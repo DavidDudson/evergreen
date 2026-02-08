@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 bevy = "0.17.3"
 models = { path = "../models" }
-bevy_rapier2d  = "0.32.0"
+avian2d = "0.4"

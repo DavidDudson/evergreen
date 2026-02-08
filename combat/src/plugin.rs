@@ -1,6 +1,6 @@
 use crate::events::damage::{DamageEvent, DeathEvent};
+use avian2d::prelude::{CollisionStart, Collisions};
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 use castle::castle::Castle;
 use models::attack::Attack;
 use models::distance::Distance;
@@ -30,14 +30,28 @@ impl Plugin for CombatPlugin {
 
 fn handle_collisions(
     query_hardness: Query<&Hardness>,
-    mut collision_events: MessageReader<ContactForceEvent>,
+    mut collision_events: MessageReader<CollisionStart>,
+    collisions: Collisions,
     mut damage_events: MessageWriter<DamageEvent>,
 ) {
-    for collision_event in collision_events.read() {
-        let entity1 = collision_event.collider1;
-        let entity2 = collision_event.collider2;
-        let force = collision_event.max_force_magnitude;
-        let force_to_damage = (force / 100000000.0).round().clamp(0.0, u16::MAX as f32) as u16;
+    for collision in collision_events.read() {
+        let entity1 = collision.collider1;
+        let entity2 = collision.collider2;
+
+        // Get contact impulse from Collisions resource
+        let force = if let Some(contacts) = collisions.get(entity1, entity2) {
+            contacts
+                .manifolds
+                .iter()
+                .flat_map(|m| m.points.iter())
+                .map(|p| p.normal_impulse.abs())
+                .sum::<f32>()
+        } else {
+            0.0
+        };
+
+        // Tune this divisor to match original gameplay feel
+        let force_to_damage = (force / 100.0).round().clamp(0.0, u16::MAX as f32) as u16;
 
         if force_to_damage < 1 {
             continue;

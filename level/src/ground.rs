@@ -1,6 +1,6 @@
+use avian2d::prelude::{Collider, CollisionEventsEnabled};
 use bevy::color::palettes::css::GREEN;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::{ActiveEvents, Collider};
 use models::hardness::Hardness;
 use models::name::Name;
 use models::scenery::Scenery;
@@ -22,8 +22,8 @@ impl Ground {
             Mesh2d(meshes.add(Rectangle::new(5000., 1000.))),
             MeshMaterial2d(materials.add(Color::from(GREEN))),
             Transform::from_xyz(0., -480., 0.),
-            Collider::cuboid(5000. / 2., 980. / 2.),
-            ActiveEvents::CONTACT_FORCE_EVENTS,
+            Collider::rectangle(5000., 980.),
+            CollisionEventsEnabled,
         ));
     }
 }

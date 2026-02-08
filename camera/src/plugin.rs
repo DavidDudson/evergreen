@@ -1,7 +1,7 @@
+use avian2d::prelude::LinearVelocity;
 use bevy::input::mouse::{MouseMotion, MouseWheel};
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-use bevy_rapier2d::prelude::ExternalImpulse;
 use castle::castle::Castle;
 use models::draggable::{Draggable, Dragged};
 use models::game_states::GameState;
@@ -206,7 +206,7 @@ fn camera_drag(
 fn drag_system(
     // Assuming you have a Peasant component defined elsewhere
     draggable: Query<(Entity, &mut Transform), (With<Draggable>, Without<Dragged>)>,
-    mut dragged: Query<(Entity, &mut Transform, Option<&mut ExternalImpulse>), With<Dragged>>,
+    mut dragged: Query<(Entity, &mut Transform, &mut LinearVelocity), With<Dragged>>,
     camera_query: Query<(&Camera, &GlobalTransform, &CameraDrag)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     mouse_button: Res<ButtonInput<MouseButton>>,
@@ -239,28 +239,18 @@ fn drag_system(
 
     // Check if we're already dragging a peasant
     let mut dragging = false;
-    if let Ok((entity, mut transform, mut external_impulse)) = dragged.single_mut() {
+    if let Ok((entity, mut transform, mut velocity)) = dragged.single_mut() {
         dragging = true;
 
         // If mouse button is released, stop dragging
         if mouse_button.just_released(MouseButton::Left) {
             commands.entity(entity).remove::<Dragged>();
-            let impulse_scale = 1500.;
+            let velocity_scale = 15.;
 
-            let vec = Vec2::new(
-                camera_drag.cursor_velocity.x * impulse_scale,
-                -camera_drag.cursor_velocity.y * impulse_scale,
-            );
-            if let Some(impulse) = external_impulse.as_mut() {
-                impulse.impulse = vec;
-                impulse.torque_impulse = 0.;
-            } else {
-                commands.entity(entity).insert(ExternalImpulse {
-                    impulse: vec,
-                    torque_impulse: 0.,
-                });
-                info!("{}", camera_drag.cursor_velocity)
-            }
+            // Set velocity directly instead of using impulse
+            velocity.x = camera_drag.cursor_velocity.x * velocity_scale;
+            velocity.y = -camera_drag.cursor_velocity.y * velocity_scale;
+            info!("{}", camera_drag.cursor_velocity);
         } else {
             // Update the position of the dragged peasant to follow the cursor
             transform.translation.x = cursor_position.x;

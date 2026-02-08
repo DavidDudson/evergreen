@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 bevy = "0.17.3"
 derive_more = { version = "2.1.0", features = ["full"] }
-bevy_rapier2d  = "0.32.0"
+avian2d = "0.4"

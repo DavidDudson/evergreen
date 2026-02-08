@@ -1,6 +1,5 @@
+use avian2d::prelude::{Collisions, LinearVelocity};
 use bevy::prelude::*;
-use bevy_rapier2d::plugin::ReadRapierContext;
-use bevy_rapier2d::prelude::Velocity;
 use models::draggable::Dragged;
 use models::game_states::GameState;
 use models::scenery::Scenery;
@@ -15,21 +14,17 @@ impl Plugin for EnemyPlugin {
 }
 
 fn move_enemy(
-    mut enemy: Query<(Entity, &Speed, &mut Velocity), Without<Dragged>>,
+    mut enemy: Query<(Entity, &Speed, &mut LinearVelocity), Without<Dragged>>,
     scenery: Query<Entity, With<Scenery>>,
-    rapier_context: ReadRapierContext,
+    collisions: Collisions,
 ) {
     let Some(scenery_entity) = scenery.iter().next() else {
         return;
     };
 
-    let Ok(context) = rapier_context.single() else {
-        return;
-    };
-
     for (entity, speed, mut vel) in &mut enemy {
-        if context.contact_pair(entity, scenery_entity).is_some() {
-            vel.linvel.x = speed.0;
+        if collisions.contains(entity, scenery_entity) {
+            vel.x = speed.0;
         }
     }
 }

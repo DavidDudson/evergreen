@@ -1,8 +1,7 @@
 use crate::hardness::Hardness;
+use avian2d::prelude::{Collider, RigidBody};
 use bevy::prelude::Component;
-use bevy_rapier2d::dynamics::RigidBody;
-use bevy_rapier2d::prelude::Collider;
 
 #[derive(Component, Default)]
-#[require(RigidBody::Fixed, Collider, Hardness)]
+#[require(RigidBody::Static, Collider, Hardness)]
 pub struct Scenery;

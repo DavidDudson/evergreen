@@ -1,6 +1,6 @@
+use avian2d::prelude::*;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 use camera::plugin::CameraPlugin;
 use castle::plugin::CastlePlugin;
 use combat::plugin::CombatPlugin;
@@ -22,7 +22,7 @@ fn main() {
             LevelPlugin,
             EnemyPlugin,
             CombatPlugin,
-            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
+            PhysicsPlugins::default().with_length_unit(100.0),
         ))
         .init_state::<GameState>()
         .run();

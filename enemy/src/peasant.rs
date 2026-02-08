@@ -1,7 +1,9 @@
-use crate::enemy::{Enemy, ENEMY_COLLISION_GROUP};
+use crate::enemy::{enemy_collision_layers, Enemy};
+use avian2d::prelude::{
+    AngularDamping, Collider, CollisionEventsEnabled, LinearDamping, LockedAxes,
+};
 use bevy::color::palettes::css::WHITE;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::{ActiveEvents, Collider, Damping, LockedAxes};
 use models::attack::Attack;
 use models::draggable::Draggable;
 use models::hardness::Hardness;
@@ -35,15 +37,15 @@ impl Peasant {
                 Mesh2d(meshes.add(Rectangle::new(64., 64.))),
                 MeshMaterial2d(materials.add(Color::from(WHITE))),
                 Transform::from_xyz(-1920. / 2., 0., 0.),
-                Collider::cuboid(64. / 2., 64. / 2.),
+                Collider::rectangle(64., 64.),
                 LockedAxes::ROTATION_LOCKED,
-                ENEMY_COLLISION_GROUP,
-                ActiveEvents::CONTACT_FORCE_EVENTS,
+                enemy_collision_layers(),
                 Hardness(1),
             ))
-            .insert(Damping {
-                linear_damping: 0.5,
-                angular_damping: 1.0,
-            });
+            .insert((
+                LinearDamping(0.5),
+                AngularDamping(1.0),
+                CollisionEventsEnabled,
+            ));
     }
 }

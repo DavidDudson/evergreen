@@ -1,6 +1,6 @@
+use avian2d::prelude::PhysicsDebugPlugin;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::RapierDebugRenderPlugin;
 
 pub struct DiagnosticsPlugin;
 
@@ -10,7 +10,7 @@ impl Plugin for DiagnosticsPlugin {
         println!("DiagnosticsPlugin Plugin Built");
         app.add_plugins((
             LogDiagnosticsPlugin::default(),
-            RapierDebugRenderPlugin::default(),
+            PhysicsDebugPlugin::default(),
         ));
     }
 }

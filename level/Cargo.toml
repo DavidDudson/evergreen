@@ -9,4 +9,4 @@ enemy = { path = "../enemy" }
 models = { path = "../models" }
 combat = { path = "../combat" }
 castle = { path = "../castle" }
-bevy_rapier2d  = "0.32.0"
+avian2d = "0.4"
