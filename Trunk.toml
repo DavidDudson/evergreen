@@ -1,0 +1,17 @@
+[build]
+target = "evergreen_main/index.html"
+
+[serve]
+addresses = ["127.0.0.1"]
+port = 8080
+
+[watch]
+watch = [
+    "evergreen_main/src",
+    "camera/src",
+    "combat/src",
+    "diagnostics/src",
+    "enemy/src",
+    "models/src",
+    "ui/src",
+]

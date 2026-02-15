@@ -7,13 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Development Commands
 
-### Runnth
+### Running
 
 ```bash
-cargo run
+trunk serve
 ```
 
-The project is configured (`.cargo/config.toml`) to automatically build for `wasm32-unknown-unknown` and run with `wasm-server-runner`, which creates a local webserver.
+The project uses [Trunk](https://trunkrs.dev/) as its WASM build tool and dev server. Running `trunk serve` builds the project and starts a dev server at `http://127.0.0.1:8080` with automatic rebuilds on file changes.
 
 ### Building
 
@@ -42,7 +42,7 @@ The pre-commit hook (`.husky/hooks/pre-commit`) automatically runs `cargo fix` a
 ### Prerequisites
 - Rust nightly toolchain (specified in `rust-toolchain.toml`)
 - WASM target: `rustup target add wasm32-unknown-unknown`
-- wasm-server-runner: `cargo install wasm-server-runner`
+- Trunk: `cargo install trunk`
 - OS-specific Bevy dependencies (see [Bevy setup guide](https://bevyengine.org/learn/quick-start/getting-started/setup/))
   - Linux: `libasound2-dev`, `libudev-dev`, `pkg-config`
 
