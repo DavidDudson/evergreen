@@ -40,6 +40,12 @@ impl Plugin for UiPlugin {
 }
 
 fn setup_main_menu(mut commands: Commands) {
+    let green_dark = Color::srgb(0.06, 0.14, 0.08);
+    let green_title = Color::srgb(0.58, 0.82, 0.52);
+    let green_accent = Color::srgb(0.24, 0.48, 0.29);
+    let green_btn_bg = Color::srgb(0.12, 0.30, 0.16);
+    let green_btn_text = Color::srgb(0.72, 0.92, 0.68);
+
     commands
         .spawn((
             MainMenu,
@@ -53,24 +59,47 @@ fn setup_main_menu(mut commands: Commands) {
                 height: Val::Percent(100.0),
                 ..Node::default()
             },
+            BackgroundColor(green_dark),
         ))
         .with_children(|parent| {
+            // Main title: "Evergreen"
             parent.spawn((
-                Text::new("Main Menu".to_string()),
+                Text::new("Evergreen"),
+                TextColor(green_title),
+                TextFont {
+                    font_size: 72.0,
+                    ..default()
+                },
                 Node {
-                    margin: UiRect::bottom(Val::Px(20.0)),
+                    margin: UiRect::bottom(Val::Px(8.0)),
                     ..Node::default()
                 },
             ));
-            parent.spawn((
-                Button,
-                Text::new("Start Game".to_string()),
-                Node {
-                    margin: UiRect::all(Val::Px(10.0)),
-                    padding: UiRect::all(Val::Px(10.0)),
-                    ..Node::default()
-                },
-            ));
+
+            // Start button
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        padding: UiRect::axes(Val::Px(40.0), Val::Px(14.0)),
+                        margin: UiRect::top(Val::Px(8.0)),
+                        border: UiRect::all(Val::Px(2.0)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Node::default()
+                    },
+                    BorderColor::all(green_accent),
+                    BackgroundColor(green_btn_bg),
+                    BorderRadius::all(Val::Px(6.0)),
+                ))
+                .with_child((
+                    Text::new("Begin Journey"),
+                    TextColor(green_btn_text),
+                    TextFont {
+                        font_size: 26.0,
+                        ..default()
+                    },
+                ));
         });
 }
 
@@ -159,6 +188,9 @@ fn handle_window_focus(
 }
 
 fn setup_pause_menu(mut commands: Commands) {
+    let green_overlay = Color::srgba(0.04, 0.12, 0.06, 0.85);
+    let green_title = Color::srgb(0.58, 0.82, 0.52);
+
     commands
         .spawn((
             PauseMenu,
@@ -172,14 +204,15 @@ fn setup_pause_menu(mut commands: Commands) {
                 height: Val::Percent(100.0),
                 ..Node::default()
             },
-            BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
+            BackgroundColor(green_overlay),
         ))
         .with_children(|parent| {
             parent.spawn((
-                Text::new("Paused".to_string()),
-                Node {
-                    margin: UiRect::bottom(Val::Px(20.0)),
-                    ..Node::default()
+                Text::new("Paused"),
+                TextColor(green_title),
+                TextFont {
+                    font_size: 48.0,
+                    ..default()
                 },
             ));
         });

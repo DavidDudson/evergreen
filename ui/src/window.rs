@@ -7,7 +7,7 @@ const SCREEN_HEIGHT: u32 = 1080;
 pub fn window_plugin() -> WindowPlugin {
     WindowPlugin {
         primary_window: Some(Window {
-            title: String::from("Evergreen"),
+            title: String::from("Evergreen: Summer of the Seventh Sunderance"),
             name: Some(String::from("evergreen.app")),
             resolution: WindowResolution::from((SCREEN_WIDTH, SCREEN_HEIGHT)),
             present_mode: PresentMode::AutoNoVsync,
