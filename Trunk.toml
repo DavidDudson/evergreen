@@ -11,7 +11,8 @@ watch = [
     "camera/src",
     "combat/src",
     "diagnostics/src",
-    "enemy/src",
+    "level/src",
     "models/src",
+    "player/src",
     "ui/src",
 ]

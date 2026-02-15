@@ -86,11 +86,11 @@ fn setup_main_menu(mut commands: Commands) {
                         border: UiRect::all(Val::Px(2.0)),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::Center,
+                        border_radius: BorderRadius::all(Val::Px(6.0)),
                         ..Node::default()
                     },
                     BorderColor::all(green_accent),
                     BackgroundColor(green_btn_bg),
-                    BorderRadius::all(Val::Px(6.0)),
                 ))
                 .with_child((
                     Text::new("Begin Journey"),
