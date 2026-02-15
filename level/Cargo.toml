@@ -1,9 +1,9 @@
 [package]
-name = "enemy"
+name = "level"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.17.3"
+bevy = "0.18"
+bevy_ecs_tilemap = "0.18"
 models = { path = "../models" }
-bevy_rapier2d  = "0.32.0"

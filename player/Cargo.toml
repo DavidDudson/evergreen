@@ -1,8 +1,8 @@
 [package]
-name = "models"
+name = "player"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 bevy = "0.18"
-derive_more = { version = "2.1.1", features = ["full"] }
+models = { path = "../models" }

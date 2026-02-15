@@ -8,10 +8,10 @@ ui = { path = "../ui" }
 models = { path = "../models" }
 diagnostics = { path = "../diagnostics" }
 combat = { path = "../combat" }
-enemy = { path = "../enemy" }
 camera = { path = "../camera" }
-bevy = "0.17.3"
-bevy_rapier2d = "0.32.0"
+level = { path = "../level" }
+player = { path = "../player" }
+bevy = "0.18"
 
 [dev-dependencies]
 husky-rs = "0.3.2"

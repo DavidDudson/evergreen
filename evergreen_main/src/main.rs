@@ -1,10 +1,10 @@
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 use camera::plugin::CameraPlugin;
 use combat::plugin::CombatPlugin;
-use enemy::plugin::EnemyPlugin;
+use level::plugin::LevelPlugin;
 use models::game_states::GameState;
+use player::plugin::PlayerPlugin;
 use ui::plugin::UiPlugin;
 use ui::window::window_plugin;
 
@@ -15,9 +15,9 @@ fn main() {
             CameraPlugin,
             LogDiagnosticsPlugin::default(),
             UiPlugin,
-            EnemyPlugin,
             CombatPlugin,
-            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0),
+            LevelPlugin,
+            PlayerPlugin,
         ))
         .init_state::<GameState>()
         .run();

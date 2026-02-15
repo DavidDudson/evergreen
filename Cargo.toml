@@ -13,10 +13,11 @@ codegen-units = 1
 resolver = "2"
 members = [
     "diagnostics",
-    "enemy",
     "models",
     "evergreen_main",
     "ui",
     "combat",
     "camera",
+    "level",
+    "player",
 ]
