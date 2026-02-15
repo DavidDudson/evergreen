@@ -3,7 +3,6 @@ extern crate core;
 pub mod attack;
 pub mod damage_type;
 pub mod distance;
-pub mod draggable;
 pub mod game_states;
 pub mod hardness;
 pub mod health;

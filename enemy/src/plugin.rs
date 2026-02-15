@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::plugin::ReadRapierContext;
 use bevy_rapier2d::prelude::Velocity;
-use models::draggable::Dragged;
 use models::game_states::GameState;
 use models::scenery::Scenery;
 use models::speed::Speed;
@@ -15,7 +14,7 @@ impl Plugin for EnemyPlugin {
 }
 
 fn move_enemy(
-    mut enemy: Query<(Entity, &Speed, &mut Velocity), Without<Dragged>>,
+    mut enemy: Query<(Entity, &Speed, &mut Velocity)>, 
     scenery: Query<Entity, With<Scenery>>,
     rapier_context: ReadRapierContext,
 ) {

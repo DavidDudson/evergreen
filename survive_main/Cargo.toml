@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-castle = { path = "../castle" }
 ui = { path = "../ui" }
 models = { path = "../models" }
 diagnostics = { path = "../diagnostics" }
-level = { path = "../level" }
 combat = { path = "../combat" }
 enemy = { path = "../enemy" }
 camera = { path = "../camera" }
@@ -16,4 +14,4 @@ bevy = "0.17.3"
 bevy_rapier2d  = "0.32.0"
 
 [dev-dependencies]
-husky-rs = "0.1.5"
+husky-rs = "0.3.2"

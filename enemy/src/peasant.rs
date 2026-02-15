@@ -3,7 +3,6 @@ use bevy::color::palettes::css::WHITE;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, Damping, LockedAxes};
 use models::attack::Attack;
-use models::draggable::Draggable;
 use models::hardness::Hardness;
 use models::health::Health;
 use models::name::Name;
@@ -23,7 +22,6 @@ impl Peasant {
         info!("Spawning peasant");
         commands
             .spawn((
-                Draggable,
                 Peasant,
                 Name("Peasant".to_string()),
                 Textured {

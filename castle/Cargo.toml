@@ -1,9 +1,0 @@
-[package]
-name = "castle"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-bevy = "0.17.3"
-models = { path = "../models" }
-bevy_rapier2d  = "0.32.0"

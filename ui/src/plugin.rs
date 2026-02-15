@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy::window::WindowFocused;
-use castle::castle::Castle;
 use models::game_states::GameState;
 use models::health::Health;
 
@@ -103,7 +102,7 @@ fn setup_hud(mut commands: Commands) {
 }
 
 fn update_health_text(
-    castle_query: Query<&Health, With<Castle>>,
+    castle_query: Query<&Health>,
     mut text_query: Query<&mut Text, With<HealthText>>,
 ) {
     // Get the castle's health

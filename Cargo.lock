@@ -1705,16 +1705,6 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_rapier2d",
- "castle",
- "models",
-]
-
-[[package]]
-name = "castle"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_rapier2d",
  "models",
 ]
 
@@ -1785,7 +1775,6 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_rapier2d",
- "castle",
  "derive_more",
  "models",
 ]
@@ -2068,18 +2057,18 @@ checksum = "2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476"
 
 [[package]]
 name = "derive_more"
-version = "2.1.0"
+version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10b768e943bed7bf2cab53df09f4bc34bfd217cdb57d971e769874c9a6710618"
+checksum = "d751e9e49156b02b44f9c1815bcb94b984cdcc4396ecc32521c739452808b134"
 dependencies = [
  "derive_more-impl",
 ]
 
 [[package]]
 name = "derive_more-impl"
-version = "2.1.0"
+version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d286bfdaf75e988b4a78e013ecd79c581e06399ab53fbacd2d916c2f904f30b"
+checksum = "799a97264921d8623a957f6c3b9011f3b5492f557bbb7a5a19b7fa6d06ba8dcb"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2210,7 +2199,6 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_rapier2d",
- "castle",
  "models",
 ]
 
@@ -2800,9 +2788,9 @@ checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
 
 [[package]]
 name = "husky-rs"
-version = "0.1.5"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8595e3e777338ccc8360c4eb89924f8d7e55a5ff831d057e1c65892c220da28f"
+checksum = "62b00c51c8ea1f7e8d93caaf071948f766eb331cd55cb9871096614c9291642e"
 
 [[package]]
 name = "image"
@@ -2971,18 +2959,6 @@ name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
-
-[[package]]
-name = "level"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_rapier2d",
- "castle",
- "combat",
- "enemy",
- "models",
-]
 
 [[package]]
 name = "lewton"
@@ -4574,12 +4550,10 @@ dependencies = [
  "bevy",
  "bevy_rapier2d",
  "camera",
- "castle",
  "combat",
  "diagnostics",
  "enemy",
  "husky-rs",
- "level",
  "models",
  "ui",
 ]
@@ -4906,7 +4880,6 @@ name = "ui"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "castle",
  "models",
 ]
 

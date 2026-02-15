@@ -11,4 +11,4 @@ codegen-units = 1
 
 [workspace]
 resolver = "2"
-members = ["castle", "diagnostics", "enemy", "level", "models", "survive_main", "ui", "combat", "camera"]
+members = ["diagnostics", "enemy", "models", "survive_main", "ui", "combat", "camera"]

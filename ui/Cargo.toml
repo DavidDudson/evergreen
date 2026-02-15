@@ -6,4 +6,3 @@ edition = "2021"
 [dependencies]
 bevy = "0.17.3"
 models = { path = "../models" }
-castle = { path = "../castle" }
