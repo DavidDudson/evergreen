@@ -75,7 +75,7 @@ This project benefits from several MCP servers available in the environment. Use
 The project uses a Cargo workspace with 9 crates organized by domain responsibility:
 
 **Core Application:**
-- **survive_main**: Entry point that orchestrates all plugins and initializes the Bevy app
+- **evergreen_main**: Entry point that orchestrates all plugins and initializes the Bevy app
 
 **Shared Data:**
 - **models**: Core components and types used across all crates
@@ -93,7 +93,7 @@ The project uses a Cargo workspace with 9 crates organized by domain responsibil
 
 ### Dependency Flow
 ```
-survive_main (orchestrator)
+evergreen_main (orchestrator)
 ├── models (shared types - no internal dependencies)
 └── diagnostics (standalone)
 ```
@@ -101,7 +101,7 @@ survive_main (orchestrator)
 ### Key Architectural Patterns
 
 **-Architre:**
-Each domain exports a Bevy `Plugin` that registers its systems and components. The main app in `survive_main` composes these plugins.
+Each domain exports a Bevy `Plugin` that registers its systems and components. The main app in `evergreen_main` composes these plugins.
 
 **Event-Driven Combat:**
 ```

@@ -7,8 +7,8 @@ const SCREEN_HEIGHT: u32 = 1080;
 pub fn window_plugin() -> WindowPlugin {
     WindowPlugin {
         primary_window: Some(Window {
-            title: String::from("Survive!"),
-            name: Some(String::from("survive.app")),
+            title: String::from("Evergreen"),
+            name: Some(String::from("evergreen.app")),
             resolution: WindowResolution::from((SCREEN_WIDTH, SCREEN_HEIGHT)),
             present_mode: PresentMode::AutoNoVsync,
             fit_canvas_to_parent: true,
