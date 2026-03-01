@@ -1,4 +1,5 @@
+pub mod area;
 pub mod plugin;
 mod spawning;
-mod terrain;
-mod tile_map;
+pub mod terrain;
+pub mod world;

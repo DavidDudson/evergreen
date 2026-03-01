@@ -18,6 +18,7 @@ impl Plugin for PlayerPlugin {
                     animation::update_animation_state,
                     animation::advance_frame,
                     movement::move_player,
+                    movement::check_area_transition,
                 )
                     .chain()
                     .run_if(in_state(GameState::Playing)),

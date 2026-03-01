@@ -1,10 +1,6 @@
 use bevy::camera::ScalingMode;
 use bevy::prelude::*;
-
-/// Half the 1280 × 720 render resolution: 2 Bevy pixels per world unit, so
-/// a 1 × 2 tile character (16 × 32 world units) occupies 32 × 64 Bevy pixels.
-const VIEWPORT_WIDTH_WORLD: f32 = 640.0;
-const VIEWPORT_HEIGHT_WORLD: f32 = 360.0;
+use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 
 pub struct CameraPlugin;
 
@@ -19,8 +15,8 @@ fn setup(mut commands: Commands) {
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
-                min_width: VIEWPORT_WIDTH_WORLD,
-                min_height: VIEWPORT_HEIGHT_WORLD,
+                min_width: f32::from(MAP_WIDTH) * f32::from(TILE_SIZE_PX),
+                min_height: f32::from(MAP_HEIGHT) * f32::from(TILE_SIZE_PX),
             },
             ..OrthographicProjection::default_2d()
         }),

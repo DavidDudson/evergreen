@@ -8,4 +8,5 @@ workspace = true
 
 [dependencies]
 bevy = "0.18"
+level = { path = "../level" }
 models = { path = "../models" }

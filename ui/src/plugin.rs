@@ -6,6 +6,7 @@ use crate::focus;
 use crate::game_over_menu::{self, GameOverMenu};
 use crate::hud::{self, Hud};
 use crate::main_menu::{self, MainMenu};
+use crate::minimap;
 use crate::pause_menu::{self, PauseMenu};
 
 pub struct UiPlugin;
@@ -15,11 +16,18 @@ impl Plugin for UiPlugin {
         app.add_systems(OnEnter(GameState::MainMenu), main_menu::setup)
             .add_systems(OnExit(GameState::MainMenu), despawn_all::<MainMenu>)
             .add_systems(Update, main_menu::button_system)
-            .add_systems(OnEnter(GameState::Playing), hud::setup)
-            .add_systems(OnExit(GameState::Playing), despawn_all::<Hud>)
+            .add_systems(OnEnter(GameState::Playing), (hud::setup, minimap::setup))
+            .add_systems(
+                OnExit(GameState::Playing),
+                (despawn_all::<Hud>, minimap::despawn).run_if(not(in_state(GameState::Paused))),
+            )
             .add_systems(
                 Update,
-                hud::update_health_text.run_if(in_state(GameState::Playing)),
+                (
+                    hud::update_health_text,
+                    minimap::refresh,
+                )
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(OnEnter(GameState::GameOver), game_over_menu::setup)
             .add_systems(OnExit(GameState::GameOver), despawn_all::<GameOverMenu>)

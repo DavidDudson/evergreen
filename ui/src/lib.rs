@@ -3,6 +3,7 @@ mod focus;
 mod game_over_menu;
 mod hud;
 mod main_menu;
+mod minimap;
 mod pause_menu;
 pub mod plugin;
 pub mod theme;
