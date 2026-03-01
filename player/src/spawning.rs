@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use level::plugin::tile_size;
+use models::health::Health;
 use models::layer::Layer;
 use models::speed::Speed;
 use models::tile::Tile;
@@ -12,6 +13,7 @@ use crate::animation::{
 const PLAYER_WIDTH: Tile = Tile(1);
 const PLAYER_HEIGHT: Tile = Tile(2);
 pub const PLAYER_SPEED: Speed = Speed(6); // run speed: 6 tiles/s; walk is 2 tiles/s (see movement.rs)
+pub const PLAYER_MAX_HEALTH: Health = Health(10);
 
 #[derive(Component)]
 #[require(Speed)]
@@ -34,6 +36,7 @@ pub fn spawn(
     commands.spawn((
         Player,
         PLAYER_SPEED,
+        PLAYER_MAX_HEALTH,
         FacingDirection::default(),
         AnimationKind::default(),
         AnimationFrame::default(),

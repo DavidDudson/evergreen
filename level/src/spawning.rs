@@ -4,7 +4,7 @@ use models::layer::Layer;
 use models::tile::Tile;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
-use crate::terrain::Terrain;
+use crate::terrain::{self, Terrain};
 use crate::world::{AreaChanged, WorldMap};
 
 /// Sprout Lands tiles are 16×16 pixels.
@@ -77,9 +77,8 @@ fn despawn_area(
 }
 
 fn spawn_area(commands: &mut Commands, asset_server: &AssetServer, world: &WorldMap) {
-    let texture: Handle<Image> = asset_server.load("terrain.png");
+    let texture: Handle<Image> = asset_server.load("terrain_wang.png");
     let area_pos = world.current;
-    let area = world.current_area();
 
     let map_size = TilemapSize {
         x: u32::from(MAP_WIDTH),
@@ -102,10 +101,6 @@ fn spawn_area(commands: &mut Commands, asset_server: &AssetServer, world: &World
         for y in 0..MAP_HEIGHT {
             let xu = u32::from(x);
             let yu = u32::from(y);
-            let terrain: Terrain = area
-                .terrain_at(xu, yu)
-                .expect("area grid covers full MAP_WIDTH × MAP_HEIGHT");
-
             let tile_pos = TilePos { x: xu, y: yu };
             let tile_entity = commands
                 .spawn((
@@ -113,8 +108,8 @@ fn spawn_area(commands: &mut Commands, asset_server: &AssetServer, world: &World
                     TileBundle {
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_entity),
-                        texture_index: TileTextureIndex(tile_index_with_neighbors(
-                            xu, yu, terrain, area_pos, world,
+                        texture_index: TileTextureIndex(wang_tile_index(
+                            xu, yu, area_pos, world,
                         )),
                         ..Default::default()
                     },
@@ -143,46 +138,29 @@ fn spawn_area(commands: &mut Commands, asset_server: &AssetServer, world: &World
     ));
 }
 
-/// Compute the sprite sheet index for a tile, consulting adjacent areas at
-/// the area boundaries so exit paths don't show an artificial edge sprite.
-fn tile_index_with_neighbors(
-    x: u32,
-    y: u32,
-    terrain: Terrain,
-    area_pos: bevy::math::IVec2,
-    world: &WorldMap,
-) -> u32 {
-    // Edge index constants (same layout for all terrain types).
-    const EDGE_TL: u32 = 0;
-    const EDGE_T: u32 = 1;
-    const EDGE_TR: u32 = 2;
-    const EDGE_L: u32 = 11;
-    const EDGE_R: u32 = 13;
-    const EDGE_BL: u32 = 22;
-    const EDGE_B: u32 = 23;
-    const EDGE_BR: u32 = 24;
-
+/// Wang corner tile index for a cell, consulting adjacent areas across boundaries.
+///
+/// Each corner is grass if ≥2 of the 4 tiles sharing that vertex are grass.
+/// Grass wins on a 2-vs-2 tie. Bit ordering: NW=8, NE=4, SW=2, SE=1.
+fn wang_tile_index(x: u32, y: u32, area_pos: bevy::math::IVec2, world: &WorldMap) -> u32 {
     let lx = i32::try_from(x).expect("x fits i32");
     let ly = i32::try_from(y).expect("y fits i32");
 
     let at = |dx: i32, dy: i32| world.terrain_at_extended(area_pos, lx + dx, ly + dy);
 
-    let edge_l = at(-1, 0) != Some(terrain);
-    let edge_r = at(1, 0) != Some(terrain);
-    let edge_b = at(0, -1) != Some(terrain);
-    let edge_t = at(0, 1) != Some(terrain);
-
-    let relative = match (edge_l, edge_r, edge_b, edge_t) {
-        (true, _, true, _) => EDGE_BL,
-        (_, true, true, _) => EDGE_BR,
-        (true, _, _, true) => EDGE_TL,
-        (_, true, _, true) => EDGE_TR,
-        (true, _, _, _) => EDGE_L,
-        (_, true, _, _) => EDGE_R,
-        (_, _, true, _) => EDGE_B,
-        (_, _, _, true) => EDGE_T,
-        _ => return terrain.fill(x, y),
+    let corner = |a, b, c, d: Option<Terrain>| -> bool {
+        [a, b, c, d]
+            .iter()
+            .filter(|t| **t == Some(Terrain::Grass))
+            .count()
+            >= 2
     };
 
-    terrain.offset() + relative
+    let nw = corner(at(0, 0), at(-1, 0), at(0, 1), at(-1, 1));
+    let ne = corner(at(0, 0), at(1, 0), at(0, 1), at(1, 1));
+    let sw = corner(at(0, 0), at(-1, 0), at(0, -1), at(-1, -1));
+    let se = corner(at(0, 0), at(1, 0), at(0, -1), at(1, -1));
+
+    let wang = terrain::wang_index(nw, ne, sw, se);
+    terrain::WANG_TO_ATLAS[wang as usize]
 }

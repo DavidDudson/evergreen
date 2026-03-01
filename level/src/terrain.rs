@@ -1,12 +1,3 @@
-/// Columns per row in the combined terrain.png sprite sheet.
-const SHEET_COLS: u32 = 11;
-
-/// Dirt tiles start at this row in the combined sheet (grass rows 0-6, dirt rows 7-13).
-const DIRT_OFFSET: u32 = 7 * SHEET_COLS;
-
-const GRASS_FILL: [u32; 12] = [55, 56, 57, 58, 59, 60, 66, 67, 68, 69, 70, 71];
-const DIRT_FILL: [u32; 6] = [55, 56, 57, 66, 67, 68];
-
 /// Terrain types that can appear in the tile map.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Terrain {
@@ -26,36 +17,32 @@ impl TryFrom<u8> for Terrain {
     }
 }
 
-impl Terrain {
-    /// Base offset into the combined sprite sheet for this terrain.
-    pub fn offset(self) -> u32 {
-        match self {
-            Terrain::Grass => 0,
-            Terrain::Dirt => DIRT_OFFSET,
-        }
-    }
-
-    pub fn fill(self, x: u32, y: u32) -> u32 {
-        let relative = match self {
-            Terrain::Grass => GRASS_FILL[tile_hash(x, y, 0) % GRASS_FILL.len()],
-            Terrain::Dirt => DIRT_FILL[tile_hash(x, y, 7) % DIRT_FILL.len()],
-        };
-        self.offset() + relative
-    }
+/// Wang corner tile index (0–15).
+///
+/// Bit ordering: NW=8, NE=4, SW=2, SE=1.
+/// A bit is 1 (grass) if a majority (≥2) of the 4 tiles sharing that vertex
+/// are grass. Grass wins on a 2-vs-2 tie.
+pub fn wang_index(nw: bool, ne: bool, sw: bool, se: bool) -> u32 {
+    (nw as u32) << 3 | (ne as u32) << 2 | (sw as u32) << 1 | (se as u32)
 }
 
-/// Simple deterministic hash for tile variation.
+/// Maps Wang index (0–15) to the bevy_ecs_tilemap texture atlas index.
 ///
-/// Returns `usize` for direct use as an array index.
-/// The `u32 -> usize` widening has no `From` impl in std, but is
-/// safe on all supported platforms (usize >= 32 bits).
+/// Filled in from the PixelLab tileset metadata after generation.
+/// Placeholder: identity mapping (assumes 4-column sheet in Wang order).
+pub const WANG_TO_ATLAS: [u32; 16] =
+    [6, 7, 10, 9, 2, 11, 4, 15, 5, 14, 1, 8, 3, 0, 13, 12];
+
+/// Deterministic tile hash for scenery placement.
+///
+/// `u32 → usize` widening is safe on all supported platforms (usize ≥ 32 bits).
 #[allow(clippy::as_conversions)]
-fn tile_hash(x: u32, y: u32, salt: u32) -> usize {
+pub fn tile_hash(x: u32, y: u32, salt: u32) -> usize {
     let mut h = x
-        .wrapping_mul(374761393)
-        .wrapping_add(y.wrapping_mul(668265263))
+        .wrapping_mul(374_761_393)
+        .wrapping_add(y.wrapping_mul(668_265_263))
         .wrapping_add(salt);
-    h = (h ^ (h >> 13)).wrapping_mul(1274126177);
+    h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
     h = h ^ (h >> 16);
     h as usize
 }

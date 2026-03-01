@@ -15,16 +15,6 @@ const PATH_COL_END: u32 = 16;
 const PATH_ROW_START: u32 = 7;
 const PATH_ROW_END: u32 = 9;
 
-// Shared tileset edge indices (both grass and dirt use the same layout).
-const EDGE_TL: u32 = 0;
-const EDGE_T: u32 = 1;
-const EDGE_TR: u32 = 2;
-const EDGE_L: u32 = 11;
-const EDGE_R: u32 = 13;
-const EDGE_BL: u32 = 22;
-const EDGE_B: u32 = 23;
-const EDGE_BR: u32 = 24;
-
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub enum Direction {
     North,
@@ -87,29 +77,6 @@ impl Area {
         self.grid.get(idx).copied()
     }
 
-    /// Determine the tile index in the combined sprite sheet for a cell.
-    pub fn tile_index(&self, x: u32, y: u32, terrain: Terrain) -> u32 {
-        let edge_l =
-            x.checked_sub(1).and_then(|nx| self.terrain_at(nx, y)) != Some(terrain);
-        let edge_r = self.terrain_at(x + 1, y) != Some(terrain);
-        let edge_b =
-            y.checked_sub(1).and_then(|ny| self.terrain_at(x, ny)) != Some(terrain);
-        let edge_t = self.terrain_at(x, y + 1) != Some(terrain);
-
-        let relative = match (edge_l, edge_r, edge_b, edge_t) {
-            (true, _, true, _) => EDGE_BL,
-            (_, true, true, _) => EDGE_BR,
-            (true, _, _, true) => EDGE_TL,
-            (_, true, _, true) => EDGE_TR,
-            (true, _, _, _) => EDGE_L,
-            (_, true, _, _) => EDGE_R,
-            (_, _, true, _) => EDGE_B,
-            (_, _, _, true) => EDGE_T,
-            _ => return terrain.fill(x, y),
-        };
-
-        terrain.offset() + relative
-    }
 }
 
 // ---------------------------------------------------------------------------

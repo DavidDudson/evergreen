@@ -3,8 +3,9 @@ use models::game_states::GameState;
 
 use crate::theme;
 
-const TITLE_FONT_SIZE_PX: u16 = 72;
-const TITLE_MARGIN_BOTTOM_PX: u16 = 8;
+const LOGO_WIDTH_PX: u16 = 512;
+const LOGO_HEIGHT_PX: u16 = 256;
+const LOGO_MARGIN_BOTTOM_PX: u16 = 24;
 const BUTTON_FONT_SIZE_PX: u16 = 26;
 const BUTTON_PADDING_H_PX: u16 = 40;
 const BUTTON_PADDING_V_PX: u16 = 14;
@@ -15,7 +16,7 @@ const BUTTON_RADIUS_PX: u16 = 6;
 #[derive(Component)]
 pub struct MainMenu;
 
-pub fn setup(mut commands: Commands) {
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             MainMenu,
@@ -33,14 +34,11 @@ pub fn setup(mut commands: Commands) {
         ))
         .with_children(|parent| {
             parent.spawn((
-                Text::new("Evergreen"),
-                TextColor(theme::TITLE),
-                TextFont {
-                    font_size: f32::from(TITLE_FONT_SIZE_PX),
-                    ..default()
-                },
+                ImageNode::new(asset_server.load("logo.png")),
                 Node {
-                    margin: UiRect::bottom(Val::Px(f32::from(TITLE_MARGIN_BOTTOM_PX))),
+                    width: Val::Px(f32::from(LOGO_WIDTH_PX)),
+                    height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
+                    margin: UiRect::bottom(Val::Px(f32::from(LOGO_MARGIN_BOTTOM_PX))),
                     ..Node::default()
                 },
             ));

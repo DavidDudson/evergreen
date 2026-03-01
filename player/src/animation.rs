@@ -9,7 +9,7 @@ pub const FRAME_H_PX: u32 = 64;
 const IDLE_FRAMES: usize = 4;
 const WALK_FRAMES: usize = 4;
 const RUN_FRAMES: usize = 4;
-const IDLE_FPS: f32 = 4.0;
+const IDLE_FPS: f32 = 3.0;
 const WALK_FPS: f32 = 8.0;
 const RUN_FPS: f32 = 12.0;
 

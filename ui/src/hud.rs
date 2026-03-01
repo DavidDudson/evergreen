@@ -1,38 +1,69 @@
 use bevy::prelude::*;
 use models::health::Health;
+use std::f32::consts::TAU;
 
-const HUD_OFFSET_PX: u16 = 5;
-const HUD_FONT_SIZE_PX: u16 = 14;
+const HUD_OFFSET_PX: f32 = 8.0;
+const ROSE_CONTAINER_PX: f32 = 80.0;
+const PETAL_SIZE_PX: f32 = 32.0;
+const PETAL_ORBIT_RADIUS_PX: f32 = 20.0;
+const PETAL_COUNT: u16 = 10;
 
 #[derive(Component)]
 pub struct Hud;
 
 #[derive(Component)]
-pub struct HealthText;
+pub struct RosePetal(pub u16);
 
-pub fn setup(mut commands: Commands) {
-    commands.spawn((
-        Hud,
-        Text::new("Health: --".to_string()),
-        HealthText,
-        TextFont {
-            font_size: f32::from(HUD_FONT_SIZE_PX),
-            ..default()
-        },
-        Node {
-            position_type: PositionType::Absolute,
-            top: Val::Px(f32::from(HUD_OFFSET_PX)),
-            right: Val::Px(f32::from(HUD_OFFSET_PX)),
-            ..Node::default()
-        },
-    ));
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let petal_image = asset_server.load("rose_petal.png");
+    let half_petal = PETAL_SIZE_PX / 2.0;
+    let center = ROSE_CONTAINER_PX / 2.0;
+
+    commands
+        .spawn((
+            Hud,
+            Node {
+                position_type: PositionType::Absolute,
+                bottom: Val::Px(HUD_OFFSET_PX),
+                right: Val::Px(HUD_OFFSET_PX),
+                width: Val::Px(ROSE_CONTAINER_PX),
+                height: Val::Px(ROSE_CONTAINER_PX),
+                ..Node::default()
+            },
+        ))
+        .with_children(|parent| {
+            for i in 1..=PETAL_COUNT {
+                let angle = TAU * f32::from(i - 1) / f32::from(PETAL_COUNT);
+                let x = PETAL_ORBIT_RADIUS_PX * angle.sin();
+                let y = -PETAL_ORBIT_RADIUS_PX * angle.cos();
+
+                parent.spawn((
+                    RosePetal(i),
+                    ImageNode::new(petal_image.clone()),
+                    Node {
+                        position_type: PositionType::Absolute,
+                        left: Val::Px(center + x - half_petal),
+                        top: Val::Px(center + y - half_petal),
+                        width: Val::Px(PETAL_SIZE_PX),
+                        height: Val::Px(PETAL_SIZE_PX),
+                        ..Node::default()
+                    },
+                    Transform::from_rotation(Quat::from_rotation_z(-angle)),
+                ));
+            }
+        });
 }
 
-pub fn update_health_text(
-    castle_query: Query<&Health>,
-    mut text_query: Query<&mut Text, With<HealthText>>,
+pub fn sync_petals(
+    health_query: Query<&Health, Changed<Health>>,
+    petal_query: Query<(Entity, &RosePetal)>,
+    mut commands: Commands,
 ) {
-    if let Some((health, mut text)) = castle_query.single().ok().zip(text_query.single_mut().ok()) {
-        text.0 = format!("Health: {}", health.0);
-    }
+    let Ok(health) = health_query.single() else {
+        return;
+    };
+    petal_query
+        .iter()
+        .filter(|(_, petal)| petal.0 > health.0)
+        .for_each(|(entity, _)| commands.entity(entity).despawn());
 }

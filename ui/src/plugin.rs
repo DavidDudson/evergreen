@@ -23,11 +23,7 @@ impl Plugin for UiPlugin {
             )
             .add_systems(
                 Update,
-                (
-                    hud::update_health_text,
-                    minimap::refresh,
-                )
-                    .run_if(in_state(GameState::Playing)),
+                (hud::sync_petals, minimap::refresh).run_if(in_state(GameState::Playing)),
             )
             .add_systems(OnEnter(GameState::GameOver), game_over_menu::setup)
             .add_systems(OnExit(GameState::GameOver), despawn_all::<GameOverMenu>)

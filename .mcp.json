@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rust-analyzer": {
+      "type": "stdio",
+      "command": "mcp-language-server",
+      "args": ["--workspace", "/home/ddudson/repos/evergreen", "--lsp", "rust-analyzer"]
+    }
+  }
+}
