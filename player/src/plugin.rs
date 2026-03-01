@@ -2,7 +2,9 @@ use bevy::prelude::*;
 use models::game_states::GameState;
 
 use crate::animation;
+use crate::collision;
 use crate::movement;
+use crate::rustle;
 use crate::spawning;
 
 pub use crate::spawning::Player;
@@ -18,6 +20,8 @@ impl Plugin for PlayerPlugin {
                     animation::update_animation_state,
                     animation::advance_frame,
                     movement::move_player,
+                    collision::resolve_scenery_collisions,
+                    rustle::trigger_rustle,
                     movement::check_area_transition,
                 )
                     .chain()

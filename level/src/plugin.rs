@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::game_states::GameState;
 
+use crate::scenery;
 use crate::spawning;
 use crate::world::{AreaChanged, WorldMap};
 
@@ -15,14 +16,23 @@ impl Plugin for LevelPlugin {
         app.add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(42))
-            .add_systems(OnEnter(GameState::Playing), spawning::spawn_tilemap)
+            .add_systems(
+                OnEnter(GameState::Playing),
+                (spawning::spawn_tilemap, scenery::spawn_scenery),
+            )
             .add_systems(
                 Update,
-                spawning::respawn_on_area_change.run_if(in_state(GameState::Playing)),
+                (
+                    spawning::respawn_on_area_change,
+                    scenery::respawn_scenery_on_area_change,
+                    scenery::animate_rustle,
+                )
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnExit(GameState::Playing),
-                spawning::despawn_tilemap.run_if(not(in_state(GameState::Paused))),
+                (spawning::despawn_tilemap, scenery::despawn_scenery)
+                    .run_if(not(in_state(GameState::Paused))),
             );
     }
 }

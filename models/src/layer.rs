@@ -5,14 +5,20 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Layer {
     Tilemap,
+    SceneryTree,
     Player,
+    SceneryBush,
+    SceneryFlower,
 }
 
 impl Layer {
     pub const fn z(self) -> u16 {
         match self {
             Self::Tilemap => 0,
+            Self::SceneryTree => 3,
             Self::Player => 10,
+            Self::SceneryBush => 11,
+            Self::SceneryFlower => 12,
         }
     }
 
