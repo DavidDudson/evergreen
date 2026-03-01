@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::*;
 
-const SCREEN_WIDTH_PX: u32 = 640;
-const SCREEN_HEIGHT_PX: u32 = 360;
+const SCREEN_WIDTH_PX: u32 = 1280;
+const SCREEN_HEIGHT_PX: u32 = 720;
 
 pub fn window_plugin() -> WindowPlugin {
     WindowPlugin {
@@ -11,9 +11,10 @@ pub fn window_plugin() -> WindowPlugin {
             name: Some(String::from("evergreen.app")),
             resolution: WindowResolution::from((SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX)),
             present_mode: PresentMode::AutoNoVsync,
-            fit_canvas_to_parent: true,
-            prevent_default_event_handling: false,
+            fit_canvas_to_parent: false,
+            prevent_default_event_handling: true,
             window_theme: Some(WindowTheme::Dark),
+            canvas: Some(String::from("#game-canvas")),
             ..default()
         }),
         ..default()

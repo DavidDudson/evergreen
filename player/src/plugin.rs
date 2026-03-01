@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::animation;
 use crate::movement;
 use crate::spawning;
 
@@ -13,7 +14,13 @@ impl Plugin for PlayerPlugin {
         app.add_systems(OnEnter(GameState::Playing), spawning::spawn)
             .add_systems(
                 Update,
-                movement::move_player.run_if(in_state(GameState::Playing)),
+                (
+                    animation::update_animation_state,
+                    animation::advance_frame,
+                    movement::move_player,
+                )
+                    .chain()
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnExit(GameState::Playing),

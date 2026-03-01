@@ -72,27 +72,39 @@
                 align-items: center;
                 justify-content: center;
                 padding: 10px 20px;
-                position: relative;
                 min-height: 0;
+                position: relative;
+                container-type: size;
             }
 
+            /*
+             * The frame stays at native 1280×720 in layout, then is scaled
+             * up (or down) to fill the available container space using a
+             * pure-CSS transform.  cqw / cqh resolve to the .game-area's
+             * border-box dimensions; subtracting the area's own padding gives
+             * the usable content rectangle.
+             */
             .game-frame {
                 position: relative;
-                width: min(90vw);
-                aspect-ratio: 16 / 9;
-                max-height: calc(100vh - 130px);
-                border-radius: 4px;
                 overflow: hidden;
+                border-radius: 4px;
                 border: 2px solid #2a5e3a;
                 background: #000;
+                flex-shrink: 0;
+                width: 1280px;
+                height: 720px;
+                transform-origin: center center;
+                transform: scale(min(
+                    calc((100cqw - 40px) / 1280px),
+                    calc((100cqh - 20px) / 720px)
+                ));
             }
 
-            /* ── canvas (injected by Bevy/Trunk) ── */
             canvas {
                 display: block;
-                width: 100% !important;
-                height: 100% !important;
-                border-radius: 4px;
+                width: 1280px !important;
+                height: 720px !important;
+                image-rendering: pixelated;
             }
 
             /* ── footer ── */
@@ -115,25 +127,14 @@
             <div class="divider"></div>
         </header>
 
-        <main class="game-area">
-            <div class="game-frame" id="game"></div>
+        <main class="game-area" id="game-area">
+            <div class="game-frame" id="game">
+                <canvas id="game-canvas"></canvas>
+            </div>
         </main>
 
         <footer class="footer">
             built with bevy &middot; rust &middot; wasm
         </footer>
-
-        <script>
-            // Move the Bevy canvas into the game frame once it appears
-            const observer = new MutationObserver(() => {
-                const canvas = document.querySelector("body > canvas");
-                const frame = document.getElementById("game");
-                if (canvas && frame) {
-                    frame.appendChild(canvas);
-                    observer.disconnect();
-                }
-            });
-            observer.observe(document.body, { childList: true });
-        </script>
     </body>
 </html>

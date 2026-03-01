@@ -1,17 +1,17 @@
 use bevy::prelude::*;
-use bevy::window::WindowFocused;
 use models::game_states::GameState;
 
-pub fn handle_window_focus(
-    mut focus_events: MessageReader<WindowFocused>,
+pub fn handle_pause_input(
+    keyboard: Res<ButtonInput<KeyCode>>,
     mut next_state: ResMut<NextState<GameState>>,
     current_state: Res<State<GameState>>,
 ) {
-    focus_events
-        .read()
-        .for_each(|event| match (*current_state.get(), event.focused) {
-            (GameState::Playing, false) => next_state.set(GameState::Paused),
-            (GameState::Paused, true) => next_state.set(GameState::Playing),
-            _ => {}
-        });
+    if !keyboard.just_pressed(KeyCode::Escape) {
+        return;
+    }
+    match *current_state.get() {
+        GameState::Playing => next_state.set(GameState::Paused),
+        GameState::Paused => next_state.set(GameState::Playing),
+        _ => {}
+    }
 }

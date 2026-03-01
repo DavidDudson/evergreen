@@ -23,7 +23,7 @@ impl Plugin for UiPlugin {
             )
             .add_systems(OnEnter(GameState::GameOver), game_over_menu::setup)
             .add_systems(OnExit(GameState::GameOver), despawn_all::<GameOverMenu>)
-            .add_systems(Update, focus::handle_window_focus)
+            .add_systems(Update, focus::handle_pause_input)
             .add_systems(OnEnter(GameState::Paused), pause_menu::setup)
             .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>);
     }
