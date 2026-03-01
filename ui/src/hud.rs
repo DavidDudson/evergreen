@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use models::health::Health;
 
+const HUD_OFFSET_PX: u16 = 5;
+
 #[derive(Component)]
 pub struct Hud;
 
@@ -14,8 +16,8 @@ pub fn setup(mut commands: Commands) {
         HealthText,
         Node {
             position_type: PositionType::Absolute,
-            top: Val::Px(5.0),
-            right: Val::Px(5.0),
+            top: Val::Px(f32::from(HUD_OFFSET_PX)),
+            right: Val::Px(f32::from(HUD_OFFSET_PX)),
             ..Node::default()
         },
     ));

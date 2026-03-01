@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use level::plugin::TILE_SIZE_PX;
 use models::speed::Speed;
 
 use crate::spawning::Player;
@@ -33,6 +34,6 @@ pub fn move_player(
         return;
     };
 
-    let movement = direction * speed.0 * time.delta_secs();
+    let movement = direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * time.delta_secs();
     transform.translation += movement.extend(0.0);
 }

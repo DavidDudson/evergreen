@@ -1,0 +1,6 @@
+disallowed-methods = [
+    { path = "bevy::color::Color::srgb", reason = "Use a named constant from models::palette instead" },
+    { path = "bevy::color::Color::srgba", reason = "Use a named constant from models::palette instead" },
+    { path = "bevy::color::Color::linear_rgb", reason = "Use a named constant from models::palette instead" },
+    { path = "bevy::color::Color::linear_rgba", reason = "Use a named constant from models::palette instead" },
+]

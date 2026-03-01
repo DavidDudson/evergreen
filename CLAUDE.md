@@ -133,11 +133,16 @@ Bevy Rapier2D (2D rigid bodies, 100 pixels per meter):
 
 ## Code Conventions
 
-- Strong typing with nr domain clarity (Health(u16), Distance(u16), Speed(f32))
+- Strong typing with newtypes for domain clarity (Health(u16), Distance(u16), Speed(u16))
 - Use `derive_more` for ergonomic arithmetic operations on newtypes
 - Each crate exports one main plugin (`CastlePlugin`, `EnemyPlugin`, etc.)
 - Event-driven for decoupled systems (DamageEvent, DeathEvent)
 - Query-based system parameters for efficient ECS access
+- All colors must be defined in `models/src/palette.rs` — inline `Color::srgb()` etc. is banned by `clippy::disallowed_methods`
+- **No magic numbers** — All numeric literals must be assigned to named constants
+  - Constants with a corresponding newtype must use it: `const MELEE_RANGE: Distance = Distance(200);` not `const MELEE_RANGE: u16 = 200;`
+  - Bare numeric constants must include units in the name: `TILE_SIZE_PX`, `SCREEN_WIDTH_PX`, `BUTTON_PADDING_H_PX`
+  - If a constant would end up as `String`, `usize`, or `isize`, consider creating a newtype with `From`/`TryFrom` impls instead
 
 ### Recommended Patterns
 
@@ -151,4 +156,5 @@ Bevy Rapier2D (2D rigid bodies, 100 pixels per meter):
 
 - **No `unwrap()`** — Use `expect()` with a descriptive message for cases that are logically infallible, or propagate errors with `?`/`map`/`and_then`. `clippy::unwrap_used` is set to `deny`.
 - **No `as` casts** — Use `From`/`Into` for infallible conversions, `TryFrom`/`TryInto` for fallible ones. If `as` is truly unavoidable (e.g. const context, no `From` impl exists), add a local `#[allow(clippy::as_conversions)]` with a comment explaining why. `clippy::as_conversions` is set to `deny`.
+- **No inline color constructors** — `Color::srgb()`, `Color::srgba()`, `Color::linear_rgb()`, `Color::linear_rgba()` are banned via `clippy::disallowed_methods`. Define all colors as named constants in `models/src/palette.rs` (the only file with `#[allow(clippy::disallowed_methods)]`).
 - All workspace crates inherit these lints via `[lints] workspace = true` in their `Cargo.toml`.

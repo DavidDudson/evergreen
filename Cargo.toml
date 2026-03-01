@@ -1,6 +1,7 @@
 [workspace.lints.clippy]
 unwrap_used = "deny"
 as_conversions = "deny"
+disallowed_methods = "deny"
 
 [profile.dev]
 opt-level = 1

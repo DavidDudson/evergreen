@@ -1,4 +1,6 @@
 #!/bin/sh
+echo "Bumping versions..."
+./scripts/bump-versions.sh
 echo "Linting..."
 cargo fix --allow-staged --allow-dirty
 echo "Formatting..."

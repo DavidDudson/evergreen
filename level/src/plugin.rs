@@ -4,7 +4,7 @@ use models::game_states::GameState;
 
 use crate::spawning;
 
-pub use crate::spawning::TILE_SIZE;
+pub use crate::spawning::{tile_size, TILE_SIZE_PX};
 pub use crate::tile_map::{MAP_HEIGHT, MAP_WIDTH};
 
 pub struct LevelPlugin;

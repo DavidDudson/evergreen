@@ -5,6 +5,10 @@ use crate::seconds::Seconds;
 use bevy::prelude::Component;
 use derive_more::Display;
 
+const MELEE_RANGE: Distance = Distance(200);
+const MELEE_COOLDOWN: Seconds = Seconds(1);
+const DEFAULT_DAMAGE: Health = Health(1);
+
 #[derive(Component, Display, Clone, Copy, Debug)]
 #[display("{damage}({damage_type})")]
 pub struct Attack {
@@ -20,8 +24,8 @@ impl Attack {
         Self {
             damage,
             damage_type: DamageType::Physical,
-            range: Distance(200),
-            cooldown: Seconds(1),
+            range: MELEE_RANGE,
+            cooldown: MELEE_COOLDOWN,
             last: None,
         }
     }
@@ -39,6 +43,6 @@ impl Attack {
 
 impl Default for Attack {
     fn default() -> Self {
-        Self::melee(Health(1))
+        Self::melee(DEFAULT_DAMAGE)
     }
 }
