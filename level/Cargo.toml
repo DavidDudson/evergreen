@@ -3,7 +3,10 @@ name = "level"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 bevy = "0.18"
-bevy_ecs_tilemap = "0.18"
+bevy_ecs_tilemap = { version = "0.18", features = ["atlas"] }
 models = { path = "../models" }

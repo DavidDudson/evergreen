@@ -3,7 +3,9 @@ name = "camera"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 bevy = "0.18"
-models = { path = "../models" }
-player = { path = "../player" }
+level = { path = "../level" }

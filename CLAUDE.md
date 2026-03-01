@@ -138,3 +138,17 @@ Bevy Rapier2D (2D rigid bodies, 100 pixels per meter):
 - Each crate exports one main plugin (`CastlePlugin`, `EnemyPlugin`, etc.)
 - Event-driven for decoupled systems (DamageEvent, DeathEvent)
 - Query-based system parameters for efficient ECS access
+
+### Recommended Patterns
+
+- **Functional style** — Prefer iterators, `map`, `flat_map`, `filter`, `fold` over imperative loops. Use combinators (`and_then`, `map_or`, `ok_or`) over `if let`/`match` chains where it improves clarity.
+- **Trait-based design** — Define behavior through traits (typeclass pattern). Implement `From`/`TryFrom`, `Display`, `Default`, and domain-specific traits to keep logic polymorphic and decoupled.
+- **Small files** — No file should exceed 300 lines. If a file grows beyond this, split it into focused modules with clear responsibilities. Each module should do one thing well.
+- **Clear architectural boundaries** — Keep crate and module boundaries tight. A module should have a single reason to change. Prefer many small modules over few large ones.
+- **Plugin files are wiring only** — A `plugin.rs` file should contain only the `Plugin` impl and system registration. All components, systems, helpers, and constants belong in separate domain modules imported by the plugin. This keeps the plugin a clear table of contents for the crate.
+
+### Banned Patterns (enforced by workspace clippy lints)
+
+- **No `unwrap()`** — Use `expect()` with a descriptive message for cases that are logically infallible, or propagate errors with `?`/`map`/`and_then`. `clippy::unwrap_used` is set to `deny`.
+- **No `as` casts** — Use `From`/`Into` for infallible conversions, `TryFrom`/`TryInto` for fallible ones. If `as` is truly unavoidable (e.g. const context, no `From` impl exists), add a local `#[allow(clippy::as_conversions)]` with a comment explaining why. `clippy::as_conversions` is set to `deny`.
+- All workspace crates inherit these lints via `[lints] workspace = true` in their `Cargo.toml`.

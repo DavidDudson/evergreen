@@ -1,2 +1,9 @@
+mod despawn;
+mod focus;
+mod game_over_menu;
+mod hud;
+mod main_menu;
+mod pause_menu;
 pub mod plugin;
+pub mod theme;
 pub mod window;

@@ -15,4 +15,5 @@ watch = [
     "models/src",
     "player/src",
     "ui/src",
+    "assets",
 ]

@@ -1,3 +1,7 @@
+[workspace.lints.clippy]
+unwrap_used = "deny"
+as_conversions = "deny"
+
 [profile.dev]
 opt-level = 1
 incremental = true
