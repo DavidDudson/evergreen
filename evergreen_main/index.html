@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Evergreen: Summer of the Seventh Sunderance</title>
+        <title>Evergreen</title>
         <link data-trunk rel="rust" />
         <link data-trunk rel="copy-dir" href="../assets" />
         <style>
@@ -20,83 +20,34 @@
                 width: 100%;
                 height: 100%;
                 overflow: hidden;
+                background: #000;
             }
 
-            body {
-                background: #0a0f0a;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                font-family: sans-serif;
-                color: #c5d8c5;
-            }
-
-            /* ── header ── */
-            .header {
-                width: 100%;
-                text-align: center;
-                padding: 14px 0 10px;
-                position: relative;
-                z-index: 10;
-            }
-
-            .header h1 {
-                font-family: sans-serif;
-                font-weight: 700;
-                font-size: clamp(1.6rem, 3.5vw, 2.8rem);
-                letter-spacing: 0.08em;
-                color: #a8d5a2;
-            }
-
-            .header .subtitle {
-                font-size: 0.75rem;
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                color: #6b9b6b;
-                margin-top: 2px;
-            }
-
-            /* ── divider ── */
-            .divider {
-                width: min(720px, 85%);
-                height: 1px;
-                margin: 6px auto 0;
-                background: #2a5e3a;
-            }
-
-            /* ── game area ── */
+            /* ── game area fills the full viewport ── */
             .game-area {
-                flex: 1;
                 width: 100%;
+                height: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                padding: 10px 20px;
-                min-height: 0;
-                position: relative;
                 container-type: size;
             }
 
             /*
              * The frame stays at native 1280×720 in layout, then is scaled
              * up (or down) to fill the available container space using a
-             * pure-CSS transform.  cqw / cqh resolve to the .game-area's
-             * border-box dimensions; subtracting the area's own padding gives
-             * the usable content rectangle.
+             * pure-CSS transform.
              */
             .game-frame {
                 position: relative;
                 overflow: hidden;
-                border-radius: 4px;
-                border: 2px solid #2a5e3a;
-                background: #000;
                 flex-shrink: 0;
                 width: 1280px;
                 height: 720px;
                 transform-origin: center center;
                 transform: scale(min(
-                    calc((100cqw - 40px) / 1280px),
-                    calc((100cqh - 20px) / 720px)
+                    calc(100cqw / 1280px),
+                    calc(100cqh / 720px)
                 ));
             }
 
@@ -106,35 +57,13 @@
                 height: 720px !important;
                 image-rendering: pixelated;
             }
-
-            /* ── footer ── */
-            .footer {
-                width: 100%;
-                text-align: center;
-                padding: 6px 0;
-                font-size: 0.65rem;
-                letter-spacing: 0.15em;
-                color: #3d5e3d;
-                position: relative;
-                z-index: 10;
-            }
         </style>
     </head>
     <body>
-        <header class="header">
-            <h1>Evergreen</h1>
-            <div class="subtitle">Summer of the Seventh Sunderance</div>
-            <div class="divider"></div>
-        </header>
-
         <main class="game-area" id="game-area">
             <div class="game-frame" id="game">
                 <canvas id="game-canvas"></canvas>
             </div>
         </main>
-
-        <footer class="footer">
-            built with bevy &middot; rust &middot; wasm
-        </footer>
     </body>
 </html>
