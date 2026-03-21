@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::game_states::GameState;
 
+use crate::npcs;
 use crate::scenery;
 use crate::spawning;
 use crate::world::{AreaChanged, WorldMap};
@@ -18,7 +19,7 @@ impl Plugin for LevelPlugin {
             .insert_resource(WorldMap::new(42))
             .add_systems(
                 OnEnter(GameState::Playing),
-                (spawning::spawn_tilemap, scenery::spawn_scenery),
+                (spawning::spawn_tilemap, scenery::spawn_scenery, npcs::spawn_npcs),
             )
             .add_systems(
                 Update,
@@ -31,7 +32,7 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 OnExit(GameState::Playing),
-                (spawning::despawn_tilemap, scenery::despawn_scenery)
+                (spawning::despawn_tilemap, scenery::despawn_scenery, npcs::despawn_npcs)
                     .run_if(not(in_state(GameState::Paused))),
             );
     }

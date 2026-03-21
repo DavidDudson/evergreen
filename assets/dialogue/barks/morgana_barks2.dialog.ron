@@ -1,0 +1,6 @@
+DialogueScript(
+    id: "morgana.bark.1",
+    speaker_key: "npc.morgana.name",
+    keyword_tags: ["sunderance"],
+    lines: [ Speech(text_key: "npc.morgana.bark.1") ],
+)

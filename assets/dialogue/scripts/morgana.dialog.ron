@@ -1,0 +1,56 @@
+DialogueScript(
+    id: "morgana.greeting",
+    speaker_key: "npc.morgana.name",
+    keyword_tags: ["pendragon", "three_faced_lady", "sunderance", "mordred", "magic"],
+    lines: [
+        Speech(text_key: "npc.morgana.greeting.0"),
+        Speech(text_key: "npc.morgana.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.morgana.choice.ask_goddess",
+                flags_required: [],
+                flags_set: ["morgana_told_goddess"],
+                next: [
+                    Speech(text_key: "npc.morgana.goddess.0"),
+                    Speech(text_key: "npc.morgana.goddess.1"),
+                    Speech(text_key: "npc.morgana.goddess.2"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.morgana.choice.ask_mordred",
+                flags_required: [],
+                flags_set: ["morgana_told_mordred"],
+                next: [
+                    Speech(text_key: "npc.morgana.mordred.0"),
+                    Speech(text_key: "npc.morgana.mordred.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.morgana.choice.ask_sunderance",
+                flags_required: ["morgana_told_goddess"],
+                flags_set: ["morgana_told_sunderance"],
+                next: [
+                    Speech(text_key: "npc.morgana.sunderance.0"),
+                    Speech(text_key: "npc.morgana.sunderance.1"),
+                    Speech(text_key: "npc.morgana.sunderance.2"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.morgana.choice.ask_briar",
+                flags_required: ["morgana_told_sunderance"],
+                flags_set: ["morgana_told_briar"],
+                next: [
+                    Speech(text_key: "npc.morgana.briar.0"),
+                    Speech(text_key: "npc.morgana.briar.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.morgana.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.morgana.farewell"),
+    ],
+)

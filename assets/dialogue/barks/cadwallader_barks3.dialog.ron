@@ -1,0 +1,6 @@
+DialogueScript(
+    id: "cadwallader.bark.2",
+    speaker_key: "npc.cadwallader.name",
+    keyword_tags: ["debt"],
+    lines: [ Speech(text_key: "npc.cadwallader.bark.2") ],
+)

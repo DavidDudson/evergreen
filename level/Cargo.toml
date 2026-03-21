@@ -10,3 +10,4 @@ workspace = true
 bevy = "0.18"
 bevy_ecs_tilemap = { version = "0.18", features = ["atlas"] }
 models = { path = "../models" }
+dialog = { path = "../dialog" }

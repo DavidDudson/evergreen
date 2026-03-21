@@ -1,0 +1,6 @@
+DialogueScript(
+    id: "morgana.bark.2",
+    speaker_key: "npc.morgana.name",
+    keyword_tags: ["goddess", "magic"],
+    lines: [ Speech(text_key: "npc.morgana.bark.2") ],
+)

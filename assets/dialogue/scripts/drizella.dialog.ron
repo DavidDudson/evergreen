@@ -1,0 +1,45 @@
+DialogueScript(
+    id: "drizella.greeting",
+    speaker_key: "npc.drizella.name",
+    keyword_tags: ["faceless_soldier", "antiseed", "nightmare", "tremaine"],
+    lines: [
+        Speech(text_key: "npc.drizella.greeting.0"),
+        Speech(text_key: "npc.drizella.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.drizella.choice.ask_appearance",
+                flags_required: [],
+                flags_set: ["drizella_explained_appearance"],
+                next: [
+                    Speech(text_key: "npc.drizella.appearance.0"),
+                    Speech(text_key: "npc.drizella.appearance.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.drizella.choice.ask_soldier",
+                flags_required: [],
+                flags_set: ["drizella_told_soldier"],
+                next: [
+                    Speech(text_key: "npc.drizella.soldier.0"),
+                    Speech(text_key: "npc.drizella.soldier.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.drizella.choice.ask_antiseed",
+                flags_required: ["drizella_explained_appearance"],
+                flags_set: ["drizella_told_antiseed"],
+                next: [
+                    Speech(text_key: "npc.drizella.antiseed.0"),
+                    Speech(text_key: "npc.drizella.antiseed.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.drizella.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.drizella.farewell"),
+    ],
+)

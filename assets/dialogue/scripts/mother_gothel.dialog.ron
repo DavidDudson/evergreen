@@ -1,0 +1,55 @@
+DialogueScript(
+    id: "mother_gothel.greeting",
+    speaker_key: "npc.gothel.name",
+    keyword_tags: ["covens", "three_faced_lady", "caliburn", "history", "magic"],
+    lines: [
+        Speech(text_key: "npc.gothel.greeting.0"),
+        Speech(text_key: "npc.gothel.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.gothel.choice.ask_covens",
+                flags_required: [],
+                flags_set: ["gothel_told_covens"],
+                next: [
+                    Speech(text_key: "npc.gothel.covens.0"),
+                    Speech(text_key: "npc.gothel.covens.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.gothel.choice.ask_three_faced_lady",
+                flags_required: ["gothel_told_covens"],
+                flags_set: ["gothel_told_goddess"],
+                next: [
+                    Speech(text_key: "npc.gothel.goddess.0"),
+                    Speech(text_key: "npc.gothel.goddess.1"),
+                    Speech(text_key: "npc.gothel.goddess.2"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.gothel.choice.ask_caliburn",
+                flags_required: [],
+                flags_set: ["gothel_told_caliburn"],
+                next: [
+                    Speech(text_key: "npc.gothel.caliburn.0"),
+                    Speech(text_key: "npc.gothel.caliburn.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.gothel.choice.ask_morgana",
+                flags_required: ["gothel_told_goddess"],
+                flags_set: ["gothel_told_morgana"],
+                next: [
+                    Speech(text_key: "npc.gothel.morgana.0"),
+                    Speech(text_key: "npc.gothel.morgana.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.gothel.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.gothel.farewell"),
+    ],
+)

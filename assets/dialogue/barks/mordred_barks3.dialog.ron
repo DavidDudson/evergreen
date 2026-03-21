@@ -1,0 +1,6 @@
+DialogueScript(
+    id: "mordred.bark.2",
+    speaker_key: "npc.mordred.name",
+    keyword_tags: ["caliburn"],
+    lines: [ Speech(text_key: "npc.mordred.bark.2") ],
+)

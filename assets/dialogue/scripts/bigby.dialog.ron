@@ -1,0 +1,45 @@
+DialogueScript(
+    id: "bigby.greeting",
+    speaker_key: "npc.bigby.name",
+    keyword_tags: ["xyander", "investigation", "redeye", "beastkin"],
+    lines: [
+        Speech(text_key: "npc.bigby.greeting.0"),
+        Speech(text_key: "npc.bigby.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.bigby.choice.ask_redeye",
+                flags_required: [],
+                flags_set: ["bigby_told_redeye"],
+                next: [
+                    Speech(text_key: "npc.bigby.redeye.0"),
+                    Speech(text_key: "npc.bigby.redeye.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.bigby.choice.ask_xyander",
+                flags_required: [],
+                flags_set: ["bigby_told_xyander"],
+                next: [
+                    Speech(text_key: "npc.bigby.xyander.0"),
+                    Speech(text_key: "npc.bigby.xyander.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.bigby.choice.ask_wolf",
+                flags_required: ["bigby_told_xyander"],
+                flags_set: ["bigby_told_wolf"],
+                next: [
+                    Speech(text_key: "npc.bigby.wolf.0"),
+                    Speech(text_key: "npc.bigby.wolf.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.bigby.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.bigby.farewell"),
+    ],
+)

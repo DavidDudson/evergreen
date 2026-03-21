@@ -1,0 +1,45 @@
+DialogueScript(
+    id: "mordred.greeting",
+    speaker_key: "npc.mordred.name",
+    keyword_tags: ["pendragon", "caliburn", "sunderance", "prophecy"],
+    lines: [
+        Speech(text_key: "npc.mordred.greeting.0"),
+        Speech(text_key: "npc.mordred.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.mordred.choice.ask_caliburn",
+                flags_required: [],
+                flags_set: ["mordred_told_caliburn"],
+                next: [
+                    Speech(text_key: "npc.mordred.caliburn.0"),
+                    Speech(text_key: "npc.mordred.caliburn.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.mordred.choice.ask_sunderance",
+                flags_required: [],
+                flags_set: ["mordred_told_sunderance"],
+                next: [
+                    Speech(text_key: "npc.mordred.sunderance.0"),
+                    Speech(text_key: "npc.mordred.sunderance.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.mordred.choice.ask_morgana",
+                flags_required: ["mordred_told_caliburn"],
+                flags_set: ["mordred_told_morgana"],
+                next: [
+                    Speech(text_key: "npc.mordred.morgana.0"),
+                    Speech(text_key: "npc.mordred.morgana.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.mordred.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.mordred.farewell"),
+    ],
+)

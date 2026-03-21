@@ -1,0 +1,47 @@
+DialogueScript(
+    id: "cadwallader.greeting",
+    speaker_key: "npc.cadwallader.name",
+    keyword_tags: ["deals", "debt", "cadwallader", "rumpelstiltskin", "magic"],
+    lines: [
+        Speech(text_key: "npc.cadwallader.greeting.0"),
+        Speech(text_key: "npc.cadwallader.greeting.1"),
+        Speech(text_key: "npc.cadwallader.greeting.2"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.cadwallader.choice.ask_deal",
+                flags_required: [],
+                flags_set: ["cadwallader_told_deal"],
+                next: [
+                    Speech(text_key: "npc.cadwallader.deal.0"),
+                    Speech(text_key: "npc.cadwallader.deal.1"),
+                    Speech(text_key: "npc.cadwallader.deal.2"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.cadwallader.choice.ask_name",
+                flags_required: [],
+                flags_set: ["cadwallader_asked_name"],
+                next: [
+                    Speech(text_key: "npc.cadwallader.name_deflect.0"),
+                    Speech(text_key: "npc.cadwallader.name_deflect.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.cadwallader.choice.ask_maeve",
+                flags_required: ["cadwallader_told_deal"],
+                flags_set: ["cadwallader_told_maeve"],
+                next: [
+                    Speech(text_key: "npc.cadwallader.maeve.0"),
+                    Speech(text_key: "npc.cadwallader.maeve.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.cadwallader.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.cadwallader.farewell"),
+    ],
+)

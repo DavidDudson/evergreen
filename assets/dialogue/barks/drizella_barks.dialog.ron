@@ -1,0 +1,6 @@
+DialogueScript(
+    id: "drizella.bark.0",
+    speaker_key: "npc.drizella.name",
+    keyword_tags: ["nightmare"],
+    lines: [ Speech(text_key: "npc.drizella.bark.0") ],
+)
