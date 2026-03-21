@@ -11,12 +11,14 @@ use crate::lore_page;
 use crate::main_menu::{self, MainMenu};
 use crate::minimap;
 use crate::pause_menu::{self, PauseMenu};
-use crate::settings_screen::{self, SettingsScreen};
+use crate::settings_screen::{self, SettingsOrigin, SettingsScreen};
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        app.init_resource::<SettingsOrigin>();
+
         // Main menu
         app.add_systems(OnEnter(GameState::MainMenu), main_menu::setup)
             .add_systems(OnExit(GameState::MainMenu), despawn_all::<MainMenu>)
@@ -80,6 +82,7 @@ impl Plugin for UiPlugin {
                     settings_screen::handle_fullscreen_button,
                     settings_screen::handle_lang_buttons,
                     settings_screen::handle_keybinds_nav,
+                    settings_screen::handle_reset,
                     settings_screen::handle_back,
                     settings_screen::sync_displays,
                 )

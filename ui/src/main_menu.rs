@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::settings_screen::SettingsOrigin;
 use crate::theme;
 
 const LOGO_WIDTH_PX: u16 = 512;
@@ -12,6 +13,10 @@ const BUTTON_PADDING_V_PX: u16 = 14;
 const BUTTON_MARGIN_TOP_PX: u16 = 8;
 const BUTTON_BORDER_PX: u16 = 2;
 const BUTTON_RADIUS_PX: u16 = 6;
+const COG_BUTTON_SIZE_PX: f32 = 44.0;
+const COG_ICON_SIZE_PX: f32 = 28.0;
+const COG_MARGIN_PX: f32 = 12.0;
+const COG_BORDER_RADIUS_PX: f32 = 8.0;
 
 #[derive(Component)]
 pub struct MainMenu;
@@ -22,8 +27,11 @@ pub(crate) struct StartButton;
 #[derive(Component)]
 pub(crate) struct LoreButton;
 
+#[derive(Component)]
+pub(crate) struct MainMenuSettingsButton;
+
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands
+    let root = commands
         .spawn((
             MainMenu,
             Node {
@@ -38,7 +46,37 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             },
             BackgroundColor(theme::DARK_BG),
         ))
-        .with_children(|parent| {
+        .id();
+
+    // Cog / settings button anchored to top-right corner
+    commands
+        .spawn((
+            MainMenuSettingsButton,
+            Button,
+            Node {
+                position_type: PositionType::Absolute,
+                top: Val::Px(COG_MARGIN_PX),
+                right: Val::Px(COG_MARGIN_PX),
+                width: Val::Px(COG_BUTTON_SIZE_PX),
+                height: Val::Px(COG_BUTTON_SIZE_PX),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                border_radius: BorderRadius::all(Val::Px(COG_BORDER_RADIUS_PX)),
+                ..Node::default()
+            },
+            BackgroundColor(theme::BUTTON_BG),
+            ChildOf(root),
+        ))
+        .with_child((
+            ImageNode::new(asset_server.load("icons/cog.png")),
+            Node {
+                width: Val::Px(COG_ICON_SIZE_PX),
+                height: Val::Px(COG_ICON_SIZE_PX),
+                ..Node::default()
+            },
+        ));
+
+    commands.entity(root).with_children(|parent| {
             parent.spawn((
                 ImageNode::new(asset_server.load("logo.png")),
                 Node {
@@ -109,8 +147,10 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 pub fn button_system(
     mut next_state: ResMut<NextState<GameState>>,
+    mut origin: ResMut<SettingsOrigin>,
     start_q: Query<&Interaction, (Changed<Interaction>, With<StartButton>)>,
     lore_q: Query<&Interaction, (Changed<Interaction>, With<LoreButton>)>,
+    settings_q: Query<&Interaction, (Changed<Interaction>, With<MainMenuSettingsButton>)>,
 ) {
     start_q
         .iter()
@@ -121,4 +161,12 @@ pub fn button_system(
         .iter()
         .filter(|i| **i == Interaction::Pressed)
         .for_each(|_| next_state.set(GameState::LorePage));
+
+    settings_q
+        .iter()
+        .filter(|i| **i == Interaction::Pressed)
+        .for_each(|_| {
+            *origin = SettingsOrigin::MainMenu;
+            next_state.set(GameState::Settings);
+        });
 }

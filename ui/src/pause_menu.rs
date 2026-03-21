@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::settings_screen::SettingsOrigin;
 use crate::theme;
 
 const TITLE_FONT_SIZE_PX: f32 = 48.0;
@@ -77,10 +78,14 @@ pub fn handle_settings_button(
         (Changed<Interaction>, With<SettingsButton>),
     >,
     mut next_state: ResMut<NextState<GameState>>,
+    mut origin: ResMut<SettingsOrigin>,
 ) {
     for (interaction, mut bg) in &mut q {
         match interaction {
-            Interaction::Pressed => next_state.set(GameState::Settings),
+            Interaction::Pressed => {
+                *origin = SettingsOrigin::Paused;
+                next_state.set(GameState::Settings);
+            }
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
         }

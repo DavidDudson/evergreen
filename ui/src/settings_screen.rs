@@ -83,7 +83,18 @@ pub(crate) struct LangDisplay;
 pub(crate) struct KeybindsNavButton;
 
 #[derive(Component)]
+pub(crate) struct SettingsResetButton;
+
+#[derive(Component)]
 pub(crate) struct SettingsBackButton;
+
+/// Tracks which state to return to when the settings Back button is pressed.
+#[derive(Resource, Default, Clone, Copy, PartialEq, Eq)]
+pub enum SettingsOrigin {
+    #[default]
+    MainMenu,
+    Paused,
+}
 
 // ---------------------------------------------------------------------------
 // Setup
@@ -140,6 +151,7 @@ pub fn setup(mut commands: Commands, settings: Res<GameSettings>) {
     )).id();
 
     spawn_nav_btn(&mut commands, nav, KeybindsNavButton, "Key Bindings", theme::BUTTON_BG);
+    spawn_nav_btn(&mut commands, nav, SettingsResetButton, "Reset Defaults", theme::DIALOG_CHOICE_BG);
     spawn_nav_btn(&mut commands, nav, SettingsBackButton, "Back", theme::DIALOG_CHOICE_BG);
 }
 
@@ -186,13 +198,33 @@ pub fn handle_keybinds_nav(
     }
 }
 
-pub fn handle_back(
-    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<SettingsBackButton>)>,
-    mut next_state: ResMut<NextState<GameState>>,
+pub fn handle_reset(
+    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<SettingsResetButton>)>,
+    mut settings: ResMut<GameSettings>,
 ) {
     for (interaction, mut bg) in &mut q {
         match interaction {
-            Interaction::Pressed => next_state.set(GameState::Paused),
+            Interaction::Pressed => *settings = GameSettings::default(),
+            Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
+            Interaction::None => *bg = BackgroundColor(theme::DIALOG_CHOICE_BG),
+        }
+    }
+}
+
+pub fn handle_back(
+    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<SettingsBackButton>)>,
+    mut next_state: ResMut<NextState<GameState>>,
+    origin: Res<SettingsOrigin>,
+) {
+    for (interaction, mut bg) in &mut q {
+        match interaction {
+            Interaction::Pressed => {
+                let dest = match *origin {
+                    SettingsOrigin::MainMenu => GameState::MainMenu,
+                    SettingsOrigin::Paused => GameState::Paused,
+                };
+                next_state.set(dest);
+            }
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::DIALOG_CHOICE_BG),
         }
