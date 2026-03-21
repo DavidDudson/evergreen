@@ -11,3 +11,4 @@ bevy = "0.18"
 level = { path = "../level" }
 models = { path = "../models" }
 dialog = { path = "../dialog" }
+keybinds = { path = "../keybinds" }

@@ -1,14 +1,28 @@
 use bevy::prelude::*;
+use models::game_states::GameState;
 
 use crate::theme;
 
-const PAUSE_FONT_SIZE_PX: u16 = 48;
+const TITLE_FONT_SIZE_PX: f32 = 48.0;
+const TITLE_MARGIN_BOTTOM_PX: f32 = 32.0;
+const BUTTON_FONT_SIZE_PX: f32 = 22.0;
+const BUTTON_PADDING_H_PX: f32 = 32.0;
+const BUTTON_PADDING_V_PX: f32 = 12.0;
+const BUTTON_MARGIN_BOTTOM_PX: f32 = 12.0;
+const BUTTON_BORDER_PX: f32 = 2.0;
+const BUTTON_RADIUS_PX: f32 = 6.0;
 
 #[derive(Component)]
 pub struct PauseMenu;
 
+#[derive(Component)]
+pub(crate) struct ResumeButton;
+
+#[derive(Component)]
+pub(crate) struct KeybindsButton;
+
 pub fn setup(mut commands: Commands) {
-    commands
+    let root = commands
         .spawn((
             PauseMenu,
             Node {
@@ -23,14 +37,79 @@ pub fn setup(mut commands: Commands) {
             },
             BackgroundColor(theme::OVERLAY),
         ))
-        .with_children(|parent| {
-            parent.spawn((
-                Text::new("Paused"),
-                TextColor(theme::TITLE),
-                TextFont {
-                    font_size: f32::from(PAUSE_FONT_SIZE_PX),
-                    ..default()
-                },
-            ));
-        });
+        .id();
+
+    // Title
+    commands.spawn((
+        Text::new("Paused"),
+        TextColor(theme::TITLE),
+        TextFont { font_size: TITLE_FONT_SIZE_PX, ..default() },
+        Node {
+            margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
+        ChildOf(root),
+    ));
+
+    spawn_button(&mut commands, root, ResumeButton, "Resume");
+    spawn_button(&mut commands, root, KeybindsButton, "Key Bindings");
+}
+
+pub fn handle_buttons(
+    mut resume_q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<ResumeButton>),
+    >,
+    mut keybinds_q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<KeybindsButton>),
+    >,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for (interaction, mut bg) in &mut resume_q {
+        match interaction {
+            Interaction::Pressed => next_state.set(GameState::Playing),
+            Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
+            Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
+        }
+    }
+    for (interaction, mut bg) in &mut keybinds_q {
+        match interaction {
+            Interaction::Pressed => next_state.set(GameState::KeybindConfig),
+            Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
+            Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
+        }
+    }
+}
+
+fn spawn_button(
+    commands: &mut Commands,
+    parent: Entity,
+    marker: impl Component,
+    label: &str,
+) {
+    commands
+        .spawn((
+            marker,
+            Button,
+            Node {
+                padding: UiRect::axes(
+                    Val::Px(BUTTON_PADDING_H_PX),
+                    Val::Px(BUTTON_PADDING_V_PX),
+                ),
+                margin: UiRect::bottom(Val::Px(BUTTON_MARGIN_BOTTOM_PX)),
+                border: UiRect::all(Val::Px(BUTTON_BORDER_PX)),
+                border_radius: BorderRadius::all(Val::Px(BUTTON_RADIUS_PX)),
+                justify_content: JustifyContent::Center,
+                ..Node::default()
+            },
+            BorderColor::all(theme::ACCENT),
+            BackgroundColor(theme::BUTTON_BG),
+            ChildOf(parent),
+        ))
+        .with_child((
+            Text::new(label),
+            TextColor(theme::BUTTON_TEXT),
+            TextFont { font_size: BUTTON_FONT_SIZE_PX, ..default() },
+        ));
 }

@@ -6,6 +6,7 @@ use crate::dialog_box::{self, DialogBox};
 use crate::focus;
 use crate::game_over_menu::{self, GameOverMenu};
 use crate::hud::{self, Hud};
+use crate::keybind_screen::{self, KeybindScreen};
 use crate::lore_page;
 use crate::main_menu::{self, MainMenu};
 use crate::minimap;
@@ -39,7 +40,11 @@ impl Plugin for UiPlugin {
         // Focus / pause
         app.add_systems(Update, focus::handle_pause_input)
             .add_systems(OnEnter(GameState::Paused), pause_menu::setup)
-            .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>);
+            .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>)
+            .add_systems(
+                Update,
+                pause_menu::handle_buttons.run_if(in_state(GameState::Paused)),
+            );
 
         // Dialog box (shown during NPC conversation)
         app.add_systems(OnEnter(GameState::Dialogue), dialog_box::setup)
@@ -61,6 +66,23 @@ impl Plugin for UiPlugin {
                 Update,
                 (lore_page::handle_back_button, lore_page::handle_filter_buttons)
                     .run_if(in_state(GameState::LorePage)),
+            );
+
+        // Keybind config screen
+        app.add_systems(OnEnter(GameState::KeybindConfig), keybind_screen::setup)
+            .add_systems(OnExit(GameState::KeybindConfig), despawn_all::<KeybindScreen>)
+            .add_systems(
+                Update,
+                (
+                    keybind_screen::handle_key_buttons,
+                    keybind_screen::handle_reset_buttons,
+                    keybind_screen::handle_reset_all,
+                    keybind_screen::handle_back,
+                    keybind_screen::refresh_key_labels,
+                    keybind_screen::sync_all_labels,
+                    keybind_screen::sync_remap_overlay,
+                )
+                    .run_if(in_state(GameState::KeybindConfig)),
             );
     }
 }

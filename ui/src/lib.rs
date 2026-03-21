@@ -3,6 +3,7 @@ mod dialog_box;
 mod focus;
 mod game_over_menu;
 mod hud;
+mod keybind_screen;
 mod lore_page;
 mod main_menu;
 mod minimap;
