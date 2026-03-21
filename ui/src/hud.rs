@@ -15,7 +15,7 @@ pub struct Hud;
 pub struct RosePetal(pub u16);
 
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let petal_image = asset_server.load("rose_petal.png");
+    let petal_image = asset_server.load("rose_petal.webp");
     let half_petal = PETAL_SIZE_PX / 2.0;
     let center = ROSE_CONTAINER_PX / 2.0;
 

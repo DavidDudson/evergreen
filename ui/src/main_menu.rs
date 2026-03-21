@@ -68,7 +68,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ChildOf(root),
         ))
         .with_child((
-            ImageNode::new(asset_server.load("icons/cog.png")),
+            ImageNode::new(asset_server.load("icons/cog.webp")),
             Node {
                 width: Val::Px(COG_ICON_SIZE_PX),
                 height: Val::Px(COG_ICON_SIZE_PX),
@@ -78,7 +78,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.entity(root).with_children(|parent| {
             parent.spawn((
-                ImageNode::new(asset_server.load("logo.png")),
+                ImageNode::new(asset_server.load("logo.webp")),
                 Node {
                     width: Val::Px(f32::from(LOGO_WIDTH_PX)),
                     height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
