@@ -4289,6 +4289,7 @@ dependencies = [
  "bevy",
  "dialog",
  "keybinds",
+ "models",
  "serde",
  "serde_json",
  "wasm-bindgen",

@@ -248,7 +248,7 @@ pub fn handle_back(
         match interaction {
             Interaction::Pressed => {
                 cancel_writer.write(CancelRemap);
-                next_state.set(GameState::Paused);
+                next_state.set(GameState::Settings);
             }
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
@@ -400,7 +400,7 @@ fn spawn_action_row(commands: &mut Commands, parent: Entity, action: Action, key
             ChildOf(row),
         ))
         .with_child((
-            Text::new("↺"),
+            Text::new("Reset"),
             TextColor(theme::DIALOG_TEXT),
             TextFont { font_size: RESET_FONT_SIZE_PX, ..default() },
         ));
@@ -456,10 +456,10 @@ pub fn keycode_label(key: KeyCode) -> &'static str {
         KeyCode::ControlRight => "R-Ctrl",
         KeyCode::AltLeft => "L-Alt",
         KeyCode::AltRight => "R-Alt",
-        KeyCode::ArrowUp => "↑",
-        KeyCode::ArrowDown => "↓",
-        KeyCode::ArrowLeft => "←",
-        KeyCode::ArrowRight => "→",
+        KeyCode::ArrowUp => "Up",
+        KeyCode::ArrowDown => "Down",
+        KeyCode::ArrowLeft => "Left",
+        KeyCode::ArrowRight => "Right",
         KeyCode::F1 => "F1",
         KeyCode::F2 => "F2",
         KeyCode::F3 => "F3",

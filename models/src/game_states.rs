@@ -11,6 +11,8 @@ pub enum GameState {
     Dialogue,
     /// Lore browser accessed from the main menu.
     LorePage,
-    /// Key remapping UI, accessible from the pause menu.
+    /// Key remapping UI, accessible from the settings screen.
     KeybindConfig,
+    /// Settings hub: audio, video, and keybind navigation.
+    Settings,
 }

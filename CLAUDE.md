@@ -68,6 +68,7 @@ fn my_system(keyboard: Res<ButtonInput<KeyCode>>, bindings: Res<Keybinds>) {
 - **Do not hardcode `KeyCode` values** in gameplay systems — always look up via `Keybinds`
 - Bindings persist automatically via the `save` crate: WASM → `localStorage["evergreen.save"]`, native → `./evergreen_saves/evergreen.save.json`
 - **Do not add storage logic to `keybinds`** — the `save` crate owns all I/O. To persist new data, add a field to `save/src/file.rs::SaveFile` and wire it in `save/src/plugin.rs`.
+- **`GameSettings`** lives in `models/src/settings.rs` (master/bgm/sfx volumes 0–10, fullscreen bool). Settings are persisted via `save` and synced to Bevy's `Window` by `settings_screen::apply_fullscreen`. Wire audio volume sync in `settings_screen` when audio is added.
 
 ## MCP Server Usage
 

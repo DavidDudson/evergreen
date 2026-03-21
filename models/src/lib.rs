@@ -4,6 +4,7 @@ pub mod attack;
 pub mod damage_type;
 pub mod distance;
 pub mod game_states;
+pub mod settings;
 pub mod hardness;
 pub mod health;
 pub mod layer;

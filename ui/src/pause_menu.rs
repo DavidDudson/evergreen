@@ -19,7 +19,7 @@ pub struct PauseMenu;
 pub(crate) struct ResumeButton;
 
 #[derive(Component)]
-pub(crate) struct KeybindsButton;
+pub(crate) struct SettingsButton;
 
 pub fn setup(mut commands: Commands) {
     let root = commands
@@ -52,7 +52,7 @@ pub fn setup(mut commands: Commands) {
     ));
 
     spawn_button(&mut commands, root, ResumeButton, "Resume");
-    spawn_button(&mut commands, root, KeybindsButton, "Key Bindings");
+    spawn_button(&mut commands, root, SettingsButton, "Settings");
 }
 
 pub fn handle_resume(
@@ -71,16 +71,16 @@ pub fn handle_resume(
     }
 }
 
-pub fn handle_keybinds_button(
+pub fn handle_settings_button(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<KeybindsButton>),
+        (Changed<Interaction>, With<SettingsButton>),
     >,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, mut bg) in &mut q {
         match interaction {
-            Interaction::Pressed => next_state.set(GameState::KeybindConfig),
+            Interaction::Pressed => next_state.set(GameState::Settings),
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
         }

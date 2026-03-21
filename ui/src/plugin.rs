@@ -11,6 +11,7 @@ use crate::lore_page;
 use crate::main_menu::{self, MainMenu};
 use crate::minimap;
 use crate::pause_menu::{self, PauseMenu};
+use crate::settings_screen::{self, SettingsScreen};
 
 pub struct UiPlugin;
 
@@ -43,7 +44,7 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>)
             .add_systems(
                 Update,
-                (pause_menu::handle_resume, pause_menu::handle_keybinds_button)
+                (pause_menu::handle_resume, pause_menu::handle_settings_button)
                     .run_if(in_state(GameState::Paused)),
             );
 
@@ -68,6 +69,24 @@ impl Plugin for UiPlugin {
                 (lore_page::handle_back_button, lore_page::handle_filter_buttons)
                     .run_if(in_state(GameState::LorePage)),
             );
+
+        // Settings screen
+        app.add_systems(OnEnter(GameState::Settings), settings_screen::setup)
+            .add_systems(OnExit(GameState::Settings), despawn_all::<SettingsScreen>)
+            .add_systems(
+                Update,
+                (
+                    settings_screen::handle_volume_buttons,
+                    settings_screen::handle_fullscreen_button,
+                    settings_screen::handle_keybinds_nav,
+                    settings_screen::handle_back,
+                    settings_screen::sync_displays,
+                )
+                    .run_if(in_state(GameState::Settings)),
+            );
+
+        // Apply fullscreen whenever settings change (any state)
+        app.add_systems(Update, settings_screen::apply_fullscreen);
 
         // Keybind config screen
         app.add_systems(OnEnter(GameState::KeybindConfig), keybind_screen::setup)

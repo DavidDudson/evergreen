@@ -1,4 +1,5 @@
 mod despawn;
+mod settings_screen;
 mod dialog_box;
 mod focus;
 mod game_over_menu;

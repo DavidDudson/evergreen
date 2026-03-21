@@ -8,6 +8,7 @@ workspace = true
 
 [dependencies]
 bevy       = "0.18"
+models     = { path = "../models" }
 keybinds   = { path = "../keybinds" }
 dialog     = { path = "../dialog" }
 serde      = { version = "1", features = ["derive"] }
