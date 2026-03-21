@@ -53,6 +53,21 @@ This project has custom skills to accelerate common tasks. Use them proactively:
 - **`/create-dialog`** — Add dialogue scripts, barks, or NPC `Talker` entities. Covers locale keys, RON asset format, flag-gated branching, and `BarkPool` setup.
 - **`/bevy-18`** — Bevy 0.18 API reference. **Use this skill before writing any Bevy system, component, event, asset loader, or plugin.** Covers renamed APIs (`Message` instead of `Event`, `MessageReader`/`MessageWriter`, `ChildOf`, etc.), WASM patterns, and common pitfalls.
 
+### Keybinds
+
+All player input should go through `Res<Keybinds>` rather than hardcoded `KeyCode` values:
+
+```rust
+fn my_system(keyboard: Res<ButtonInput<KeyCode>>, bindings: Res<Keybinds>) {
+    if keyboard.just_pressed(bindings.key(Action::Interact)) { ... }
+}
+```
+
+- Add new actions to `Action` in `keybinds/src/action.rs` — include a default binding in `Keybinds::default()` and a display label in `Action::label()`
+- Add the new `KeyCode` variant to `keycode_name`/`keycode_from_name` in `keybinds/src/serialize.rs` and `keycode_label` in `ui/src/keybind_screen.rs`
+- **Do not hardcode `KeyCode` values** in gameplay systems — always look up via `Keybinds`
+- Bindings persist automatically: WASM → `localStorage`, native → `./evergreen_saves/evergreen.keybinds.json`
+
 ## MCP Server Usage
 
 This project benefits from several MCP servers available in the environment. Use these tools proactively:
