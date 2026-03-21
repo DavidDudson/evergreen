@@ -55,25 +55,30 @@ pub fn setup(mut commands: Commands) {
     spawn_button(&mut commands, root, KeybindsButton, "Key Bindings");
 }
 
-pub fn handle_buttons(
-    mut resume_q: Query<
+pub fn handle_resume(
+    mut q: Query<
         (&Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<ResumeButton>),
     >,
-    mut keybinds_q: Query<
-        (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<KeybindsButton>),
-    >,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    for (interaction, mut bg) in &mut resume_q {
+    for (interaction, mut bg) in &mut q {
         match interaction {
             Interaction::Pressed => next_state.set(GameState::Playing),
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
         }
     }
-    for (interaction, mut bg) in &mut keybinds_q {
+}
+
+pub fn handle_keybinds_button(
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<KeybindsButton>),
+    >,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for (interaction, mut bg) in &mut q {
         match interaction {
             Interaction::Pressed => next_state.set(GameState::KeybindConfig),
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),

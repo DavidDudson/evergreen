@@ -43,7 +43,8 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>)
             .add_systems(
                 Update,
-                pause_menu::handle_buttons.run_if(in_state(GameState::Paused)),
+                (pause_menu::handle_resume, pause_menu::handle_keybinds_button)
+                    .run_if(in_state(GameState::Paused)),
             );
 
         // Dialog box (shown during NPC conversation)
