@@ -1,15 +1,17 @@
-use bevy::asset::{Asset, AssetLoader, LoadContext, io::Reader};
+use bevy::asset::{Asset, AssetId, AssetLoader, LoadContext, io::Reader};
 use bevy::prelude::*;
 use bevy::reflect::TypePath;
+use models::settings::GameSettings;
 use std::collections::HashMap;
 
+/// All supported locales as `(code, display_name)` pairs.
+/// Add entries here when adding new locale files under `assets/locale/`.
+pub const AVAILABLE_LOCALES: &[(&str, &str)] = &[
+    ("en-US", "English"),
+    ("es-ES", "Espanol"),
+];
+
 /// A flat key→string locale map loaded from a `.locale.ron` file.
-///
-/// All keys follow dot notation: `"npc.merchant.greeting"`.
-/// Missing keys fall back to the raw key so nothing panics in development.
-///
-/// This is intentionally simple. It can be replaced with `bevy_fluent` later
-/// without changing callsites — just swap the lookup impl.
 #[derive(Asset, TypePath, Debug, Default, Clone)]
 pub struct LocaleAsset(pub HashMap<String, String>);
 
@@ -70,21 +72,36 @@ impl AssetLoader for LocaleAssetLoader {
 #[derive(Resource)]
 pub struct ActiveLocale(pub Handle<LocaleAsset>);
 
-/// System: once the active locale asset has loaded, update [`LocaleMap`].
+/// System: copies the active locale asset into [`LocaleMap`] once loaded,
+/// and re-copies whenever the active locale changes (language switching).
 ///
-/// Uses a `Local<bool>` flag so the copy only happens once per locale load.
-/// If you add hot-reload support later, remove the guard.
+/// Tracks the last-loaded [`AssetId`] so it only re-runs after a language
+/// change, not every frame.
 pub fn sync_locale(
     active: Res<ActiveLocale>,
     assets: Res<Assets<LocaleAsset>>,
     mut locale_map: ResMut<LocaleMap>,
-    mut done: Local<bool>,
+    mut loaded_id: Local<Option<AssetId<LocaleAsset>>>,
 ) {
-    if *done {
+    let current_id = active.0.id();
+    if *loaded_id == Some(current_id) {
         return;
     }
-    if let Some(asset) = assets.get(active.0.id()) {
+    if let Some(asset) = assets.get(current_id) {
         locale_map.load_from(asset);
-        *done = true;
+        *loaded_id = Some(current_id);
     }
+}
+
+/// System: when [`GameSettings::language`] changes, reload the locale asset.
+pub fn sync_language(
+    settings: Res<GameSettings>,
+    mut active: ResMut<ActiveLocale>,
+    asset_server: Res<AssetServer>,
+) {
+    if !settings.is_changed() {
+        return;
+    }
+    let path = format!("locale/{}.locale.ron", settings.language);
+    *active = ActiveLocale(asset_server.load(path));
 }

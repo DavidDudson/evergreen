@@ -14,6 +14,8 @@ pub struct GameSettings {
     pub sfx_volume: u8,
     /// Whether the window is in borderless-fullscreen mode.
     pub fullscreen: bool,
+    /// Active locale code, e.g. `"en-US"`. Must match a file in `assets/locale/`.
+    pub language: String,
 }
 
 impl Default for GameSettings {
@@ -23,6 +25,7 @@ impl Default for GameSettings {
             bgm_volume: 8,
             sfx_volume: 10,
             fullscreen: false,
+            language: "en-US".to_owned(),
         }
     }
 }

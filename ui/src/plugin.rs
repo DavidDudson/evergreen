@@ -78,6 +78,7 @@ impl Plugin for UiPlugin {
                 (
                     settings_screen::handle_volume_buttons,
                     settings_screen::handle_fullscreen_button,
+                    settings_screen::handle_lang_buttons,
                     settings_screen::handle_keybinds_nav,
                     settings_screen::handle_back,
                     settings_screen::sync_displays,

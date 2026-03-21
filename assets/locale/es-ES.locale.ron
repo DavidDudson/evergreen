@@ -1,0 +1,39 @@
+// Español (España) — todas las cadenas de dialogo del juego.
+// Formato: mapa plano { "clave": "valor" }.
+{
+    // Nombres de PNJ
+    "npc.elder.name": "Anciana Maren",
+    "npc.wanderer.name": "Viajero Errante",
+
+    // Anciana Maren — guion de saludo
+    "npc.elder.greeting.0": "Ah... otra alma atraida por el Bosque Verde. Me preguntaba cuando me encontrarias.",
+    "npc.elder.greeting.1": "Estos bosques existen desde antes de que la abuela de tu abuela respirara. Lo recuerdan todo.",
+    "npc.elder.greeting.choice": "¿Que deseas saber?",
+    "npc.elder.choice.ask_forest": "Hablame del bosque.",
+    "npc.elder.choice.ask_sunderance": "¿Que es la Escision?",
+    "npc.elder.choice.farewell": "Nada, por ahora.",
+    "npc.elder.forest.0": "El Bosque Verde respira, criatura. Cada arbol un pulmon, cada raiz un nervio. Cuando uno cae, todo el cuerpo lo siente.",
+    "npc.elder.forest.1": "Por eso portas el briar: para sanar lo que otros han roto.",
+    "npc.elder.sunderance.0": "Hace siete estaciones, la tierra fue desgarrada. No por espada ni inundacion, sino por el olvido.",
+    "npc.elder.sunderance.1": "Cuando la gente dejo de nombrar las cosas, las cosas dejaron de mantener su forma.",
+    "npc.elder.sunderance.2": "Tu tarea es el recuerdo. Camina, sé testigo y di lo que encuentres.",
+    "npc.elder.farewell": "Ve con cuidado, criatura. Las raices escuchan.",
+
+    // Anciana Maren — segunda visita (bloqueada por bandera)
+    "npc.elder.revisit.0": "Has visto las raices, entonces. Bien. Hay mas todavia.",
+
+    // Viajero Errante — ladridos
+    "npc.wanderer.bark.0": "...",
+    "npc.wanderer.bark.1": "Mantente en el camino al anochecer.",
+    "npc.wanderer.bark.2": "Las flores aqui solo florecen una vez.",
+    "npc.wanderer.bark.3": "Perdi algo aqui, hace mucho tiempo.",
+
+    // Etiquetas de interfaz
+    "ui.dialog.continue": "[Espacio] Continuar",
+    "ui.lore.title": "Tradiciones",
+    "ui.lore.empty": "Aun no has escuchado ningun relato.",
+    "ui.lore.back": "Atras",
+    "ui.lore.filter.all": "Todo",
+    "ui.main_menu.lore": "Tradiciones",
+    "ui.interact.prompt": "[E] Hablar",
+}

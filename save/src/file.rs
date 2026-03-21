@@ -33,6 +33,8 @@ pub(crate) struct StoredSettings {
     pub sfx_volume: u8,
     #[serde(default)]
     pub fullscreen: bool,
+    #[serde(default = "default_language")]
+    pub language: String,
 }
 
 impl Default for StoredSettings {
@@ -43,6 +45,7 @@ impl Default for StoredSettings {
             bgm_volume: d.bgm_volume,
             sfx_volume: d.sfx_volume,
             fullscreen: d.fullscreen,
+            language: d.language,
         }
     }
 }
@@ -52,6 +55,9 @@ fn default_ten() -> u8 {
 }
 fn default_eight() -> u8 {
     8
+}
+fn default_language() -> String {
+    "en-US".to_owned()
 }
 
 // ---------------------------------------------------------------------------
@@ -89,6 +95,7 @@ pub(crate) fn from_resources(
             bgm_volume: settings.bgm_volume,
             sfx_volume: settings.sfx_volume,
             fullscreen: settings.fullscreen,
+            language: settings.language.clone(),
         },
     }
 }
@@ -105,4 +112,5 @@ pub(crate) fn apply(
     settings.bgm_volume = file.settings.bgm_volume;
     settings.sfx_volume = file.settings.sfx_volume;
     settings.fullscreen = file.settings.fullscreen;
+    settings.language = file.settings.language;
 }

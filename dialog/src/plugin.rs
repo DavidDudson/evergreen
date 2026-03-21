@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
+use models::settings::GameSettings;
 
 use crate::asset::{DialogueScript, DialogueScriptLoader};
 use crate::barks::tick_barks;
@@ -8,7 +9,9 @@ use crate::events::{
 };
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
-use crate::locale::{ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap, sync_locale};
+use crate::locale::{
+    ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap, sync_language, sync_locale,
+};
 use crate::runner::{
     DialogueRunner, advance_runner, detect_interact_input, detect_interact_range,
     handle_choice, on_dialogue_ended, start_dialogue,
@@ -38,11 +41,11 @@ impl Plugin for DialogPlugin {
             .add_message::<DialogueEnded>()
             .add_message::<BarkFired>();
 
-        // Startup: load default locale
-        app.add_systems(Startup, load_default_locale);
+        // Startup: load the locale specified in GameSettings (set by SavePlugin).
+        app.add_systems(Startup, load_initial_locale);
 
-        // Locale sync (runs always)
-        app.add_systems(Update, sync_locale);
+        // Locale sync and language switching (runs always)
+        app.add_systems(Update, (sync_locale, sync_language));
 
         // Playing: range detection, interact input, barks, start_dialogue
         app.add_systems(
@@ -66,7 +69,11 @@ impl Plugin for DialogPlugin {
     }
 }
 
-fn load_default_locale(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let handle = asset_server.load("locale/en-US.locale.ron");
-    commands.insert_resource(ActiveLocale(handle));
+fn load_initial_locale(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    settings: Res<GameSettings>,
+) {
+    let path = format!("locale/{}.locale.ron", settings.language);
+    commands.insert_resource(ActiveLocale(asset_server.load(path)));
 }
