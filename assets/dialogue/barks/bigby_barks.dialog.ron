@@ -1,6 +1,6 @@
 DialogueScript(
     id: "bigby.bark.0",
     speaker_key: "npc.bigby.name",
-    keyword_tags: ["rumour"],
+    keyword_tags: ["rumour", "cities"],
     lines: [ Speech(text_key: "npc.bigby.bark.0") ],
 )

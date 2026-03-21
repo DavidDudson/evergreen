@@ -4,7 +4,7 @@
 DialogueScript(
     id: "elder_maren.greeting",
     speaker_key: "npc.elder.name",
-    keyword_tags: ["history", "world", "lore"],
+    keyword_tags: ["history", "world", "lore", "greenwoods"],
     lines: [
         Speech(text_key: "npc.elder.greeting.0"),
         Speech(text_key: "npc.elder.greeting.1"),

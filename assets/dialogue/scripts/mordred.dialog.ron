@@ -1,7 +1,7 @@
 DialogueScript(
     id: "mordred.greeting",
     speaker_key: "npc.mordred.name",
-    keyword_tags: ["pendragon", "caliburn", "sunderance", "prophecy"],
+    keyword_tags: ["pendragon", "caliburn", "sunderance", "prophecy", "greenwoods"],
     lines: [
         Speech(text_key: "npc.mordred.greeting.0"),
         Speech(text_key: "npc.mordred.greeting.1"),

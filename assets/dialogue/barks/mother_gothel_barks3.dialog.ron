@@ -1,6 +1,6 @@
 DialogueScript(
     id: "mother_gothel.bark.2",
     speaker_key: "npc.gothel.name",
-    keyword_tags: ["forest", "nature"],
+    keyword_tags: ["forest", "nature", "greenwoods"],
     lines: [ Speech(text_key: "npc.gothel.bark.2") ],
 )

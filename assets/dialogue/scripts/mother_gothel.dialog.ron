@@ -1,7 +1,7 @@
 DialogueScript(
     id: "mother_gothel.greeting",
     speaker_key: "npc.gothel.name",
-    keyword_tags: ["covens", "three_faced_lady", "caliburn", "history", "magic"],
+    keyword_tags: ["covens", "three_faced_lady", "caliburn", "history", "magic", "greenwoods"],
     lines: [
         Speech(text_key: "npc.gothel.greeting.0"),
         Speech(text_key: "npc.gothel.greeting.1"),

@@ -1,7 +1,7 @@
 DialogueScript(
     id: "drizella.greeting",
     speaker_key: "npc.drizella.name",
-    keyword_tags: ["faceless_soldier", "antiseed", "nightmare", "tremaine"],
+    keyword_tags: ["faceless_soldier", "antiseed", "nightmare", "tremaine", "darkwoods"],
     lines: [
         Speech(text_key: "npc.drizella.greeting.0"),
         Speech(text_key: "npc.drizella.greeting.1"),

@@ -3,7 +3,7 @@
 DialogueScript(
     id: "wanderer.bark.silence",
     speaker_key: "npc.wanderer.name",
-    keyword_tags: ["ambient"],
+    keyword_tags: ["ambient", "greenwoods"],
     lines: [
         Speech(text_key: "npc.wanderer.bark.0"),
     ],

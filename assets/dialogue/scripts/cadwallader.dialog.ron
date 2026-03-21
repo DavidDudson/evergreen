@@ -1,7 +1,7 @@
 DialogueScript(
     id: "cadwallader.greeting",
     speaker_key: "npc.cadwallader.name",
-    keyword_tags: ["deals", "debt", "cadwallader", "rumpelstiltskin", "magic"],
+    keyword_tags: ["deals", "debt", "cadwallader", "rumpelstiltskin", "magic", "cities"],
     lines: [
         Speech(text_key: "npc.cadwallader.greeting.0"),
         Speech(text_key: "npc.cadwallader.greeting.1"),

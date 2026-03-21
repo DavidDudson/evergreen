@@ -1,7 +1,7 @@
 DialogueScript(
     id: "bigby.greeting",
     speaker_key: "npc.bigby.name",
-    keyword_tags: ["xyander", "investigation", "redeye", "beastkin"],
+    keyword_tags: ["xyander", "investigation", "redeye", "beastkin", "cities"],
     lines: [
         Speech(text_key: "npc.bigby.greeting.0"),
         Speech(text_key: "npc.bigby.greeting.1"),

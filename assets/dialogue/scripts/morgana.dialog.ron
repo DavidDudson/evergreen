@@ -1,7 +1,7 @@
 DialogueScript(
     id: "morgana.greeting",
     speaker_key: "npc.morgana.name",
-    keyword_tags: ["pendragon", "three_faced_lady", "sunderance", "mordred", "magic"],
+    keyword_tags: ["pendragon", "three_faced_lady", "sunderance", "mordred", "magic", "darkwoods"],
     lines: [
         Speech(text_key: "npc.morgana.greeting.0"),
         Speech(text_key: "npc.morgana.greeting.1"),
