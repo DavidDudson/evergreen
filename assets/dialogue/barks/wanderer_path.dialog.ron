@@ -1,0 +1,8 @@
+DialogueScript(
+    id: "wanderer.bark.path",
+    speaker_key: "npc.wanderer.name",
+    keyword_tags: ["ambient"],
+    lines: [
+        Speech(text_key: "npc.wanderer.bark.1"),
+    ],
+)

@@ -7,4 +7,8 @@ pub enum GameState {
     Playing,
     Paused,
     GameOver,
+    /// NPC conversation in progress; world systems are frozen.
+    Dialogue,
+    /// Lore browser accessed from the main menu.
+    LorePage,
 }

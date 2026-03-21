@@ -1,0 +1,16 @@
+[package]
+name = "dialog"
+version = "0.1.0"
+edition = "2021"
+
+[lints]
+workspace = true
+
+[dependencies]
+bevy = "0.18"
+models = { path = "../models" }
+serde = { version = "1", features = ["derive"] }
+ron = "0.9"
+rand = "0.8"
+getrandom = { version = "0.2", features = ["js"] }
+futures-lite = "2"

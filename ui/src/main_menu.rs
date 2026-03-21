@@ -16,6 +16,12 @@ const BUTTON_RADIUS_PX: u16 = 6;
 #[derive(Component)]
 pub struct MainMenu;
 
+#[derive(Component)]
+pub(crate) struct StartButton;
+
+#[derive(Component)]
+pub(crate) struct LoreButton;
+
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
@@ -45,6 +51,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
             parent
                 .spawn((
+                    StartButton,
                     Button,
                     Node {
                         padding: UiRect::axes(
@@ -69,15 +76,49 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                 ));
+
+            parent
+                .spawn((
+                    LoreButton,
+                    Button,
+                    Node {
+                        padding: UiRect::axes(
+                            Val::Px(f32::from(BUTTON_PADDING_H_PX)),
+                            Val::Px(f32::from(BUTTON_PADDING_V_PX)),
+                        ),
+                        margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
+                        border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
+                        ..Node::default()
+                    },
+                    BorderColor::all(theme::ACCENT),
+                    BackgroundColor(theme::BUTTON_BG),
+                ))
+                .with_child((
+                    Text::new("Lore"),
+                    TextColor(theme::BUTTON_TEXT),
+                    TextFont {
+                        font_size: f32::from(BUTTON_FONT_SIZE_PX),
+                        ..default()
+                    },
+                ));
         });
 }
 
 pub fn button_system(
     mut next_state: ResMut<NextState<GameState>>,
-    interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
+    start_q: Query<&Interaction, (Changed<Interaction>, With<StartButton>)>,
+    lore_q: Query<&Interaction, (Changed<Interaction>, With<LoreButton>)>,
 ) {
-    interaction_query
+    start_q
         .iter()
-        .filter(|interaction| **interaction == Interaction::Pressed)
+        .filter(|i| **i == Interaction::Pressed)
         .for_each(|_| next_state.set(GameState::Playing));
+
+    lore_q
+        .iter()
+        .filter(|i| **i == Interaction::Pressed)
+        .for_each(|_| next_state.set(GameState::LorePage));
 }

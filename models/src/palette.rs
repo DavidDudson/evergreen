@@ -14,3 +14,12 @@ pub const PLAYER: Color = Color::srgb(0.6, 0.2, 0.8);
 pub const MINIMAP_BG: Color = Color::srgba(0.04, 0.08, 0.04, 0.80);
 pub const MINIMAP_ROOM: Color = Color::srgb(0.38, 0.58, 0.40);
 pub const MINIMAP_CURRENT: Color = Color::srgb(0.90, 0.92, 0.72);
+
+// Dialog / lore colours
+pub const DIALOG_BG: Color = Color::srgba(0.04, 0.10, 0.06, 0.95);
+pub const DIALOG_BORDER: Color = Color::srgb(0.24, 0.48, 0.29);
+pub const DIALOG_TEXT: Color = Color::srgb(0.82, 0.94, 0.78);
+pub const DIALOG_SPEAKER: Color = Color::srgb(0.58, 0.82, 0.52);
+pub const DIALOG_CHOICE_BG: Color = Color::srgb(0.10, 0.24, 0.14);
+pub const DIALOG_CHOICE_HOVER: Color = Color::srgb(0.18, 0.40, 0.22);
+pub const BARK_TEXT: Color = Color::srgb(0.90, 0.94, 0.72);

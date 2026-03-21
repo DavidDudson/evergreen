@@ -1,0 +1,39 @@
+// English (US) locale — all dialogue string keys used by the game.
+// Format: flat { "key": "value" } map.
+{
+    // NPC names
+    "npc.elder.name": "Elder Maren",
+    "npc.wanderer.name": "Wandering Stranger",
+
+    // Elder Maren — greeting script
+    "npc.elder.greeting.0": "Ah... another soul drawn to the Greenwood. I wondered when you would find me.",
+    "npc.elder.greeting.1": "These woods have stood since before your grandmother's grandmother drew breath. They remember everything.",
+    "npc.elder.greeting.choice": "What do you wish to know?",
+    "npc.elder.choice.ask_forest": "Tell me about the forest.",
+    "npc.elder.choice.ask_sunderance": "What is the Sunderance?",
+    "npc.elder.choice.farewell": "Nothing, for now.",
+    "npc.elder.forest.0": "The Greenwood breathes, child. Each tree a lung, each root a nerve. When one falls, the whole body feels it.",
+    "npc.elder.forest.1": "That is why you carry the briar — to mend what others have broken.",
+    "npc.elder.sunderance.0": "Seven seasons past, the land was torn. Not by blade or flood, but by forgetting.",
+    "npc.elder.sunderance.1": "When people stopped naming things, the things stopped holding shape.",
+    "npc.elder.sunderance.2": "Your task is remembrance. Walk, witness, and speak what you find.",
+    "npc.elder.farewell": "Go carefully, child. The roots are listening.",
+
+    // Elder Maren — second visit (flag-gated)
+    "npc.elder.revisit.0": "You have seen the roots, then. Good. There is more yet.",
+
+    // Wandering Stranger — barks
+    "npc.wanderer.bark.0": "...",
+    "npc.wanderer.bark.1": "Keep to the path at dusk.",
+    "npc.wanderer.bark.2": "The flowers here bloom only once.",
+    "npc.wanderer.bark.3": "I lost something here, long ago.",
+
+    // UI labels
+    "ui.dialog.continue": "[Space] Continue",
+    "ui.lore.title": "Lore",
+    "ui.lore.empty": "You have not yet heard any tales.",
+    "ui.lore.back": "Back",
+    "ui.lore.filter.all": "All",
+    "ui.main_menu.lore": "Lore",
+    "ui.interact.prompt": "[E] Speak",
+}

@@ -25,4 +25,5 @@ members = [
     "camera",
     "level",
     "player",
+    "dialog",
 ]

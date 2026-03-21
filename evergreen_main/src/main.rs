@@ -3,6 +3,7 @@ use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use camera::plugin::CameraPlugin;
 use combat::plugin::CombatPlugin;
+use dialog::DialogPlugin;
 use level::plugin::LevelPlugin;
 use models::game_states::GameState;
 use player::plugin::PlayerPlugin;
@@ -21,6 +22,7 @@ fn main() {
                 }),
             CameraPlugin,
             LogDiagnosticsPlugin::default(),
+            DialogPlugin,
             UiPlugin,
             CombatPlugin,
             LevelPlugin,

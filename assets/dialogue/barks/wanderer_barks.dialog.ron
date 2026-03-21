@@ -1,0 +1,10 @@
+// Wanderer bark — each file holds one bark line.
+// The bark system picks randomly from a BarkPool's list of handles.
+DialogueScript(
+    id: "wanderer.bark.silence",
+    speaker_key: "npc.wanderer.name",
+    keyword_tags: ["ambient"],
+    lines: [
+        Speech(text_key: "npc.wanderer.bark.0"),
+    ],
+)

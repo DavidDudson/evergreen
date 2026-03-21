@@ -46,6 +46,13 @@ The pre-commit hook (`.husky/hooks/pre-commit`) automatically runs `cargo fix` a
 - OS-specific Bevy dependencies (see [Bevy setup guide](https://bevyengine.org/learn/quick-start/getting-started/setup/))
   - Linux: `libasound2-dev`, `libudev-dev`, `pkg-config`
 
+## Skills
+
+This project has custom skills to accelerate common tasks. Use them proactively:
+
+- **`/create-dialog`** — Add dialogue scripts, barks, or NPC `Talker` entities. Covers locale keys, RON asset format, flag-gated branching, and `BarkPool` setup.
+- **`/bevy-18`** — Bevy 0.18 API reference. **Use this skill before writing any Bevy system, component, event, asset loader, or plugin.** Covers renamed APIs (`Message` instead of `Event`, `MessageReader`/`MessageWriter`, `ChildOf`, etc.), WASM patterns, and common pitfalls.
+
 ## MCP Server Usage
 
 This project benefits from several MCP servers available in the environment. Use these tools proactively:
@@ -72,7 +79,7 @@ This project benefits from several MCP servers available in the environment. Use
 
 ### Workspace Structure
 
-The project uses a Cargo workspace with 9 crates organized by domain responsibility:
+The project uses a Cargo workspace with crates organized by domain responsibility:
 
 **Core Application:**
 - **evergreen_main**: Entry point that orchestrates all plugins and initializes the Bevy app
@@ -80,16 +87,21 @@ The project uses a Cargo workspace with 9 crates organized by domain responsibil
 **Shared Data:**
 - **models**: Core components and types used across all crates
   - `Health`, `Attack`, `Speed`, `Hardness`, `Distance`, `Name`
-  - `Draggable`, `Dragged` - UI interaction markers
-  - `GameState` enum - MainMenu, Playing, Paused, GameOver
+  - `GameState` enum - MainMenu, Playing, Paused, GameOver, Dialogue, LorePage, KeybindConfig
+  - Palette colors (`models/src/palette.rs`) — all colors defined here
 
 **Game Systems (Plugins):**
-- **enemy**: Enemy types and movement (Peasant: 64x64, Health: 5, Speed: 100, draggable)
-- **combat**: Combat mechanics with event-driven damage system
-- **level**: Game setup, ground spawning, and enemy wave management (spawns every 5s)
-- **camera**: Camera controls (foll--pan, scroll-to-zoom, peasant dragging)
-- **ui**: Menu systems (MainMenu, HUD, PauseMenu, GameOverMenu)
-- **diagnostics**: Debug utilities (Bevy diagnostics, Rapier debug rendering)
+- **combat**: Combat mechanics with message-driven damage system
+- **level**: Tilemap, scenery, terrain, area streaming
+- **camera**: Camera pan/zoom
+- **player**: Player sprite, 8-direction animation, movement, collision
+- **dialog**: NPC dialogue system — scripted trees, bark pools, lore book, locale/i18n
+  - Scripts: `assets/dialogue/scripts/*.dialog.ron`
+  - Barks: `assets/dialogue/barks/*.dialog.ron`
+  - Locale: `assets/locale/en-US.locale.ron`
+- **keybinds**: Configurable keybinds with WASM localStorage persistence and remapping UI
+- **ui**: All menu/HUD systems (MainMenu, HUD, PauseMenu, GameOverMenu, DialogBox, LorePage, KeybindConfigScreen)
+- **diagnostics**: Debug utilities
 
 ### Dependency Flow
 ```
@@ -125,11 +137,19 @@ Bevy Rapier2D (2D rigid bodies, 100 pixels per meter):
 - ContactForceEvent drives collision damage
 - Kinematic controls for peasant dragging
 
-### Game State Flo→ Playing ↔ Paused → GameOver
+### Game State Flow
 ```
-- MainMenu: Initial state, "Start Game" button transitions to Playing
+MainMenu → Playing ↔ Paused → GameOver
+MainMenu → LorePage → MainMenu
+Playing  → Dialogue → Playing
+Playing  → KeybindConfig → Playing  (or from PauseMenu)
+```
+- MainMenu: Initial state
 - Playing: Active gameplay
-- Paused: Auto-triggered on window focus loss, freezes gameplay
+- Paused: Auto-triggered on window focus loss
+- Dialogue: NPC conversation (world frozen)
+- LorePage: Lore browser (from main menu)
+- KeybindConfig: Key remapping UI (accessible from pause menu)
 
 ## Code Conventions
 

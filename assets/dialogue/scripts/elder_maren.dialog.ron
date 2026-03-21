@@ -1,0 +1,40 @@
+// Elder Maren — first greeting.
+// Flags set: "met_elder"
+// Second visit (with "met_elder" set) routes to the revisit script.
+DialogueScript(
+    id: "elder_maren.greeting",
+    speaker_key: "npc.elder.name",
+    keyword_tags: ["history", "world", "lore"],
+    lines: [
+        Speech(text_key: "npc.elder.greeting.0"),
+        Speech(text_key: "npc.elder.greeting.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.elder.choice.ask_forest",
+                flags_required: [],
+                flags_set: [],
+                next: [
+                    Speech(text_key: "npc.elder.forest.0"),
+                    Speech(text_key: "npc.elder.forest.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.elder.choice.ask_sunderance",
+                flags_required: [],
+                flags_set: ["learned_sunderance"],
+                next: [
+                    Speech(text_key: "npc.elder.sunderance.0"),
+                    Speech(text_key: "npc.elder.sunderance.1"),
+                    Speech(text_key: "npc.elder.sunderance.2"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.elder.choice.farewell",
+                flags_required: [],
+                flags_set: [],
+                next: [],
+            ),
+        ]),
+        Speech(text_key: "npc.elder.farewell"),
+    ],
+)

@@ -1,7 +1,9 @@
 mod despawn;
+mod dialog_box;
 mod focus;
 mod game_over_menu;
 mod hud;
+mod lore_page;
 mod main_menu;
 mod minimap;
 mod pause_menu;
