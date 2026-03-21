@@ -8,6 +8,7 @@ use keybinds::KeybindsPlugin;
 use level::plugin::LevelPlugin;
 use models::game_states::GameState;
 use player::plugin::PlayerPlugin;
+use save::SavePlugin;
 use ui::plugin::UiPlugin;
 use ui::window::window_plugin;
 
@@ -25,6 +26,7 @@ fn main() {
             LogDiagnosticsPlugin::default(),
             KeybindsPlugin,
             DialogPlugin,
+            SavePlugin,
             UiPlugin,
             CombatPlugin,
             LevelPlugin,

@@ -1,16 +1,15 @@
 use bevy::prelude::*;
 
+use crate::bindings::Keybinds;
 use crate::remap::{CancelRemap, RemapCompleted, RequestRemap};
-use crate::storage;
 use crate::systems::{capture_remap_key, handle_cancel_remap, handle_request_remap};
 
 pub struct KeybindsPlugin;
 
 impl Plugin for KeybindsPlugin {
     fn build(&self, app: &mut App) {
-        // Load saved bindings (or use defaults if nothing saved yet).
-        let keybinds = storage::load().unwrap_or_default();
-        app.insert_resource(keybinds);
+        // Default bindings; SavePlugin overwrites these in PreStartup.
+        app.insert_resource(Keybinds::default());
 
         // Messages
         app.add_message::<RequestRemap>()
@@ -22,8 +21,5 @@ impl Plugin for KeybindsPlugin {
             Update,
             (handle_request_remap, handle_cancel_remap, capture_remap_key),
         );
-
-        // Persist to storage whenever bindings change.
-        app.add_systems(PostUpdate, storage::save_on_change);
     }
 }

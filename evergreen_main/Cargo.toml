@@ -16,6 +16,7 @@ level = { path = "../level" }
 player = { path = "../player" }
 dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
+save     = { path = "../save" }
 bevy = "0.18"
 
 [dev-dependencies]

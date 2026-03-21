@@ -2,8 +2,7 @@ pub mod action;
 pub mod bindings;
 pub mod plugin;
 pub mod remap;
-pub(crate) mod serialize;
-pub mod storage;
+pub mod serialize;
 pub mod systems;
 
 pub use action::Action;

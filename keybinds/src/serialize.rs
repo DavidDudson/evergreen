@@ -9,25 +9,31 @@ use crate::bindings::Keybinds;
 // Public API
 // ---------------------------------------------------------------------------
 
-pub(crate) fn to_json(keybinds: &Keybinds) -> String {
-    let map: HashMap<&str, &str> = Action::ALL
+/// Converts a [`Keybinds`] resource into a plain string map suitable for
+/// serialization. The `save` crate owns JSON encoding; this returns raw data.
+pub fn to_map(keybinds: &Keybinds) -> HashMap<String, String> {
+    Action::ALL
         .iter()
-        .map(|&action| (action_name(action), keycode_name(keybinds.key(action))))
-        .collect();
-    serde_json::to_string(&map).unwrap_or_default()
+        .map(|&action| {
+            (
+                action_name(action).to_owned(),
+                keycode_name(keybinds.key(action)).to_owned(),
+            )
+        })
+        .collect()
 }
 
-pub(crate) fn from_json(s: &str) -> Option<Keybinds> {
-    let raw: HashMap<String, String> = serde_json::from_str(s).ok()?;
+/// Builds a [`Keybinds`] from a plain string map, skipping unknown entries.
+pub fn from_map(raw: &HashMap<String, String>) -> Keybinds {
     let mut keybinds = Keybinds::default();
-    for (action_s, key_s) in &raw {
+    for (action_s, key_s) in raw {
         if let (Some(action), Some(key)) =
             (action_from_name(action_s), keycode_from_name(key_s))
         {
             keybinds.set(action, key);
         }
     }
-    Some(keybinds)
+    keybinds
 }
 
 // ---------------------------------------------------------------------------

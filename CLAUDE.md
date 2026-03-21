@@ -66,7 +66,8 @@ fn my_system(keyboard: Res<ButtonInput<KeyCode>>, bindings: Res<Keybinds>) {
 - Add new actions to `Action` in `keybinds/src/action.rs` — include a default binding in `Keybinds::default()` and a display label in `Action::label()`
 - Add the new `KeyCode` variant to `keycode_name`/`keycode_from_name` in `keybinds/src/serialize.rs` and `keycode_label` in `ui/src/keybind_screen.rs`
 - **Do not hardcode `KeyCode` values** in gameplay systems — always look up via `Keybinds`
-- Bindings persist automatically: WASM → `localStorage`, native → `./evergreen_saves/evergreen.keybinds.json`
+- Bindings persist automatically via the `save` crate: WASM → `localStorage["evergreen.save"]`, native → `./evergreen_saves/evergreen.save.json`
+- **Do not add storage logic to `keybinds`** — the `save` crate owns all I/O. To persist new data, add a field to `save/src/file.rs::SaveFile` and wire it in `save/src/plugin.rs`.
 
 ## MCP Server Usage
 
@@ -114,7 +115,8 @@ The project uses a Cargo workspace with crates organized by domain responsibilit
   - Scripts: `assets/dialogue/scripts/*.dialog.ron`
   - Barks: `assets/dialogue/barks/*.dialog.ron`
   - Locale: `assets/locale/en-US.locale.ron`
-- **keybinds**: Configurable keybinds with WASM localStorage persistence and remapping UI
+- **keybinds**: Configurable keybinds with in-memory remap logic; persistence delegated to `save`
+- **save**: Single unified save file (`evergreen.save.json` / `localStorage`). Owns all platform I/O. Loads into `Keybinds` + `LoreBook` on `PreStartup`; saves on any change in `PostUpdate`.
 - **ui**: All menu/HUD systems (MainMenu, HUD, PauseMenu, GameOverMenu, DialogBox, LorePage, KeybindConfigScreen)
 - **diagnostics**: Debug utilities
 
