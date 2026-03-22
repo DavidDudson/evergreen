@@ -10,9 +10,9 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
 | **Briar Rose** | Aurora Plantagenet, Princess Aurora | Alive | greenwoods | *The playable character.* Druid; born 287 in Grimordia; cursed by Maleficent at 16; slept 300+ years via Cadwallader's deal. Bearer of the briar. Twin soul: Prince Phillip. |
-| **Mordred** | — | Alive | greenwoods | Oracle (Battle); Changeling; born 336; Pendragon blood; wields Caliburn; adoptive son of Morgana. Haunted by The Stranger. Wandering oracle in the forest. |
-| **Drizella Tremaine** | — | Alive | darkwoods | Cleric (Nightmare Domain); Fleshwarp; translucent skin; Antiseed in her heart; follower of The Faceless Soldier. Sister: Anastasia Tremaine. From Quillwilde. |
-| **Bigby** | Joseph Bigby | Alive | cities | Investigator/Rogue; Beastkin (lupine); from Xyander; former crewman under Captain Hook; connected to the Big Bad Wolf legend. Tracking the Redeye pandemic. |
+| **Mordred** | — | Alive | greenwoods | Oracle (Battle); Changeling; born 336; Pendragon blood; wields Caliburn (and Caledfwlch). Adoptive son of Morgana Le Fay. Son of King Arthur and Guinevere (ritual). Former Knights of Camelot trainee. Best friend: Galahad. Prophecy: will die *very soon, at his father's hands*. Lost his left hand (replaced by magical black gauntlet). May be an avatar of the Tuatha De Danann. |
+| **Drizella Tremaine** | — | Alive | darkwoods | Cleric (Nightmare Domain); Fleshwarp; translucent skin; Antiseed roots growing in her heart + mirror shards. Mirror shard replaced her right eye (Mary can see through it). Follower of The Faceless Soldier. Sister: Anastasia. Father: Robert Tremaine. Was engineered from birth by Carabosse and Bloody Mary to free Mary from the mirror. Prophecy: dies *content at her desk*. |
+| **Bigby** | Joseph Bigby | Alive | cities | Investigator/Rogue; Beastkin (lupine); from Xyander. Former Hogson Brothers construction worker. Former crewman under Captain Hook. His brother is the Big Bad Wolf who tried to assassinate him. Prophecy: dies *at the hands of a bitter rival*. |
 | **Darian Sand** | — | Deceased (†) | cities | Sorcerer; human; raised on the streets; mentored by Merlin. Died during the campaign. |
 | **Merida** | — | Alive (departed) | greenwoods | Archer; from the highlands. Left the Mythmakers Union in earlier sessions. |
 | **Sibylla** | — | Alive (departed) | greenwoods | Seer. Left the Mythmakers Union. |
@@ -25,7 +25,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
 | **Dame Gothel** | Mother Gothel | Unknown (believed dead ~311) | greenwoods | Former All-Mother of the Thrice-Triple Covens. 100+ years old. Kept Caliburn safe for the Pendragon bloodline. Her death triggered the All-Mother Succession Crisis. May still be alive in hiding. |
-| **Bloody Mary** | — | Alive (imprisoned) | darkwoods | Former Empress of the Arrnon Empire. Trapped in the Mirror of Aretas. Dangerously active even in captivity. Once seized OXIE from Merlin; right hand removed. |
+| **Bloody Mary** | — | Alive (freed S57) | darkwoods | Former Empress of the Arrnon Empire. Born 226 (6th Age); trained by Merlin; took over the Order of the Eleventh Eye and built the Arrnon Empire. Imprisoned in the Mirror of Aretas at age 22 by Merlin and Craven. Freed in Session 57. Has the Hand of Sycorax restored. Can see through any mirror in Evergreen. Engineered Drizella's life (via Carabosse + Lady Tremaine) to free herself. |
 | **Memphis Cadwallader** | Rumpelstiltskin, Tobias Gold, Louis Cypher, The Imp, The Fairy Godmother | Alive | cities | Devil (possibly *the* devil). ~3ft tall gnome form; true form is living flame. Deal-maker; holds Briar Rose's 300-year-old life-debt. Former agent of Queen Maeve. Cannot speak his name "Rumpelstiltskin". |
 
 ---
@@ -105,9 +105,13 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 |---|---|---|---|---|
 | **Lord Dracul** | — | Alive | darkwoods | Vampire king; Westerforge, Avalon. Near-omniscient. Avalon is Maeve's territory. |
 | **Prince Phillip** | — | Alive | greenwoods | Twin soul of Briar Rose — whatever happens to one happens to the other. Details otherwise sparse. |
-| **Anastasia Tremaine** | — | Alive | darkwoods | Drizella's sister. Tremaine family was affected by the Glass Slipper curse. |
-| **Lady Tremaine** | — | Unknown | darkwoods | Suspected connection to the Glass Slipper curse; Cadwallader may have been involved as a side deal on her behalf. |
-| **Snow White** | — | Alive (rescued) | greenwoods | Kept captive by Nimue. Rescued by the Mythmakers Union. |
+| **Anastasia Tremaine** | — | Alive | darkwoods | Drizella's sister. Was the Beast King's ward under a *modify memory* spell (memories held in Captain Sharmaine). Memories restored in Session 66 when Sharmaine was killed. Was engaged to Argent Carreau in Salasarglumm. |
+| **Lady Tremaine** | — | Alive (confirmed S66) | darkwoods | One of three fragments of the original Morgana Pendragon. Made a deal with Carabosse + Bloody Mary, trading her children's life force. Aged Drizella 20 years during a dance. Apparently died (news reached party mid-campaign) but Polko confirmed she's alive in S66. |
+| **Snow White** | — | Alive | darkwoods | Found in a Pebblecreek greenhouse, afflicted with vampirism. She is Queen Maeve's daughter. |
+| **Robert Tremaine** | — | Alive (freed S59) | greenwoods | Drizella's father. An archer. Held captive by Queen Maeve in a room of mirrors. Freed briefly at Everdrift; told Drizella to *"escape through mirrors."* |
+| **Galahad** | — | Alive (captive) | cities | Mordred's best friend from Knights of Camelot training. Under a *modify memory* spell by Queen Maeve (memories placed in an object). Was taken by knights during Maleficent's attack on Camelot's training ground. |
+| **Galehaut** | — | Alive | cities | Half-giant knight; former trainer at Camelot. Carried Mordred to safety during the attack. |
+| **Medraut** | The Raven Knight | Alive | darkwoods | Construct made by Queen Maeve in Mordred's exact likeness but lacking his kindness. Shares Mordred's face; bears scars. Maeve's son. Said to Mordred: *"What she did to **us**."* Morgana says he *"arranged the entire continent"* to give Mordred answers. |
 
 ---
 
@@ -123,7 +127,7 @@ Deities walk in physical form and are not strictly faction-aligned — they pred
 | **The Harvestman** | Food/crops, woodlands | greenwoods | Patron of the forest *and* cultivated land. |
 | **The Man on the Moon** | Travellers, light in darkness | greenwoods | Guides the lost. |
 | **The Woman on the Sun** | Healing, disease, finding lost things | greenwoods | Restorative; closely tied to Briar Rose's purpose. |
-| **The Three-Faced Lady** | Occult magic, time, balance, love | greenwoods | Patron of witches/hags; her avatar was Morgana Le Fay. Status unknown after Morgana's severance. |
+| **The Three-Faced Lady** | Occult magic, time, balance, love | greenwoods | Patron of witches/hags; her avatar was Morgana Le Fay. **Confirmed dead** — murdered by Morgana in Oz (S60). Morgana used the killing to split herself into three. Sibylla's patron. |
 | **The Fool** | Joy, festivals, self-understanding | greenwoods | Unpredictable. |
 | **The Magus** | Arcane magic, book learning, creation | cities | Aligns with OXIE's academic tradition. |
 | **The Sacred Sister** | Holy magic, prophecy | greenwoods | Prophecy; tied to Mordred's arc. |
@@ -141,14 +145,78 @@ Deities walk in physical form and are not strictly faction-aligned — they pred
 
 | Name | Aliases | Status | Alignment | Notes |
 |---|---|---|---|---|
-| **The Horned King** | Blighted Lord, Prince of Rot, Nightmare King, Merry Stag Lord | Destroyed (~276) / Resurrection pending | darkwoods | Once a benevolent fey/god; turned cruel; ruled Arcadia. Destroyed at the Fall of Arcadia using the Mirror of Aretas. His essence fragmented into the Antiseeds. The Silverheart Court is engineering his return. |
+| **The Horned King** | Blighted Lord, Prince of Rot, Nightmare King, Merry Stag Lord, The Tuatha Slaugh | Destroyed (end of 4th age) / Resurrection imminent | darkwoods | Once the Merry Stag Lord — god of harvest, plenty, and spring. Over centuries his followers demanded more than he could give; he grew monstrous. Slain at the Fall of Arcadia by nine Grandmother Hags, Titania, Mab, the Gold Dragon of Thurran, the Jabberwocky, Merlin, and the Green Man. His essence fragmented into the Antiseeds. The Not-Deer creatures manifesting in Cindershire are early signs of return. |
+
+---
+
+## Session-Introduced NPCs
+
+Characters confirmed during session recaps not previously listed.
+
+### Allies & Recurring
+
+| Name | Status | Alignment | Role / Notes |
+|---|---|---|---|
+| **Lancelot** | Alive | cities | Aged (70–80), white-haired former Knight of Camelot living in Pebblecreek. Left Camelot after Arthur chose to save the child over Guinevere's life in childbirth. Buried Guinevere himself. Has a son in knight training. Comforted Mordred after Darian's death. |
+| **Carabosse** | Alive | darkwoods | The true Fairy Godmother. Worked with Bloody Mary to engineer Drizella's entire life via the Lady Tremaine scheme. Claims she wants to help undo what was done. Connected to Sycorax. May be the only one who can reverse the curse. |
+| **Robson Wellgood** | Alive | darkwoods (defecting?) | Former Silverheart Court member, prisoner of Maeve at Everdrift. Deliberately threw a card game to help Bigby. Told him: *"Find me in Mercia."* Potential double agent. |
+| **Tinker Bell** | Alive | greenwoods | Summer Court fey investigator. Uncovered that the wish spell destroying the druids was cast on 30 April 348 beneath Emberhall. |
+| **Renfield** | Alive | darkwoods | Vampire thrall of Bloody Mary. Calls Drizella "Empress." Can travel between Oz and Evergreen. More intelligent than he appears. |
+| **Dean Marikosa** | Alive | cities | Dean of Ersatz University. Fought in the Fall of Arcadia. Her vision provided the complete story of the Horned King's death. |
+| **Hazel the Wise** | Alive | greenwoods | Grandmother of the Thrice-Triple Covens. |
+| **Glinda the Good** | Alive | greenwoods | Psychopomp (shepherd of the dead) in Oz. Revealed each party member's death prophecy. |
+| **Vasala/Valassa Farsight** | Alive | greenwoods | Recurring arcane expert ally. Preserved Mordred's severed hand in Salasarglumm. |
+| **King Oberon** | Murdered (S56) | greenwoods | King of the Fey. Murdered 30 April 348; his memory was tampered with (ten minutes missing). Asked Bigby to investigate. The dagger was identical to Bigby's. |
+| **Queen Mab** | Alive | greenwoods | Winter Court sovereign. Louie's mother. Her sister Augusta is keeper of fate. |
+| **Grandmother Alpine** | Alive | greenwoods | Large owl-woman fey. Knows Morgana. Warned party about deals with Mary. Mordred read her fate: *"traitor."* |
+| **Miss Octavia Muffet** | Alive | greenwoods | Giant spider fey running an orphanage in Morso. Has a deal with Grandmother Malyr for a safe glade post-Sunderance. |
+| **Rodrigo** | Alive (freed S66) | greenwoods | Cursed lion from Cindershire. Was searching for the witch who cursed him. Freed by the party. |
+| **Matron Simone** | Alive | cities | Head of the Sage Hospice in Lowmarsh. Provisionally licenced Drizella as a Medicaster. |
+| **Lewis Short** | Alive | cities | Chairman of Lowmarsh. Long-moustached elf. Targeted by the Shadic Brethren. |
+| **High Matron Mayana** | Alive | cities | Leader of the Northern League of Medicasters in Cindershire. Investigating the Blight plague. |
+| **Billy Bones** | Unknown | cities | Old sailor; introduced the party to the Hispaniola crew at Auntie's Scones in Oronia. |
+| **Flycatcher** | Alive | greenwoods | Informant in Pebblecreek. Revealed antiseed distribution details. Cannot remember the Big Bad Wolf's name. |
+| **Savvan** | Alive | greenwoods | Changeling. Was caught in Nimue's ritual against their will. Warned that a Sunderance will occur within 12–18 months (as of mid-campaign). |
+| **Greta** | Alive | greenwoods | Moon-connected woman with vampiric traits. Connected to the Man on the Moon. Confirmed Lady Tremaine's apparent death in Pebblecreek. |
+| **Old Mother Hubbard** | Alive | greenwoods | Wise figure at Goback; the party received gifts and prophecy here. |
+| **Augusta** | Alive | greenwoods | Mab's sister; keeper of fate. Told Briar her soul sings the song of the Harvestman; that Prince Phillip may have experienced the same sleeping curse. |
+
+### Villains & Antagonists (session-confirmed)
+
+| Name | Status | Alignment | Role / Notes |
+|---|---|---|---|
+| **The Beast King** | Defeated | darkwoods | Carlos Vanth; former Ersatz University student. Used a botched polymorph and three stolen magic items (Ring of Objectification, Staff of Beguiling, Looking Glass) to conquer Salasarglumm. Tool of Bloody Mary and the Silverheart Court. Defeated by the party. |
+| **Equinox** | Destroyed (S57) | darkwoods | Construct posing as Lord of Unicorns; created by Queen Maeve in Mordred's exact likeness. Lacking Mordred's kindness. Reduced to sand by Mab and Titania. |
+| **Jacob Hilton** | Stopped | darkwoods | The Devil of Newgate. Oronian doctor who consumed mutagens and became a serial killer. Connected to Bloody Mary via a mirror shard. |
+| **Krennic Silverbarrow** | Alive | cities | Duegar agent of Camelot knight Percival. Called Drizella "Lady Tremaine" (suggesting false identity used). |
+| **Big Bad Wolf** | Alive | darkwoods | Bigby's older brother. Attempted to assassinate Bigby on behalf of the Hogson Brothers. |
+| **Grandmother Malyr** | Alive | darkwoods | Has promised Miss Muffet a safe glade after the Sunderance — implies unusual foreknowledge. Connected to the Cailleach. True allegiance unclear; possibly working against the courts. |
+| **The Cailleach** | Alive | darkwoods | *"True mother of hags."* Ancient being stealing children's screams in the Morso dreamscape. Maleficent panics at her name. Connected to Grandmother Malyr. |
+| **Eamus/John Hogson** | Alive | darkwoods | Criminal brothers; Eamus finances antiseed deliveries under "M"'s direction. John had a mirror shard with a note from Mary in his desk. |
+| **The Not-Deer** | Ongoing | darkwoods | Corrupted deer creatures manifesting the Horned King in Cindershire. Say: *"The Name is still hollow. It is not yet above as it is below."* |
+| **Davy Jones** | Alive | darkwoods | Keeper of the dead at sea. Captain Hook used Nik's soul as collateral with him. |
+| **The Green Man** | Alive | greenwoods | Fey guardian of the Greenwoods; ostentatiously dressed. Appeared to Mordred in Session 3 saying *"Sunderance."* Also inhabits the Green Knight (defeated at the Everdrift tourney by Mordred). |
+| **Henry Borsch** | Alive | darkwoods | Necromancer student at Ersatz University. Killed Briar's familiar Bud. Defeated by Bigby in a duel. |
+| **Captain Sharmaine** | Deceased (S66) | darkwoods | Veiled witch's champion at Cindershire. Held Anastasia Tremaine's memories. Killed by Drizella and Briar. |
+
+### Oz / Fairytale Characters
+
+| Name | Status | Alignment | Role / Notes |
+|---|---|---|---|
+| **Barnabas Ragdoll** | Alive | cities | The Wizard of Oz (his duplicate is Count Clarion). Gave the Ruby Slippers (now Glass Slippers) to Bloody Mary under duress. Confirmed the slippers can undo the Wish Ring. |
+| **Cinderella** | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
+| **The Scarecrow** | Alive | greenwoods | One of Morgana's constructs in Oz. Told the party that Morgause was his older sister (and is made of sand = Servant Four / Hellekin). |
+| **The Tin Man** | Alive | unknown | Metal construct found in Oz, frozen in terror. |
+| **The Creature** | Alive | unknown | Frankenstein's monster ("Adam"). Seeking Victor Frankenstein. Lady Tremaine hired him to kill Anastasia. |
+| **Victor Frankenstein** | Unknown | cities | Sought by Adam/the Creature. |
+| **Argent Carreau** | Unknown | darkwoods | Was Anastasia's fiancé in Salasarglumm under the Beast King. |
 
 ---
 
 ## Summary by Alignment
 
-| Alignment | Count | Key NPCs |
+| Alignment | Count (approx.) | Key NPCs |
 |---|---|---|
-| **greenwoods** | 24 | Dame Gothel, Mordred, Elder Maren, Wandering Stranger, Tashanna, Lady Caelia, King Louie, Jackie Brush, Titania, Merida, Sibylla, Briar Rose, Prince Phillip, Snow White, and most deities |
-| **darkwoods** | 17 | Bloody Mary, Morgana Le Fay, Drizella Tremaine, Maleficent, Queen Maeve, Nimue, the Silverheart Court members, Lord Dracul, Jack Frost, Morgause, the Horned King |
-| **cities** | 15 | Memphis Cadwallader, Bigby, King Arthur, Merlin, Lancelot, Archduke Tyson II, Emilia Zeneba, Osiris Krex, Enoch Holcombe, Captain Hook, Darian Sand, Nik Jones, and guild/order leaders |
+| **greenwoods** | 40+ | Dame Gothel, Mordred, Briar Rose, Tashanna, Lady Caelia, King Louie, Jackie Brush, Titania, Oberon, Mab, Merida, Sibylla, Prince Phillip, Hazel the Wise, Vasala Farsight, Tinker Bell, Glinda, Grandmother Alpine, Savvan, Flycatcher, Greta, Augusta, Miss Muffet, the Green Man, and most Tuatha De Danann |
+| **darkwoods** | 30+ | Bloody Mary, Morgana Le Fay, Queen Maeve, Lady Tremaine, Drizella Tremaine, Maleficent, Nimue (compelled), the Silverheart Court (Medraut, Lady Piques, Peter Hogson, Robson Wellgood), Lord Dracul, Jack Frost, Morgause, the Horned King, the Cailleach, Grandmother Malyr, the Big Bad Wolf, Carabosse, Equinox, the Beast King, Davy Jones, Renfield |
+| **cities** | 25+ | Memphis Cadwallader, Bigby, King Arthur, Merlin, Lancelot, Galahad, Galehaut, Archduke Tyson II, Emilia Zeneba, Osiris Krex, Enoch Holcombe, Captain Hook, Darian Sand†, Nik Jones, Dean Marikosa, Matron Simone, Lewis Short, High Matron Mayana, Krennic Silverbarrow, Barnabas Ragdoll, Cinderella, Billy Bones, and guild/order leaders |
