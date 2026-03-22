@@ -77,12 +77,12 @@ setup_cookies() {
 login() {
   echo "Fetching credentials from 1Password..."
   local user pass
-  user=$(op item get "${OP_ITEM}" --field username 2>/dev/null) || {
+  user=$(op item get "${OP_ITEM}" --field username --reveal 2>/dev/null | tr -d '[:space:]') || {
     echo "ERROR: could not read username from 1Password item '${OP_ITEM}'" >&2
-    echo "  Run: op item get \"${OP_ITEM}\" --field username" >&2
+    echo "  Run: op item get \"${OP_ITEM}\" --field username --reveal" >&2
     exit 1
   }
-  pass=$(op item get "${OP_ITEM}" --field password 2>/dev/null) || {
+  pass=$(op item get "${OP_ITEM}" --field password --reveal 2>/dev/null | tr -d '[:space:]') || {
     echo "ERROR: could not read password from 1Password item '${OP_ITEM}'" >&2
     exit 1
   }
