@@ -255,10 +255,4 @@ Characters confirmed during session recaps not previously listed.
 
 ---
 
-## Summary by Alignment
-
-| Alignment | Count (approx.) | Key NPCs |
-|---|---|---|
-| **greenwoods** | 40+ | Dame Gothel, Mordred, Briar Rose, Tashanna, Lady Caelia, King Louie, Jackie Brush, Titania, Oberon, Mab, Merida, Sibylla, Prince Phillip, Hazel the Wise, Vasala Farsight, Tinker Bell, Glinda, Grandmother Alpine, Savvan, Flycatcher, Greta, Augusta, Miss Muffet, the Green Man, and most Tuatha De Danann |
-| **darkwoods** | 30+ | Bloody Mary, Morgana Le Fay, Queen Maeve, Lady Tremaine, Drizella Tremaine, Maleficent, Nimue (compelled), the Silverheart Court (Medraut, Lady Piques, Peter Hogson, Robson Wellgood), Lord Dracul, Jack Frost, Morgause, the Horned King, the Cailleach, Grandmother Malyr, the Big Bad Wolf, Carabosse, Equinox, the Beast King, Davy Jones, Renfield |
-| **cities** | 25+ | Memphis Cadwallader, Bigby, King Arthur, Merlin, Lancelot, Galahad, Galehaut, Archduke Tyson II, Emilia Zeneba, Osiris Krex, Enoch Holcombe, Captain Hook, Darian Sand†, Nik Jones, Dean Marikosa, Matron Simone, Lewis Short, High Matron Mayana, Krennic Silverbarrow, Barnabas Ragdoll, Cinderella, Billy Bones, and guild/order leaders |
+*For character alignment breakdowns, see [Character Alignments](character_alignments.md).*

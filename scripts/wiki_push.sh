@@ -40,6 +40,7 @@ declare -A PAGE_MAP=(
   ["${RESEARCH}/wiki_nav.md"]="Research Navigation"
   ["${RESEARCH}/characters/npc_list.md"]="NPC List"
   ["${RESEARCH}/characters/player_characters.md"]="Player Characters"
+  ["${RESEARCH}/characters/character_alignments.md"]="Character Alignments"
   ["${RESEARCH}/characters/mother_gothel.md"]="Mother Gothel"
   ["${RESEARCH}/characters/morgana.md"]="Morgana Le Fay/Research"
   ["${RESEARCH}/characters/cadwallader.md"]="Memphis Cadwallader/Research"
