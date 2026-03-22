@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use dialog::events::{ChoiceMade, ChoicesReady, DialogueLineReady};
 use dialog::locale::LocaleMap;
 
+use crate::fonts::UiFont;
 use crate::theme;
 
 // ---------------------------------------------------------------------------
@@ -55,7 +56,7 @@ pub(crate) struct ChoiceButton(usize);
 // Setup / teardown
 // ---------------------------------------------------------------------------
 
-pub fn setup(mut commands: Commands) {
+pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     commands
         .spawn((
             DialogBox,
@@ -83,6 +84,7 @@ pub fn setup(mut commands: Commands) {
                 Text::default(),
                 TextColor(theme::DIALOG_SPEAKER),
                 TextFont {
+                    font: fonts.0.clone(),
                     font_size: SPEAKER_FONT_SIZE_PX,
                     ..default()
                 },
@@ -97,6 +99,7 @@ pub fn setup(mut commands: Commands) {
                 Text::default(),
                 TextColor(theme::DIALOG_TEXT),
                 TextFont {
+                    font: fonts.0.clone(),
                     font_size: TEXT_FONT_SIZE_PX,
                     ..default()
                 },
@@ -115,6 +118,7 @@ pub fn setup(mut commands: Commands) {
                 Text::new(""),
                 TextColor(theme::DIALOG_SPEAKER),
                 TextFont {
+                    font: fonts.0.clone(),
                     font_size: HINT_FONT_SIZE_PX,
                     ..default()
                 },
@@ -192,6 +196,7 @@ pub fn on_line_ready(
 pub fn on_choices_ready(
     mut events: MessageReader<ChoicesReady>,
     locale: Res<LocaleMap>,
+    fonts: Res<UiFont>,
     mut body_q: Query<
         &mut Text,
         (
@@ -256,6 +261,7 @@ pub fn on_choices_ready(
                 Text::new(label),
                 TextColor(theme::DIALOG_TEXT),
                 TextFont {
+                    font: fonts.0.clone(),
                     font_size: CHOICE_FONT_SIZE_PX,
                     ..default()
                 },

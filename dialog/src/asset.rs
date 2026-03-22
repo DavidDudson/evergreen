@@ -1,5 +1,6 @@
 use bevy::asset::{Asset, AssetLoader, LoadContext, io::Reader};
 use bevy::reflect::TypePath;
+use models::alignment::AlignmentFaction;
 use serde::Deserialize;
 
 /// A dialogue script loaded from a `.dialog.ron` asset file.
@@ -36,6 +37,9 @@ pub struct ChoiceOption {
     pub flags_required: Vec<String>,
     /// Flags to set to `true` when this option is selected.
     pub flags_set: Vec<String>,
+    /// If set, grant +1 to this alignment faction when the choice is made.
+    #[serde(default)]
+    pub alignment_grant: Option<AlignmentFaction>,
     /// Sub-lines to run after this choice is made.
     pub next: Vec<DialogueLine>,
 }

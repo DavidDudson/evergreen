@@ -39,7 +39,15 @@ const TREE_ASSETS: [&str; 2] = ["tree_oak.webp", "tree_pine.webp"];
 const BUSH_ASSETS: [&str; 2] = ["bush_round.webp", "bush_flower.webp"];
 const FLOWER_ASSETS: [&str; 2] = ["flower_yellow.webp", "flower_purple.webp"];
 
-pub fn spawn_scenery(mut commands: Commands, asset_server: Res<AssetServer>, world: Res<WorldMap>) {
+pub fn spawn_scenery(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    world: Res<WorldMap>,
+    existing: Query<(), With<Scenery>>,
+) {
+    if !existing.is_empty() {
+        return;
+    }
     spawn_area_scenery(&mut commands, &asset_server, &world);
 }
 

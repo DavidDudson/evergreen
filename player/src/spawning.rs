@@ -23,7 +23,13 @@ pub fn spawn(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    existing: Query<(), With<Player>>,
 ) {
+    // OnEnter(Playing) fires on every entry including resume from pause.
+    // Skip if the player already exists.
+    if !existing.is_empty() {
+        return;
+    }
     let layout = TextureAtlasLayout::from_grid(
         UVec2::new(FRAME_W_PX, FRAME_H_PX),
         u32::try_from(SHEET_COLS).expect("SHEET_COLS fits u32"),

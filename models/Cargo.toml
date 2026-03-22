@@ -9,3 +9,4 @@ workspace = true
 [dependencies]
 bevy = "0.18"
 derive_more = { version = "2.1.1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }

@@ -1,5 +1,8 @@
 use bevy::prelude::*;
+use keybinds::action::Action;
+use keybinds::bindings::Keybinds;
 use models::game_states::GameState;
+use models::speed::Speed;
 
 use crate::asset::{DialogueLine, DialogueScript};
 use crate::components::{DialogueTrigger, Talker};
@@ -8,6 +11,7 @@ use crate::events::{
 };
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
+use models::alignment::PlayerAlignment;
 
 const INTERACT_RADIUS_PX: f32 = 48.0;
 
@@ -31,6 +35,8 @@ pub(crate) enum RunnerState {
         seen: Vec<String>,
         /// Whether the runner is waiting for the player to press "next".
         awaiting_advance: bool,
+        /// Whether we've emitted choices and are waiting for a [`ChoiceMade`].
+        awaiting_choice: bool,
     },
 }
 
@@ -48,7 +54,7 @@ impl Default for RunnerState {
 /// [`DialogueTrigger`]. Removes the marker when out of range.
 pub fn detect_interact_range(
     talker_q: Query<(Entity, &GlobalTransform), With<Talker>>,
-    player_q: Query<(Entity, &GlobalTransform), Without<Talker>>,
+    player_q: Query<(Entity, &GlobalTransform), (With<Speed>, Without<Talker>)>,
     mut commands: Commands,
     trigger_q: Query<(Entity, &DialogueTrigger)>,
 ) {
@@ -85,13 +91,14 @@ pub fn detect_interact_range(
     }
 }
 
-/// When the player presses E near a Talker, emit [`StartDialogue`].
+/// When the player presses Interact near a Talker, emit [`StartDialogue`].
 pub fn detect_interact_input(
     keyboard: Res<ButtonInput<KeyCode>>,
+    bindings: Res<Keybinds>,
     player_q: Query<&DialogueTrigger>,
     mut writer: MessageWriter<StartDialogue>,
 ) {
-    if !keyboard.just_pressed(KeyCode::KeyE) {
+    if !keyboard.just_pressed(bindings.key(Action::Interact)) {
         return;
     }
     let Ok(trigger) = player_q.single() else {
@@ -132,6 +139,7 @@ pub fn start_dialogue(
         remaining: script.lines.clone(),
         seen: Vec::new(),
         awaiting_advance: false,
+        awaiting_choice: false,
     };
 
     next_state.set(GameState::Dialogue);
@@ -165,10 +173,16 @@ pub fn advance_runner(
         ref mut remaining,
         ref mut seen,
         ref mut awaiting_advance,
+        ref mut awaiting_choice,
     } = runner.state
     else {
         return;
     };
+
+    // If we're waiting for the player to pick a choice, do nothing here.
+    if *awaiting_choice {
+        return;
+    }
 
     // If we're waiting for a keypress to advance past a speech line.
     if *awaiting_advance {
@@ -208,6 +222,7 @@ pub fn advance_runner(
                 remaining.remove(0);
             } else {
                 choice_writer.write(ChoicesReady { options: visible });
+                *awaiting_choice = true;
                 // Don't remove yet — handle_choice will splice in the branch.
             }
         }
@@ -219,6 +234,7 @@ pub fn handle_choice(
     mut events: MessageReader<ChoiceMade>,
     mut runner: ResMut<DialogueRunner>,
     mut flags: ResMut<DialogueFlags>,
+    mut alignment: ResMut<PlayerAlignment>,
 ) {
     let Some(event) = events.read().next() else {
         return;
@@ -226,6 +242,7 @@ pub fn handle_choice(
     let RunnerState::Running {
         ref mut remaining,
         ref mut seen,
+        ref mut awaiting_choice,
         ..
     } = runner.state
     else {
@@ -246,6 +263,11 @@ pub fn handle_choice(
         flags.set(flag.clone());
     }
 
+    // Apply alignment grant.
+    if let Some(faction) = chosen.alignment_grant {
+        alignment.grant(faction);
+    }
+
     // Record the player's choice key for lore.
     seen.push(chosen.text_key.clone());
 
@@ -253,6 +275,7 @@ pub fn handle_choice(
     let mut new_remaining = chosen.next.clone();
     new_remaining.extend(remaining.iter().skip(1).cloned());
     *remaining = new_remaining;
+    *awaiting_choice = false;
 }
 
 /// Records lore and transitions back to Playing when dialogue ends.

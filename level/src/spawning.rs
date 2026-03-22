@@ -30,7 +30,11 @@ pub fn spawn_tilemap(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     world: Res<WorldMap>,
+    existing: Query<(), With<Level>>,
 ) {
+    if !existing.is_empty() {
+        return;
+    }
     spawn_area(&mut commands, &asset_server, &world);
 }
 

@@ -3,10 +3,11 @@ use models::game_states::GameState;
 
 use crate::credits::{self, CreditsScreen};
 use crate::despawn::despawn_all;
+use crate::fonts;
 use crate::dialog_box::{self, DialogBox};
 use crate::focus;
 use crate::game_over_menu::{self, GameOverMenu};
-use crate::hud::{self, Hud};
+use crate::hud::{self, AlignmentBars, Hud};
 use crate::keybind_screen::{self, KeybindScreen};
 use crate::lore_page;
 use crate::main_menu::{self, MainMenu};
@@ -18,6 +19,8 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        app.init_resource::<fonts::UiFont>();
+
         app.init_resource::<SettingsOrigin>();
 
         // Main menu
@@ -26,15 +29,19 @@ impl Plugin for UiPlugin {
             .add_systems(Update, main_menu::button_system);
 
         // Playing HUD & minimap
-        app.add_systems(OnEnter(GameState::Playing), (hud::setup, minimap::setup))
+        app.add_systems(
+                OnEnter(GameState::Playing),
+                (hud::setup, hud::setup_alignment_bars, minimap::setup),
+            )
             .add_systems(
                 OnExit(GameState::Playing),
-                (despawn_all::<Hud>, minimap::despawn)
+                (despawn_all::<Hud>, despawn_all::<AlignmentBars>, minimap::despawn)
                     .run_if(not(in_state(GameState::Paused))),
             )
             .add_systems(
                 Update,
-                (hud::sync_petals, minimap::refresh).run_if(in_state(GameState::Playing)),
+                (hud::sync_petals, hud::sync_alignment_bars, minimap::refresh)
+                    .run_if(in_state(GameState::Playing)),
             );
 
         // Game over
@@ -98,7 +105,8 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(GameState::Credits), despawn_all::<CreditsScreen>)
             .add_systems(
                 Update,
-                credits::handle_back.run_if(in_state(GameState::Credits)),
+                (credits::handle_back, credits::sync_scrollbar)
+                    .run_if(in_state(GameState::Credits)),
             );
 
         // Keybind config screen

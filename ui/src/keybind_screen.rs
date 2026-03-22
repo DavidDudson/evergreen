@@ -4,6 +4,7 @@ use keybinds::bindings::Keybinds;
 use keybinds::remap::{AwaitingRemap, CancelRemap, RemapCompleted, RequestRemap};
 use models::game_states::GameState;
 
+use crate::fonts::UiFont;
 use crate::theme;
 
 // ---------------------------------------------------------------------------
@@ -41,6 +42,8 @@ const BACK_MARGIN_TOP_PX: f32 = 20.0;
 const BACK_BORDER_PX: f32 = 2.0;
 const BACK_RADIUS_PX: f32 = 6.0;
 
+const OVERLAY_FONT_SIZE_PX: f32 = 24.0;
+
 // ---------------------------------------------------------------------------
 // Components
 // ---------------------------------------------------------------------------
@@ -76,7 +79,7 @@ pub(crate) struct RemapOverlay;
 // Setup / teardown
 // ---------------------------------------------------------------------------
 
-pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>) {
+pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
             KeybindScreen,
@@ -93,11 +96,13 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>) {
         ))
         .id();
 
+    let font = fonts.0.clone();
+
     // Title
     commands.spawn((
         Text::new("Key Bindings"),
         TextColor(theme::TITLE),
-        TextFont { font_size: TITLE_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
         Node {
             margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
             ..Node::default()
@@ -108,14 +113,14 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>) {
     // Action rows
     for &action in Action::ALL {
         let key = keybinds.key(action);
-        spawn_action_row(&mut commands, root, action, key);
+        spawn_action_row(&mut commands, root, action, key, font.clone());
     }
 
     // Hint text
     commands.spawn((
         Text::new("Click a key button, then press the new key. Escape cancels."),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font_size: HINT_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: HINT_FONT_SIZE_PX, ..default() },
         Node {
             margin: UiRect::top(Val::Px(HINT_MARGIN_TOP_PX)),
             ..Node::default()
@@ -154,7 +159,7 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>) {
         .with_child((
             Text::new("Back"),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font_size: BACK_FONT_SIZE_PX, ..default() },
+            TextFont { font: font.clone(), font_size: BACK_FONT_SIZE_PX, ..default() },
         ));
 
     // Reset All button
@@ -174,7 +179,7 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>) {
         .with_child((
             Text::new("Reset All"),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font_size: RESET_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: RESET_FONT_SIZE_PX, ..default() },
         ));
 }
 
@@ -289,6 +294,7 @@ pub fn sync_remap_overlay(
     awaiting: Option<Res<AwaitingRemap>>,
     overlay_q: Query<Entity, With<RemapOverlay>>,
     screen_q: Query<Entity, With<KeybindScreen>>,
+    fonts: Res<UiFont>,
     mut commands: Commands,
 ) {
     let overlay_exists = !overlay_q.is_empty();
@@ -318,7 +324,7 @@ pub fn sync_remap_overlay(
                         a.action.label()
                     )),
                     TextColor(theme::DIALOG_TEXT),
-                    TextFont { font_size: 24.0, ..default() },
+                    TextFont { font: fonts.0.clone(), font_size: OVERLAY_FONT_SIZE_PX, ..default() },
                 ));
         }
         (None, true) => {
@@ -335,7 +341,13 @@ pub fn sync_remap_overlay(
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn spawn_action_row(commands: &mut Commands, parent: Entity, action: Action, key: KeyCode) {
+fn spawn_action_row(
+    commands: &mut Commands,
+    parent: Entity,
+    action: Action,
+    key: KeyCode,
+    font: Handle<Font>,
+) {
     let row = commands
         .spawn((
             Node {
@@ -357,7 +369,7 @@ fn spawn_action_row(commands: &mut Commands, parent: Entity, action: Action, key
     commands.spawn((
         Text::new(action.label()),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font_size: LABEL_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
         Node { flex_grow: 1.0, ..Node::default() },
         ChildOf(row),
     ));
@@ -382,7 +394,7 @@ fn spawn_action_row(commands: &mut Commands, parent: Entity, action: Action, key
             KeyButtonLabel(action),
             Text::new(keycode_label(key).to_string()),
             TextColor(theme::DIALOG_SPEAKER),
-            TextFont { font_size: KEY_FONT_SIZE_PX, ..default() },
+            TextFont { font: font.clone(), font_size: KEY_FONT_SIZE_PX, ..default() },
         ));
 
     // Reset button
@@ -402,7 +414,7 @@ fn spawn_action_row(commands: &mut Commands, parent: Entity, action: Action, key
         .with_child((
             Text::new("Reset"),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font_size: RESET_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: RESET_FONT_SIZE_PX, ..default() },
         ));
 }
 

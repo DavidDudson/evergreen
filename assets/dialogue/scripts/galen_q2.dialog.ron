@@ -1,0 +1,40 @@
+DialogueScript(
+    id: "galen.q2.wounded_stranger",
+    speaker_key: "npc.galen.name",
+    keyword_tags: ["galen", "alignment", "hero_questions"],
+    lines: [
+        Speech(text_key: "npc.galen.hello.0"),
+        Speech(text_key: "npc.galen.hello.1"),
+        Speech(text_key: "npc.galen.q2.question"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.galen.q2.answer.greenwoods",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Greenwoods),
+                next: [
+                    Speech(text_key: "npc.galen.q2.response.greenwoods"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.galen.q2.answer.darkwoods",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Darkwoods),
+                next: [
+                    Speech(text_key: "npc.galen.q2.response.darkwoods"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.galen.q2.answer.cities",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Cities),
+                next: [
+                    Speech(text_key: "npc.galen.q2.response.cities"),
+                ],
+            ),
+        ]),
+        Speech(text_key: "npc.galen.farewell"),
+    ],
+)

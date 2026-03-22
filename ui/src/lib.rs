@@ -1,5 +1,6 @@
 mod credits;
 mod despawn;
+pub mod fonts;
 mod settings_screen;
 mod dialog_box;
 mod focus;

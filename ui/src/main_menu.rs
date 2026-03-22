@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::fonts::UiFont;
 use crate::settings_screen::SettingsOrigin;
 use crate::theme;
 
@@ -33,7 +34,7 @@ pub(crate) struct CreditsButton;
 #[derive(Component)]
 pub(crate) struct MainMenuSettingsButton;
 
-pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
             MainMenu,
@@ -113,6 +114,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Text::new("Begin Journey"),
                     TextColor(theme::BUTTON_TEXT),
                     TextFont {
+                        font: fonts.0.clone(),
                         font_size: f32::from(BUTTON_FONT_SIZE_PX),
                         ..default()
                     },
@@ -141,6 +143,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Text::new("Lore"),
                     TextColor(theme::BUTTON_TEXT),
                     TextFont {
+                        font: fonts.0.clone(),
                         font_size: f32::from(BUTTON_FONT_SIZE_PX),
                         ..default()
                     },
@@ -169,6 +172,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Text::new("Credits"),
                     TextColor(theme::BUTTON_TEXT),
                     TextFont {
+                        font: fonts.0.clone(),
                         font_size: f32::from(BUTTON_FONT_SIZE_PX),
                         ..default()
                     },

@@ -3,6 +3,7 @@ use dialog::history::{LoreBook, LoreEntry};
 use dialog::locale::LocaleMap;
 use models::game_states::GameState;
 
+use crate::fonts::UiFont;
 use crate::theme;
 
 // ---------------------------------------------------------------------------
@@ -69,6 +70,7 @@ pub fn setup(
     mut commands: Commands,
     lore_book: Res<LoreBook>,
     locale: Res<LocaleMap>,
+    fonts: Res<UiFont>,
 ) {
     commands.insert_resource(LoreFilter::default());
 
@@ -94,6 +96,7 @@ pub fn setup(
         Text::new(locale.get("ui.lore.title").to_string()),
         TextColor(theme::TITLE),
         TextFont {
+            font: fonts.0.clone(),
             font_size: TITLE_FONT_SIZE_PX,
             ..default()
         },
@@ -134,7 +137,7 @@ pub fn setup(
         .with_child((
             Text::new(locale.get("ui.lore.filter.all").to_string()),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font_size: FILTER_FONT_SIZE_PX, ..default() },
+            TextFont { font: fonts.0.clone(), font_size: FILTER_FONT_SIZE_PX, ..default() },
         ));
 
     // Tag-specific filter buttons
@@ -159,7 +162,7 @@ pub fn setup(
             .with_child((
                 Text::new(tag),
                 TextColor(theme::BUTTON_TEXT),
-                TextFont { font_size: FILTER_FONT_SIZE_PX, ..default() },
+                TextFont { font: fonts.0.clone(), font_size: FILTER_FONT_SIZE_PX, ..default() },
             ));
     }
 
@@ -177,7 +180,7 @@ pub fn setup(
         ))
         .id();
 
-    spawn_entries(&mut commands, &lore_book, &locale, entries_root, "");
+    spawn_entries(&mut commands, &lore_book, &locale, entries_root, "", fonts.0.clone());
 
     // Back button
     commands
@@ -199,7 +202,7 @@ pub fn setup(
         .with_child((
             Text::new(locale.get("ui.lore.back").to_string()),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font_size: BACK_FONT_SIZE_PX, ..default() },
+            TextFont { font: fonts.0.clone(), font_size: BACK_FONT_SIZE_PX, ..default() },
         ));
 }
 
@@ -235,6 +238,7 @@ pub fn handle_filter_buttons(
     mut filter: ResMut<LoreFilter>,
     lore_book: Res<LoreBook>,
     locale: Res<LocaleMap>,
+    fonts: Res<UiFont>,
     entries_root_q: Query<Entity, With<LoreEntriesRoot>>,
     card_q: Query<Entity, With<LoreEntryCard>>,
     mut commands: Commands,
@@ -267,7 +271,7 @@ pub fn handle_filter_buttons(
         return;
     };
 
-    spawn_entries(&mut commands, &lore_book, &locale, root, &tag);
+    spawn_entries(&mut commands, &lore_book, &locale, root, &tag, fonts.0.clone());
 }
 
 // ---------------------------------------------------------------------------
@@ -291,6 +295,7 @@ fn spawn_entries(
     locale: &LocaleMap,
     parent: Entity,
     filter: &str,
+    font: Handle<Font>,
 ) {
     let entries: Vec<&LoreEntry> = lore_book
         .entries
@@ -304,6 +309,7 @@ fn spawn_entries(
             Text::new(locale.get("ui.lore.empty").to_string()),
             TextColor(theme::BUTTON_TEXT),
             TextFont {
+                font: font.clone(),
                 font_size: EMPTY_FONT_SIZE_PX,
                 ..default()
             },
@@ -334,6 +340,7 @@ fn spawn_entries(
             Text::new(locale.get(&entry.speaker_key).to_string()),
             TextColor(theme::DIALOG_SPEAKER),
             TextFont {
+                font: font.clone(),
                 font_size: ENTRY_SPEAKER_FONT_SIZE_PX,
                 ..default()
             },
@@ -345,6 +352,7 @@ fn spawn_entries(
                 Text::new(format!("  {}", locale.get(line_key))),
                 TextColor(theme::DIALOG_TEXT),
                 TextFont {
+                    font: font.clone(),
                     font_size: ENTRY_TEXT_FONT_SIZE_PX,
                     ..default()
                 },

@@ -180,6 +180,42 @@ Characters confirmed during session recaps not previously listed.
 | **Greta** | Alive | greenwoods | Moon-connected woman with vampiric traits. Connected to the Man on the Moon. Confirmed Lady Tremaine's apparent death in Pebblecreek. |
 | **Old Mother Hubbard** | Alive | greenwoods | Wise figure at Goback; the party received gifts and prophecy here. |
 | **Augusta** | Alive | greenwoods | Mab's sister; keeper of fate. Told Briar her soul sings the song of the Harvestman; that Prince Phillip may have experienced the same sleeping curse. |
+<!-- Added from Session 1 -->
+| **The Witch of the Woods** | Alive | greenwoods | Merida's mentor. A witch (not a hag). Initially tricked Merida but later took her on as a student. Told Merida about the upcoming winter solstice and sent her toward Lowmarsh. |
+| **Officer Bradley** | Alive | cities | Law enforcement in Lowmarsh. "Great big brick of a man" in plate armour. Runs the Broken Bricks guardhouse. Mentioned scouts from the south. |
+<!-- Added from Session 2 -->
+| **Bessa of the Lone Pine** | Unknown | greenwoods | Sibylla's mentor. Told Sibylla about the Parallax and encouraged her to bond with a patron. |
+<!-- Added from Session 3 -->
+| **Mother Mary Hill** | Alive | cities | Thin, older cleric/healer at the Immaculate Church of the Goodly Father in Lowmarsh. A healer, not skilled in dispelling. Directed the party to Vicar Rothwell for magical help. |
+| **Vicar Sean Rothwell** | Alive | cities | Vicar of the Goodly Father in Lowmarsh. More magically skilled than Mother Mary Hill. Was in a committee meeting when the party needed help dispelling the illusion on Thori Black's chambers. |
+| **Chops** | Alive | cities | Small, red-haired barkeeper at the Lone Pine tavern in Lowmarsh. Provided the party with information and free accommodation. |
+| **Corpus** | Alive | cities | Large, barrel-chested tavern worker at the Lone Pine in Lowmarsh. Has a dwarf uncle living underground who speaks Dwarvish — potential lead for translating Thori Black's treasury book. |
+| **Trevor Becker** | Alive | cities | Runs a rival establishment ("Investigations") in Lowmarsh. Prejudiced against Travelers. Few customers but always has money — suspected of shady dealings. Town guard calls him "a sad little man." |
+<!-- Added from Session 4 -->
+| **Paul Goodget** | Alive | cities | Farmer and Lowmarsh People's Committee member. Owns the largest farm within the walls. Hired the party to investigate crop theft (12% loss over three months). Holds one of three vault keys. |
+| **Austin Burton** | Alive | cities | Owns the Burton Lumber Yard in Lowmarsh. People's Committee member. Holds the third vault key. Cheerful and cooperative. |
+<!-- Added from Session 5 -->
+| **Oswald Burton** | Alive | cities | Short, bald owner of Burton Lumber Yard. Handed over his vault key with no resistance. Red shirt, blue overalls, perpetual unlit cigarette. |
+| **Alexander Dunos** | Alive | darkwoods | Red Hand commander. Elder man with salt-and-pepper hair, goatee, terrible burns on one side of his face, right eye replaced with a brass eye. Calm, purposeful, not murderous. Led the Red Hand force into Lowmarsh hunting a shapeshifting fey. Revealed the shapechanger had calculated when the next Sunderance will occur. |
+<!-- Added from Session 6 -->
+| **Pyromancer Ken** | Deceased | darkwoods | Red Hand mage. Big red hooded robes. Once fought a Fairy Godmother alongside Alexander. Killed during a road ambush while escorting the party. Invited Nik to join Ember Hall. |
+<!-- Added from Session 7 -->
+| **The Conductor** | Alive | greenwoods | Skeleton in a bright blue suit with white stripes and a pocket watch. Operates the Winter Express. Gives magical gifts to passengers who defend the train. Polite and formal. |
+| **The Hitchhiker** | Alive | greenwoods | Scruffily dressed skeleton; the Conductor's brother. Rides on the outside of the Winter Express. Trickster figure. Drops and returns the Conductor's pocket watch. |
+| **The Winter Giver** | Alive | greenwoods | Old man in a big red cloak with a long white beard, riding a reindeer sleigh (one with a glowing red nose). Jolly gift-giver but also, by lore, a very evil spirit that devours the wicked. A second demonic face briefly appears at the back of his head. |
+| **The Tea Lady** | Alive | greenwoods | Elderly woman pushing a cart on the Winter Express. Serves jasmine tea. |
+<!-- Added from Session 8 -->
+| **Father Lucas** | Alive | cities | Cleric in black robes with a collar of bones. Member of the Bonekeeper's Guild. Used the Mind Conference spell to brief the party in a shared mental space about the spontaneously-rising undead. |
+| **Krennic Silver-Po** | Alive | cities | Dwarf; rival contractor pursuing the same Salasarglumm commission as the party on behalf of an unnamed employer. Travels with an unnamed albino woman who has a bronze eye. Memphis warned the party to be wary of him. |
+| **Frond** | Alive | cities | Leshy (half-plant scholar) at Ersatz University. Expert on the Great Beasts and Titanic forces. Advised Merida that her beast-curse will be very hard to break and directed her toward the Ziggurat of Goback. |
+| **Thr** | Alive | cities | Head librarian at Ersatz University. Very tall with a completely grey bob haircut and jet-black eyes — has infernal heritage. Gave Sibylla a partial catacomb map; told Nik his infernal father is actively on this plane. |
+| **Kolen** | Alive | cities | Ancient hunched elf at Ersatz University; Fey research specialist working from a broom-closet office plastered in papers and string. Explained Fairy Godmother mechanics to Drizella: it is a job description requiring a pact token (possibly a glass slipper) from the original mortal patron. |
+| **Agnes Crooked Finger** | Alive | cities | City witch of Rymes. Identified as a potential Cunning (mother-witch) for Sibylla, whose spellcasting requires a mentor of that type. |
+<!-- Added from Session 9 -->
+| **Marabella** | Deceased (ghost) | cities | Ersatz University student who accidentally teleported into a sealed chamber in the Rymes catacombs and died. Her ghost warned the party about the Tomb of the Horned King. Her spell notes appear to have been deliberately sabotaged. Laid to rest by the party. |
+| **Zara** | Alive | cities | Elderly blind diviner at Ersatz University's School of Divination. Large curly hair, big spectacles. Read Merida's prophetic dreams and identified The Stranger (the Herald). Warned: "Stay away from the purple." |
+<!-- Added from Session 10 -->
+| **Enoch Hulldrown** | Alive | cities | Head of the Bonekeeper's Guild in Rymes. Tall, very still, calm. Hired the party to investigate undead risings in the lower crypt. Rewarded them with 120 silver and the Blessing of the Reaper. Unaware of the Tomb's full significance. |
 
 ### Villains & Antagonists (session-confirmed)
 

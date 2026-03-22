@@ -1,8 +1,8 @@
 use bevy::asset::AssetMetaCheck;
-use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use camera::plugin::CameraPlugin;
 use combat::plugin::CombatPlugin;
+use diagnostics::plugin::DiagnosticsPlugin;
 use dialog::DialogPlugin;
 use keybinds::KeybindsPlugin;
 use level::plugin::LevelPlugin;
@@ -23,7 +23,7 @@ fn main() {
                     ..default()
                 }),
             CameraPlugin,
-            LogDiagnosticsPlugin::default(),
+            DiagnosticsPlugin,
             KeybindsPlugin,
             DialogPlugin,
             SavePlugin,

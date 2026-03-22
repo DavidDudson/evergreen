@@ -2,6 +2,10 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::game_states::GameState;
 
+use crate::galen;
+use crate::npc_anim;
+use crate::npc_labels::{self, InteractIconState};
+use crate::npc_wander;
 use crate::npcs;
 use crate::scenery;
 use crate::spawning;
@@ -14,25 +18,43 @@ pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(TilemapPlugin)
+        app.init_resource::<InteractIconState>()
+            .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(42))
             .add_systems(
                 OnEnter(GameState::Playing),
-                (spawning::spawn_tilemap, scenery::spawn_scenery, npcs::spawn_npcs),
+                (
+                    spawning::spawn_tilemap,
+                    scenery::spawn_scenery,
+                    npcs::spawn_npcs,
+                    galen::spawn_galen,
+                ),
             )
             .add_systems(
                 Update,
                 (
                     spawning::respawn_on_area_change,
                     scenery::respawn_scenery_on_area_change,
+                    npcs::respawn_npcs_on_area_change,
                     scenery::animate_rustle,
+                    npc_labels::attach_labels,
+                    npc_labels::sync_interact_icon,
+                    galen::randomise_question,
+                    npc_anim::advance_npc_frame,
+                    npc_anim::reset_npc_anim_on_change,
+                    npc_wander::wander_npcs,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnExit(GameState::Playing),
-                (spawning::despawn_tilemap, scenery::despawn_scenery, npcs::despawn_npcs)
+                (
+                    spawning::despawn_tilemap,
+                    scenery::despawn_scenery,
+                    npcs::despawn_npcs,
+                    galen::despawn_galen,
+                )
                     .run_if(not(in_state(GameState::Paused))),
             );
     }

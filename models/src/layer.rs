@@ -6,9 +6,11 @@
 pub enum Layer {
     Tilemap,
     SceneryTree,
+    Npc,
     Player,
     SceneryBush,
     SceneryFlower,
+    NpcLabel,
 }
 
 impl Layer {
@@ -16,9 +18,11 @@ impl Layer {
         match self {
             Self::Tilemap => 0,
             Self::SceneryTree => 3,
+            Self::Npc => 9,
             Self::Player => 10,
             Self::SceneryBush => 11,
             Self::SceneryFlower => 12,
+            Self::NpcLabel => 20,
         }
     }
 

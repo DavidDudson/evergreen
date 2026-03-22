@@ -1,0 +1,40 @@
+DialogueScript(
+    id: "galen.q1.ice_cream",
+    speaker_key: "npc.galen.name",
+    keyword_tags: ["galen", "alignment", "hero_questions"],
+    lines: [
+        Speech(text_key: "npc.galen.hello.0"),
+        Speech(text_key: "npc.galen.hello.1"),
+        Speech(text_key: "npc.galen.q1.question"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "npc.galen.q1.answer.greenwoods",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Greenwoods),
+                next: [
+                    Speech(text_key: "npc.galen.q1.response.greenwoods"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.galen.q1.answer.darkwoods",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Darkwoods),
+                next: [
+                    Speech(text_key: "npc.galen.q1.response.darkwoods"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.galen.q1.answer.cities",
+                flags_required: [],
+                flags_set: [],
+                alignment_grant: Some(Cities),
+                next: [
+                    Speech(text_key: "npc.galen.q1.response.cities"),
+                ],
+            ),
+        ]),
+        Speech(text_key: "npc.galen.farewell"),
+    ],
+)

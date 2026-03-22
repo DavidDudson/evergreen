@@ -4,6 +4,7 @@ use dialog::locale::AVAILABLE_LOCALES;
 use models::game_states::GameState;
 use models::settings::GameSettings;
 
+use crate::fonts::UiFont;
 use crate::theme;
 
 // ---------------------------------------------------------------------------
@@ -100,7 +101,7 @@ pub enum SettingsOrigin {
 // Setup
 // ---------------------------------------------------------------------------
 
-pub fn setup(mut commands: Commands, settings: Res<GameSettings>) {
+pub fn setup(mut commands: Commands, settings: Res<GameSettings>, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
             SettingsScreen,
@@ -117,27 +118,28 @@ pub fn setup(mut commands: Commands, settings: Res<GameSettings>) {
         ))
         .id();
 
+    let font = fonts.0.clone();
     commands.spawn((
         Text::new("Settings"),
         TextColor(theme::TITLE),
-        TextFont { font_size: TITLE_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
         Node { margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)), ..Node::default() },
         ChildOf(root),
     ));
 
-    spawn_section_header(&mut commands, root, "AUDIO");
+    spawn_section_header(&mut commands, root, "AUDIO", font.clone());
     spawn_volume_row(&mut commands, root, "Master", VolumeDisplay::Master,
-        VolumeButton::MasterDown, VolumeButton::MasterUp, settings.master_volume);
+        VolumeButton::MasterDown, VolumeButton::MasterUp, settings.master_volume, font.clone());
     spawn_volume_row(&mut commands, root, "BGM", VolumeDisplay::Bgm,
-        VolumeButton::BgmDown, VolumeButton::BgmUp, settings.bgm_volume);
+        VolumeButton::BgmDown, VolumeButton::BgmUp, settings.bgm_volume, font.clone());
     spawn_volume_row(&mut commands, root, "SFX", VolumeDisplay::Sfx,
-        VolumeButton::SfxDown, VolumeButton::SfxUp, settings.sfx_volume);
+        VolumeButton::SfxDown, VolumeButton::SfxUp, settings.sfx_volume, font.clone());
 
-    spawn_section_header(&mut commands, root, "VIDEO");
-    spawn_fullscreen_row(&mut commands, root, settings.fullscreen);
+    spawn_section_header(&mut commands, root, "VIDEO", font.clone());
+    spawn_fullscreen_row(&mut commands, root, settings.fullscreen, font.clone());
 
-    spawn_section_header(&mut commands, root, "LANGUAGE");
-    spawn_lang_row(&mut commands, root, &settings.language);
+    spawn_section_header(&mut commands, root, "LANGUAGE", font.clone());
+    spawn_lang_row(&mut commands, root, &settings.language, font.clone());
 
     // Bottom nav row
     let nav = commands.spawn((
@@ -150,9 +152,9 @@ pub fn setup(mut commands: Commands, settings: Res<GameSettings>) {
         ChildOf(root),
     )).id();
 
-    spawn_nav_btn(&mut commands, nav, KeybindsNavButton, "Key Bindings", theme::BUTTON_BG);
-    spawn_nav_btn(&mut commands, nav, SettingsResetButton, "Reset Defaults", theme::DIALOG_CHOICE_BG);
-    spawn_nav_btn(&mut commands, nav, SettingsBackButton, "Back", theme::DIALOG_CHOICE_BG);
+    spawn_nav_btn(&mut commands, nav, KeybindsNavButton, "Key Bindings", theme::BUTTON_BG, font.clone());
+    spawn_nav_btn(&mut commands, nav, SettingsResetButton, "Reset Defaults", theme::DIALOG_CHOICE_BG, font.clone());
+    spawn_nav_btn(&mut commands, nav, SettingsBackButton, "Back", theme::DIALOG_CHOICE_BG, font);
 }
 
 // ---------------------------------------------------------------------------
@@ -316,21 +318,21 @@ fn lang_display_name(code: &str) -> &str {
         .unwrap_or(code)
 }
 
-fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str) {
+fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str, font: Handle<Font>) {
     let row = spawn_row(commands, parent);
     commands.spawn((
         Text::new("Language"),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font_size: LABEL_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
         Node { flex_grow: 1.0, ..Node::default() },
         ChildOf(row),
     ));
-    spawn_step_btn(commands, row, LangButton::Prev, "<");
+    spawn_step_btn(commands, row, LangButton::Prev, "<", font.clone());
     commands.spawn((
         LangDisplay,
         Text::new(lang_display_name(current_code)),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font_size: VALUE_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: VALUE_FONT_SIZE_PX, ..default() },
         Node {
             min_width: Val::Px(VALUE_MIN_WIDTH_PX * 3.0),
             justify_content: JustifyContent::Center,
@@ -338,7 +340,7 @@ fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str) {
         },
         ChildOf(row),
     ));
-    spawn_step_btn(commands, row, LangButton::Next, ">");
+    spawn_step_btn(commands, row, LangButton::Next, ">", font);
 }
 
 fn adjust_volume(settings: &mut GameSettings, btn: VolumeButton) {
@@ -352,11 +354,11 @@ fn adjust_volume(settings: &mut GameSettings, btn: VolumeButton) {
     }
 }
 
-fn spawn_section_header(commands: &mut Commands, parent: Entity, label: &str) {
+fn spawn_section_header(commands: &mut Commands, parent: Entity, label: &str, font: Handle<Font>) {
     commands.spawn((
         Text::new(label),
         TextColor(theme::ACCENT),
-        TextFont { font_size: SECTION_FONT_SIZE_PX, ..default() },
+        TextFont { font, font_size: SECTION_FONT_SIZE_PX, ..default() },
         Node {
             margin: UiRect::new(
                 Val::ZERO, Val::ZERO,
@@ -376,21 +378,22 @@ fn spawn_volume_row(
     btn_down: VolumeButton,
     btn_up: VolumeButton,
     value: u8,
+    font: Handle<Font>,
 ) {
     let row = spawn_row(commands, parent);
     commands.spawn((
         Text::new(label),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font_size: LABEL_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
         Node { flex_grow: 1.0, ..Node::default() },
         ChildOf(row),
     ));
-    spawn_step_btn(commands, row, btn_down, "-");
+    spawn_step_btn(commands, row, btn_down, "-", font.clone());
     commands.spawn((
         display_marker,
         Text::new(format!("{value}")),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font_size: VALUE_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: VALUE_FONT_SIZE_PX, ..default() },
         Node {
             min_width: Val::Px(VALUE_MIN_WIDTH_PX),
             justify_content: JustifyContent::Center,
@@ -398,15 +401,15 @@ fn spawn_volume_row(
         },
         ChildOf(row),
     ));
-    spawn_step_btn(commands, row, btn_up, "+");
+    spawn_step_btn(commands, row, btn_up, "+", font);
 }
 
-fn spawn_fullscreen_row(commands: &mut Commands, parent: Entity, fullscreen: bool) {
+fn spawn_fullscreen_row(commands: &mut Commands, parent: Entity, fullscreen: bool, font: Handle<Font>) {
     let row = spawn_row(commands, parent);
     commands.spawn((
         Text::new("Fullscreen"),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font_size: LABEL_FONT_SIZE_PX, ..default() },
+        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
         Node { flex_grow: 1.0, ..Node::default() },
         ChildOf(row),
     ));
@@ -429,7 +432,7 @@ fn spawn_fullscreen_row(commands: &mut Commands, parent: Entity, fullscreen: boo
             FullscreenDisplay,
             Text::new(if fullscreen { "On" } else { "Off" }),
             TextColor(theme::DIALOG_SPEAKER),
-            TextFont { font_size: VALUE_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: VALUE_FONT_SIZE_PX, ..default() },
         ));
 }
 
@@ -449,7 +452,13 @@ fn spawn_row(commands: &mut Commands, parent: Entity) -> Entity {
     )).id()
 }
 
-fn spawn_step_btn(commands: &mut Commands, parent: Entity, marker: impl Component, label: &str) {
+fn spawn_step_btn(
+    commands: &mut Commands,
+    parent: Entity,
+    marker: impl Component,
+    label: &str,
+    font: Handle<Font>,
+) {
     commands
         .spawn((
             marker,
@@ -468,7 +477,7 @@ fn spawn_step_btn(commands: &mut Commands, parent: Entity, marker: impl Componen
         .with_child((
             Text::new(label),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font_size: STEP_BTN_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: STEP_BTN_FONT_SIZE_PX, ..default() },
         ));
 }
 
@@ -478,6 +487,7 @@ fn spawn_nav_btn(
     marker: impl Component,
     label: &str,
     bg: bevy::prelude::Color,
+    font: Handle<Font>,
 ) {
     commands
         .spawn((
@@ -497,6 +507,6 @@ fn spawn_nav_btn(
         .with_child((
             Text::new(label),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font_size: NAV_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: NAV_FONT_SIZE_PX, ..default() },
         ));
 }

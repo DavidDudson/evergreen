@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use models::alignment::PlayerAlignment;
 use models::game_states::GameState;
 use models::settings::GameSettings;
 
@@ -31,7 +32,8 @@ impl Plugin for DialogPlugin {
         app.init_resource::<DialogueFlags>()
             .init_resource::<LoreBook>()
             .init_resource::<LocaleMap>()
-            .init_resource::<DialogueRunner>();
+            .init_resource::<DialogueRunner>()
+            .init_resource::<PlayerAlignment>();
 
         // Messages
         app.add_message::<StartDialogue>()

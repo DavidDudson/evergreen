@@ -173,4 +173,57 @@
     "ui.lore.filter.all": "All",
     "ui.main_menu.lore": "Lore",
     "ui.interact.prompt": "[E] Speak",
+
+    // -------------------------------------------------------------------------
+    // Storyteller Galen
+    // -------------------------------------------------------------------------
+    "npc.galen.name": "Storyteller Galen",
+    "npc.galen.hello.0": "Ah! Briar Rose. Awake, breathing, and apparently fond of morning walks.",
+    "npc.galen.hello.1": "Welcome back to the waking world. I have been saving a question for you.",
+    "npc.galen.farewell": "Fascinating. I shall add that to the record.",
+
+    // Q1 — favourite ice cream
+    "npc.galen.q1.question": "A trivial question first — purely for science. What is your favourite flavour of ice cream?",
+    "npc.galen.q1.answer.greenwoods": "Wildberry — I gather them fresh from the glade each morning.",
+    "npc.galen.q1.answer.darkwoods": "Nightshade and dark honey. An acquired taste, but worth the effort.",
+    "npc.galen.q1.answer.cities": "Vanilla honeycomb. Straight from the market stalls, no foraging required.",
+    "npc.galen.q1.response.greenwoods": "Ah — a soul who finds joy in the forest's small gifts. The glades remember those who notice them.",
+    "npc.galen.q1.response.darkwoods": "Bold choices reveal bold hearts. The forest respects creatures who are honest about their appetites.",
+    "npc.galen.q1.response.cities": "Practical and pleasurable in equal measure. The city does love something it can weigh and exchange.",
+
+    // Q2 — wounded stranger
+    "npc.galen.q2.question": "You are walking a forest path and come across a wounded stranger, collapsed and barely conscious. What do you do?",
+    "npc.galen.q2.answer.greenwoods": "Tend to them here, with whatever the forest offers.",
+    "npc.galen.q2.answer.darkwoods": "Help them — but make clear you expect something in return.",
+    "npc.galen.q2.answer.cities": "Bind the wound and carry them to the nearest settlement.",
+    "npc.galen.q2.response.greenwoods": "The forest provides for those who stop to notice. That instinct — to reach for what is near rather than what is convenient — the glades approve.",
+    "npc.galen.q2.response.darkwoods": "Honest about the exchange. Power is power, whether coin or favour. At least you do not pretend otherwise.",
+    "npc.galen.q2.response.cities": "You trust the system to finish what you start. There is something steadying in that.",
+
+    // Q3 — hero's calling
+    "npc.galen.q3.question": "A weightier one. What do you believe calls a person to become a hero in the first place?",
+    "npc.galen.q3.answer.greenwoods": "The land itself. You do not choose the call — it chooses you.",
+    "npc.galen.q3.answer.darkwoods": "The refusal to accept that some things simply cannot be changed.",
+    "npc.galen.q3.answer.cities": "Duty. An oath sworn to the people who cannot protect themselves.",
+    "npc.galen.q3.response.greenwoods": "Yes. The roots were pulling at you long before you had a name for it. That is not fate — that is belonging.",
+    "npc.galen.q3.response.darkwoods": "A defiance that rebuilds the world by refusing to accept its shape. Dangerous. Magnificent. I have told that story before.",
+    "npc.galen.q3.response.cities": "Duty held long enough becomes love. That is one of the oldest stories I know, and it never loses its truth.",
+
+    // Q4 — fork in the road
+    "npc.galen.q4.question": "Your path leads east. A village lies north, endangered and calling for aid. You cannot do both. Which pulls you?",
+    "npc.galen.q4.answer.greenwoods": "The forest will show me a way to serve both, if I listen.",
+    "npc.galen.q4.answer.darkwoods": "East. The greater mission saves more in the end.",
+    "npc.galen.q4.answer.cities": "North. The village is real. The eastern quest is not yet.",
+    "npc.galen.q4.response.greenwoods": "And sometimes it does. The forest is not cruel — it rarely asks the impossible. But sometimes the path is simply wider than you thought.",
+    "npc.galen.q4.response.darkwoods": "Cold logic, and not wrong. Every hero I have recorded has made that choice at least once. The ones who chose the greater mission — they carry it quietly.",
+    "npc.galen.q4.response.cities": "The concrete over the abstract. The bird in hand. The village can see you. That matters more than most acknowledge.",
+
+    // Q5 — great power
+    "npc.galen.q5.question": "Last one. You hold, for one moment, a power great enough to reshape the world. What do you do with it?",
+    "npc.galen.q5.answer.greenwoods": "Return it to the forest — let it spread back into every root that needs it.",
+    "npc.galen.q5.answer.darkwoods": "Use it. Break what is broken beyond mending. Build what cannot be built otherwise.",
+    "npc.galen.q5.answer.cities": "Share it through every institution the realm has built to hold such things safely.",
+    "npc.galen.q5.response.greenwoods": "To give it back rather than keep it — that is a rare answer. The Greenwood has been waiting a long time for someone who would say that.",
+    "npc.galen.q5.response.darkwoods": "The boldest answer, and the most honest. Power is a tool and a test. You chose to use it. That has weight.",
+    "npc.galen.q5.response.cities": "To trust that the structures of civilisation can hold power without breaking — that is not naive. That is an act of faith in the city, and faith is a kind of love.",
 }

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::fonts::UiFont;
 use crate::settings_screen::SettingsOrigin;
 use crate::theme;
 
@@ -22,7 +23,7 @@ pub(crate) struct ResumeButton;
 #[derive(Component)]
 pub(crate) struct SettingsButton;
 
-pub fn setup(mut commands: Commands) {
+pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
             PauseMenu,
@@ -44,7 +45,7 @@ pub fn setup(mut commands: Commands) {
     commands.spawn((
         Text::new("Paused"),
         TextColor(theme::TITLE),
-        TextFont { font_size: TITLE_FONT_SIZE_PX, ..default() },
+        TextFont { font: fonts.0.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
         Node {
             margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
             ..Node::default()
@@ -52,8 +53,8 @@ pub fn setup(mut commands: Commands) {
         ChildOf(root),
     ));
 
-    spawn_button(&mut commands, root, ResumeButton, "Resume");
-    spawn_button(&mut commands, root, SettingsButton, "Settings");
+    spawn_button(&mut commands, root, ResumeButton, "Resume", fonts.0.clone());
+    spawn_button(&mut commands, root, SettingsButton, "Settings", fonts.0.clone());
 }
 
 pub fn handle_resume(
@@ -97,6 +98,7 @@ fn spawn_button(
     parent: Entity,
     marker: impl Component,
     label: &str,
+    font: Handle<Font>,
 ) {
     commands
         .spawn((
@@ -120,6 +122,6 @@ fn spawn_button(
         .with_child((
             Text::new(label),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font_size: BUTTON_FONT_SIZE_PX, ..default() },
+            TextFont { font, font_size: BUTTON_FONT_SIZE_PX, ..default() },
         ));
 }
