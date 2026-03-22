@@ -232,7 +232,7 @@ You may run these commands as part of this skill:
 - `./scripts/wiki_push.sh push "<title>" "<file>"` — **only after approval**
 - `pandoc` — local markdown conversion (no network)
 - `jq` — local JSON parsing (no network)
-- `op item get "Evergreen Wiki Bot" --field <field> --reveal | tr -d '[:space:]'` — credential retrieval (the `--reveal` flag is required; strip whitespace)
+- `op item get "Evergreen Wiki Bot" --field <field> | tr -d '[:space:]'` — credential retrieval (strip whitespace)
 - `python3` / `pip install pywikibot` / `pip install mwclient` — for complex tasks
 
 You may **not** call the MediaWiki write API (`action=edit`, etc.) via raw
