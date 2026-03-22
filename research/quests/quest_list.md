@@ -157,13 +157,207 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ## Completed Quests
 
-| Quest | Resolved | Session |
-|-------|----------|---------|
-| Ghoul Fever cure | Antidote brewed; Bigby cured | Sessions 1–3 |
-| Thori Black investigation | Found dead; Crooked Men responsible | Sessions 1–5 |
-| Devil of Newgate mystery | Jacob Hilton identified and stopped | Sessions 13–15 |
-| Beast King deposed | Carlos Vanth defeated; Salasarglumm freed | Sessions 23–32 |
-| Grimordia vault | Merlin's four items recovered | Sessions 48–52 |
-| Bloody Mary freed | Freed with Clarent as key; boons granted | Session 57 |
-| Phoenix Egg protected | Hatched; bird named Darian | Session 60 |
-| Darian Sand death | Mourned and honoured; dragon phoenix named for him | Sessions 41–42 |
+These are resolved story threads from the campaign — fully documented so they can be adapted as playable quests in Evergreen.
+
+---
+
+### C1. The Ghoul Fever Cure
+**Sessions:** 1–3
+**Location:** Lowmarsh, the Greenwoods
+
+**Setup:** A Ghoul Fever outbreak has spread from the Greenwoods into the city of Lowmarsh, where massacred Camlin soldiers have been found at Hilltop Heath. **Matron Simone** at the Sage Hospice urgently needs a live ghoul to study in order to brew a cure. The party is offered their freedom from Lowmarsh jail in exchange for capturing one.
+
+**Beats:**
+1. Enter the ancient Greenwoods and find evidence of a massacre at Hilltop Heath — organs removed from corpses with surgical precision by the **Deer-Masked Stranger** (Nimue in disguise)
+2. Fight a pack of ghouls; one party member is **bitten and infected** with Ghoul Fever
+3. Capture a live ghoul and bring it back to Matron Simone (or gather enough samples)
+4. Work with Matron Simone and the infected party member to **brew the antidote** — involves identifying components from the goblin tunnels beneath the city
+5. Administer the cure; the infected character recovers
+
+**Complications:** The Deer-Masked Stranger may be encountered again — she is not hostile if approached calmly, but flees when confronted, and she was *also* collecting something from the corpses. What was she taking, and why?
+
+**Reward:** Freedom from Lowmarsh jail; silver from the People's Committee; Matron Simone becomes an ally and provisional Medicaster licensor.
+
+**Key NPCs:** Matron Simone, Lewis Short, Officer Bradley
+**Foreshadowing:** The Deer-Masked Stranger (Nimue) is introduced here. The Sunderance is first spoken of.
+
+---
+
+### C2. The Thori Black Investigation
+**Sessions:** 1–5
+**Location:** Lowmarsh
+
+**Setup:** **Thori Black**, the city Treasurer of Lowmarsh, has gone missing. **Lewis Short** (Chairman) hires the party to find him. Thori's living quarters are concealed by a powerful illusion cast by an unknown fey — three weeks *before* he disappeared.
+
+**Beats:**
+1. Investigate Thori's chambers; a spell conceals the ransacked room (requires Cruthic Coven magic or dispel to break)
+2. Discover burglary tools and armed figures hidden at the **"Mouthful" (Fool's House)** across the street — imposter followers of the Fool
+3. A **dwarf assassin** hired by the Crooked Men ambushes the party and attempts to steal vault keys; she stabs a party member and flees
+4. Recover three vault keys and open the treasury
+5. Find Thori Black dead inside — killed by severe **psychic trauma** while malnourished; a **forged confession** blaming him for stealing from the Crooked Men is planted on his body; a strange **cocoon** is also in the vault
+
+**Resolution:** Thori was framed and killed by the **Crooked Men** to cover up their theft from the city treasury. The illusion on his room was cast by a fey working for them.
+
+**Complications:** The cocoon in the vault is unexplained. The Crooked Men are still active and dangerous. The "Fool Seller Out" imposter throws a smoke bomb and escapes.
+
+**Reward:** Vindication of Thori Black's name; political favour with Lewis Short; access to city resources.
+
+**Key NPCs:** Lewis Short, Matron Simone, Thori Black (found dead), the Crooked Men (faction)
+
+---
+
+### C3. The Devil of Newgate
+**Sessions:** 13–15
+**Location:** Oronia (coastal city under Red Hand blockade)
+
+**Setup:** Six or seven victims in Oronia have been killed by something with long, bony hands — dubbed the **"Devil of Newgate"** by locals. The city is already stressed by a Red Hand blockade. The party discovers the Order of the Eleventh Eye has a secret presence in the city, and there is a mirror shard aboard a nearby ship.
+
+**Beats:**
+1. Investigate the murder scenes; bodies show wounds consistent with extremely long, bony hands
+2. Identify the suspect: **Dr Jacob Hilton**, a respected physician who has been secretly consuming mutagens — transforming himself into something monstrous
+3. Uncover his connection to Bloody Mary via a mirror shard in his possession; he has been receiving instructions through it
+4. Confront and stop Hilton during one of his transformations
+5. Decide what to do with the mirror shard and the knowledge of Mary's communications
+
+**Resolution:** Hilton is stopped (dead or arrested). The mirror shard is recovered.
+
+**Complications:** Bloody Mary can speak through any mirror — even after Hilton is stopped, she may still be listening. The Order of the Eleventh Eye is watching events in Oronia.
+
+**Reward:** Gratitude from the citizens of Oronia; the mirror shard (or information about it); first direct encounter with Bloody Mary's reach.
+
+**Key NPCs:** Dr Jacob Hilton (the Devil of Newgate), Bloody Mary (via mirror), the Order of the Eleventh Eye
+**Foreshadowing:** The Antiseeds and their connection to corruption are hinted at.
+
+---
+
+### C4. The Beast of Salasarglumm
+**Sessions:** 23–32
+**Location:** Salasarglumm (forest glade)
+
+**Setup:** **Salasarglumm** is a once-peaceful forest glade now ruled by the **Beast King** — **Carlos Vanth**, a former Ersatz University student who used a botched polymorph spell and three stolen magic items (the Ring of Objectification, Staff of Beguiling, and the Looking Glass) to transform himself into a monster and take control. The party must infiltrate his court, win over three vassal barons, and depose him.
+
+**Beats:**
+1. Arrive at Salasarglumm and attend the Beast King's court; meet **Anastasia Tremaine** (the Beast King's ward, her memories erased) and **Lady Tremaine** (attending as "Queen Regent of Cindershire")
+2. Discover that **Bloody Mary** is pulling the Beast King's strings — overheard conversation: *"honour his bargain"*
+3. Win over the three vassal Barons:
+   - **Baron Drazag** (ogre): hunt a giant boar to prove worth; arm-wrestle with consequences (Drazag loses his life to Morgana's crows shortly after)
+   - Second and third barons via their own subplot tests
+4. **The Beast King's Ball**: Queen Maeve arrives; chaos erupts; the party passes through the Looking Glass
+5. Final confrontation — the Beast King is defeated and Salasarglumm is freed
+
+**Resolution:** Carlos Vanth is defeated. The Ring of Objectification, Staff of Beguiling, and Looking Glass are in the party's hands (or debated). Anastasia's situation remains unresolved.
+
+**Complications:**
+- The **Looking Glass** can see the future, communicate, and holds a fragment of Arcadia — destroying, keeping, or guarding it are all debated
+- Lady Tremaine ages a party member 20 years during a dance
+- Queen Maeve's attendance reveals the Silverheart Court's interest in Salasarglumm
+- A party member loses a limb (consequences at the GM's discretion)
+
+**Reward:** Salasarglumm freed; three magic items recovered; key lore about Bloody Mary and the Silverheart Court.
+
+**Key NPCs:** Carlos Vanth (the Beast King), Anastasia Tremaine, Lady Tremaine, Bloody Mary, Queen Maeve, Baron Drazag, Valassa Farsight
+
+---
+
+### C5. The Grimordia Vault
+**Sessions:** 48–52
+**Location:** The Darkwoods, Grimordia (ruins of the Arrnon Empire capital)
+
+**Setup:** **Grimordia** was once a shining beacon of tolerance and power — now it is a city of ruins, its people frozen in stone, a black dragon circling overhead. Deep in its vault lie **Merlin's four items**: the Dragon Egg, Bracers of the Elements, Ring of Peerless Apprehension, and Spectral Key. Bloody Mary wants at least one of them in exchange for safe passage and political leverage.
+
+**Beats:**
+1. Cross through the Darkwoods of Pegorath; navigate dangers and deal with Mary's demands for one of Merlin's items
+2. Enter Grimordia: the ruins are eerie, populated by stone-frozen citizens mid-action; a black dragon patrols above
+3. Avoid or distract the dragon; infiltrate the vault
+4. Navigate the vault's protections (traps, guardians, or puzzles tied to Merlin's legacy)
+5. Recover the four items; negotiate what to give Mary (if anything) vs. what to keep
+6. Escape Grimordia through a race to a well of power
+
+**Resolution:** The party escapes with Merlin's items. The black dragon may be overcome, fled, or bargained with. The Ring of Peerless Apprehension may have already been traded to Mary (Drizella did this to get mirror eye powers).
+
+**Complications:**
+- The Spectral Key is described as being able to unlock *"a terror hundreds of years old"* — Mary truly wanted this, not the Ring
+- Mary can see through Drizella's mirror eye at any time
+- The frozen citizens of Grimordia — what happened to them, and is it reversible?
+
+**Reward:** Merlin's four artefacts; safe passage through the Darkwoods; significant lore about the Arrnon Empire and Bloody Mary's history.
+
+**Key NPCs:** Bloody Mary, Dean Marikosa (background), Merlin (absent but represented by his items)
+
+---
+
+### C6. Freeing Bloody Mary
+**Session:** 57
+**Location:** Everdrift, the Mirror of Aretas
+
+**Setup:** The party is drawn into the **Mirror of Aretas** when **Equinox** (a construct made by Queen Maeve in Mordred's likeness) attempts to summon Bloody Mary. Inside the Mirror, the party finds themselves in the Imperial Throne Room of Grimordia — and Bloody Mary, **chained to the floor**.
+
+Mary reveals that Equinox is a hollow construct and cannot be reasoned with. She proposes a bargain: if Mordred unlocks her prison, she will grant boons and will *not* seek revenge on those who imprisoned her or their descendants.
+
+**Beats:**
+1. Navigate the Mirror world (Imperial Grimordia): a distorted reflection of the throne room, with Mary chained at its centre
+2. Mary explains her situation and Equinox's nature; the party must decide whether to trust her
+3. Mordred uses **Clarent/Caledfwlch** — the key carved from the same metal as the Mirror — to unlock her chains
+4. Mary is freed; her **Hand of Sycorax** is restored; she grants boons to the party:
+   - Briar: Grimordia's protection
+   - Bigby: a mirror showing his brother
+   - Mordred: she absorbs a fragment of his pure light
+5. A dark deer with white shining eyes briefly appears as Mary vanishes (Horned King harbinger)
+6. The party re-emerges; Equinox (construct) flees and is destroyed by Mab and Titania
+
+**Resolution:** Bloody Mary is freed after ~100 years. She is dangerous but bound by her word. The Hand of Sycorax is hers again.
+
+**Complications:**
+- Mary is freed — she is not a villain who has reformed, she is a power who was wrongly imprisoned and is still ruthless
+- The dark deer suggests her freedom may be tied to the Horned King's return
+- Equinox's remains (a familiar gauntlet) are left behind — it carries Queen Maeve's voice
+
+**Reward:** Boons from Bloody Mary; Equinox's defeat exposes Maeve's constructs; Caledfwlch's true nature as the Excalibur-key is confirmed.
+
+**Key NPCs:** Bloody Mary, Equinox, Mordred, Mab, Titania
+
+---
+
+### C7. The Phoenix Egg
+**Sessions:** 56–60
+**Location:** Everdrift (the Rattling Tree), Oz
+
+**Setup:** A **Phoenix Egg** rests in the **Rattling Tree** at Everdrift, protected by the Summer Court. Agents of the Silverheart Court — **Master Dobbs**, **Ser Arbour**, and a glamoured spy called **Puck** (actually Chadwick) — attempt to steal or destroy it during the court celebrations.
+
+**Beats:**
+1. Defend the Rattling Tree from Silverheart Court infiltrators during the festival
+2. The tree is destroyed in the fight; the Phoenix Egg falls from the branches
+3. Mordred catches the falling egg — it burns his hands severely but he holds on
+4. The egg survives; it is kept safe through the journey to Oz and back
+
+**Resolution:** The Phoenix Egg hatches in Oz after the party returns from being partly dead. The bird is named **Darian** in memory of the fallen party member Darian Sand.
+
+**Complications:**
+- Mordred's burned hands; the egg's heat is a physical cost
+- The spy "Puck" was glamoured — a Silverheart Court infiltrator at the heart of Everdrift
+
+**Reward:** A phoenix companion (Darian); proof of the Silverheart Court's reach into the Fey courts; emotional closure for Darian Sand's death.
+
+**Key NPCs:** Mordred, Briar, the phoenix Darian; Chadwick/Puck (antagonist); Darian Sand (honoured)
+
+---
+
+### C8. The Death of Darian Sand
+**Sessions:** 41–42
+**Location:** Pebblecreek (the docks)
+
+*Note: This is not a traditional quest — it is a death scene. Included for its importance as a playable moment and because it unlocks the Briar Rose storyline.*
+
+**Setup:** The party has been investigating antiseed smuggling through Pebblecreek's docks, traced to the **Hogson Brothers** and their shipping network. A battle erupts.
+
+**Beats:**
+1. Battle at the docks; the Silverheart Court's presence is revealed (**Lady Piques**, **Peter Hogson**)
+2. **Darian Sand** is killed in the fighting
+3. Mordred, in grief and rage, uses **Caliburn** to stab a chest containing an antiseed — a **silver dragon of light** erupts from his hands into the sky; the Horned King's eyes stare back from the Sun Spire
+4. The party follows Ida Montague's hatpin teleport to a greenhouse in the Sun Spire
+5. In the greenhouse: a fountain of antiseeds and a **cocoon of thorny briars** — inside is **Briar Rose**, sleeping; the party wakes her
+
+**Resolution:** Darian Sand is dead. Briar Rose joins the party. The antiseed network is confirmed. The Horned King's connection to Pebblecreek is established.
+
+**Key NPCs:** Darian Sand (dies), Briar Rose (introduced), Lady Piques, Peter Hogson, Flycatcher (informant), Ida Montague
+**Note for game design:** This quest ending — the death of a beloved character followed immediately by the awakening of a new one — is a deliberate narrative pivot. The cocoon in Lowmarsh vault (Quest C2) and this one are connected; Briar was being moved into position long before the party arrived.
