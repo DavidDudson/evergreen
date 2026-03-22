@@ -52,6 +52,7 @@ This project has custom skills to accelerate common tasks. Use them proactively:
 
 - **`/create-dialog`** — Add dialogue scripts, barks, or NPC `Talker` entities. Covers locale keys, RON asset format, flag-gated branching, and `BarkPool` setup.
 - **`/bevy-18`** — Bevy 0.18 API reference. **Use this skill before writing any Bevy system, component, event, asset loader, or plugin.** Covers renamed APIs (`Message` instead of `Event`, `MessageReader`/`MessageWriter`, `ChildOf`, etc.), WASM patterns, and common pitfalls.
+- **`/wiki-update`** — Push research files to the EvergreenNova fandom wiki. **Use this skill for any wiki write operation.** Enforces three rules: (1) edits to human-owned pages go under `Unreviewed Bot Recommendations`; (2) new bot-created pages get a warning banner; (3) every edit requires explicit manual approval before the API is called.
 
 ### Keybinds
 
