@@ -53,6 +53,8 @@ This project has custom skills to accelerate common tasks. Use them proactively:
 - **`/create-dialog`** — Add dialogue scripts, barks, or NPC `Talker` entities. Covers locale keys, RON asset format, flag-gated branching, and `BarkPool` setup.
 - **`/bevy-18`** — Bevy 0.18 API reference. **Use this skill before writing any Bevy system, component, event, asset loader, or plugin.** Covers renamed APIs (`Message` instead of `Event`, `MessageReader`/`MessageWriter`, `ChildOf`, etc.), WASM patterns, and common pitfalls.
 - **`/wiki-update`** — Push research files to the EvergreenNova fandom wiki. **Use this skill for any wiki write operation.** Enforces three rules: (1) edits to human-owned pages go under a `Bot Conjecture` section (treated as unverified); (2) new bot-created pages get a warning banner; (3) every edit requires explicit manual approval before the API is called. Also documents pywikibot/mwclient for complex bulk operations.
+- **`/wiki-enrich`** — Enrich an existing wiki character page with transcript-sourced content. Fetches the existing page, analyses raw transcripts for the character, and appends new History, Quotes, Relationships, Birth/Death, and Appearances sections under `Bot Conjecture`. Never replaces existing content. Includes YouTube timestamps for key moments.
+- **`/wiki-create-character`** — Create a new character page on the wiki from session transcripts and research files. For characters that don't have a wiki page yet. Uses `{{Bot-created}}` banner, `{{Evergreen_NPC}}` infobox, and full page structure (Description, History, Relationships, Quotes, Appearances).
 
 ### Keybinds
 
