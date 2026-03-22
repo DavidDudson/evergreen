@@ -7,6 +7,12 @@ Sessions 67–70 are null / unpublished as of the last scrape.
 
 ## Arc 1: Lowmarsh (Sessions 1–6)
 **Dates:** Aug–Nov 2023
+**Session 1 YouTube:** [Session 1](https://www.youtube.com/watch?v=veYpJwwx2yQ)
+**Session 2 YouTube:** [Session 2](https://www.youtube.com/watch?v=mPq_jE13bDM)
+**Session 3 YouTube:** [Session 3](https://www.youtube.com/watch?v=z2aL7-MmevY)
+**Session 4 YouTube:** [Session 4](https://www.youtube.com/watch?v=I9ew-buXkOw)
+**Session 5 YouTube:** [Session 5](https://www.youtube.com/watch?v=LAzA6OW_44I)
+**Session 6 YouTube:** [Session 6](https://www.youtube.com/watch?v=7oT9Uo1pdOw)
 
 Six PCs independently arrive in Lowmarsh, a democratically governed city near the Mercia/Gribsby border. They are assembled via a prisoner deal: freedom in exchange for capturing a live ghoul to help brew a cure for Ghoul Fever spreading from the Greenwoods.
 
@@ -24,6 +30,14 @@ Key events:
 
 ## Arc 2: The Winter Express / Rymes (Sessions 7–12)
 **Dates:** Dec 2023 – Mar 2024
+**Session 7 YouTube:** [Session 7](https://www.youtube.com/watch?v=-QBsTQihF7s)
+**Session 8 YouTube:** [Session 8](https://www.youtube.com/watch?v=c0GpJkrBhxU)
+**Session 9 YouTube:** [Session 9](https://www.youtube.com/watch?v=FhOyfyV0nAo)
+**Session 10 YouTube:** [Session 10](https://www.youtube.com/watch?v=5LvAqMk7hK0)
+**Session 11 YouTube:** [Session 11](https://www.youtube.com/watch?v=u9AJ43VXt2Y)
+**Session 11 Transcript:** [[Session 11/Transcript]]
+**Session 12 YouTube:** [Session 12](https://www.youtube.com/watch?v=Zw8FNDYBzj8)
+**Session 12 Transcript:** [[Session 12/Transcript]]
 
 The party boards the **Winter Express** (magical train through the Greenwoods) and arrives in **Rymes**, a major city in the Gribsby region. Rymes is home to Ersatz University and, unknown to all, the Tomb of the Horned King.
 
@@ -42,6 +56,18 @@ Key events:
 
 ## Arc 3: Oronia (Sessions 13–18)
 **Dates:** Jun–Sep 2024
+**Session 13 YouTube:** [Session 13](https://www.youtube.com/watch?v=Wzndc9Zwd0M)
+**Session 13 Transcript:** [[Session 13/Transcript]]
+**Session 14 YouTube:** [Session 14](https://www.youtube.com/watch?v=2cnWELGPJDk)
+**Session 14 Transcript:** [[Session 14/Transcript]]
+**Session 15 YouTube:** [Session 15](https://www.youtube.com/watch?v=gqOvjB-pmtY)
+**Session 15 Transcript:** [[Session 15/Transcript]]
+**Session 16 YouTube:** [Session 16](https://www.youtube.com/watch?v=gqxo2tnzOok)
+**Session 16 Transcript:** [[Session 16/Transcript]]
+**Session 17 YouTube:** [Session 17](https://www.youtube.com/watch?v=jfKxc0Zu1Nc)
+**Session 17 Transcript:** [[Session 17/Transcript]]
+**Session 18 YouTube:** [Session 18](https://www.youtube.com/watch?v=F6ZdfZQgJ9s)
+**Session 18 Transcript:** [[Session 18/Transcript]]
 
 The party reaches the coastal city of **Oronia**, which is under **Red Hand** blockade.
 
@@ -56,6 +82,12 @@ Key events:
 
 ## Arc 4: Sea / Jolly Roger / Goback (Sessions 19–21)
 **Dates:** Oct 2024
+**Session 19 YouTube:** [Session 19](https://www.youtube.com/watch?v=b4JVEuFwArw)
+**Session 19 Transcript:** [[Session 19/Transcript]]
+**Session 20 YouTube:** [Session 20](https://www.youtube.com/watch?v=-r2dwnCAqnE)
+**Session 20 Transcript:** [[Session 20/Transcript]]
+**Session 21 YouTube:** [Session 21](https://www.youtube.com/watch?v=C16pvJeutbc)
+**Session 21 Transcript:** [[Session 21/Transcript]]
 
 Mutiny on the *Hispaniola* leads to it being swallowed by the **Jolly Roger** (Captain Hook's flying ship). The party meets **Captain Hook**, who softens when he learns Nik is aboard.
 
@@ -70,6 +102,22 @@ Key events:
 
 ## Arc 5: Salasarglumm (Sessions 22–33)
 **Dates:** Nov 2024 – Mar 2025
+**Session 22 YouTube:** [Session 22](https://www.youtube.com/watch?v=Od8doiW5nTQ)
+**Session 22 Transcript:** [[Session 22/Transcript]]
+**Session 23 YouTube:** [Session 23](https://www.youtube.com/watch?v=ACHeCfKW5cg)
+**Session 23 Transcript:** [[Session 23/Transcript]]
+**Session 25 YouTube:** [Session 25](https://www.youtube.com/watch?v=raCvBubSybQ)
+**Session 25 Transcript:** [[Session 25/Transcript]]
+**Session 26 YouTube:** [Session 26](https://www.youtube.com/watch?v=Q8xDIC02Zzc)
+**Session 26 Transcript:** [[Session 26/Transcript]]
+**Session 27 YouTube:** [Session 27](https://www.youtube.com/watch?v=OQfl8NFK_z4)
+**Session 27 Transcript:** [[Session 27/Transcript]]
+**Session 28 YouTube:** [Session 28](https://www.youtube.com/watch?v=8s_IpM80cjc)
+**Session 28 Transcript:** [[Session 28/Transcript]]
+**Session 29 YouTube:** [Session 29](https://www.youtube.com/watch?v=rcmGCtVLyhc)
+**Session 29 Transcript:** [[Session 29/Transcript]]
+**Session 30 YouTube:** [Session 30](https://www.youtube.com/watch?v=DnlIYcvUU3w)
+**Session 30 Transcript:** [[Session 30/Transcript]]
 
 The party infiltrates **Salasarglumm**, a glade conquered by the **Beast King** (Carlos Vanth — a former Ersatz University student who used three stolen magic items and a botched polymorph to become a monster). Bloody Mary and the Silverheart Court are pulling his strings.
 

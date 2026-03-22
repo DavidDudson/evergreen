@@ -1,0 +1,89 @@
+# Session 6 Summary
+
+**Date:** Nov 2023
+**YouTube:** [Session 6](https://www.youtube.com/watch?v=7oT9Uo1pdOw)
+**Arc:** Arc 1 — Lowmarsh (Sessions 1–6)
+
+## Synopsis
+
+The final session of the Lowmarsh arc opens the morning after the Red Hand's arrival in town. Sibylla is absent ("she did vanish — it's thematic"). The remaining five PCs gather for breakfast at the Split Belt inn, where a well-dressed gnome named Memphis Cadwallader scrapes up a chair and offers gold to anyone willing to help him escape the Red Hand's lockdown. Mordred reads his fate as "profitable"; the party interrogates him and concludes he is not fey. Memphis reveals he works for a wealthy employer, offers an escort contract (20 gold up front, 80 on arrival at Rymes, plus a letter of introduction to Dean Marikosa at Ersatz University), and mentions knowing Merida's father. He also mentions Bigby from a prior encounter at an unknown location.
+
+The session's middle portion is a tightly choreographed escape operation. Red Hand commander Alexander assigns Pyromancer Ken, soldier Dan, and soldier Harold as a "personal guard" to the party ostensibly to continue the shapechanger investigation. The party immediately splits up to ditch the guards: Bigby takes Pyromancer Ken to investigate the lumber yard (where he decodes Thori Black's rune-stick cipher and finds evidence of a second cocoon burned there a week before Thori's disappearance); Nik keeps Harold occupied with cards and successfully slips away; Drizella casts Torturous Trauma on Dan from inside her prayer position at the Church of the Goodly Father, causing internal organ damage with no external sign, while Mordred slips out a side exit; and Merida navigates Memphis and a second refugee — a hooded, mysterious figure named Savvan — to the escape tunnel beneath Goodget's farm. Bigby reports back to Alexander: Thori's decoded ledger confirms he was channelling public funds to the Crooked Men, eventually ran the vault dry, and paid a sniper to kill an unnamed colleague listed only as "M." Alexander returns the ledger to Bigby and reveals the Red Hand's true purpose: the shapechanger has calculated when the next Sunderance will occur, and the Red Hand's priority is ensuring that no fey faction learns that timing.
+
+The party exits through the farm tunnel into the Greenwood. Merida navigates with a clean survival roll, and there is no encounter in the first stretch — only a gigantic bat soaring overhead and a strange procession of creatures heading southwest from the direction of Rymes. Further along, the party finds a felled ancient oak with runes carved into the stump. What appears to be a young woman chained to the tree is revealed (occultism 24) as a hag performing a multi-day divinatory ritual exploiting the coming Parallax, with two orange Earth Wisps at her back. When Merida speaks in the Darkwood tongue and eventually invokes her mother's name, the hag immediately dismisses her Wisps and flees up the nearest tree, calling Merida "spawn of the Rot Queen." Back on the road, the party encounters a Red Hand patrol. The pyromancer mage is killed (Nik delivers 25 bludgeoning and lightning damage in a single blow); Savvan then steps forward with glowing white eyes and puts all three remaining soldiers to sleep simultaneously — a feat the party immediately recognises as far beyond normal Sleep magic in range and scale. The soldiers are stabilised rather than killed. The session closes with the party on the road north toward Rymes, out of Lowmarsh.
+
+Bigby's decoded ledger and Alexander's revelation connect multiple threads: the Crooked Men conspiracy, the Sunderance prophecy first uttered by the Green Man in Session 3, and the shapechanger's true significance. The arc ends with the mystery of who "M" is and where the shapechanger is now both unresolved, and Savvan's true nature and allegiance hanging conspicuously open.
+
+## Key Events
+
+- **Memphis Cadwallader introduced at breakfast**: gnome in fine Avalon-emblazoned coat; offers an escort contract to Rymes; confirmed not fey; Mordred's Read Fate reads his future as "profitable"; knows Merida's father and Bigby; works for "the Silver Lady" (Queen Maeve of Avalon); allergic to silver
+- **Alexander assigns personal guard detail**: Pyromancer Ken, soldier Dan, and soldier Harold assigned to the party; Alexander tells Bigby he is free to continue the shapechanger investigation
+- **Second cocoon found at Burton's Lumber Yard**: workers burned what they thought was an insect nest approximately a week before Thori's official disappearance — the shapechanger's earlier transformation point
+- **Thori Black's ledger decoded**: Bigby uses a Dwarvish rune-stamp from Thori's pocket to decode the cipher; ledger reveals Thori was funnelling public funds to the Crooked Men, eventually emptied the vault, and paid a sniper to kill a colleague listed only as "M"
+- **Alexander reveals the Red Hand's true purpose**: the shapechanger has calculated the precise timing of the next Sunderance; the Red Hand's mission is to prevent fey factions from obtaining that information; if the wrong factions learn the timing, "it could spell the end of the Glades"
+- **Party ditches the guards**: Bigby takes Ken to the lumber yard; Nik distracts Harold with cards; Drizella uses Torturous Trauma on Dan in the church while Mordred slips out the side; Merida navigates Memphis and Savvan to the escape tunnel
+- **Escape through the Greenwood**: all five PCs plus Memphis and Savvan exit via the farm tunnel; a gigantic bat and a strange multi-species procession are observed heading southwest from Rymes
+- **The Hag encounter**: a hag performing a Parallax-exploitation ritual (disguised as a chained woman) is exposed; two Earth Wisps appear; Merida speaks in the Darkwood tongue and invokes her mother's name ("the Rot Queen") — the hag immediately flees and refuses to deal with "spawn of the Rot Queen"
+- **Road combat with Red Hand patrol**: three soldiers and a pyromancer; Nik kills the pyromancer with a single 25-damage punch (Shocking Grasp); Savvan sleeps the remaining three simultaneously with glowing white eyes — range and scale far beyond normal Sleep magic; soldiers are stabilised, not killed; Mordred notes he has not yet killed any intelligent non-rabid humanoid
+- **Savvan's identity flags**: his anomalous sleep magic, evasive answers about "the courts," and reference to delivering "information of great value" at Ersatz University are all noted by the party
+
+## Characters Introduced/Appearing
+
+### New NPCs
+- **Memphis Cadwallader** — Gnome, roughly 3.5 feet tall. Fine coat with golden buttons bearing the symbol of Avalon; multiple coin purses on his belt. An independent contractor working for Queen Maeve of Avalon (whom he calls "my lady" or "the Silver Lady"). Allergic to silver — the allergy is genuine and significant, though he is confirmed not to be fey. Heading to Rymes on urgent business at Ersatz University with an introduction to Dean Marikosa. Proposes the party escort him for 20 gold up front, 80 on arrival, plus a letter of introduction to the Dean. Knew Merida's father (describes him as "a Dunbarton man with a problem with a bear, all sorted now"). Knew Bigby from a previous unnamed encounter. First appearance of this recurring character.
+- **Savvan** — Hooded and evasive; revealed under Merida's interrogation to be human-presenting (bald with short brown hair, light eyes, stubble). Claims to owe money to a group "posing as clerics" (the Crooked Men false priest's faction from earlier sessions). Carries a legitimate Red Hand silver-test mark. Heading to Ersatz University to deliver "information of great value." Speaks in careful half-answers about "the movements of the courts" — Merida deduces he means fey courts, not royal courts. Possesses anomalous sleep magic: can put multiple healthy combatants to sleep simultaneously at a range and scale far beyond normal. Lays out tarot cards at quiet moments. First name only; no family name given.
+- **Pyromancer Ken** (approximate transcription "Pyre Queen / P. Queen") — Red Hand mage; female; big red hooded robes; assigned as personal guard alongside Dan and Harold. Once fought a Fairy Godmother as part of Alexander's team; Alexander received his burns in that encounter. Invites Nik to join Ember Hall (Red Hand magic school) to control his magic. Killed during the road encounter — Nik's Shocking Grasp punch deals 25 bludgeoning and lightning damage.
+- **Dan and Harold** — Two Red Hand soldiers assigned as guard detail alongside Ken. Dan is described as mercenary-type with a gambling problem; Harold has similar energy. Harold passes Nik 5 copper coins during the card game.
+- **The Hag** — Encountered in the Greenwood performing a multi-day divinatory scrying ritual on a felled ancient oak, disguised as an emaciated young woman chained to the tree (revealed: face upside-down, knees triple-jointed, eyes where the chin should be). Two orange Earth Wisps accompany her. When Merida speaks the Darkwood tongue and invokes her mother's name, the hag immediately dismisses the Wisps and flees, calling Merida "spawn of the Rot Queen" and declaring she "would not dare speak with" her.
+
+### Returning NPCs
+- **Matron Simone** — Visited by Drizella and Mordred; currently under Red Hand lockdown; gives Drizella her large medical dissertation to deliver to a half-elf named Asher in the Anatomy General department at Ersatz University, Rymes
+- **Alexander Dunos** — Red Hand commander; confirms his burns came from fighting a Fairy Godmother; cooperates with the party's investigation; decodes Thori's ledger with the rune-stamp; reveals the shapechanger's true significance (the Sunderance calculation); releases the party from the guard detail after they cooperate
+
+### PC Details
+- **Drizella** — Uses Torturous Trauma on Dan in the church to ditch her escort; goal stated as reaching Rymes to research the Fairy Godmother who cursed her family; accepts Simone's dissertation delivery task; wears plague mask (drinks coffee through a straw)
+- **Mordred** — Slips out the church side exit; uses Read Fate on Memphis; notes after the road fight that he has never yet killed an intelligent non-rabid humanoid; goal stated as understanding his strange visions and leaving Lowmarsh
+- **Nik Jones** — Keeps Harold occupied at cards (Deception 26); slips away successfully; goal stated as learning to control his wild magic (glowing red eyes, involuntary Abyssal spell-formulas drawn on skin, something moving under the skin of his forehead); plans to visit Ersatz University
+- **Bigby** — Decodes the Thori ledger; finds the second cocoon at the lumber yard; reports to Alexander; goal stated as working the shapechanger case
+- **Merida** — Navigates the Greenwood escape (Survival 14–15, exactly clearing the DC); speaks the Darkwood tongue (learned from her mother); identifies the hag by Occultism 24; invokes the Rot Queen's name to end the encounter; her mother's identity and power is the session's most significant lore drop
+
+## Notable Quotes
+
+- **Alexander Dunos (revealing the shapechanger's significance):** "This shapechanger has found a way to calculate when the next Sunderance will happen... if those groups were to find the information, it could spell the end of the Glades."
+- **Hag (upon Merida invoking her mother's name):** "I would not dare speak with the spawn of the Rot Queen."
+- **Memphis Cadwallader (introducing himself):** "I intend not to bring knives but coins, if you would be interested."
+- **Pyromancer Ken (on the Burning God):** "We maintain order. We seek out that which does not belong. We serve the Burning God."
+- **Nik Jones (on his magic):** "I can't help it. Feels like there's something under the skin."
+- **Savvan (after sleeping the guards):** "I was more interested in stopping them from doing harm to me, but you're welcome."
+- **Mordred (after the road fight):** (noted in-fiction that he has not yet killed any intelligent non-rabid humanoid)
+- **Drizella (after being assigned guard detail):** "We are here on an observ[ation]—" (to the party, explaining Dan and Harold)
+
+## Hero Question
+
+No formal hero question is posed this session. The closest moral tension is implicit: the Red Hand reveals it is trying to prevent dangerous fey entities from learning the Sunderance's timing — giving the party potential aligned interests with an organisation that just spent two sessions oppressing Lowmarsh. Nik explicitly debates killing Memphis after being paid for the escort. The trustworthiness of Savvan and the nature of his "information of great value" hang unresolved.
+
+## Faction Developments
+
+- **Red Hand** — Internal structure clarified: the **Red Dawn** (passive) and the **Red Hand** (active enforcement wing) are the two main divisions. The Lowmarsh lockdown is confirmed to be about capturing the shapechanger, not primarily about Crooked Men criminality or Thori's theft. Alexander cooperates with the party to a limited degree and reveals the shapechanger's true significance (Sunderance calculation). **Ember Hall** named as the Red Hand's school for magical initiates. Pyromancer Ken is killed; Alexander does not appear to retaliate.
+- **Crooked Men** — Thori Black's decoded ledger confirms he was their bagman, channelling Lowmarsh public funds to them. The payments stopped only when the vault was emptied. The mysterious conspirator **"M"** — referenced as someone Thori paid a sniper to kill — is a new active lead.
+- **Queen Maeve / Avalon** — Memphis works for her directly. Avalon is currently prosecuting the Northern War against Camelot (~20 years ongoing). Maeve seized power roughly 30 years ago in a violent coup; widely rumoured to use dark magic; Memphis calls her "the Silver Lady." Mercia is allied to Camelot and affected by the war's fallout.
+- **The Hag / Darkwood entities** — A lone hag was conducting a multi-day divinatory ritual exploiting the upcoming Parallax. A strange multi-species procession (allegiance unknown) was observed moving southwest from the direction of Rymes. The Rot Queen's name is sufficient to cause immediate flight and deference from a hag mid-ritual.
+
+## Quest Progress
+
+- **Escape Lowmarsh** — Completed. The party exits via the Goodget farm tunnel at the session's end.
+- **Escort Memphis Cadwallader to Rymes** — Active. 20 gold paid upfront; 80 gold on arrival; letter of introduction to Dean Marikosa at Ersatz University is the additional incentive.
+- **Deliver Matron Simone's dissertation** — Active. To be delivered to Asher in the Anatomy General department at Ersatz University, Rymes.
+- **Identify/capture the shapechanger** — Unresolved and deferred. Savvan is the most conspicuous candidate (anomalous magic, evasive background, travelling to Ersatz under cover of a debt story) but not confirmed. The investigation passes out of Lowmarsh.
+- **Thori Black murder investigation / the "M" lead** — Partially advanced. Ledger decoded: Crooked Men connection confirmed, "M" is a new named mystery. Further investigation deferred to future arcs.
+- **Merida's mother / the Rot Queen** — Not a formal quest, but a significant character thread opened: the Rot Queen is powerful enough to make a mid-ritual hag flee on sight; Merida speaks her mother's tongue and carries her name as a weapon.
+
+## Lore Reveals
+
+- **The Sunderance — first full definition**: a global event where forests and glades physically change place; it marks the end of one age and the beginning of the next; it is catastrophic in scale; it occurs approximately every 300 years. The current age is 352 years old (the Sunderance is overdue). Fey rituals are timed to coincide with it. The shapechanger has somehow calculated its precise timing — the most dangerous piece of intelligence in the setting.
+- **The Parallax** — A distinct upcoming astronomical/magical event. Hags and occultists are already exploiting it for divination; the hag's multi-day ritual in the Greenwood was timed to the coming Parallax. It amplifies divinatory magic. Distinct from (but possibly related to) the Sunderance.
+- **Burning God theology** — Silver is the Burning God's holiest material; anything with a genuine silver allergy is considered a "foul being." Fire walks among the faithful. Two wings: the passive Red Dawn and the active Red Hand. The Red Hand fought a Fairy Godmother in Alexander's past — Alexander received his burns and his brass replacement eye in that encounter.
+- **Queen Maeve of Avalon** — Seized power roughly 30 years ago in a violent coup; widely rumoured to use dark magic; prosecuting the Northern War against Camelot for approximately 20 years. Referenced reverentially by Memphis as "the Silver Lady." Avalon's flag features "a middle shape and slash." Memphis is her direct agent.
+- **Merida's mother = "the Rot Queen"** — A figure powerful enough that a hag performing a complex multi-day ritual in the Greenwood abandoned it, dismissed her Wisps, and fled immediately upon hearing the name. The Rot Queen taught Merida the Darkwood/Hag tongue. The hag addresses Merida as "spawn of the Rot Queen." Earlier in the campaign Merida's mother was described as "a woman who did her own dealings and turned into a witch."
+- **Savvan's anomalous sleep magic** — Can put fully-healthy combatants to sleep simultaneously at range and scale far beyond normal Sleep magic. The party (Perception 25, Arcana 15) recognises this as extraordinary. His origins remain unknown; he appears to be fleeing fey courts and delivering intelligence to Ersatz University.
+- **The Crooked Men / "M"** — Thori Black was their bagman. The payments stopped only when he ran the vault dry. The mysterious "M" — referenced in Thori's coded ledger as someone he paid a sniper to kill — is a separate thread now carried forward by Bigby.
