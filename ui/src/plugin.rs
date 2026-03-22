@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use models::game_states::GameState;
 
+use crate::credits::{self, CreditsScreen};
 use crate::despawn::despawn_all;
 use crate::dialog_box::{self, DialogBox};
 use crate::focus;
@@ -91,6 +92,14 @@ impl Plugin for UiPlugin {
 
         // Apply fullscreen whenever settings change (any state)
         app.add_systems(Update, settings_screen::apply_fullscreen);
+
+        // Credits screen
+        app.add_systems(OnEnter(GameState::Credits), credits::setup)
+            .add_systems(OnExit(GameState::Credits), despawn_all::<CreditsScreen>)
+            .add_systems(
+                Update,
+                credits::handle_back.run_if(in_state(GameState::Credits)),
+            );
 
         // Keybind config screen
         app.add_systems(OnEnter(GameState::KeybindConfig), keybind_screen::setup)

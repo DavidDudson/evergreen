@@ -28,6 +28,9 @@ pub(crate) struct StartButton;
 pub(crate) struct LoreButton;
 
 #[derive(Component)]
+pub(crate) struct CreditsButton;
+
+#[derive(Component)]
 pub(crate) struct MainMenuSettingsButton;
 
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -142,6 +145,34 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..default()
                     },
                 ));
+
+            parent
+                .spawn((
+                    CreditsButton,
+                    Button,
+                    Node {
+                        padding: UiRect::axes(
+                            Val::Px(f32::from(BUTTON_PADDING_H_PX)),
+                            Val::Px(f32::from(BUTTON_PADDING_V_PX)),
+                        ),
+                        margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
+                        border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
+                        ..Node::default()
+                    },
+                    BorderColor::all(theme::ACCENT),
+                    BackgroundColor(theme::BUTTON_BG),
+                ))
+                .with_child((
+                    Text::new("Credits"),
+                    TextColor(theme::BUTTON_TEXT),
+                    TextFont {
+                        font_size: f32::from(BUTTON_FONT_SIZE_PX),
+                        ..default()
+                    },
+                ));
         });
 }
 
@@ -150,6 +181,7 @@ pub fn button_system(
     mut origin: ResMut<SettingsOrigin>,
     start_q: Query<&Interaction, (Changed<Interaction>, With<StartButton>)>,
     lore_q: Query<&Interaction, (Changed<Interaction>, With<LoreButton>)>,
+    credits_q: Query<&Interaction, (Changed<Interaction>, With<CreditsButton>)>,
     settings_q: Query<&Interaction, (Changed<Interaction>, With<MainMenuSettingsButton>)>,
 ) {
     start_q
@@ -161,6 +193,11 @@ pub fn button_system(
         .iter()
         .filter(|i| **i == Interaction::Pressed)
         .for_each(|_| next_state.set(GameState::LorePage));
+
+    credits_q
+        .iter()
+        .filter(|i| **i == Interaction::Pressed)
+        .for_each(|_| next_state.set(GameState::Credits));
 
     settings_q
         .iter()

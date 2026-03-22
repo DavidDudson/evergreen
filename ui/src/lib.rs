@@ -1,3 +1,4 @@
+mod credits;
 mod despawn;
 mod settings_screen;
 mod dialog_box;

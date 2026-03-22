@@ -15,4 +15,6 @@ pub enum GameState {
     KeybindConfig,
     /// Settings hub: audio, video, and keybind navigation.
     Settings,
+    /// Credits screen, accessible from the main menu.
+    Credits,
 }
