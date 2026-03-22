@@ -9,14 +9,14 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Briar Rose** | Aurora Plantagenet, Princess Aurora | Alive | greenwoods | *The playable character.* Druid; born 287 in Grimordia; cursed by Maleficent at 16; slept 300+ years via Cadwallader's deal. Bearer of the briar. Twin soul: Prince Phillip. |
-| **Mordred** | — | Alive | greenwoods | Oracle (Battle); Changeling; born 336; Pendragon blood; wields Caliburn (and Caledfwlch). Adoptive son of Morgana Le Fay. Son of King Arthur and Guinevere (ritual). Former Knights of Camelot trainee. Best friend: Galahad. Prophecy: will die *very soon, at his father's hands*. Lost his left hand (replaced by magical black gauntlet). May be an avatar of the Tuatha De Danann. |
-| **Drizella Tremaine** | — | Alive | darkwoods | Cleric (Nightmare Domain); Fleshwarp; translucent skin; Antiseed roots growing in her heart + mirror shards. Mirror shard replaced her right eye (Mary can see through it). Follower of The Faceless Soldier. Sister: Anastasia. Father: Robert Tremaine. Was engineered from birth by Carabosse and Bloody Mary to free Mary from the mirror. Prophecy: dies *content at her desk*. |
-| **Bigby** | Joseph Bigby | Alive | cities | Investigator/Rogue; Beastkin (lupine); from Xyander. Former Hogson Brothers construction worker. Former crewman under Captain Hook. His brother is the Big Bad Wolf who tried to assassinate him. Prophecy: dies *at the hands of a bitter rival*. |
-| **Darian Sand** | — | Deceased (†) | cities | Sorcerer; human; raised on the streets; mentored by Merlin. Died during the campaign. |
-| **Merida** | — | Alive (departed) | greenwoods | Archer; from the highlands. Left the Mythmakers Union in earlier sessions. |
-| **Sibylla** | — | Alive (departed) | greenwoods | Seer. Left the Mythmakers Union. |
-| **Nik Jones** | — | Alive (departed) | cities | Mortal origins. Left the Mythmakers Union. |
+| [**Briar Rose**](https://evergeennova.fandom.com/wiki/Briar_Rose) | Aurora Plantagenet, Princess Aurora | Alive | greenwoods | *The playable character.* Druid; born 287 in Grimordia; cursed by Maleficent at 16; slept 300+ years via Cadwallader's deal. Bearer of the briar. Twin soul: Prince Phillip. |
+| [**Mordred**](https://evergeennova.fandom.com/wiki/Mordred) | — | Alive | greenwoods | Oracle (Battle); Changeling; born 336; Pendragon blood; wields Caliburn (and Caledfwlch). Adoptive son of Morgana Le Fay. Son of King Arthur and Guinevere (ritual). Former Knights of Camelot trainee. Best friend: Galahad. Prophecy: will die *very soon, at his father's hands*. Lost his left hand (replaced by magical black gauntlet). May be an avatar of the Tuatha De Danann. |
+| [**Drizella Tremaine**](https://evergeennova.fandom.com/wiki/Drizella_Tremaine) | — | Alive | darkwoods | Cleric (Nightmare Domain); Fleshwarp; translucent skin; Antiseed roots growing in her heart + mirror shards. Mirror shard replaced her right eye (Mary can see through it). Follower of The Faceless Soldier. Sister: Anastasia. Father: Robert Tremaine. Was engineered from birth by Carabosse and Bloody Mary to free Mary from the mirror. Prophecy: dies *content at her desk*. |
+| [**Bigby**](https://evergeennova.fandom.com/wiki/Bigby) | Joseph Bigby | Alive | cities | Investigator/Rogue; Beastkin (lupine); from Xyander. Former Hogson Brothers construction worker. Former crewman under Captain Hook. His brother is the Big Bad Wolf who tried to assassinate him. Prophecy: dies *at the hands of a bitter rival*. |
+| [**Darian Sand**](https://evergeennova.fandom.com/wiki/Darian_Sand) | — | Deceased (†) | cities | Sorcerer; human; raised on the streets; mentored by Merlin. Died during the campaign. |
+| [**Merida**](https://evergeennova.fandom.com/wiki/Merida) | — | Alive (departed) | greenwoods | Archer; from the highlands. Left the Mythmakers Union in earlier sessions. |
+| [**Sibylla**](https://evergeennova.fandom.com/wiki/Sibylla) | — | Alive (departed) | greenwoods | Seer. Left the Mythmakers Union. |
+| [**Nik Jones**](https://evergeennova.fandom.com/wiki/Nik_Jones) | — | Alive (departed) | cities | Mortal origins. Left the Mythmakers Union. |
 
 ---
 
@@ -24,9 +24,9 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Dame Gothel** | Mother Gothel | Alive (confirmed S22+) | greenwoods | Former All-Mother of the Thrice-Triple Covens. 100+ years old. Kept Caliburn safe for the Pendragon bloodline. Her death triggered the All-Mother Succession Crisis. Found alive at a cottage near Salasarglumm. Led Mordred's resurrection ritual (S32). Has 50-year memory gaps. Cannot harm living creatures. |
-| **Bloody Mary** | — | Alive (freed S57) | darkwoods | Former Empress of the Arrnon Empire. Born 226 (6th Age); trained by Merlin; took over the Order of the Eleventh Eye and built the Arrnon Empire. Imprisoned in the Mirror of Aretas at age 22 by Merlin and Craven. Freed in Session 57. Has the Hand of Sycorax restored. Can see through any mirror in Evergreen. Engineered Drizella's life (via Carabosse + Lady Tremaine) to free herself. |
-| **Memphis Cadwallader** | Rumpelstiltskin, Tobias Gold, Louis Cypher, The Imp, The Fairy Godmother | Alive | cities | Devil (possibly *the* devil). ~3ft tall gnome form; true form is living flame. Deal-maker; holds Briar Rose's 300-year-old life-debt. Former agent of Queen Maeve. Cannot speak his name "Rumpelstiltskin". |
+| [**Dame Gothel**](https://evergeennova.fandom.com/wiki/Dame_Gothel) | Mother Gothel | Alive (confirmed S22+) | greenwoods | Former All-Mother of the Thrice-Triple Covens. 100+ years old. Kept Caliburn safe for the Pendragon bloodline. Her death triggered the All-Mother Succession Crisis. Found alive at a cottage near Salasarglumm. Led Mordred's resurrection ritual (S32). Has 50-year memory gaps. Cannot harm living creatures. |
+| [**Bloody Mary**](https://evergeennova.fandom.com/wiki/Bloody_Mary) | — | Alive (freed S57) | darkwoods | Former Empress of the Arrnon Empire. Born 226 (6th Age); trained by Merlin; took over the Order of the Eleventh Eye and built the Arrnon Empire. Imprisoned in the Mirror of Aretas at age 22 by Merlin and Craven. Freed in Session 57. Has the Hand of Sycorax restored. Can see through any mirror in Evergreen. Engineered Drizella's life (via Carabosse + Lady Tremaine) to free herself. |
+| [**Memphis Cadwallader**](https://evergeennova.fandom.com/wiki/Memphis_Cadwallader) | Rumpelstiltskin, Tobias Gold, Louis Cypher, The Imp, The Fairy Godmother | Alive | cities | Devil (possibly *the* devil). ~3ft tall gnome form; true form is living flame. Deal-maker; holds Briar Rose's 300-year-old life-debt. Former agent of Queen Maeve. Cannot speak his name "Rumpelstiltskin". |
 
 ---
 
@@ -34,11 +34,11 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **King Arthur Pendragon** | — | Alive (fate uncertain) | cities | Aging king of Camelot; no living heir; poor diplomat. At war with Avalon for 30 years. Excalibur stands in an anvil at Pendragon. Died and came back during the Strife of Camlin (unconfirmed). |
-| **Queen Maeve** | — | Alive | darkwoods | Queen of Avalon; leader of the Silverheart Court. Silver lady; pink eyes (shared with Morgana). Seized Avalon in a coup in 323. Collecting Mirror of Aretas shards and artefacts. Former employer of Cadwallader. |
-| **Queen Guinevere** | — | Deceased (†) | cities | Wife of King Arthur; lover of both Lancelot and Morgana. Her blood was used in the ritual that produced Mordred. |
-| **Archduke Tyson II** | — | Deceased (assassinated S30) | cities | Ruler of Gribsby, the decentralised heartland of Arrnonland. Home of Ersatz University. Assassinated by massive fire magic at the Beast King's ball. Crown and jewels melted. |
-| **King Louie** | — | Alive | greenwoods | Rules Everdrift. Summer Court Fey; hedonistic; generally friendly to mortals. |
+| [**King Arthur Pendragon**](https://evergeennova.fandom.com/wiki/Arthur_Pendragon) | — | Alive (fate uncertain) | cities | Aging king of Camelot; no living heir; poor diplomat. At war with Avalon for 30 years. Excalibur stands in an anvil at Pendragon. Died and came back during the Strife of Camlin (unconfirmed). |
+| [**Queen Maeve**](https://evergeennova.fandom.com/wiki/Queen_Maeve) | — | Alive | darkwoods | Queen of Avalon; leader of the Silverheart Court. Silver lady; pink eyes (shared with Morgana). Seized Avalon in a coup in 323. Collecting Mirror of Aretas shards and artefacts. Former employer of Cadwallader. |
+| [**Queen Guinevere**](https://evergeennova.fandom.com/wiki/Queen_Guinevere) | — | Deceased (†) | cities | Wife of King Arthur; lover of both Lancelot and Morgana. Her blood was used in the ritual that produced Mordred. |
+| [**Archduke Tyson II**](https://evergeennova.fandom.com/wiki/Archduke_Tyson_II) | — | Deceased (assassinated S30) | cities | Ruler of Gribsby, the decentralised heartland of Arrnonland. Home of Ersatz University. Assassinated by massive fire magic at the Beast King's ball. Crown and jewels melted. |
+| [**King Louie**](https://evergeennova.fandom.com/wiki/King_Louie) | — | Alive | greenwoods | Rules Everdrift. Summer Court Fey; hedonistic; generally friendly to mortals. |
 
 ---
 
@@ -46,11 +46,11 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Morgana Le Fay** | The Begot Queen, Morgana Pendragon, The Wicked Witch | Alive (~70–80, appears ~45) | darkwoods | Sister of King Arthur; adoptive mother of Mordred. Former avatar of the Three-Faced Lady — severed the goddess using Caliburn ~281. Lives in the Broceliande. Pink eyes; black/white hair; crow familiar. 9th-level spellcasting. |
-| **Merlin** | — | Missing | cities | Founded the Order of the Eleventh Eye. Powerful arcane focal point; sworn to the Pendragon line until the last dies. Once tricked Bloody Mary. Mentored Darian Sand. Went missing. |
-| **Nimue** | — | Alive | darkwoods | Lady of the Lake. Construct (bones held together by unnatural means, S32). Former avatar of the Three-Faced Lady before Morgana severed the connection using Caliburn (S33). Under magical compulsion — 'The waters of Pendragon can free me' (S11, S59). Has two aspects: corrupted outer form and trapped peaceful true self. Merlin's apprentice. Stole Darian's body (S43). Gave Caliburn to Mordred under duress (S59). Previously collaborated with Dame Gothel to hide Caliburn. |
+| [**Morgana Le Fay**](https://evergeennova.fandom.com/wiki/Morgana_Le_Fay) | The Begot Queen, Morgana Pendragon, The Wicked Witch | Alive (~70–80, appears ~45) | darkwoods | Sister of King Arthur; adoptive mother of Mordred. Former avatar of the Three-Faced Lady — severed the goddess using Caliburn ~281. Lives in the Broceliande. Pink eyes; black/white hair; crow familiar. 9th-level spellcasting. |
+| [**Merlin**](https://evergeennova.fandom.com/wiki/Merlin) | — | Missing | cities | Founded the Order of the Eleventh Eye. Powerful arcane focal point; sworn to the Pendragon line until the last dies. Once tricked Bloody Mary. Mentored Darian Sand. Went missing. |
+| [**Nimue**](https://evergeennova.fandom.com/wiki/Nimue) | — | Alive | darkwoods | Lady of the Lake. Construct (bones held together by unnatural means, S32). Former avatar of the Three-Faced Lady before Morgana severed the connection using Caliburn (S33). Under magical compulsion — 'The waters of Pendragon can free me' (S11, S59). Has two aspects: corrupted outer form and trapped peaceful true self. Merlin's apprentice. Stole Darian's body (S43). Gave Caliburn to Mordred under duress (S59). Previously collaborated with Dame Gothel to hide Caliburn. |
 | **Tashanna** | — | Alive | greenwoods | Current All-Mother of the Thrice-Triple Covens. Leading the fractured covens in the post-Gothel era. |
-| **Morgause** | — | Unknown | darkwoods | Mentioned as sharing strong resemblance to Morgana Le Fay and Queen Maeve. Relationship unexplained. |
+| [**Morgause**](https://evergeennova.fandom.com/wiki/Morgause) | — | Unknown | darkwoods | Mentioned as sharing strong resemblance to Morgana Le Fay and Queen Maeve. Relationship unexplained. |
 
 ---
 
@@ -58,12 +58,12 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Maleficent** | — | Alive (sleeping) | darkwoods | Archfey dragon; ruler of Pegaroth in the Darkwoods. Human and dragon forms. Discovered the Antiseeds in 343 and brought them to the Silverheart Court. Cursed Briar Rose. |
-| **The Beast King** | — | Defeated | darkwoods | Silverheart Court member. Conquered Salasarglumm in 346. Defeated by the Mythmakers Union. Stole the Staff of Beguiling and the Ring of Objectification. |
-| **Lady Elizabeth Pikes** | — | Fled | darkwoods | Silverheart Court member. Undead. Operated Spade Shipping as a Silverheart Court front. Used antiseed control devices at Pebblecreek docks (S41). Connected to Ida Montague's heart via dream realm. Fled after confrontation. |
-| **Robson Wellgood** | — | Alive | darkwoods | Silverheart Court member. Details unclear. |
-| **Peter Hogson** | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
-| **John Hogson** | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
+| [**Maleficent**](https://evergeennova.fandom.com/wiki/Maleficent) | — | Alive (sleeping) | darkwoods | Archfey dragon; ruler of Pegaroth in the Darkwoods. Human and dragon forms. Discovered the Antiseeds in 343 and brought them to the Silverheart Court. Cursed Briar Rose. |
+| [**The Beast King**](https://evergeennova.fandom.com/wiki/The_Beast_King) | — | Defeated | darkwoods | Silverheart Court member. Conquered Salasarglumm in 346. Defeated by the Mythmakers Union. Stole the Staff of Beguiling and the Ring of Objectification. |
+| [**Lady Elizabeth Pikes**](https://evergeennova.fandom.com/wiki/Lady_Piques) | — | Fled | darkwoods | Silverheart Court member. Undead. Operated Spade Shipping as a Silverheart Court front. Used antiseed control devices at Pebblecreek docks (S41). Connected to Ida Montague's heart via dream realm. Fled after confrontation. |
+| [**Robson Wellgood**](https://evergeennova.fandom.com/wiki/Robson_Wellgood) | — | Alive | darkwoods | Silverheart Court member. Details unclear. |
+| [**Peter Hogson**](https://evergeennova.fandom.com/wiki/Peter_Hogson) | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
+| [**John Hogson**](https://evergeennova.fandom.com/wiki/John_Hogson) | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
 
 ---
 
@@ -71,7 +71,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Captain Hook** | — | Unknown | cities | Former captain; Bigby served under him. Maritime. |
+| [**Captain Hook**](https://evergeennova.fandom.com/wiki/Captain_Hook) | — | Unknown | cities | Former captain; Bigby served under him. Maritime. |
 
 ---
 
@@ -79,10 +79,10 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Court | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Lady Caelia** | Spring | Alive | greenwoods | Leader of the Spring Court. Domain: birth, renewal. |
-| **King Louie** | Summer | Alive | greenwoods | Leader of the Summer Court. Rules Everdrift. Hedonistic; generally friendly. |
+| [**Lady Caelia**](https://evergeennova.fandom.com/wiki/Caelia) | Spring | Alive | greenwoods | Leader of the Spring Court. Domain: birth, renewal. |
+| [**King Louie**](https://evergeennova.fandom.com/wiki/King_Louie) | Summer | Alive | greenwoods | Leader of the Summer Court. Rules Everdrift. Hedonistic; generally friendly. |
 | **Jackie Brush** | Autumn | Alive | greenwoods | Leader of the Autumn Court. Domain: harvest, endings. |
-| **Jack Frost** | Winter | Alive | darkwoods | Leader of the Winter Court. Domain: cold, isolation. Tense relations with mortals. |
+| [**Jack Frost**](https://evergeennova.fandom.com/wiki/Sneeden) | Winter | Alive | darkwoods | Leader of the Winter Court. Domain: cold, isolation. Tense relations with mortals. |
 | **Titania** | Former Seelie/Unseelie | Alive (confirmed S43) | greenwoods | Ancient Fey queen. Fell out with Maeve, causing the court split into four. Merlin's sister. Guardian of his relics. Bestowed Merlin's four sacred items on the party. His last words to her: 'Forgive me, Sister.' |
 
 ---
@@ -91,9 +91,9 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Org | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Emilia Zeneba** | OXIE | Alive | cities | Holds the Staff of Action (one of the Staves of Power). |
-| **Osiris Krex** | OXIE | Alive | cities | Holds the Staff of Insight (one of the Staves of Power). |
-| **Enoch Holcombe** | Bonekeeper's Guild | Alive | cities | Leader of the Bonekeeper's Guild; followers of The Reaper; protect the dead. |
+| [**Emilia Zeneba**](https://evergeennova.fandom.com/wiki/Emilia_Zeneba) | OXIE | Alive | cities | Holds the Staff of Action (one of the Staves of Power). |
+| [**Osiris Krex**](https://evergeennova.fandom.com/wiki/Osiris_Krex) | OXIE | Alive | cities | Holds the Staff of Insight (one of the Staves of Power). |
+| [**Enoch Holcombe**](https://evergeennova.fandom.com/wiki/Enoch_Holcombe) | Bonekeeper's Guild | Alive | cities | Leader of the Bonekeeper's Guild; followers of The Reaper; protect the dead. |
 
 ---
 
@@ -101,15 +101,15 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Lord Dracul** | — | Alive | darkwoods | Vampire king; Westerforge, Avalon. Near-omniscient. Avalon is Maeve's territory. |
+| [**Lord Dracul**](https://evergeennova.fandom.com/wiki/Lord_Dracul) | — | Alive | darkwoods | Vampire king; Westerforge, Avalon. Near-omniscient. Avalon is Maeve's territory. |
 | **Prince Phillip** | — | Alive | greenwoods | Twin soul of Briar Rose — whatever happens to one happens to the other. Details otherwise sparse. |
-| **Anastasia Tremaine** | — | Alive | darkwoods | Drizella's sister. Was the Beast King's ward under a *modify memory* spell (memories held in Captain Sharmaine). Memories restored in Session 66 when Sharmaine was killed. Was engaged to Argent Carreau in Salasarglumm. |
-| **Lady Tremaine** | — | Alive (confirmed S66) | darkwoods | One of three fragments of the original Morgana Pendragon. Made a deal with Carabosse + Bloody Mary, trading her children's life force. Aged Drizella 20 years during a dance. Apparently died (news reached party mid-campaign) but Polko confirmed she's alive in S66. |
-| **Snow White** | — | Alive | darkwoods | Found in a Pebblecreek greenhouse, afflicted with vampirism. She is Queen Maeve's daughter. |
-| **Robert Tremaine** | — | Alive (freed S59) | greenwoods | Drizella's father. An archer. Held captive by Queen Maeve in a room of mirrors. Freed briefly at Everdrift; told Drizella to *"escape through mirrors."* |
-| **Galahad** | — | Alive (captive) | cities | Mordred's best friend from Knights of Camelot training. Under a *modify memory* spell by Queen Maeve (memories placed in an object). Was taken by knights during Maleficent's attack on Camelot's training ground. |
-| **Galehaut** | — | Alive | cities | Half-giant knight; former trainer at Camelot. Carried Mordred to safety during the attack. |
-| **Medraut** | The Raven Knight | Alive | darkwoods | Construct made by Queen Maeve in Mordred's exact likeness but lacking his kindness. Shares Mordred's face; bears scars. Maeve's son. Said to Mordred: *"What she did to **us**."* Morgana says he *"arranged the entire continent"* to give Mordred answers. |
+| [**Anastasia Tremaine**](https://evergeennova.fandom.com/wiki/Anastasia_Tremaine) | — | Alive | darkwoods | Drizella's sister. Was the Beast King's ward under a *modify memory* spell (memories held in Captain Sharmaine). Memories restored in Session 66 when Sharmaine was killed. Was engaged to Argent Carreau in Salasarglumm. |
+| [**Lady Tremaine**](https://evergeennova.fandom.com/wiki/Lady_Tremaine) | — | Alive (confirmed S66) | darkwoods | One of three fragments of the original Morgana Pendragon. Made a deal with Carabosse + Bloody Mary, trading her children's life force. Aged Drizella 20 years during a dance. Apparently died (news reached party mid-campaign) but Polko confirmed she's alive in S66. |
+| [**Snow White**](https://evergeennova.fandom.com/wiki/Snow_White) | — | Alive | darkwoods | Found in a Pebblecreek greenhouse, afflicted with vampirism. She is Queen Maeve's daughter. |
+| [**Robert Tremaine**](https://evergeennova.fandom.com/wiki/Robert_Tremaine) | — | Alive (freed S59) | greenwoods | Drizella's father. An archer. Held captive by Queen Maeve in a room of mirrors. Freed briefly at Everdrift; told Drizella to *"escape through mirrors."* |
+| [**Galahad**](https://evergeennova.fandom.com/wiki/Galahad) | — | Alive (captive) | cities | Mordred's best friend from Knights of Camelot training. Under a *modify memory* spell by Queen Maeve (memories placed in an object). Was taken by knights during Maleficent's attack on Camelot's training ground. |
+| [**Galehaut**](https://evergeennova.fandom.com/wiki/Galehaut) | — | Alive | cities | Half-giant knight; former trainer at Camelot. Carried Mordred to safety during the attack. |
+| [**Medraut**](https://evergeennova.fandom.com/wiki/Medraut) | The Raven Knight | Alive | darkwoods | Construct made by Queen Maeve in Mordred's exact likeness but lacking his kindness. Shares Mordred's face; bears scars. Maeve's son. Said to Mordred: *"What she did to **us**."* Morgana says he *"arranged the entire continent"* to give Mordred answers. |
 
 ---
 
@@ -119,23 +119,23 @@ Deities walk in physical form and are not strictly faction-aligned — they pred
 
 | Name | Domain | Alignment | Notes |
 |---|---|---|---|
-| **The Goodly Father** | Law, protection, building | cities | Order and structure. |
-| **The Merry Mother** | Domestic life, joy | greenwoods | Hearth and home. |
-| **The Dour Uncle** | Waterways, rain, seasons | greenwoods | Natural cycles. |
-| **The Harvestman** | Food/crops, woodlands | greenwoods | Patron of the forest *and* cultivated land. |
-| **The Man on the Moon** | Travellers, light in darkness | greenwoods | Guides the lost. |
-| **The Woman on the Sun** | Healing, disease, finding lost things | greenwoods | Restorative; closely tied to Briar Rose's purpose. |
-| **The Three-Faced Lady** | Occult magic, time, balance, love | greenwoods | Patron of witches/hags; her avatar was Morgana Le Fay. **Confirmed dead** — murdered by Morgana in Oz (S60). Morgana used the killing to split herself into three. Sibylla's patron. |
-| **The Fool** | Joy, festivals, self-understanding | greenwoods | Unpredictable. |
-| **The Magus** | Arcane magic, book learning, creation | cities | Aligns with OXIE's academic tradition. |
-| **The Sacred Sister** | Holy magic, prophecy | greenwoods | Prophecy; tied to Mordred's arc. |
-| **The Rider** | Athletics, will, determination | cities | Ambition and drive. |
-| **The Lion** | Courage | cities | Military virtue. |
-| **The Pilgrim** | Journeys | greenwoods | The long road. |
-| **The Stranger** | The unknown | darkwoods | Haunts Mordred; associated with things older than the Sunderance. |
-| **The Reaper** | Death | darkwoods | Patron of the Bonekeeper's Guild. |
-| **The Faceless Soldier** | War, sacrifice | darkwoods | Patron of Drizella and the Shadic Brethren. |
-| **The Judge** | Justice | cities | Law without mercy. |
+| [**The Goodly Father**](https://evergeennova.fandom.com/wiki/The_Goodly_Father) | Law, protection, building | cities | Order and structure. |
+| [**The Merry Mother**](https://evergeennova.fandom.com/wiki/The_Merry_Mother) | Domestic life, joy | greenwoods | Hearth and home. |
+| [**The Dour Uncle**](https://evergeennova.fandom.com/wiki/The_Dour_Uncle) | Waterways, rain, seasons | greenwoods | Natural cycles. |
+| [**The Harvestman**](https://evergeennova.fandom.com/wiki/The_Harvestman) | Food/crops, woodlands | greenwoods | Patron of the forest *and* cultivated land. |
+| [**The Man on the Moon**](https://evergeennova.fandom.com/wiki/The_Man_on_the_Moon) | Travellers, light in darkness | greenwoods | Guides the lost. |
+| [**The Woman on the Sun**](https://evergeennova.fandom.com/wiki/The_Woman_on_the_Sun) | Healing, disease, finding lost things | greenwoods | Restorative; closely tied to Briar Rose's purpose. |
+| [**The Three-Faced Lady**](https://evergeennova.fandom.com/wiki/The_Three-Faced_Lady) | Occult magic, time, balance, love | greenwoods | Patron of witches/hags; her avatar was Morgana Le Fay. **Confirmed dead** — murdered by Morgana in Oz (S60). Morgana used the killing to split herself into three. Sibylla's patron. |
+| [**The Fool**](https://evergeennova.fandom.com/wiki/The_Fool) | Joy, festivals, self-understanding | greenwoods | Unpredictable. |
+| [**The Magus**](https://evergeennova.fandom.com/wiki/The_Magus) | Arcane magic, book learning, creation | cities | Aligns with OXIE's academic tradition. |
+| [**The Sacred Sister**](https://evergeennova.fandom.com/wiki/The_Sacred_Sister) | Holy magic, prophecy | greenwoods | Prophecy; tied to Mordred's arc. |
+| [**The Rider**](https://evergeennova.fandom.com/wiki/The_Rider) | Athletics, will, determination | cities | Ambition and drive. |
+| [**The Lion**](https://evergeennova.fandom.com/wiki/The_Lion) | Courage | cities | Military virtue. |
+| [**The Pilgrim**](https://evergeennova.fandom.com/wiki/The_Pilgrim) | Journeys | greenwoods | The long road. |
+| [**The Stranger**](https://evergeennova.fandom.com/wiki/The_Stranger) | The unknown | darkwoods | Haunts Mordred; associated with things older than the Sunderance. |
+| [**The Reaper**](https://evergeennova.fandom.com/wiki/The_Reaper) | Death | darkwoods | Patron of the Bonekeeper's Guild. |
+| [**The Faceless Soldier**](https://evergeennova.fandom.com/wiki/The_Faceless_Soldier) | War, sacrifice | darkwoods | Patron of Drizella and the Shadic Brethren. |
+| [**The Judge**](https://evergeennova.fandom.com/wiki/The_Judge) | Justice | cities | Law without mercy. |
 
 ---
 
@@ -143,7 +143,7 @@ Deities walk in physical form and are not strictly faction-aligned — they pred
 
 | Name | Aliases | Status | Alignment | Notes |
 |---|---|---|---|---|
-| **The Horned King** | Blighted Lord, Prince of Rot, Nightmare King, Merry Stag Lord, The Tuatha Slaugh | Destroyed (end of 4th age) / Resurrection imminent | darkwoods | Once the Merry Stag Lord — god of harvest, plenty, and spring. Over centuries his followers demanded more than he could give; he grew monstrous. Slain at the Fall of Arcadia by nine Grandmother Hags, Titania, Mab, the Gold Dragon of Thurran, the Jabberwocky, Merlin, and the Green Man. His essence fragmented into the Antiseeds. The Not-Deer creatures manifesting in Cindershire are early signs of return. |
+| [**The Horned King**](https://evergeennova.fandom.com/wiki/Horned_King) | Blighted Lord, Prince of Rot, Nightmare King, Merry Stag Lord, The Tuatha Slaugh | Destroyed (end of 4th age) / Resurrection imminent | darkwoods | Once the Merry Stag Lord — god of harvest, plenty, and spring. Over centuries his followers demanded more than he could give; he grew monstrous. Slain at the Fall of Arcadia by nine Grandmother Hags, Titania, Mab, the Gold Dragon of Thurran, the Jabberwocky, Merlin, and the Green Man. His essence fragmented into the Antiseeds. The Not-Deer creatures manifesting in Cindershire are early signs of return. |
 
 ---
 
@@ -246,8 +246,8 @@ Characters confirmed during session recaps not previously listed.
 | Name | Session | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
 | **The Creature** | S12 | Alive | unknown | Frankenstein's monster ('Adam'). Given his name during reconciliation with Victor (S17). Reconciled; no longer hunting. Lady Tremaine hired him to kill Anastasia (contract unfulfilled). Formed alliance with Drizella. |
-| **Victor Frankenstein** | S16 | Alive | cities | Found alive in Oronia (S16-17). Reconciled with Adam/the Creature. Surgeon who also signed a devil's contract with Rumpelstiltskin. Provided party with winter wolf elixir and healing notes. |
-| **Cinderella** | S25 | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
+| [**Victor Frankenstein**](https://evergeennova.fandom.com/wiki/Victor_Frankenstein) | S16 | Alive | cities | Found alive in Oronia (S16-17). Reconciled with Adam/the Creature. Surgeon who also signed a devil's contract with Rumpelstiltskin. Provided party with winter wolf elixir and healing notes. |
+| [**Cinderella**](https://evergeennova.fandom.com/wiki/Cinderella) | S25 | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
 | [**Argent Carreau**](https://evergeennova.fandom.com/wiki/Argent_Carreau) | S25 | Unknown | darkwoods | Was Anastasia's fiancé in Salasarglumm under the Beast King. |
 | **The Scarecrow** | S60 | Alive | greenwoods | One of Morgana's constructs in Oz. Told the party that Morgause was his older sister (and is made of sand = Servant Four / Hellekin). |
 | **The Tin Man** | S60 | Alive | unknown | Metal construct found in Oz, frozen in terror. |
