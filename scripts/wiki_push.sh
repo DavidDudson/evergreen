@@ -5,7 +5,7 @@
 # Credentials are read from 1Password. Set up once:
 #   1. Create a bot password at https://evergeennova.fandom.com/wiki/Special:BotPasswords
 #   2. Store it in 1Password:
-#        Item name : EvergreenNova Wiki Bot
+#        Item name : Evergreen Wiki Bot
 #        Field     : username   →  YourFandomUsername@BotName
 #        Field     : password   →  the-bot-password-string
 #
@@ -24,7 +24,7 @@ WIKI_BASE="https://evergeennova.fandom.com"
 API="${WIKI_BASE}/api.php"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RESEARCH="${REPO_ROOT}/research"
-OP_ITEM="EvergreenNova Wiki Bot"
+OP_ITEM="Evergreen Wiki Bot"
 
 # ---------------------------------------------------------------------------
 # Mapping: local research file → wiki page title

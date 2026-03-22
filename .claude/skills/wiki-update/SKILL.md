@@ -181,7 +181,7 @@ You may run these commands as part of this skill:
 - `./scripts/wiki_push.sh push "<title>" "<file>"` — **only after approval**
 - `pandoc` — local markdown conversion (no network)
 - `jq` — local JSON parsing (no network)
-- `op item get "EvergreenNova Wiki Bot" --field <field>` — credential retrieval
+- `op item get "Evergreen Wiki Bot" --field <field>` — credential retrieval
 
 You may **not** call the MediaWiki write API (`action=edit`, `action=create`,
 etc.) via raw curl without routing through `wiki_push.sh`, unless the script
