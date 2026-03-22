@@ -199,3 +199,4 @@ Playing  → KeybindConfig → Playing  (or from PauseMenu)
 - **No `as` casts** — Use `From`/`Into` for infallible conversions, `TryFrom`/`TryInto` for fallible ones. If `as` is truly unavoidable (e.g. const context, no `From` impl exists), add a local `#[allow(clippy::as_conversions)]` with a comment explaining why. `clippy::as_conversions` is set to `deny`.
 - **No inline color constructors** — `Color::srgb()`, `Color::srgba()`, `Color::linear_rgb()`, `Color::linear_rgba()` are banned via `clippy::disallowed_methods`. Define all colors as named constants in `models/src/palette.rs` (the only file with `#[allow(clippy::disallowed_methods)]`).
 - All workspace crates inherit these lints via `[lints] workspace = true` in their `Cargo.toml`.
+- **No em dashes or en dashes** — Use `--` for parenthetical asides or ranges in prose (code, comments, research files, wiki content). Never use `—` (em dash) or `–` (en dash) characters.
