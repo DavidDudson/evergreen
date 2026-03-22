@@ -8,7 +8,8 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 1. The Sunderance
 **Status:** Critical / in progress
-**Summary:** A periodic catastrophic event that reshapes the world. Savvan predicted it would occur within 12–18 months of Session 12 — meaning it is now imminent. Session 51 confirms the Sixth Sunderance is already underway — the Emperor is missing and druids cannot contact each other. At the Sunderance, Arcadia (a sunken fey isle) is expected to rise, and the Horned King's tomb beneath Rymes is expected to open. The party must find Arcadia before it does.
+**Summary:** A periodic catastrophic event that reshapes the world. Savvan predicted it would occur within 12–18 months of Session 12 — meaning it is now imminent. At the Sunderance, Arcadia (a sunken fey isle) is expected to rise, and the Horned King's tomb beneath Rymes is expected to open. The party must find Arcadia before it does.
+**Update (S51):** The Sixth Sunderance is already underway — the Emperor is missing and druids cannot contact each other.
 **Key NPCs:** Savvan, Dean Marikosa, the druids (decimated), the Horned King
 **Locations:** Arcadia (will rise at "Flotsam"), Rymes (Horned King's tomb is below the city)
 
@@ -41,7 +42,8 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 5. Nimue's Redemption
 **Status:** Active
-**Summary:** Nimue (the Lady of the Lake) is under Morgana Le Fay's magical compulsion. She briefly broke free to give Mordred Caliburn, saying: *"The waters of Pendragon can free me."* Her soul is described as unclean. Until freed, she remains a tool of the Silverheart Court. Nimue is confirmed as a construct (S32) and former avatar of the Three-Faced Lady (S33). She attacked the party multiple times with spectral eyes (S43), stole Darian's body, and operated from a greenhouse with 100+ antiseeds. Caliburn was later given to Drizella (S33), not Mordred.
+**Summary:** Nimue (the Lady of the Lake) is under Morgana Le Fay's magical compulsion. She briefly broke free to give Mordred Caliburn, saying: *"The waters of Pendragon can free me."* Her soul is described as unclean. Until freed, she remains a tool of the Silverheart Court.
+**Update:** Nimue is confirmed as a construct (S32) and former avatar of the Three-Faced Lady (S33). She attacked the party multiple times with spectral eyes (S43), stole Darian's body, and operated from a greenhouse with 100+ antiseeds. Caliburn was later given to Drizella (S33), not Mordred.
 **Key NPCs:** Nimue, Mordred, the waters of Pendragon
 **Locations:** Pendragon (Camelot's seat of power)
 
@@ -56,7 +58,7 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 7. Robert Tremaine
 **Status:** Active
-**Summary:** Drizella's father, held captive in a room of mirrors by Queen Maeve. Freed (briefly) at Everdrift. He is an archer and told Drizella to *"escape through mirrors."* Freed at Everdrift (S59). Appeared aged with white beard. Told Drizella to 'escape through mirrors.' Current location after freedom unknown.
+**Summary:** Drizella's father, held captive in a room of mirrors by Queen Maeve. An archer. Freed at Everdrift (S59) — appeared aged with white beard. Told Drizella to *"escape through mirrors."* Current location after freedom unknown.
 **Key NPCs:** Robert Tremaine, Drizella, Queen Maeve
 
 ---
@@ -71,10 +73,8 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 9. Morgana's Three Selves
 **Status:** Active
-**Summary:** Morgana Le Fay killed the Three-Faced Lady in Oz and split herself into three: **Morgana** (memories/heart), **Queen Maeve** (magic/ambition), **Lady Tremaine** ("other things"). Each is diminished. Lady Tremaine appeared dead (confirmed by Greta) but is apparently still alive (Polko confirmed in Session 66). The three fragments appearing together at Everdrift caused chaos. Reconnecting or confronting them is a major thread.
+**Summary:** Morgana Le Fay killed the Three-Faced Lady in Oz (S56/60) and used the murder to split herself into three: **Morgana** (memories/heart), **Queen Maeve** (magic/ambition), **Lady Tremaine** ("other things"). Each is diminished. Lady Tremaine appeared dead (confirmed by Greta) but is apparently still alive (Polko confirmed in Session 66). The three fragments appearing together at Everdrift caused chaos. Reconnecting or confronting them is a major thread.
 **Key NPCs:** Morgana Le Fay, Queen Maeve, Lady Tremaine, the Three-Faced Lady (dead)
-
-Morgana killed the Three-Faced Lady in Oz (S56/60) and used the murder to fragment herself into three. This origin is confirmed.
 
 ---
 
@@ -143,7 +143,8 @@ Morgana killed the Three-Faced Lady in Oz (S56/60) and used the murder to fragme
 
 ### 18. Merlin's Imprisonment
 **Status:** Active
-**Summary:** Merlin (founder of the Order of the Eleventh Eye and Briar's distant patron) has been imprisoned by Queen Maeve. Briar negotiated his release — in exchange for allowing Maeve to operate on Drizella at Aspenthorn. Maeve warned: *"You won't want him back when you know why he was imprisoned."* Critical complication: Merlin is bound to the Pendragon bloodline (S34/36) and cannot act freely while any Pendragon lives — meaning Mordred's existence directly prevents Merlin from helping them even if released.
+**Summary:** Merlin (founder of the Order of the Eleventh Eye and Briar's distant patron) has been imprisoned by Queen Maeve. Briar negotiated his release — in exchange for allowing Maeve to operate on Drizella at Aspenthorn. Maeve warned: *"You won't want him back when you know why he was imprisoned."*
+**Complication (S34/36):** Merlin is bound to the Pendragon bloodline and cannot act freely while any Pendragon lives — meaning Mordred's existence directly prevents Merlin from helping them even if released.
 **Key NPCs:** Merlin, Queen Maeve, Briar
 **Flags:** `briar_maeve_bargain`
 
