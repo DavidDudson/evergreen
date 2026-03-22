@@ -8,234 +8,196 @@ tools: Read, Write, Edit, Bash, Glob, Grep, Agent, WebFetch
 
 Appends new sections to an **existing** character page on the EvergreenNova
 fandom wiki, sourced from raw session transcripts. Never replaces existing
-content — only adds new sections under a `== Bot Conjecture ==` heading.
+content. New content goes under `== Bot Conjecture ==`.
 
 ---
 
 ## Inputs
 
 The user provides:
-- **Character name** (required) — e.g. `Queen Maeve`, `Mordred`, `Nimue`
-- **Session range** (optional) — e.g. `11-30`. Defaults to all available sessions.
+- **Character name** (required)
+- **Session range** (optional, defaults to all)
 
 ---
 
 ## Workflow
 
-### Step 1 — Fetch the existing wiki page
+### Step 1 -- Fetch and save the existing wiki page
 
 ```bash
 curl -s "https://evergeennova.fandom.com/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=PAGE_TITLE&format=json" \
-  | jq -r '.query.pages | to_entries[0].value.revisions[0].slots.main["*"]'
+  | jq -r '.query.pages | to_entries[0].value.revisions[0].slots.main["*"]' > /tmp/page_existing.txt
 ```
 
-Save this content. You need it to:
-1. Confirm the page exists (abort if missing — this skill is append-only)
-2. Know what content is **already there** so you don't duplicate it
-3. Identify whether a `== Bot Conjecture ==` section already exists
+Save this to a file. You need the **complete original content** to:
+1. Confirm the page exists (abort if missing)
+2. Know what is already documented (to avoid duplicates)
+3. Identify sessions already covered in Appearances
+4. Detect existing `== Bot Conjecture ==` section
 
-### Step 2 — Identify relevant sessions
-
-Search the raw transcripts for mentions of the character:
+### Step 2 -- Find relevant sessions
 
 ```bash
-grep -li "CHARACTER_NAME" research/sessions/yt-scripts/Session*
+# Summaries (fast, read these first)
+grep -li "CHARACTER" research/sessions/summaries/Session*.md
+
+# Raw transcripts (for quotes and timestamps)
+grep -li "CHARACTER" research/sessions/yt-scripts/Session*
 ```
 
-Also check the session summaries:
+Try garbled name variants too (see name mappings below).
 
-```bash
-grep -li "CHARACTER_NAME" research/sessions/summaries/Session*.md
-```
+### Step 3 -- Get YouTube video IDs and timestamps
 
-This gives you the session numbers where the character appears. Read those
-summaries first (fast), then dig into the raw transcripts for quotes and
-timestamps.
-
-### Step 3 — Extract the YouTube video ID for each session
-
-Each summary file contains a YouTube link on line 4:
+**From summaries** (line 4):
 ```
 **YouTube:** [Session N](https://www.youtube.com/watch?v=VIDEO_ID)
 ```
 
-Each raw transcript file contains timestamp links like:
+**From raw transcripts** (no `.md` extension):
 ```
 [https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS (HH:MM:SS)]
 ```
 
-Use these to create timestamped links in the wiki content.
+**CRITICAL:** Always use the video ID from the raw transcript itself, not
+from the summary. They may differ. Search the transcript for character-name
+mentions near key events to find the right timestamp.
 
-### Step 4 — Analyse transcripts for new content
+### Step 4 -- Extract new content
 
-For each relevant session, extract:
+For each session NOT already on the page, extract:
 
-#### History
-Events, actions, revelations, and decisions involving the character. Focus on
-**what they did** and **what happened to them**. Write in past tense, narrative
-style, matching the tone of existing wiki pages (see Queen Maeve example).
+**History:** What they did, what happened to them. Past tense, narrative.
 
-#### Quotes
-Direct speech attributed to the character. Auto-captions are noisy — only
-include quotes you're confident about. Format:
+**Quotes:** Direct speech from the character. Mark uncertain with (?).
 
-```
-{{Quote|Quote text here.|Source — [[Session N]] [video_url (timestamp)]}}
-```
+**Relationships:** Who they interact with, how.
 
-If the `{{Quote}}` template doesn't exist, use a simple blockquote:
-```
-:"''Quote text here.''" — [[Session N]]
-```
+**Appearances:** Brief narrative of involvement per session.
 
-#### Relationships
-New relationship information revealed in the session. Who do they interact
-with? What is the nature of the relationship? Has it changed?
+**Every claim must have a YouTube timestamp where one can be found.** Search
+the raw transcript for the character name near the relevant dialogue. Place
+timestamps inline after the claim, before the `<ref>` tag.
 
-Format as sub-sections under `=== Character Name ===`.
+### Step 5 -- Diff against existing content
 
-#### Birth / Death
-Any information about the character's birth, origin, death, resurrection,
-or transformation. Include session references.
+Compare findings against the existing page. Remove duplicates:
+- Session already in Appearances? Skip it.
+- Relationship already described? Skip (unless new info).
+- Quote already present? Skip.
+- History already covered? Skip.
 
-#### Appearances in the Campaign
-A chronological list of sessions where the character appeared or was
-significantly referenced. Format like the Queen Maeve example:
+### Step 6 -- Build the complete page
 
-```
-=== [[Session N]] ===
-Brief narrative of what happened with this character in this session.
-[https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS (timestamp)] for key moments.
-```
+**DO NOT use `appendtext`.** It appends after footer elements and breaks
+the page structure.
 
-### Step 5 — Diff against existing content
+Instead, build the complete page:
 
-Before generating output, compare your findings against the existing wiki
-page content from Step 1. **Remove anything that is already covered.**
+1. Read the original page content from Step 1
+2. Strip footer elements: `{{Template:Nav-Characters}}`, `{{Template:Nav-Deities}}`,
+   `[[Category:Characters]]`, `[[Category:Deities]]`, `== References ==`, `<references />`
+3. Append the Bot Conjecture section
+4. Re-add footer at the very end
 
-Rules:
-- If a session appearance is already documented → skip it
-- If a relationship is already described → skip it (unless new info changes it)
-- If a quote is already on the page → skip it
-- If history is already covered → skip it
-- Only include genuinely **new** information
-
-### Step 6 — Format the wikitext
-
-All new content goes under `== Bot Conjecture ==` at the bottom of the page,
-before `==References==` and category tags.
-
-Structure:
+**Bot Conjecture structure** (must match this exactly):
 
 ```mediawiki
 == Bot Conjecture ==
 {{Bot conjecture|date=YYYY-MM-DD}}
 
 === History (Bot) ===
-Narrative history content here. Reference sessions with <ref>[[Session N]]</ref>.
+Narrative content. [https://www.youtube.com/watch?v=ID&t=SEC (HH:MM:SS)] <ref>[[Session NN]]</ref>
 
 === Quotes (Bot) ===
-:"''Quote text here.''" — [[Session N]] [https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS (HH:MM:SS)]
-
-:"''Another quote.''" — [[Session N]]
+:"''Quote text.''" [https://www.youtube.com/watch?v=ID&t=SEC (HH:MM:SS)] <ref>[[Session NN]]</ref>
 
 === Relationships (Bot) ===
 ==== [[Character Name]] ====
-Description of the relationship. <ref>[[Session N]]</ref>
-
-=== Birth / Death (Bot) ===
-Information about origin, birth, death, resurrection if applicable.
+Description. [https://www.youtube.com/watch?v=ID&t=SEC (HH:MM:SS)] <ref>[[Session NN]]</ref>
 
 === Appearances in the Campaign (Bot) ===
-==== [[Session N]] ====
-What happened with this character in this session.
-[https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS (timestamp)]
+==== [[Session NN]] ====
+What happened. [https://www.youtube.com/watch?v=ID&t=SEC (HH:MM:SS)]
 ```
 
-**Only include sections that have new content.** If there are no new quotes,
-omit the Quotes section entirely. Don't add empty sections.
+**Sub-section naming:** Always use `(Bot)` suffix: `=== History (Bot) ===`,
+`=== Relationships (Bot) ===`, `=== Appearances in the Campaign (Bot) ===`.
 
-If a `== Bot Conjecture ==` section already exists on the page, append new
-`===` subsections to it — never create a second `== Bot Conjecture ==`.
+**Appearance entries:** Use `==== [[Session NN]] ====` (four `=`).
 
-### Step 7 — Present for approval
+**Only include sections with content.** Omit empty sections.
 
-Show the user an approval block:
+If `== Bot Conjecture ==` already exists, append new `===` sub-sections
+to it. Never create a duplicate.
+
+### Step 7 -- Verify before presenting
+
+Before showing the approval block, verify:
+1. **Original content preserved.** The new file must be LONGER than the
+   original. If it's shorter, something was lost. Abort and investigate.
+2. **No em/en dashes.** Search for unicode chars. Rephrase if found.
+3. **Session zero-padding.** Sessions 1-9 must be `[[Session 01]]` to `[[Session 09]]`.
+4. **YouTube timestamps present.** Every Appearances entry and every
+   significant claim should have a timestamp if one was found in the transcript.
+5. **Footer at end.** `{{Template:Nav-Characters}}`, `[[Category:Characters]]`,
+   `== References ==`, `<references />` must be the last 4 lines.
+
+### Step 8 -- Present for approval
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-WIKI ENRICH APPROVAL
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Page     : <wiki page title>
+Page     : <title>
 Action   : APPEND TO "Bot Conjecture"
-Sections : <list of sections being added>
-Sessions : <session numbers referenced>
-
---- PREVIEW ---
-<the wikitext that will be appended>
---- END PREVIEW ---
-
-Type YES to push, NO to skip, or EDIT to modify.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sections : History, Relationships, Appearances
+Sessions : S07, S22, S32 ...
+Original : NN lines
+New      : NN lines (+NN added)
+Timestamps: NN YouTube links
 ```
 
-Wait for explicit confirmation before pushing.
-
-### Step 8 — Push
-
-Use the MediaWiki API `appendtext` parameter to add content to the END
-of the page without touching existing content. **Write raw mediawiki
-wikitext** (with `==` headings, `[[links]]`, `{{templates}}`).
+### Step 9 -- Push
 
 ```bash
-# Login and get CSRF token (wiki_push.sh handles this, but for direct API):
-./scripts/wiki_push.sh push "<Page Title>" "<local wikitext file>"
+./scripts/wiki_push.sh push "<Page Title>" /tmp/page_complete.txt
 ```
 
-**WARNING: Do NOT use `appendtext`** — it appends after *everything*
-including `{{Template:Nav-Characters}}`, `[[Category:Characters]]`, and
-`== References ==`, breaking the page structure.
-
-Instead, **fetch the full page, insert the Bot Conjecture section before
-the footer elements, and push the complete page:**
-
-```bash
-# 1. Fetch existing page
-curl -s "${API}?action=query&prop=revisions&rvprop=content&rvslots=main&titles=PAGE&format=json" \
-  | jq -r '.query.pages | to_entries[0].value.revisions[0].slots.main["*"]' > /tmp/page_full.txt
-
-# 2. Insert Bot Conjecture BEFORE {{Template:Nav-Characters}} / [[Category:]] / ==References==
-#    Strip footer elements, append Bot Conjecture, re-add footer at end
-
-# 3. Push the complete corrected page
-./scripts/wiki_push.sh push "<Page Title>" /tmp/page_full.txt
-```
-
-**Important:** The file must be raw mediawiki wikitext with `==` headings
-on their own lines. `wiki_push.sh` auto-detects wikitext (looks for `{{`
-or `^==`) and passes it through without pandoc conversion.
+The file must contain `{{` or `==` headings for wiki_push.sh to detect
+it as raw wikitext and skip pandoc.
 
 ---
 
-## Wiki Link Formatting
+## Footer Element Reference
 
-When referencing other characters, locations, or sessions, use wiki links:
+Different pages use different footer templates. Detect from the original:
 
-- Characters: `[[Character Name]]` or `[[Wiki Page Title|Display Name]]`
-- Sessions: `[[Session N]]`
-- Locations: `[[Location Name]]`
-- Items: `[[Item Name]]`
-
-For YouTube timestamps, use external links:
 ```
-[https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS (HH:MM:SS)]
+{{Template:Nav-Characters}}   -- most character pages
+{{Template:Nav-Deities}}      -- deity pages
+[[Category:Characters]]       -- most pages
+[[Category:Deities]]          -- deity pages
+== References ==               -- or ==References==
+<references />
 ```
+
+Strip ALL of these from the original, append Bot Conjecture, then re-add
+the same footer elements at the end.
 
 ---
 
-## Matching Character Names in Transcripts
+## Timestamp Searching Tips
 
-Auto-captions garble names. Use these known mappings:
+1. Search the raw transcript (no `.md` extension) not the wiki copy
+2. Use `grep -i "character_name" research/sessions/yt-scripts/SessionNN`
+3. Timestamps appear inline: `[https://www.youtube.com/watch?v=ID&t=SEC (HH:MM:SS)]`
+4. Search for keywords near the character name to find the right moment
+5. If the character name is garbled in captions, search for related terms
+   (location, event, other character in the scene)
+6. Place timestamps after the relevant claim, before `<ref>`:
+   `...the ritual. [https://...&t=7763 (02:09:23)] <ref>[[Session 08]]</ref>`
+
+---
+
+## Character Name Mappings (Auto-Caption Garbling)
 
 | Caption Name | Actual Character |
 |---|---|
@@ -249,76 +211,53 @@ Auto-captions garble names. Use these known mappings:
 | Morana, Morgana | Morgana Le Fay |
 | Carlos | The Beast King |
 | Dean Maricosa | Dean Marikosa |
-
-When searching for a character, try both the real name and known garbled
-variants.
+| Queen Ma, Queen Mave | Queen Maeve |
+| Silver Lady | Queen Maeve |
+| Goth, Mother Goth | Dame Gothel |
 
 ---
 
 ## Rules
 
-1. **Never replace existing content.** This skill only appends.
-2. **All content goes under `== Bot Conjecture ==`.** Use `{{Bot conjecture|date=YYYY-MM-DD}}`.
-3. **Skip content that already exists on the page.** Diff first.
-4. **Mark uncertain quotes with (?)** as auto-captions are noisy.
-5. **Include session references** for every claim using `<ref>[[Session N]]</ref>`.
-6. **Include YouTube timestamps** where possible for key moments and quotes.
-7. **Write in the wiki's existing tone** -- past tense, narrative, encyclopaedic.
-8. **Approval required** before any API call (inherited from wiki-update skill).
-9. **One character at a time.** If the user asks for multiple, process sequentially.
-10. **No em dashes or en dashes.** Never use `—` or `–`. Rephrase using commas, periods, or "to" for ranges instead.
+1. **Never replace existing content.** Build the complete page: original + Bot Conjecture + footer.
+2. **Verify line count.** New file must be longer than original. If shorter, content was lost.
+3. **All content goes under `== Bot Conjecture ==`.** Use `{{Bot conjecture|date=YYYY-MM-DD}}`.
+4. **Sub-sections use `(Bot)` suffix.** `=== History (Bot) ===`, `=== Relationships (Bot) ===`, etc.
+5. **Appearance entries use `==== [[Session NN]] ====`** (four `=`, wiki-linked).
+6. **Skip content already on the page.** Diff first.
+7. **Mark uncertain quotes with (?).** Auto-captions are noisy.
+8. **Every claim needs `<ref>[[Session NN]]</ref>`.**
+9. **Every claim needs a YouTube timestamp** where one exists in the transcript.
+10. **No em dashes or en dashes.** Never use `--` or `--`. Rephrase with commas, periods, or "to".
+11. **Sessions 1-9 are zero-padded:** `[[Session 01]]` through `[[Session 09]]`.
+12. **Footer goes at the very end.** After all Bot Conjecture content.
+13. **Approval required** before any API call.
+14. **Do NOT use `appendtext` API.** It breaks page structure.
 
 ---
 
 ## Quick Reference
 
 ```bash
-# Check if a page exists
-curl -s "https://evergeennova.fandom.com/api.php?action=query&titles=PAGE&format=json" \
-  | jq -r '.query.pages | to_entries[0].value.missing // "exists"'
-
-# Fetch existing page content
+# Fetch existing page
 curl -s "https://evergeennova.fandom.com/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=PAGE&format=json" \
   | jq -r '.query.pages | to_entries[0].value.revisions[0].slots.main["*"]'
 
-# Find character mentions in transcripts
+# Find mentions in transcripts (no .md extension)
 grep -li "CHARACTER" research/sessions/yt-scripts/Session*
 
-# Find character mentions in summaries
+# Find mentions in summaries (.md extension)
 grep -li "CHARACTER" research/sessions/summaries/Session*.md
 
-# Get YouTube ID from a summary
+# Get YouTube ID from summary
 grep "YouTube:" research/sessions/summaries/SessionN.md
 
-# Get timestamps from raw transcript
-grep "youtube.com" research/sessions/yt-scripts/SessionN | head -5
-```
+# Find timestamps near character mention in transcript
+grep -B2 -A2 -i "character_name" research/sessions/yt-scripts/SessionNN
 
----
+# Check for em/en dashes
+grep -cP '[--]' /tmp/page_complete.txt
 
-## Example Output
-
-For a character like Nimue, the appended content might look like:
-
-```mediawiki
-== Bot Conjecture ==
-{{Bot conjecture|date=2026-03-22}}
-
-=== History (Bot) ===
-During [[Session 11]], Nimue conducted a divination ritual at [[Ersatz University]]'s Observatory during the [[Parallax]], attempting to determine when the [[Sunderance]] would occur. She had mind-controlled [[Savvan]] to operate the machine and imprisoned [[Dean Marikosa]] in a back chamber. She cast an 8th-level dominate spell (DC 40) on [[Mordred]], turning him against the party.<ref>[[Session 11]]</ref>
-
-When [[Drizella]] nearly died during the fight, Nimue's true self — a peaceful, drowning figure trapped within her corrupted outer shell — communicated via Message spell: ''"The Waters of Pendragon can free me."''<ref>[[Session 11]]</ref>
-
-=== Quotes (Bot) ===
-:"''Leave this place. I have work that must be done. I am commanded by a greater power.''" — [[Session 11]] [https://www.youtube.com/watch?v=u9AJ43VXt2Y&t=250 (00:04:10)]
-
-:"''You might have known the glory I seek if you would serve the order.''" — [[Session 11]]
-
-=== Relationships (Bot) ===
-==== [[Savvan]] ====
-Nimue mind-controlled Savvan to operate her divination machine during the Parallax ritual. He fought the control, urging the party: "Destroy the machine!"<ref>[[Session 11]]</ref>
-
-=== Appearances in the Campaign (Bot) ===
-==== [[Session 11]] ====
-Nimue attacked the party at the Ersatz University Observatory, conducting a Parallax divination ritual. She mind-controlled Mordred and stole Drizella's mask before escaping. Caliburn's scabbard was recovered from the wreckage. [https://www.youtube.com/watch?v=u9AJ43VXt2Y&t=62 (00:01:02)]
+# Verify line count
+wc -l /tmp/page_existing.txt /tmp/page_complete.txt
 ```
