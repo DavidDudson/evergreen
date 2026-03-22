@@ -1,6 +1,6 @@
 ---
 name: wiki-update
-description: Update the EvergreenNova fandom wiki. Use when the user asks to push, sync, edit, or create wiki pages. Handles bot attribution, unreviewed-recommendation sections, new-page warnings, and mandatory manual approval before any API call.
+description: Update the EvergreenNova fandom wiki. Use when the user asks to push, sync, edit, or create wiki pages. Handles bot attribution, bot-conjecture sections, new-page warnings, and mandatory manual approval before any API call.
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -20,21 +20,24 @@ three rules below — no exceptions.
 
 When the target page exists and was not originally created by the bot,
 all proposed content must be appended under a section called
-`== Unreviewed Bot Recommendations ==` at the bottom of the page.
+`== Bot Conjecture ==` at the bottom of the page.
+
+Content in this section is explicitly labelled as **conjecture** — it is
+unverified, generated from research files, and has not been reviewed by
+a human editor. Wiki readers and editors must treat it as such.
 
 The section format is:
 
 ```
-== Unreviewed Bot Recommendations ==
-{{Bot recommendation|date=YYYY-MM-DD}}
-=== <short title for this recommendation> ===
+== Bot Conjecture ==
+{{Bot conjecture|date=YYYY-MM-DD}}
+=== <short title for this entry> ===
 <content>
 ```
 
-Use `{{Bot recommendation|date=YYYY-MM-DD}}` as the section opener so
-wiki editors can see at a glance what is pending review. If the section
-already exists, append a new `===` subsection — never replace the
-existing one.
+Use `{{Bot conjecture|date=YYYY-MM-DD}}` as the section opener. If the
+section already exists, append a new `===` subsection — never replace
+the existing one.
 
 ### Rule 2 — New pages created by the bot
 
@@ -87,7 +90,7 @@ curl -s "https://evergeennova.fandom.com/api.php?action=query&prop=revisions&rvl
 ```
 
 - If the first-ever revision was made by the bot account → bot owns the page → full overwrite is allowed
-- Otherwise → human-owned → apply Rule 1 (append to `Unreviewed Bot Recommendations`)
+- Otherwise → human-owned → apply Rule 1 (append to `Bot Conjecture`)
 
 ### Step 3 — Prepare wikitext
 
@@ -117,7 +120,7 @@ Show the user an approval block for **every page** before touching the API:
 WIKI EDIT APPROVAL REQUIRED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Page   : <wiki page title>
-Action : <NEW PAGE | APPEND TO "Unreviewed Bot Recommendations" | OVERWRITE (bot-owned)>
+Action : <NEW PAGE | APPEND TO "Bot Conjecture" | OVERWRITE (bot-owned)>
 Source : <local file path>
 
 --- PREVIEW (first 40 lines) ---
@@ -140,13 +143,13 @@ Only after receiving explicit confirmation, call:
 ```
 
 Or use the API directly for append/section operations where the script
-does not support them natively.
+does not support them natively (e.g. `action=edit&section=new`).
 
 ---
 
 ## Template Creation
 
-If `{{Bot-created}}` or `{{Bot recommendation}}` do not yet exist on the
+If `{{Bot-created}}` or `{{Bot conjecture}}` do not yet exist on the
 wiki, create them before pushing any content pages. Present the template
 creation for approval the same way as any other edit.
 
@@ -161,13 +164,61 @@ relying on it.
 <noinclude>[[Category:Bot-created pages]]</noinclude>
 ```
 
-**Template:Bot recommendation** (wikitext):
+**Template:Bot conjecture** (wikitext):
 ```
-<div style="border:2px solid #4a90d9; background:#eaf4ff; padding:8px; margin-bottom:8px;">
-🤖 '''Unreviewed bot recommendation''' added on {{{date|}}}.
-A human editor should review and integrate or dismiss this content.
+<div style="border:2px solid #9b59b6; background:#f5eeff; padding:8px; margin-bottom:8px;">
+🤖 '''Bot conjecture''' — added on {{{date|}}}. This content was generated
+from research files and has not been verified by a human editor.
+Treat as conjecture until reviewed and integrated into the main article.
 </div>
 ```
+
+---
+
+## pywikibot — For Complex Tasks
+
+For simple single-page pushes, `wiki_push.sh` + curl is sufficient.
+For complex operations, use **pywikibot** instead:
+
+```bash
+pip install pywikibot
+```
+
+Prefer pywikibot when:
+- **Bulk edits** — pushing many pages in a loop with rate limiting
+- **Category management** — adding/removing pages from categories
+- **Template replacement** — find-and-replace across many pages
+- **Page moves / redirects** — renaming pages while preserving history
+- **Conditional edits** — only edit if the page matches a pattern
+- **Watchlist / recent changes monitoring** — reactive bot behaviour
+- **Talk page operations** — appending to discussion sections cleanly
+
+pywikibot handles CSRF tokens, retries, rate limiting, and the Fandom
+login flow automatically. Configure it with:
+
+```python
+# user-config.py
+family = 'evergeennova'   # custom family file needed for non-Wikimedia wikis
+mylang = 'en'
+usernames['evergeennova']['en'] = 'YourBotUsername'
+```
+
+For one-off scripts, `mwclient` is a lighter alternative:
+
+```bash
+pip install mwclient
+```
+
+```python
+import mwclient
+site = mwclient.Site('evergeennova.fandom.com', path='/wiki/')
+site.login('BotUser@BotName', 'bot-password')
+page = site.pages['Page Title']
+page.save(new_text, summary='Updated via bot')
+```
+
+All three rules (conjecture section, bot-created banner, approval) still
+apply regardless of whether you use curl, pywikibot, or mwclient.
 
 ---
 
@@ -182,19 +233,20 @@ You may run these commands as part of this skill:
 - `pandoc` — local markdown conversion (no network)
 - `jq` — local JSON parsing (no network)
 - `op item get "Evergreen Wiki Bot" --field <field>` — credential retrieval
+- `python3` / `pip install pywikibot` / `pip install mwclient` — for complex tasks
 
-You may **not** call the MediaWiki write API (`action=edit`, `action=create`,
-etc.) via raw curl without routing through `wiki_push.sh`, unless the script
-genuinely cannot support the operation (e.g. section appends). In that case,
-show the full curl command in the approval block.
+You may **not** call the MediaWiki write API (`action=edit`, etc.) via raw
+curl without routing through `wiki_push.sh`, unless the script genuinely
+cannot support the operation. In that case, show the full curl command in
+the approval block.
 
 ---
 
 ## Quick Reference — just recipes
 
 ```bash
-just wiki-list                                          # see all mapped pages
+just wiki-list                                             # see all mapped pages
 just wiki-diff "Quest List" research/quests/quest_list.md  # check drift
 just wiki-push-one "Quest List" research/quests/quest_list.md  # push one (after approval)
-just wiki-push                                          # push all (approval per page)
+just wiki-push                                             # push all (approval per page)
 ```
