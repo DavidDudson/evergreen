@@ -153,116 +153,105 @@ Characters confirmed during session recaps not previously listed.
 
 ### Allies & Recurring
 
-| Name | Status | Alignment | Role / Notes |
-|---|---|---|---|
-| **Lancelot** | Alive | cities | Aged (70–80), white-haired former Knight of Camelot living in Pebblecreek. Lover of both Queen Guinevere and Morgana Le Fay. Left Camelot after Arthur chose to save the child over Guinevere's life in childbirth. Buried Guinevere himself. Has a son in knight training. Comforted Mordred after Darian's death. Present at Mordred's birth. Loved Mordred's mother. Buried the queen when Arthur refused. Lost companion Passibal during baby-retrieval attempt. Came to Pebblecreek specifically seeking Mordred (a changeling of the right age). Deeply hostile to Merlin. Confirmed Caliburn = one-third of Excalibur (S36). |
-| **Carabosse** | Alive | darkwoods | The true Fairy Godmother. Worked with Bloody Mary to engineer Drizella's entire life via the Lady Tremaine scheme. Claims she wants to help undo what was done. Connected to Sycorax. May be the only one who can reverse the curse. |
-| **Robson Wellgood** | Alive | darkwoods (defecting?) | Former Silverheart Court member, prisoner of Maeve at Everdrift. Deliberately threw a card game to help Bigby. Told him: *"Find me in Mercia."* Potential double agent. |
-| **Tinker Bell** | Alive | greenwoods | Summer Court fey investigator. Uncovered that the wish spell destroying the druids was cast on 30 April 348 beneath Emberhall. |
-| **Renfield** | Alive | darkwoods | Vampire thrall of Bloody Mary. Calls Drizella "Empress." Can travel between Oz and Evergreen. More intelligent than he appears. |
-| **Dean Marikosa** | Alive | cities | Dean of Ersatz University. Fought in the Fall of Arcadia. Her vision provided the complete story of the Horned King's death. |
-| **Hazel the Wise** | Alive | greenwoods | Grandmother of the Thrice-Triple Covens. |
-| **Glinda the Good** | Alive | greenwoods | Psychopomp (shepherd of the dead) in Oz. Revealed each party member's death prophecy. |
-| **Vasala/Valassa Farsight** | Alive | greenwoods | Recurring arcane expert ally. Preserved Mordred's severed hand in Salasarglumm. |
-| **King Oberon** | Murdered (S56) | greenwoods | King of the Fey. Murdered 30 April 348; his memory was tampered with (ten minutes missing). Asked Bigby to investigate. The dagger was identical to Bigby's. |
-| **Queen Mab** | Alive | greenwoods | Winter Court sovereign. Louie's mother. Her sister Augusta is keeper of fate. |
-| **Grandmother Alpine** | Alive | greenwoods | Large owl-woman fey. Knows Morgana. Warned party about deals with Mary. Mordred read her fate: *"traitor."* |
-| **Miss Octavia Muffet** | Alive | greenwoods | Giant spider fey running an orphanage in Morso. Has a deal with Grandmother Malyr for a safe glade post-Sunderance. |
-| **Rodrigo** | Alive (freed S66) | greenwoods | Cursed lion from Cindershire. Was searching for the witch who cursed him. Freed by the party. |
-| **Matron Simone** | Alive | cities | Head of the Sage Hospice in Lowmarsh. Provisionally licenced Drizella as a Medicaster. |
-| **Lewis Short** | Alive | cities | Chairman of Lowmarsh. Long-moustached elf. Targeted by the Shadic Brethren. |
-| **High Matron Mayana** | Alive | cities | Leader of the Northern League of Medicasters in Cindershire. Investigating the Blight plague. |
-| **Billy Bones** | Unknown | cities | Old sailor; introduced the party to the Hispaniola crew at Auntie's Scones in Oronia. |
-| **Flycatcher** | Alive | greenwoods | Informant in Pebblecreek. Revealed antiseed distribution details. Cannot remember the Big Bad Wolf's name. |
-| **Savvan** | Alive | greenwoods | Changeling. Was caught in Nimue's ritual against their will. Warned that a Sunderance will occur within 12–18 months (as of mid-campaign). |
-| **Greta** | Alive | greenwoods | Moon-connected woman with vampiric traits. Connected to the Man on the Moon. Confirmed Lady Tremaine's apparent death in Pebblecreek. |
-| **Old Mother Hubbard** | Alive | greenwoods | Wise figure at Goback; the party received gifts and prophecy here. |
-| **Augusta** | Alive | greenwoods | Mab's sister; keeper of fate. Told Briar her soul sings the song of the Harvestman; that Prince Phillip may have experienced the same sleeping curse. |
-<!-- Added from Session 1 -->
-| **The Witch of the Woods** | Alive | greenwoods | Merida's mentor. A witch (not a hag). Initially tricked Merida but later took her on as a student. Told Merida about the upcoming winter solstice and sent her toward Lowmarsh. |
-| **Officer Bradley** | Alive | cities | Law enforcement in Lowmarsh. "Great big brick of a man" in plate armour. Runs the Broken Bricks guardhouse. Mentioned scouts from the south. |
-<!-- Added from Session 2 -->
-| **Bessa of the Lone Pine** | Unknown | greenwoods | Sibylla's mentor. Told Sibylla about the Parallax and encouraged her to bond with a patron. |
-<!-- Added from Session 3 -->
-| **Mother Mary Hill** | Alive | cities | Thin, older cleric/healer at the Immaculate Church of the Goodly Father in Lowmarsh. A healer, not skilled in dispelling. Directed the party to Vicar Rothwell for magical help. |
-| **Vicar Sean Rothwell** | Alive | cities | Vicar of the Goodly Father in Lowmarsh. More magically skilled than Mother Mary Hill. Was in a committee meeting when the party needed help dispelling the illusion on Thori Black's chambers. |
-| **Chops** | Alive | cities | Small, red-haired barkeeper at the Lone Pine tavern in Lowmarsh. Provided the party with information and free accommodation. |
-| **Corpus** | Alive | cities | Large, barrel-chested tavern worker at the Lone Pine in Lowmarsh. Has a dwarf uncle living underground who speaks Dwarvish — potential lead for translating Thori Black's treasury book. |
-| **Trevor Becker** | Alive | cities | Runs a rival establishment ("Investigations") in Lowmarsh. Prejudiced against Travelers. Few customers but always has money — suspected of shady dealings. Town guard calls him "a sad little man." |
-<!-- Added from Session 4 -->
-| **Paul Goodget** | Alive | cities | Farmer and Lowmarsh People's Committee member. Owns the largest farm within the walls. Hired the party to investigate crop theft (12% loss over three months). Holds one of three vault keys. |
-| **Austin Burton** | Alive | cities | Owns the Burton Lumber Yard in Lowmarsh. People's Committee member. Holds the third vault key. Cheerful and cooperative. |
-<!-- Added from Session 5 -->
-| **Oswald Burton** | Alive | cities | Short, bald owner of Burton Lumber Yard. Handed over his vault key with no resistance. Red shirt, blue overalls, perpetual unlit cigarette. |
-| **Alexander Dunos** | Alive | darkwoods | Red Hand commander. Elder man with salt-and-pepper hair, goatee, terrible burns on one side of his face, right eye replaced with a brass eye. Calm, purposeful, not murderous. Led the Red Hand force into Lowmarsh hunting a shapeshifting fey. Revealed the shapechanger had calculated when the next Sunderance will occur. |
-<!-- Added from Session 6 -->
-| **Pyromancer Ken** | Deceased | darkwoods | Red Hand mage. Big red hooded robes. Once fought a Fairy Godmother alongside Alexander. Killed during a road ambush while escorting the party. Invited Nik to join Ember Hall. |
-<!-- Added from Session 7 -->
-| **The Conductor** | Alive | greenwoods | Skeleton in a bright blue suit with white stripes and a pocket watch. Operates the Winter Express. Gives magical gifts to passengers who defend the train. Polite and formal. |
-| **The Hitchhiker** | Alive | greenwoods | Scruffily dressed skeleton; the Conductor's brother. Rides on the outside of the Winter Express. Trickster figure. Drops and returns the Conductor's pocket watch. |
-| **The Winter Giver** | Alive | greenwoods | Old man in a big red cloak with a long white beard, riding a reindeer sleigh (one with a glowing red nose). Jolly gift-giver but also, by lore, a very evil spirit that devours the wicked. A second demonic face briefly appears at the back of his head. |
-| **The Tea Lady** | Alive | greenwoods | Elderly woman pushing a cart on the Winter Express. Serves jasmine tea. |
-<!-- Added from Session 8 -->
-| **Father Lucas** | Alive | cities | Cleric in black robes with a collar of bones. Member of the Bonekeeper's Guild. Used the Mind Conference spell to brief the party in a shared mental space about the spontaneously-rising undead. |
-| **Krennic Silver-Po** | Alive | cities | Dwarf; rival contractor pursuing the same Salasarglumm commission as the party on behalf of an unnamed employer. Travels with an unnamed albino woman who has a bronze eye. Memphis warned the party to be wary of him. |
-| **Frond** | Alive | cities | Leshy (half-plant scholar) at Ersatz University. Expert on the Great Beasts and Titanic forces. Advised Merida that her beast-curse will be very hard to break and directed her toward the Ziggurat of Goback. |
-| **Thr** | Alive | cities | Head librarian at Ersatz University. Very tall with a completely grey bob haircut and jet-black eyes — has infernal heritage. Gave Sibylla a partial catacomb map; told Nik his infernal father is actively on this plane. |
-| **Kolen** | Alive | cities | Ancient hunched elf at Ersatz University; Fey research specialist working from a broom-closet office plastered in papers and string. Explained Fairy Godmother mechanics to Drizella: it is a job description requiring a pact token (possibly a glass slipper) from the original mortal patron. |
-| **Agnes Crooked Finger** | Alive | cities | City witch of Rymes. Identified as a potential Cunning (mother-witch) for Sibylla, whose spellcasting requires a mentor of that type. |
-<!-- Added from Session 9 -->
-| **Marabella** | Deceased (ghost) | cities | Ersatz University student who accidentally teleported into a sealed chamber in the Rymes catacombs and died. Her ghost warned the party about the Tomb of the Horned King. Her spell notes appear to have been deliberately sabotaged. Laid to rest by the party. |
-| **Zara** | Alive | cities | Elderly blind diviner at Ersatz University's School of Divination. Large curly hair, big spectacles. Read Merida's prophetic dreams and identified The Stranger (the Herald). Warned: "Stay away from the purple." |
-<!-- Added from Session 10 -->
-| **Enoch Hulldrown** | Alive | cities | Head of the Bonekeeper's Guild in Rymes. Tall, very still, calm. Hired the party to investigate undead risings in the lower crypt. Rewarded them with 120 silver and the Blessing of the Reaper. Unaware of the Tomb's full significance. |
-<!-- Added from Sessions 11-66 -->
-| **Kristoff Marlo** | Alive | cities | Fugitive wizard hiding in Salasarglumm's sewers. Trained at Arcanian Institute. Raised a basilisk for alchemical research (blood reverses petrification). Arrived at Beast King battle via waterfall teleportation on a turtle with 10 doves. Provided counter-magic against Carlos's healing. |
-| **Governor Eustus Moro** | Alive | greenwoods | Old Lord's brother. Disguised magistrate in Salasarglumm. Uses wax dummy heads at executions to show mercy. Allied with party to overthrow Beast King. |
-| **Tristan Iran** | Alive (freed) | greenwoods | Imprisoned heir of the Iran dynasty of Salasarglumm. Freed publicly during the ball revolt. Uncle: Galen Aran. |
-| **Galen Aran** | Alive | greenwoods | Tristan Iran's uncle. Hidden rebel leader in Salasarglumm. Revealed Borograth Tower and Beast King's mind-control staff. |
-| **Atasha** | Alive | darkwoods | Diplomat/advisor in Salasarglumm. Twin sister of Mother Ren. Sphinx ally of the Beast King. Refused to betray Carlos, fearing the mob. Trained Baron Lumella. |
-| **Mother Ren** | Alive | cities | Cleric in Mimsy. Twin of Atasha. Channelled infernal fey power for healing. Freed from demonic pact by the party. Granted the Sanctus Codex. |
-| **Titus Skye** | Alive | cities | Old orc ranger. Scarred, salt-and-pepper moustache, green cape, war axe. Bound by devil contract. Killed Jacob Hilton. Mirror-portal accident with Bigby caused months of time displacement. |
-| **Lord Edmund** | Alive | cities | Lord of Oronia. Oversaw the Devil of Newgate investigation. Hired Dr. Hilton as consultant. Paid party and hired them to investigate witches. |
-| **Irene Adler** | Alive | cities | Crimson-cloaked agent of Moriarty. Scar through eyebrow. Hired to stop Flycatcher's marriage to Arabella. Referenced Bigby's past: "Excellent work on Xander." |
-| **Ida Montague** | Destroyed (S41) | darkwoods | Spade Shipping operative. Was human; transformed into undead vessel for antiseed device. Heart retained consciousness: "They made me like this." Destroyed when Caliburn reacted with the antiseed chest. |
-| **Thori Black** | Deceased | cities | Former town treasurer of Lowmarsh. Killed by psychic damage from a shapeshifting fey. Was channelling public funds to the Crooked Men. His coded ledger referenced payments to "M." |
-| **Captain Alexander Smelt** | Unknown (wounded) | cities | Captain of the Hispaniola. Refined, experienced. Badly wounded when the main mast fell during pirate attack. |
-| **Mr. Arrow** | Unknown | cities | First Mate of the Hispaniola. Stern, military bearing. Arranged the treasure-map speculation with Squire Trone. Took command when Smelt was wounded. |
-| **High Abbot Jor** | Alive | greenwoods | Leader of the silent monks at Goback's ziggurat. Under his leadership (2 years), monks became increasingly strict. Visions at the ziggurat becoming "more real." |
-| **Amelia** | Alive | cities | Order of the Eleventh Eye member. Cursed to never sleep. Researching cleric spell evolution. Participated in Pebblecreek dock battle (providing Haste). |
-| **Marquis Stefan** | Petrified (S51) | greenwoods | Briar Rose's father. Found petrified in Grimordia's palace council chamber. His family guards a wish ring. |
-| **Marquise Leah** | Alive (?) (S52) | greenwoods | Briar Rose's mother. Found petrified but appeared miraculously animate during Grimordia escape. |
-| **Freya Iron Blood** | Defeated (S16) | darkwoods | Hag working for Morgana (Mother Iron Blood). Wore purple, twisted hands. Attempted to recruit party to deliver Eye of Obaad to Morgana. Defeated at Ragged Muffin. |
+| Name | Session | Status | Alignment | Role / Notes |
+|---|---|---|---|---|
+| [**Matron Simone**](https://evergeennova.fandom.com/wiki/Matron_Simone) | S1 | Alive | cities | Head of the Sage Hospice in Lowmarsh. Provisionally licenced Drizella as a Medicaster. |
+| [**Lewis Short**](https://evergeennova.fandom.com/wiki/Lewis_Short) | S1 | Alive | cities | Chairman of Lowmarsh. Long-moustached elf. Targeted by the Shadic Brethren. |
+| **The Witch of the Woods** | S1 | Alive | greenwoods | Merida's mentor. A witch (not a hag). Initially tricked Merida but later took her on as a student. Told Merida about the upcoming winter solstice and sent her toward Lowmarsh. |
+| [**Officer Bradley**](https://evergeennova.fandom.com/wiki/Officer_Bradley) | S1 | Alive | cities | Law enforcement in Lowmarsh. "Great big brick of a man" in plate armour. Runs the Broken Bricks guardhouse. Mentioned scouts from the south. |
+| **Thori Black** | S1 | Deceased | cities | Former town treasurer of Lowmarsh. Killed by psychic damage from a shapeshifting fey. Was channelling public funds to the Crooked Men. His coded ledger referenced payments to "M." |
+| **Bessa of the Lone Pine** | S2 | Unknown | greenwoods | Sibylla's mentor. Told Sibylla about the Parallax and encouraged her to bond with a patron. |
+| **Mother Mary Hill** | S3 | Alive | cities | Thin, older cleric/healer at the Immaculate Church of the Goodly Father in Lowmarsh. A healer, not skilled in dispelling. Directed the party to Vicar Rothwell for magical help. |
+| **Vicar Sean Rothwell** | S3 | Alive | cities | Vicar of the Goodly Father in Lowmarsh. More magically skilled than Mother Mary Hill. Was in a committee meeting when the party needed help dispelling the illusion on Thori Black's chambers. |
+| **Chops** | S3 | Alive | cities | Small, red-haired barkeeper at the Lone Pine tavern in Lowmarsh. Provided the party with information and free accommodation. |
+| **Corpus** | S3 | Alive | cities | Large, barrel-chested tavern worker at the Lone Pine in Lowmarsh. Has a dwarf uncle living underground who speaks Dwarvish — potential lead for translating Thori Black's treasury book. |
+| **Trevor Becker** | S3 | Alive | cities | Runs a rival establishment ("Investigations") in Lowmarsh. Prejudiced against Travelers. Few customers but always has money — suspected of shady dealings. Town guard calls him "a sad little man." |
+| **Paul Goodget** | S4 | Alive | cities | Farmer and Lowmarsh People's Committee member. Owns the largest farm within the walls. Hired the party to investigate crop theft (12% loss over three months). Holds one of three vault keys. |
+| **Austin Burton** | S4 | Alive | cities | Owns the Burton Lumber Yard in Lowmarsh. People's Committee member. Holds the third vault key. Cheerful and cooperative. |
+| **Oswald Burton** | S5 | Alive | cities | Short, bald owner of Burton Lumber Yard. Handed over his vault key with no resistance. Red shirt, blue overalls, perpetual unlit cigarette. |
+| **Alexander Dunos** | S5 | Alive | darkwoods | Red Hand commander. Elder man with salt-and-pepper hair, goatee, terrible burns on one side of his face, right eye replaced with a brass eye. Calm, purposeful, not murderous. Led the Red Hand force into Lowmarsh hunting a shapeshifting fey. Revealed the shapechanger had calculated when the next Sunderance will occur. |
+| **Pyromancer Ken** | S6 | Deceased | darkwoods | Red Hand mage. Big red hooded robes. Once fought a Fairy Godmother alongside Alexander. Killed during a road ambush while escorting the party. Invited Nik to join Ember Hall. |
+| [**Lancelot**](https://evergeennova.fandom.com/wiki/Lancelot) | S7 | Alive | cities | Aged (70–80), white-haired former Knight of Camelot living in Pebblecreek. Lover of both Queen Guinevere and Morgana Le Fay. Left Camelot after Arthur chose to save the child over Guinevere's life in childbirth. Buried Guinevere himself. Has a son in knight training. Comforted Mordred after Darian's death. Present at Mordred's birth. Loved Mordred's mother. Buried the queen when Arthur refused. Lost companion Passibal during baby-retrieval attempt. Came to Pebblecreek specifically seeking Mordred (a changeling of the right age). Deeply hostile to Merlin. Confirmed Caliburn = one-third of Excalibur (S36). |
+| **The Conductor** | S7 | Alive | greenwoods | Skeleton in a bright blue suit with white stripes and a pocket watch. Operates the Winter Express. Gives magical gifts to passengers who defend the train. Polite and formal. |
+| **The Hitchhiker** | S7 | Alive | greenwoods | Scruffily dressed skeleton; the Conductor's brother. Rides on the outside of the Winter Express. Trickster figure. Drops and returns the Conductor's pocket watch. |
+| **The Winter Giver** | S7 | Alive | greenwoods | Old man in a big red cloak with a long white beard, riding a reindeer sleigh (one with a glowing red nose). Jolly gift-giver but also, by lore, a very evil spirit that devours the wicked. A second demonic face briefly appears at the back of his head. |
+| **The Tea Lady** | S7 | Alive | greenwoods | Elderly woman pushing a cart on the Winter Express. Serves jasmine tea. |
+| [**Dean Marikosa**](https://evergeennova.fandom.com/wiki/Dean_Marikosa) | S8 | Alive | cities | Dean of Ersatz University. Fought in the Fall of Arcadia. Her vision provided the complete story of the Horned King's death. |
+| **Father Lucas** | S8 | Alive | cities | Cleric in black robes with a collar of bones. Member of the Bonekeeper's Guild. Used the Mind Conference spell to brief the party in a shared mental space about the spontaneously-rising undead. |
+| **Krennic Silver-Po** | S8 | Alive | cities | Dwarf; rival contractor pursuing the same Salasarglumm commission as the party on behalf of an unnamed employer. Travels with an unnamed albino woman who has a bronze eye. Memphis warned the party to be wary of him. |
+| **Frond** | S8 | Alive | cities | Leshy (half-plant scholar) at Ersatz University. Expert on the Great Beasts and Titanic forces. Advised Merida that her beast-curse will be very hard to break and directed her toward the Ziggurat of Goback. |
+| **Thr** | S8 | Alive | cities | Head librarian at Ersatz University. Very tall with a completely grey bob haircut and jet-black eyes — has infernal heritage. Gave Sibylla a partial catacomb map; told Nik his infernal father is actively on this plane. |
+| **Kolen** | S8 | Alive | cities | Ancient hunched elf at Ersatz University; Fey research specialist working from a broom-closet office plastered in papers and string. Explained Fairy Godmother mechanics to Drizella: it is a job description requiring a pact token (possibly a glass slipper) from the original mortal patron. |
+| [**Agnes Crooked Finger**](https://evergeennova.fandom.com/wiki/Agnes_Crookedfinger) | S8 | Alive | cities | City witch of Rymes. Identified as a potential Cunning (mother-witch) for Sibylla, whose spellcasting requires a mentor of that type. |
+| **Marabella** | S9 | Deceased (ghost) | cities | Ersatz University student who accidentally teleported into a sealed chamber in the Rymes catacombs and died. Her ghost warned the party about the Tomb of the Horned King. Her spell notes appear to have been deliberately sabotaged. Laid to rest by the party. |
+| **Zara** | S9 | Alive | cities | Elderly blind diviner at Ersatz University's School of Divination. Large curly hair, big spectacles. Read Merida's prophetic dreams and identified The Stranger (the Herald). Warned: "Stay away from the purple." |
+| [**Savvan**](https://evergeennova.fandom.com/wiki/Savvan) | S10 | Alive | greenwoods | Changeling. Was caught in Nimue's ritual against their will. Warned that a Sunderance will occur within 12–18 months (as of mid-campaign). |
+| [**Enoch Hulldrown**](https://evergeennova.fandom.com/wiki/Enoch_Holcombe) | S10 | Alive | cities | Head of the Bonekeeper's Guild in Rymes. Tall, very still, calm. Hired the party to investigate undead risings in the lower crypt. Rewarded them with 120 silver and the Blessing of the Reaper. Unaware of the Tomb's full significance. |
+| [**Hazel the Wise**](https://evergeennova.fandom.com/wiki/Hazel_the_Wise) | S12 | Alive | greenwoods | Grandmother of the Thrice-Triple Covens. |
+| **Lord Edmund** | S13 | Alive | cities | Lord of Oronia. Oversaw the Devil of Newgate investigation. Hired Dr. Hilton as consultant. Paid party and hired them to investigate witches. |
+| [**Freya Iron Blood**](https://evergeennova.fandom.com/wiki/Freya_Ironblood) | S15 | Defeated (S16) | darkwoods | Hag working for Morgana (Mother Iron Blood). Wore purple, twisted hands. Attempted to recruit party to deliver Eye of Obaad to Morgana. Defeated at Ragged Muffin. |
+| **Titus Skye** | S17 | Alive | cities | Old orc ranger. Scarred, salt-and-pepper moustache, green cape, war axe. Bound by devil contract. Killed Jacob Hilton. Mirror-portal accident with Bigby caused months of time displacement. |
+| [**Billy Bones**](https://evergeennova.fandom.com/wiki/Billy_Bones) | S18 | Unknown | cities | Old sailor; introduced the party to the Hispaniola crew at Auntie's Scones in Oronia. |
+| **Captain Alexander Smelt** | S18 | Unknown (wounded) | cities | Captain of the Hispaniola. Refined, experienced. Badly wounded when the main mast fell during pirate attack. |
+| **Mr. Arrow** | S18 | Unknown | cities | First Mate of the Hispaniola. Stern, military bearing. Arranged the treasure-map speculation with Squire Trone. Took command when Smelt was wounded. |
+| **High Abbot Jor** | S21 | Alive | greenwoods | Leader of the silent monks at Goback's ziggurat. Under his leadership (2 years), monks became increasingly strict. Visions at the ziggurat becoming "more real." |
+| [**Atasha**](https://evergeennova.fandom.com/wiki/Atasha) | S22 | Alive | darkwoods | Diplomat/advisor in Salasarglumm. Twin sister of Mother Ren. Sphinx ally of the Beast King. Refused to betray Carlos, fearing the mob. Trained Baron Lumella. |
+| **Kristoff Marlo** | S24 | Alive | cities | Fugitive wizard hiding in Salasarglumm's sewers. Trained at Arcanian Institute. Raised a basilisk for alchemical research (blood reverses petrification). Arrived at Beast King battle via waterfall teleportation on a turtle with 10 doves. Provided counter-magic against Carlos's healing. |
+| **Governor Eustus Moro** | S25 | Alive | greenwoods | Old Lord's brother. Disguised magistrate in Salasarglumm. Uses wax dummy heads at executions to show mercy. Allied with party to overthrow Beast King. |
+| **Tristan Iran** | S25 | Alive (freed) | greenwoods | Imprisoned heir of the Iran dynasty of Salasarglumm. Freed publicly during the ball revolt. Uncle: Galen Aran. |
+| **Galen Aran** | S26 | Alive | greenwoods | Tristan Iran's uncle. Hidden rebel leader in Salasarglumm. Revealed Borograth Tower and Beast King's mind-control staff. |
+| **Mother Ren** | S26 | Alive | cities | Cleric in Mimsy. Twin of Atasha. Channelled infernal fey power for healing. Freed from demonic pact by the party. Granted the Sanctus Codex. |
+| **Vasala/Valassa Farsight** | S27 | Alive | greenwoods | Recurring arcane expert ally. Preserved Mordred's severed hand in Salasarglumm. |
+| [**Old Mother Hubbard**](https://evergeennova.fandom.com/wiki/Old_Mother_Hubbard) | S33 | Alive | greenwoods | Wise figure at Goback; the party received gifts and prophecy here. |
+| **Amelia** | S34 | Alive | cities | Order of the Eleventh Eye member. Cursed to never sleep. Researching cleric spell evolution. Participated in Pebblecreek dock battle (providing Haste). |
+| [**Flycatcher**](https://evergeennova.fandom.com/wiki/Flycatcher) | S37 | Alive | greenwoods | Informant in Pebblecreek. Revealed antiseed distribution details. Cannot remember the Big Bad Wolf's name. |
+| [**Greta**](https://evergeennova.fandom.com/wiki/Greta) | S38 | Alive | greenwoods | Moon-connected woman with vampiric traits. Connected to the Man on the Moon. Confirmed Lady Tremaine's apparent death in Pebblecreek. |
+| [**Irene Adler**](https://evergeennova.fandom.com/wiki/Irene_Adler) | S38 | Alive | cities | Crimson-cloaked agent of Moriarty. Scar through eyebrow. Hired to stop Flycatcher's marriage to Arabella. Referenced Bigby's past: "Excellent work on Xander." |
+| [**Ida Montague**](https://evergeennova.fandom.com/wiki/Ida_Montague) | S39 | Destroyed (S41) | darkwoods | Spade Shipping operative. Was human; transformed into undead vessel for antiseed device. Heart retained consciousness: "They made me like this." Destroyed when Caliburn reacted with the antiseed chest. |
+| [**Marquess Stefan**](https://evergeennova.fandom.com/wiki/Marquess_Stefan) | S51 | Petrified (S51) | greenwoods | Briar Rose's father. Found petrified in Grimordia's palace council chamber. His family guards a wish ring. |
+| [**Marchioness Leah**](https://evergeennova.fandom.com/wiki/Marchioness_Leah) | S51 | Alive (?) (S52) | greenwoods | Briar Rose's mother. Found petrified but appeared miraculously animate during Grimordia escape. |
+| [**Carabosse**](https://evergeennova.fandom.com/wiki/Carabosse) | S55 | Alive | darkwoods | The true Fairy Godmother. Worked with Bloody Mary to engineer Drizella's entire life via the Lady Tremaine scheme. Claims she wants to help undo what was done. Connected to Sycorax. May be the only one who can reverse the curse. |
+| [**Robson Wellgood**](https://evergeennova.fandom.com/wiki/Robson_Wellgood) | S56 | Alive | darkwoods (defecting?) | Former Silverheart Court member, prisoner of Maeve at Everdrift. Deliberately threw a card game to help Bigby. Told him: *"Find me in Mercia."* Potential double agent. |
+| **Tinker Bell** | S56 | Alive | greenwoods | Summer Court fey investigator. Uncovered that the wish spell destroying the druids was cast on 30 April 348 beneath Emberhall. |
+| [**Glinda the Good**](https://evergeennova.fandom.com/wiki/Glinda_the_Good) | S56 | Alive | greenwoods | Psychopomp (shepherd of the dead) in Oz. Revealed each party member's death prophecy. |
+| [**King Oberon**](https://evergeennova.fandom.com/wiki/King_Oberon) | S56 | Murdered (S56) | greenwoods | King of the Fey. Murdered 30 April 348; his memory was tampered with (ten minutes missing). Asked Bigby to investigate. The dagger was identical to Bigby's. |
+| [**Queen Mab**](https://evergeennova.fandom.com/wiki/Queen_Mab) | S56 | Alive | greenwoods | Winter Court sovereign. Louie's mother. Her sister Augusta is keeper of fate. |
+| [**Grandmother Alpine**](https://evergeennova.fandom.com/wiki/Grandmother_Alpine) | S56 | Alive | greenwoods | Large owl-woman fey. Knows Morgana. Warned party about deals with Mary. Mordred read her fate: *"traitor."* |
+| [**Augusta**](https://evergeennova.fandom.com/wiki/Augusta) | S56 | Alive | greenwoods | Mab's sister; keeper of fate. Told Briar her soul sings the song of the Harvestman; that Prince Phillip may have experienced the same sleeping curse. |
+| [**Renfield**](https://evergeennova.fandom.com/wiki/Renfield) | S62 | Alive | darkwoods | Vampire thrall of Bloody Mary. Calls Drizella "Empress." Can travel between Oz and Evergreen. More intelligent than he appears. |
+| [**High Matron Mayana**](https://evergeennova.fandom.com/wiki/High_Matron_Mayana) | S62 | Alive | cities | Leader of the Northern League of Medicasters in Cindershire. Investigating the Blight plague. |
+| [**Miss Octavia Muffet**](https://evergeennova.fandom.com/wiki/Miss_Muffet) | S63 | Alive | greenwoods | Giant spider fey running an orphanage in Morso. Has a deal with Grandmother Malyr for a safe glade post-Sunderance. |
+| [**Rodrigo**](https://evergeennova.fandom.com/wiki/Rodrigo) | S66 | Alive (freed S66) | greenwoods | Cursed lion from Cindershire. Was searching for the witch who cursed him. Freed by the party. |
 
 ### Villains & Antagonists (session-confirmed)
 
-| Name | Status | Alignment | Role / Notes |
-|---|---|---|---|
-| **The Beast King** | Defeated | darkwoods | Carlos Vanth; former Ersatz University student. Used a botched polymorph and three stolen magic items (Ring of Objectification, Staff of Beguiling, Looking Glass) to conquer Salasarglumm. Tool of Bloody Mary and the Silverheart Court. Defeated by the party. |
-| **Equinox** | Destroyed (S57) | darkwoods | Construct posing as Lord of Unicorns; created by Queen Maeve in Mordred's exact likeness. Lacking Mordred's kindness. Reduced to sand by Mab and Titania. |
-| **Jacob Hilton** | Stopped | darkwoods | The Devil of Newgate. Oronian doctor who consumed mutagens and became a serial killer. Connected to Bloody Mary via a mirror shard. |
-| **Krennic Silverbarrow** | Alive | cities | Duegar agent of Camelot knight Percival. Called Drizella "Lady Tremaine" (suggesting false identity used). |
-| **Big Bad Wolf** | Alive | darkwoods | Bigby's older brother. Attempted to assassinate Bigby on behalf of the Hogson Brothers. |
-| **Grandmother Malyr** | Alive | darkwoods | Has promised Miss Muffet a safe glade after the Sunderance — implies unusual foreknowledge. Connected to the Cailleach. True allegiance unclear; possibly working against the courts. |
-| **The Cailleach** | Alive | darkwoods | *"True mother of hags."* Ancient being stealing children's screams in the Morso dreamscape. Maleficent panics at her name. Connected to Grandmother Malyr. |
-| **Eamus/John Hogson** | Alive | darkwoods | Criminal brothers; Eamus finances antiseed deliveries under "M"'s direction. John had a mirror shard with a note from Mary in his desk. |
-| **The Not-Deer** | Ongoing | darkwoods | Corrupted deer creatures manifesting the Horned King in Cindershire. Say: *"The Name is still hollow. It is not yet above as it is below."* |
-| **Davy Jones** | Alive | darkwoods | Keeper of the dead at sea. Captain Hook used Nik's soul as collateral with him. |
-| **The Green Man** | Alive | greenwoods | Fey guardian of the Greenwoods; ostentatiously dressed. Appeared to Mordred in Session 3 saying *"Sunderance."* Also inhabits the Green Knight (defeated at the Everdrift tourney by Mordred). |
-| **Henry Borsch** | Alive | darkwoods | Necromancer student at Ersatz University. Killed Briar's familiar Bud. Defeated by Bigby in a duel. |
-| **Captain Sharmaine** | Deceased (S66) | darkwoods | Veiled witch's champion at Cindershire. Held Anastasia Tremaine's memories. Killed by Drizella and Briar. |
+| Name | Session | Status | Alignment | Role / Notes |
+|---|---|---|---|---|
+| [**Davy Jones**](https://evergeennova.fandom.com/wiki/Davy_Jones) | S1 | Alive | darkwoods | Keeper of the dead at sea. Captain Hook used Nik's soul as collateral with him. |
+| **The Green Man** | S3 | Alive | greenwoods | Fey guardian of the Greenwoods; ostentatiously dressed. Appeared to Mordred in Session 3 saying *"Sunderance."* Also inhabits the Green Knight (defeated at the Everdrift tourney by Mordred). |
+| [**Big Bad Wolf**](https://evergeennova.fandom.com/wiki/Bigby%27s_Brother) | S12 | Alive | darkwoods | Bigby's older brother. Attempted to assassinate Bigby on behalf of the Hogson Brothers. |
+| [**Jacob Hilton**](https://evergeennova.fandom.com/wiki/Jacob_Hilton) | S13 | Stopped | darkwoods | The Devil of Newgate. Oronian doctor who consumed mutagens and became a serial killer. Connected to Bloody Mary via a mirror shard. |
+| [**The Beast King**](https://evergeennova.fandom.com/wiki/The_Beast_King) | S22 | Defeated | darkwoods | Carlos Vanth; former Ersatz University student. Used a botched polymorph and three stolen magic items (Ring of Objectification, Staff of Beguiling, Looking Glass) to conquer Salasarglumm. Tool of Bloody Mary and the Silverheart Court. Defeated by the party. |
+| [**Krennic Silverbarrow**](https://evergeennova.fandom.com/wiki/Krennic_Silverbarrow) | S35 | Alive | cities | Duegar agent of Camelot knight Percival. Called Drizella "Lady Tremaine" (suggesting false identity used). |
+| [**Eamus/John Hogson**](https://evergeennova.fandom.com/wiki/Eamus_Hogson) | S37 | Alive | darkwoods | Criminal brothers; Eamus finances antiseed deliveries under "M"'s direction. John had a mirror shard with a note from Mary in his desk. |
+| **Henry Borsch** | S44 | Alive | darkwoods | Necromancer student at Ersatz University. Killed Briar's familiar Bud. Defeated by Bigby in a duel. |
+| [**Grandmother Malyr**](https://evergeennova.fandom.com/wiki/Grandmother_Malyr) | S56 | Alive | darkwoods | Has promised Miss Muffet a safe glade after the Sunderance — implies unusual foreknowledge. Connected to the Cailleach. True allegiance unclear; possibly working against the courts. |
+| [**The Cailleach**](https://evergeennova.fandom.com/wiki/Cailleach) | S56 | Alive | darkwoods | *"True mother of hags."* Ancient being stealing children's screams in the Morso dreamscape. Maleficent panics at her name. Connected to Grandmother Malyr. |
+| [**Equinox**](https://evergeennova.fandom.com/wiki/Equinox) | S56 | Destroyed (S57) | darkwoods | Construct posing as Lord of Unicorns; created by Queen Maeve in Mordred's exact likeness. Lacking Mordred's kindness. Reduced to sand by Mab and Titania. |
+| **The Not-Deer** | S62 | Ongoing | darkwoods | Corrupted deer creatures manifesting the Horned King in Cindershire. Say: *"The Name is still hollow. It is not yet above as it is below."* |
+| **Captain Sharmaine** | S66 | Deceased (S66) | darkwoods | Veiled witch's champion at Cindershire. Held Anastasia Tremaine's memories. Killed by Drizella and Briar. |
 
 ### Oz / Fairytale Characters
 
-| Name | Status | Alignment | Role / Notes |
-|---|---|---|---|
-| **Barnabas Ragdoll** | Alive | cities | The Wizard of Oz (his duplicate is Count Clarion). Gave the Ruby Slippers (now Glass Slippers) to Bloody Mary under duress. Confirmed the slippers can undo the Wish Ring. |
-| **Cinderella** | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
-| **The Scarecrow** | Alive | greenwoods | One of Morgana's constructs in Oz. Told the party that Morgause was his older sister (and is made of sand = Servant Four / Hellekin). |
-| **The Tin Man** | Alive | unknown | Metal construct found in Oz, frozen in terror. |
-| **The Creature** | Alive | unknown | Frankenstein's monster ('Adam'). Given his name during reconciliation with Victor (S17). Reconciled; no longer hunting. Lady Tremaine hired him to kill Anastasia (contract unfulfilled). Formed alliance with Drizella. |
-| **Victor Frankenstein** | Alive | cities | Found alive in Oronia (S16-17). Reconciled with Adam/the Creature. Surgeon who also signed a devil's contract with Rumpelstiltskin. Provided party with winter wolf elixir and healing notes. |
-| **Argent Carreau** | Unknown | darkwoods | Was Anastasia's fiancé in Salasarglumm under the Beast King. |
+| Name | Session | Status | Alignment | Role / Notes |
+|---|---|---|---|---|
+| **The Creature** | S12 | Alive | unknown | Frankenstein's monster ('Adam'). Given his name during reconciliation with Victor (S17). Reconciled; no longer hunting. Lady Tremaine hired him to kill Anastasia (contract unfulfilled). Formed alliance with Drizella. |
+| **Victor Frankenstein** | S16 | Alive | cities | Found alive in Oronia (S16-17). Reconciled with Adam/the Creature. Surgeon who also signed a devil's contract with Rumpelstiltskin. Provided party with winter wolf elixir and healing notes. |
+| **Cinderella** | S25 | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
+| [**Argent Carreau**](https://evergeennova.fandom.com/wiki/Argent_Carreau) | S25 | Unknown | darkwoods | Was Anastasia's fiancé in Salasarglumm under the Beast King. |
+| **The Scarecrow** | S60 | Alive | greenwoods | One of Morgana's constructs in Oz. Told the party that Morgause was his older sister (and is made of sand = Servant Four / Hellekin). |
+| **The Tin Man** | S60 | Alive | unknown | Metal construct found in Oz, frozen in terror. |
+| **Barnabas Ragdoll** | S61 | Alive | cities | The Wizard of Oz (his duplicate is Count Clarion). Gave the Ruby Slippers (now Glass Slippers) to Bloody Mary under duress. Confirmed the slippers can undo the Wish Ring. |
 
 ---
 
