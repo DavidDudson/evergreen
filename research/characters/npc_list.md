@@ -24,7 +24,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Dame Gothel** | Mother Gothel | Unknown (believed dead ~311) | greenwoods | Former All-Mother of the Thrice-Triple Covens. 100+ years old. Kept Caliburn safe for the Pendragon bloodline. Her death triggered the All-Mother Succession Crisis. May still be alive in hiding. |
+| **Dame Gothel** | Mother Gothel | Alive (confirmed S22+) | greenwoods | Former All-Mother of the Thrice-Triple Covens. 100+ years old. Kept Caliburn safe for the Pendragon bloodline. Her death triggered the All-Mother Succession Crisis. Found alive at a cottage near Salasarglumm. Led Mordred's resurrection ritual (S32). Has 50-year memory gaps. Cannot harm living creatures. |
 | **Bloody Mary** | — | Alive (freed S57) | darkwoods | Former Empress of the Arrnon Empire. Born 226 (6th Age); trained by Merlin; took over the Order of the Eleventh Eye and built the Arrnon Empire. Imprisoned in the Mirror of Aretas at age 22 by Merlin and Craven. Freed in Session 57. Has the Hand of Sycorax restored. Can see through any mirror in Evergreen. Engineered Drizella's life (via Carabosse + Lady Tremaine) to free herself. |
 | **Memphis Cadwallader** | Rumpelstiltskin, Tobias Gold, Louis Cypher, The Imp, The Fairy Godmother | Alive | cities | Devil (possibly *the* devil). ~3ft tall gnome form; true form is living flame. Deal-maker; holds Briar Rose's 300-year-old life-debt. Former agent of Queen Maeve. Cannot speak his name "Rumpelstiltskin". |
 
@@ -37,7 +37,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 | **King Arthur Pendragon** | — | Alive (fate uncertain) | cities | Aging king of Camelot; no living heir; poor diplomat. At war with Avalon for 30 years. Excalibur stands in an anvil at Pendragon. Died and came back during the Strife of Camlin (unconfirmed). |
 | **Queen Maeve** | — | Alive | darkwoods | Queen of Avalon; leader of the Silverheart Court. Silver lady; pink eyes (shared with Morgana). Seized Avalon in a coup in 323. Collecting Mirror of Aretas shards and artefacts. Former employer of Cadwallader. |
 | **Queen Guinevere** | — | Deceased (†) | cities | Wife of King Arthur; lover of both Lancelot and Morgana. Her blood was used in the ritual that produced Mordred. |
-| **Archduke Tyson II** | — | Alive | cities | Ruler of Gribsby, the decentralised heartland of Arrnonland. Home of Ersatz University. |
+| **Archduke Tyson II** | — | Deceased (assassinated S30) | cities | Ruler of Gribsby, the decentralised heartland of Arrnonland. Home of Ersatz University. Assassinated by massive fire magic at the Beast King's ball. Crown and jewels melted. |
 | **King Louie** | — | Alive | greenwoods | Rules Everdrift. Summer Court Fey; hedonistic; generally friendly to mortals. |
 
 ---
@@ -48,7 +48,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 |---|---|---|---|---|
 | **Morgana Le Fay** | The Begot Queen, Morgana Pendragon, The Wicked Witch | Alive (~70–80, appears ~45) | darkwoods | Sister of King Arthur; adoptive mother of Mordred. Former avatar of the Three-Faced Lady — severed the goddess using Caliburn ~281. Lives in the Broceliande. Pink eyes; black/white hair; crow familiar. 9th-level spellcasting. |
 | **Merlin** | — | Missing | cities | Founded the Order of the Eleventh Eye. Powerful arcane focal point; sworn to the Pendragon line until the last dies. Once tricked Bloody Mary. Mentored Darian Sand. Went missing. |
-| **Nimue** | — | Alive | darkwoods | Former candidate for All-Mother; chose to leave the Covens. Later became a Silverheart Court villain. Kept Snow White captive. Previously collaborated with Dame Gothel to hide Caliburn. |
+| **Nimue** | — | Alive | darkwoods | Lady of the Lake. Construct (bones held together by unnatural means, S32). Former avatar of the Three-Faced Lady before Morgana severed the connection using Caliburn (S33). Under magical compulsion — 'The waters of Pendragon can free me' (S11, S59). Has two aspects: corrupted outer form and trapped peaceful true self. Merlin's apprentice. Stole Darian's body (S43). Gave Caliburn to Mordred under duress (S59). Previously collaborated with Dame Gothel to hide Caliburn. |
 | **Tashanna** | — | Alive | greenwoods | Current All-Mother of the Thrice-Triple Covens. Leading the fractured covens in the post-Gothel era. |
 | **Morgause** | — | Unknown | darkwoods | Mentioned as sharing strong resemblance to Morgana Le Fay and Queen Maeve. Relationship unexplained. |
 
@@ -60,8 +60,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 |---|---|---|---|---|
 | **Maleficent** | — | Alive (sleeping) | darkwoods | Archfey dragon; ruler of Pegaroth in the Darkwoods. Human and dragon forms. Discovered the Antiseeds in 343 and brought them to the Silverheart Court. Cursed Briar Rose. |
 | **The Beast King** | — | Defeated | darkwoods | Silverheart Court member. Conquered Salasarglumm in 346. Defeated by the Mythmakers Union. Stole the Staff of Beguiling and the Ring of Objectification. |
-| **Lady Piques** | — | Alive | darkwoods | Silverheart Court member. Details unclear. |
-| **Medraut** | — | Alive | darkwoods | Silverheart Court member. Details unclear. |
+| **Lady Elizabeth Pikes** | — | Fled | darkwoods | Silverheart Court member. Undead. Operated Spade Shipping as a Silverheart Court front. Used antiseed control devices at Pebblecreek docks (S41). Connected to Ida Montague's heart via dream realm. Fled after confrontation. |
 | **Robson Wellgood** | — | Alive | darkwoods | Silverheart Court member. Details unclear. |
 | **Peter Hogson** | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
 | **John Hogson** | — | Alive | darkwoods | One of the Hogson Brothers; capitalist cartel; Silverheart Court member. Powerful investor. |
@@ -72,7 +71,6 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 
 | Name | Aliases | Status | Alignment | Role / Notes |
 |---|---|---|---|---|
-| **Lancelot** | — | Alive | cities | Knight of Camelot. Lover of both Queen Guinevere and Morgana Le Fay. His loyalties are deeply complicated. |
 | **Captain Hook** | — | Unknown | cities | Former captain; Bigby served under him. Maritime. |
 
 ---
@@ -85,7 +83,7 @@ Alignments: **greenwoods** (Gothel) · **darkwoods** (Mary) · **cities** (Cadwa
 | **King Louie** | Summer | Alive | greenwoods | Leader of the Summer Court. Rules Everdrift. Hedonistic; generally friendly. |
 | **Jackie Brush** | Autumn | Alive | greenwoods | Leader of the Autumn Court. Domain: harvest, endings. |
 | **Jack Frost** | Winter | Alive | darkwoods | Leader of the Winter Court. Domain: cold, isolation. Tense relations with mortals. |
-| **Titania** | Former Seelie/Unseelie | Unknown | greenwoods | Ancient Fey queen. Fell out with Maeve, causing the court split into four. |
+| **Titania** | Former Seelie/Unseelie | Alive (confirmed S43) | greenwoods | Ancient Fey queen. Fell out with Maeve, causing the court split into four. Merlin's sister. Guardian of his relics. Bestowed Merlin's four sacred items on the party. His last words to her: 'Forgive me, Sister.' |
 
 ---
 
@@ -157,7 +155,7 @@ Characters confirmed during session recaps not previously listed.
 
 | Name | Status | Alignment | Role / Notes |
 |---|---|---|---|
-| **Lancelot** | Alive | cities | Aged (70–80), white-haired former Knight of Camelot living in Pebblecreek. Left Camelot after Arthur chose to save the child over Guinevere's life in childbirth. Buried Guinevere himself. Has a son in knight training. Comforted Mordred after Darian's death. |
+| **Lancelot** | Alive | cities | Aged (70–80), white-haired former Knight of Camelot living in Pebblecreek. Lover of both Queen Guinevere and Morgana Le Fay. Left Camelot after Arthur chose to save the child over Guinevere's life in childbirth. Buried Guinevere himself. Has a son in knight training. Comforted Mordred after Darian's death. Present at Mordred's birth. Loved Mordred's mother. Buried the queen when Arthur refused. Lost companion Passibal during baby-retrieval attempt. Came to Pebblecreek specifically seeking Mordred (a changeling of the right age). Deeply hostile to Merlin. Confirmed Caliburn = one-third of Excalibur (S36). |
 | **Carabosse** | Alive | darkwoods | The true Fairy Godmother. Worked with Bloody Mary to engineer Drizella's entire life via the Lady Tremaine scheme. Claims she wants to help undo what was done. Connected to Sycorax. May be the only one who can reverse the curse. |
 | **Robson Wellgood** | Alive | darkwoods (defecting?) | Former Silverheart Court member, prisoner of Maeve at Everdrift. Deliberately threw a card game to help Bigby. Told him: *"Find me in Mercia."* Potential double agent. |
 | **Tinker Bell** | Alive | greenwoods | Summer Court fey investigator. Uncovered that the wish spell destroying the druids was cast on 30 April 348 beneath Emberhall. |
@@ -216,6 +214,25 @@ Characters confirmed during session recaps not previously listed.
 | **Zara** | Alive | cities | Elderly blind diviner at Ersatz University's School of Divination. Large curly hair, big spectacles. Read Merida's prophetic dreams and identified The Stranger (the Herald). Warned: "Stay away from the purple." |
 <!-- Added from Session 10 -->
 | **Enoch Hulldrown** | Alive | cities | Head of the Bonekeeper's Guild in Rymes. Tall, very still, calm. Hired the party to investigate undead risings in the lower crypt. Rewarded them with 120 silver and the Blessing of the Reaper. Unaware of the Tomb's full significance. |
+<!-- Added from Sessions 11-66 -->
+| **Kristoff Marlo** | Alive | cities | Fugitive wizard hiding in Salasarglumm's sewers. Trained at Arcanian Institute. Raised a basilisk for alchemical research (blood reverses petrification). Arrived at Beast King battle via waterfall teleportation on a turtle with 10 doves. Provided counter-magic against Carlos's healing. |
+| **Governor Eustus Moro** | Alive | greenwoods | Old Lord's brother. Disguised magistrate in Salasarglumm. Uses wax dummy heads at executions to show mercy. Allied with party to overthrow Beast King. |
+| **Tristan Iran** | Alive (freed) | greenwoods | Imprisoned heir of the Iran dynasty of Salasarglumm. Freed publicly during the ball revolt. Uncle: Galen Aran. |
+| **Galen Aran** | Alive | greenwoods | Tristan Iran's uncle. Hidden rebel leader in Salasarglumm. Revealed Borograth Tower and Beast King's mind-control staff. |
+| **Atasha** | Alive | darkwoods | Diplomat/advisor in Salasarglumm. Twin sister of Mother Ren. Sphinx ally of the Beast King. Refused to betray Carlos, fearing the mob. Trained Baron Lumella. |
+| **Mother Ren** | Alive | cities | Cleric in Mimsy. Twin of Atasha. Channelled infernal fey power for healing. Freed from demonic pact by the party. Granted the Sanctus Codex. |
+| **Titus Skye** | Alive | cities | Old orc ranger. Scarred, salt-and-pepper moustache, green cape, war axe. Bound by devil contract. Killed Jacob Hilton. Mirror-portal accident with Bigby caused months of time displacement. |
+| **Lord Edmund** | Alive | cities | Lord of Oronia. Oversaw the Devil of Newgate investigation. Hired Dr. Hilton as consultant. Paid party and hired them to investigate witches. |
+| **Irene Adler** | Alive | cities | Crimson-cloaked agent of Moriarty. Scar through eyebrow. Hired to stop Flycatcher's marriage to Arabella. Referenced Bigby's past: "Excellent work on Xander." |
+| **Ida Montague** | Destroyed (S41) | darkwoods | Spade Shipping operative. Was human; transformed into undead vessel for antiseed device. Heart retained consciousness: "They made me like this." Destroyed when Caliburn reacted with the antiseed chest. |
+| **Thori Black** | Deceased | cities | Former town treasurer of Lowmarsh. Killed by psychic damage from a shapeshifting fey. Was channelling public funds to the Crooked Men. His coded ledger referenced payments to "M." |
+| **Captain Alexander Smelt** | Unknown (wounded) | cities | Captain of the Hispaniola. Refined, experienced. Badly wounded when the main mast fell during pirate attack. |
+| **Mr. Arrow** | Unknown | cities | First Mate of the Hispaniola. Stern, military bearing. Arranged the treasure-map speculation with Squire Trone. Took command when Smelt was wounded. |
+| **High Abbot Jor** | Alive | greenwoods | Leader of the silent monks at Goback's ziggurat. Under his leadership (2 years), monks became increasingly strict. Visions at the ziggurat becoming "more real." |
+| **Amelia** | Alive | cities | Order of the Eleventh Eye member. Cursed to never sleep. Researching cleric spell evolution. Participated in Pebblecreek dock battle (providing Haste). |
+| **Marquis Stefan** | Petrified (S51) | greenwoods | Briar Rose's father. Found petrified in Grimordia's palace council chamber. His family guards a wish ring. |
+| **Marquise Leah** | Alive (?) (S52) | greenwoods | Briar Rose's mother. Found petrified but appeared miraculously animate during Grimordia escape. |
+| **Freya Iron Blood** | Defeated (S16) | darkwoods | Hag working for Morgana (Mother Iron Blood). Wore purple, twisted hands. Attempted to recruit party to deliver Eye of Obaad to Morgana. Defeated at Ragged Muffin. |
 
 ### Villains & Antagonists (session-confirmed)
 
@@ -243,8 +260,8 @@ Characters confirmed during session recaps not previously listed.
 | **Cinderella** | Alive | cities | Rules Cindershire. Challenged the party to single combat for a glass slipper. Fled when Sharmaine was killed. |
 | **The Scarecrow** | Alive | greenwoods | One of Morgana's constructs in Oz. Told the party that Morgause was his older sister (and is made of sand = Servant Four / Hellekin). |
 | **The Tin Man** | Alive | unknown | Metal construct found in Oz, frozen in terror. |
-| **The Creature** | Alive | unknown | Frankenstein's monster ("Adam"). Seeking Victor Frankenstein. Lady Tremaine hired him to kill Anastasia. |
-| **Victor Frankenstein** | Unknown | cities | Sought by Adam/the Creature. |
+| **The Creature** | Alive | unknown | Frankenstein's monster ('Adam'). Given his name during reconciliation with Victor (S17). Reconciled; no longer hunting. Lady Tremaine hired him to kill Anastasia (contract unfulfilled). Formed alliance with Drizella. |
+| **Victor Frankenstein** | Alive | cities | Found alive in Oronia (S16-17). Reconciled with Adam/the Creature. Surgeon who also signed a devil's contract with Rumpelstiltskin. Provided party with winter wolf elixir and healing notes. |
 | **Argent Carreau** | Unknown | darkwoods | Was Anastasia's fiancé in Salasarglumm under the Beast King. |
 
 ---

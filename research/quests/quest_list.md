@@ -7,8 +7,8 @@ Active quest threads as of Session 66 (06-03-2026).
 ## Active Quests
 
 ### 1. The Sunderance
-**Status:** Critical / ongoing
-**Summary:** A periodic catastrophic event that reshapes the world. Savvan predicted it would occur within 12–18 months of Session 12 — meaning it is now imminent. At the Sunderance, Arcadia (a sunken fey isle) is expected to rise, and the Horned King's tomb beneath Rymes is expected to open. The party must find Arcadia before it does.
+**Status:** Critical / in progress
+**Summary:** A periodic catastrophic event that reshapes the world. Savvan predicted it would occur within 12–18 months of Session 12 — meaning it is now imminent. Session 51 confirms the Sixth Sunderance is already underway — the Emperor is missing and druids cannot contact each other. At the Sunderance, Arcadia (a sunken fey isle) is expected to rise, and the Horned King's tomb beneath Rymes is expected to open. The party must find Arcadia before it does.
 **Key NPCs:** Savvan, Dean Marikosa, the druids (decimated), the Horned King
 **Locations:** Arcadia (will rise at "Flotsam"), Rymes (Horned King's tomb is below the city)
 
@@ -41,7 +41,7 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 5. Nimue's Redemption
 **Status:** Active
-**Summary:** Nimue (the Lady of the Lake) is under Morgana Le Fay's magical compulsion. She briefly broke free to give Mordred Caliburn, saying: *"The waters of Pendragon can free me."* Her soul is described as unclean. Until freed, she remains a tool of the Silverheart Court.
+**Summary:** Nimue (the Lady of the Lake) is under Morgana Le Fay's magical compulsion. She briefly broke free to give Mordred Caliburn, saying: *"The waters of Pendragon can free me."* Her soul is described as unclean. Until freed, she remains a tool of the Silverheart Court. Nimue is confirmed as a construct (S32) and former avatar of the Three-Faced Lady (S33). She attacked the party multiple times with spectral eyes (S43), stole Darian's body, and operated from a greenhouse with 100+ antiseeds. Caliburn was later given to Drizella (S33), not Mordred.
 **Key NPCs:** Nimue, Mordred, the waters of Pendragon
 **Locations:** Pendragon (Camelot's seat of power)
 
@@ -56,7 +56,7 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 7. Robert Tremaine
 **Status:** Active
-**Summary:** Drizella's father, held captive in a room of mirrors by Queen Maeve. Freed (briefly) at Everdrift. He is an archer and told Drizella to *"escape through mirrors."* His current location is unknown.
+**Summary:** Drizella's father, held captive in a room of mirrors by Queen Maeve. Freed (briefly) at Everdrift. He is an archer and told Drizella to *"escape through mirrors."* Freed at Everdrift (S59). Appeared aged with white beard. Told Drizella to 'escape through mirrors.' Current location after freedom unknown.
 **Key NPCs:** Robert Tremaine, Drizella, Queen Maeve
 
 ---
@@ -73,6 +73,8 @@ Active quest threads as of Session 66 (06-03-2026).
 **Status:** Active
 **Summary:** Morgana Le Fay killed the Three-Faced Lady in Oz and split herself into three: **Morgana** (memories/heart), **Queen Maeve** (magic/ambition), **Lady Tremaine** ("other things"). Each is diminished. Lady Tremaine appeared dead (confirmed by Greta) but is apparently still alive (Polko confirmed in Session 66). The three fragments appearing together at Everdrift caused chaos. Reconnecting or confronting them is a major thread.
 **Key NPCs:** Morgana Le Fay, Queen Maeve, Lady Tremaine, the Three-Faced Lady (dead)
+
+Morgana killed the Three-Faced Lady in Oz (S56/60) and used the murder to fragment herself into three. This origin is confirmed.
 
 ---
 
@@ -141,7 +143,7 @@ Active quest threads as of Session 66 (06-03-2026).
 
 ### 18. Merlin's Imprisonment
 **Status:** Active
-**Summary:** Merlin (founder of the Order of the Eleventh Eye and Briar's distant patron) has been imprisoned by Queen Maeve. Briar negotiated his release — in exchange for allowing Maeve to operate on Drizella at Aspenthorn. Maeve warned: *"You won't want him back when you know why he was imprisoned."*
+**Summary:** Merlin (founder of the Order of the Eleventh Eye and Briar's distant patron) has been imprisoned by Queen Maeve. Briar negotiated his release — in exchange for allowing Maeve to operate on Drizella at Aspenthorn. Maeve warned: *"You won't want him back when you know why he was imprisoned."* Critical complication: Merlin is bound to the Pendragon bloodline (S34/36) and cannot act freely while any Pendragon lives — meaning Mordred's existence directly prevents Merlin from helping them even if released.
 **Key NPCs:** Merlin, Queen Maeve, Briar
 **Flags:** `briar_maeve_bargain`
 
@@ -152,6 +154,51 @@ Active quest threads as of Session 66 (06-03-2026).
 **Summary:** An unknown figure who controls police and city officials in Xyander, owns docks and boats across Arrnonland, and put **Eamus Hogson** in charge of antiseed distribution. Flycatcher confirmed at least five antiseeds were distributed. Captain Irene Adler was mentioned in connection with Pebblecreek investigations. "M" may be a person, title, or conspiracy.
 **Key NPCs:** Eamus Hogson, Flycatcher, Captain Irene Adler
 **Locations:** Xyander, Arrnonland ports
+
+---
+
+### 20. Mordred's Pendragon Destiny
+**Status:** Critical / active
+**Summary:** Lancelot confirmed Mordred is the biological son of King Arthur (S36), making him the missing Pendragon heir. Arthur broke Excalibur after the civil war. Mordred holds Caliburn (one-third of Excalibur). The Stewards of Camelot would "cease to exist in 20-25 years" if a legitimate heir came forward. Glinda's death prophecy (S56): Mordred will die "very soon, at the hands of his father."
+**Key NPCs:** Mordred, King Arthur, Lancelot, the Stewards of Camelot, Krennic Silverbarrow
+**Locations:** Pendragon (Camelot)
+
+---
+
+### 21. Mordred's Infernal Contract
+**Status:** Active
+**Summary:** When Mordred died (S32), an entity in the death-space claimed: "We've got a deal." This implies a pre-existing infernal binding activated on death. The contract's terms and the entity's identity are unresolved. Likely connected to Morgana's deals or the Pendragon bloodline.
+**Key NPCs:** Mordred, the unnamed death-contract entity, Morgana Le Fay
+
+---
+
+### 22. Galahad's Rescue
+**Status:** Active (paused)
+**Summary:** Galahad was separated from Mordred during the Beast of Camelot attack at the knighting ceremony (S19 flashback). Morgana told Mordred that Galahad is "suffering" and revealed his location (S46). Mordred attempted to leave the party alone to rescue him but was redirected to Grimordia. No resolution.
+**Key NPCs:** Mordred, Galahad, Morgana Le Fay
+**Sessions:** 19 (flashback), 46
+
+---
+
+### 23. Mordred's Black Gauntlet Curse
+**Status:** Active
+**Summary:** Mordred received a cursed 9th-rank magical black gauntlet (S27) as replacement for his severed hand, gifted by Morgana. Confirmed "doomed by the Narrative" (S28): +1 AC on activation but dark purple-black corruption spreads up his arm. Cannot be removed (DC 30). Corruption thread ongoing.
+**Key NPCs:** Mordred, Morgana Le Fay
+
+---
+
+### 24. Hogson Brothers Network
+**Status:** Active
+**Summary:** Major criminal faction: hired Big Bad Wolf to kill Bigby (S12), finance antiseed distribution via Eamus Hogson (S42), Peter Hogson directly fought the party at the Pebblecreek docks (S41), Flycatcher (Edward Basque, Hogson supervisor) blackmailed Bigby to kill Greta (S37), attempted to marry Flycatcher into dwarven royalty for city control (S38). Connected to the mysterious "M."
+**Key NPCs:** Peter Hogson, Eamus/John Hogson, Flycatcher (Edward Basque), Lady Pikes, Bigby
+**Locations:** Xyander, Pebblecreek, Arrnonland ports
+
+---
+
+### 25. Greta / Freda / Pebblecreek Marriage Plot
+**Status:** Unresolved
+**Summary:** Greta (daughter of Amir High, dwarven city leader) was freed from Sunspire jail (S38). Her sister Freda has been asleep 8 months from Greta's accidental curse. Flycatcher planned to marry Arabella (another sister) to seize city control. Irene Adler was hired by Moriarty to stop the marriage. No resolution in later sessions.
+**Key NPCs:** Greta, Freda, Arabella, Flycatcher, Irene Adler, Amir High
 
 ---
 
@@ -361,3 +408,60 @@ Mary reveals that Equinox is a hollow construct and cannot be reasoned with. She
 
 **Key NPCs:** Darian Sand (dies), Briar Rose (introduced), Lady Piques, Peter Hogson, Flycatcher (informant), Ida Montague
 **Note for game design:** This quest ending — the death of a beloved character followed immediately by the awakening of a new one — is a deliberate narrative pivot. The cocoon in Lowmarsh vault (Quest C2) and this one are connected; Briar was being moved into position long before the party arrived.
+
+---
+
+### C9. The Memphis Cadwallader / Rumpelstiltskin Contract
+**Sessions:** 7–50
+**Location:** Winter Express → Rymes → Salasarglumm → Grimordia
+
+**Setup:** Memphis Cadwallader offered the party a commission on the Winter Express (S7) to retrieve three items from Salasarglumm. The party signed a contract (S8). In Session 17, they discovered it was a devil's contract — Memphis is Rumpelstiltskin. Prior victims included Muriel Kipper, LeAnd, Selenar, and Tobias.
+
+**Beats:**
+1. Contract signed (S8) — retrieve Ring, Staff, Looking Glass for Queen Maeve
+2. Devil's contract discovered (S17) — coded letter decodes to "Rumpelstiltskin"
+3. Three items retrieved from Salasarglumm (S31-32)
+4. Memphis invokes the contract in Grimordia (S49)
+5. Party burns the contract using Spectral Key + Rumpelstiltskin's true name (S49)
+6. Memphis's true flaming form revealed; all contracts destroyed (S50)
+
+**Resolution:** Rumpelstiltskin is defeated. All existing contracts burned. Three items remain with the party. Queen Maeve never received them.
+
+**Key NPCs:** Memphis Cadwallader (Rumpelstiltskin), the party
+
+---
+
+### C10. The Eye of Obaad
+**Sessions:** 15–16
+**Location:** Oronia (the Good Ship Ragged Muffin)
+
+**Setup:** The Eye of Obaad — literal eye of an old god — was located aboard the Ragged Muffin at Oronia's south docks, inside a chest protected by a 10th-level Contingency spell. Previously owned by Dame Gothel (~50 years ago). The eye was alive — it "smiled" at Drizella through Locate Object.
+
+**Beats:**
+1. Eye located by Drizella's mirror-shard ability (S15)
+2. Mother Iron Blood (Freya) attempts to recruit party to deliver it to Morgana; Mordred refuses
+3. Combat at the Ragged Muffin; Freya defeated (S16)
+4. Eye dropped into water during the fight; sank 25+ feet
+
+**Resolution:** The Eye of Obaad is lost at sea. Neither the party, Morgana, nor the Red Hand possesses it.
+
+**Key NPCs:** Drizella, Freya Iron Blood, Morgana Le Fay
+
+---
+
+### C11. The Frankenstein Arc
+**Sessions:** 16–17
+**Location:** Oronia (Victor Frankenstein's house)
+
+**Setup:** The Red Hand tasked the party with finding Victor Frankenstein after necromancer activity reports. The Creature (Adam) was hunting Victor seeking companionship.
+
+**Beats:**
+1. Creature goes berserk at Victor's house; combat (S16-17)
+2. Party de-escalates (Calm spells, reasoning, Intimidation)
+3. Victor's basement lab discovered: Tesla coils, failed prototypes
+4. Victor confesses he couldn't fix Adam's mind
+5. Emotional reconciliation; Adam given his name
+
+**Resolution:** Adam and Victor reconcile. Victor provides winter wolf elixir and healing notes. Adam is no longer a threat.
+
+**Key NPCs:** Adam (the Creature), Victor Frankenstein, Elizabeth
