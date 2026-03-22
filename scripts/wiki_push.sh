@@ -48,6 +48,7 @@ declare -A PAGE_MAP=(
   ["${RESEARCH}/world/lore_events.md"]="Lore Events Timeline"
   ["${RESEARCH}/quests/quest_list.md"]="Quest List"
   ["${RESEARCH}/sessions/session_summary.md"]="Session Summary"
+  ["${RESEARCH}/sessions/hero_questions.md"]="Hero Questions"
   ["${RESEARCH}/sessions/yt-scripts/Session1.md"]="Session 1/Transcript"
   ["${RESEARCH}/sessions/yt-scripts/Session2.md"]="Session 2/Transcript"
   ["${RESEARCH}/sessions/yt-scripts/Session3.md"]="Session 3/Transcript"
