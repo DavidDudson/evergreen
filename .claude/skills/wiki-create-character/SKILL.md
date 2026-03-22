@@ -180,28 +180,25 @@ Type YES to create, NO to skip, or EDIT to modify.
 
 ### Step 8 — Push
 
-Save the wikitext to a local file, then push:
+Save the wikitext to a local file, then push. **The file MUST be raw
+mediawiki wikitext** (with `==` headings, `[[links]]`, `{{templates}}`).
+Do NOT write markdown — `wiki_push.sh` auto-detects wikitext and passes
+it through without conversion.
 
 ```bash
-# Save to temp file
+# Save to temp file — use heredoc with single-quoted delimiter to prevent
+# shell expansion of {{ }} and [[ ]]
 cat > /tmp/wiki_page.txt << 'EOF'
 <wikitext content>
 EOF
 
-# Push using wiki_push.sh or direct API
+# Push using wiki_push.sh
 ./scripts/wiki_push.sh push "<Page Title>" /tmp/wiki_page.txt
 ```
 
-Or use the API directly:
-
-```bash
-curl -s -c cookies -b cookies -X POST \
-  --data-urlencode "title=<Page Title>" \
-  --data-urlencode "text@/tmp/wiki_page.txt" \
-  --data-urlencode "summary=Bot-created character page from session transcripts" \
-  --data-urlencode "token=${CSRF}" \
-  "${API}?action=edit&format=json"
-```
+**Important:** The file must contain `{{` or `==` headings on their own
+lines for `wiki_push.sh` to detect it as wikitext. If the file looks like
+markdown, pandoc will convert it and mangle the mediawiki markup.
 
 ---
 

@@ -287,13 +287,14 @@ get_csrf_token() {
 # ---------------------------------------------------------------------------
 to_wikitext() {
   local file="$1"
-  if [[ $HAVE_PANDOC -eq 1 ]]; then
+  # If the file already contains mediawiki markup (== headings, templates),
+  # pass it through raw — don't mangle it with pandoc
+  if grep -qE '^\{\{|^==.+==$' "$file" 2>/dev/null; then
+    cat "$file"
+  elif [[ $HAVE_PANDOC -eq 1 ]]; then
     pandoc --from=markdown --to=mediawiki "$file"
   else
-    # Wrap raw markdown in <pre> so it at least renders readable
-    echo "<pre>"
     cat "$file"
-    echo "</pre>"
   fi
 }
 

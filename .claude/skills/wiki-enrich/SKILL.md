@@ -183,27 +183,35 @@ Wait for explicit confirmation before pushing.
 
 ### Step 8 — Push
 
-Use `wiki_push.sh` or the MediaWiki API to append content:
+Use the MediaWiki API `appendtext` parameter to add content to the END
+of the page without touching existing content. **Write raw mediawiki
+wikitext** (with `==` headings, `[[links]]`, `{{templates}}`).
 
 ```bash
-# Option A: If wiki_push.sh supports the page
-./scripts/wiki_push.sh push "<Page Title>" "<local file>"
+# Login and get CSRF token (wiki_push.sh handles this, but for direct API):
+./scripts/wiki_push.sh push "<Page Title>" "<local wikitext file>"
+```
 
-# Option B: Direct API append (for section-level edits)
+For append-only operations where you don't want to replace the whole page,
+use the API directly with `appendtext`:
+
+```bash
 CSRF=$(curl -s -c cookies -b cookies \
   "${API}?action=query&meta=tokens&type=csrf&format=json" \
   | jq -r '.query.tokens.csrftoken')
 
 curl -s -c cookies -b cookies -X POST \
   --data-urlencode "title=<Page Title>" \
-  --data-urlencode "appendtext=<NEW WIKITEXT>" \
+  --data-urlencode "appendtext@/tmp/append_content.txt" \
   --data-urlencode "summary=Bot enrichment: added history/quotes/relationships from session transcripts" \
   --data-urlencode "token=${CSRF}" \
   "${API}?action=edit&format=json"
 ```
 
-The `appendtext` parameter adds content to the END of the page without
-touching existing content.
+**Important:** The append file must be raw mediawiki wikitext with `==`
+headings on their own lines. `wiki_push.sh` auto-detects wikitext (looks
+for `{{` or `^==`) and passes it through without pandoc conversion. If it
+looks like markdown, pandoc will mangle the mediawiki markup.
 
 ---
 
