@@ -260,12 +260,13 @@ variants.
 1. **Never replace existing content.** This skill only appends.
 2. **All content goes under `== Bot Conjecture ==`.** Use `{{Bot conjecture|date=YYYY-MM-DD}}`.
 3. **Skip content that already exists on the page.** Diff first.
-4. **Mark uncertain quotes with (?)** — auto-captions are noisy.
+4. **Mark uncertain quotes with (?)** as auto-captions are noisy.
 5. **Include session references** for every claim using `<ref>[[Session N]]</ref>`.
 6. **Include YouTube timestamps** where possible for key moments and quotes.
-7. **Write in the wiki's existing tone** — past tense, narrative, encyclopaedic.
+7. **Write in the wiki's existing tone** -- past tense, narrative, encyclopaedic.
 8. **Approval required** before any API call (inherited from wiki-update skill).
 9. **One character at a time.** If the user asks for multiple, process sequentially.
+10. **No em dashes or en dashes.** Never use `—` or `–`. Rephrase using commas, periods, or "to" for ranges instead.
 
 ---
 

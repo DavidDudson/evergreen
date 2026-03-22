@@ -258,10 +258,11 @@ or Cities) with a wiki link. Place them in the appropriate sub-section
 3. **All content needs session references** — `<ref>[[Session N]]</ref>`.
 4. **Include YouTube timestamps** for quotes and key moments.
 5. **Use wiki links** for all characters, locations, factions, items.
-6. **Write in the wiki's existing tone** — past tense, narrative, encyclopaedic.
+6. **Write in the wiki's existing tone** -- past tense, narrative, encyclopaedic.
 7. **Approval required** before any API call.
 8. **One character at a time.**
 9. **Include `{{Template:Nav-Characters}}` and `[[Category:Characters]]`** at the bottom.
+10. **No em dashes or en dashes.** Never use `—` or `–`. Rephrase using commas, periods, or "to" for ranges instead.
 
 ---
 
