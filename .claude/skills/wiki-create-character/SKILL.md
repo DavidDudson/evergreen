@@ -200,6 +200,38 @@ EOF
 lines for `wiki_push.sh` to detect it as wikitext. If the file looks like
 markdown, pandoc will convert it and mangle the mediawiki markup.
 
+### Step 9 — Update local research files
+
+After the wiki page is created, update the local research files to keep
+them in sync. This is **mandatory** — do not skip.
+
+#### 9a. NPC List (`research/characters/npc_list.md`)
+
+Check if the character is already in the NPC list. If not, add a row to
+the appropriate table in the Session-Introduced NPCs section (Allies or
+Villains). Include a wiki link to the new page.
+
+Format (Allies table):
+```markdown
+| [**Name**](https://evergeennova.fandom.com/wiki/Page_Title) | SN | Status | alignment | Role description. |
+```
+
+If the character already exists in the NPC list but without a wiki link,
+add the link.
+
+#### 9b. Character Alignments (`research/characters/character_alignments.md`)
+
+Add the character to the correct faction section (Greenwoods, Darkwoods,
+or Cities) with a wiki link. Place them in the appropriate sub-section
+(Allies, Villains, Sorcerers, etc.).
+
+#### 9c. Push updated research files to wiki
+
+```bash
+./scripts/wiki_push.sh push "NPC List" "research/characters/npc_list.md"
+./scripts/wiki_push.sh push "Character Alignments" "research/characters/character_alignments.md"
+```
+
 ---
 
 ## Character Name Mappings (Auto-Caption Garbling)

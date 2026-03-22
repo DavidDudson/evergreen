@@ -25,7 +25,7 @@ Natural magic, memory, preservation. The forest is alive and must be tended.
 |---|---|---|
 | [**Dame Gothel**](https://evergeennova.fandom.com/wiki/Dame_Gothel) | Alive (S22+) | Former All-Mother. Kept Caliburn safe. 50-year memory gaps. Cannot harm living creatures. |
 | [**King Louie**](https://evergeennova.fandom.com/wiki/King_Louie) | Alive | Summer Court. Rules Everdrift. Hedonistic; friendly to mortals. |
-| **Tashanna** | Alive | Current All-Mother of the Thrice-Triple Covens. |
+| [**Tashanna**](https://evergeennova.fandom.com/wiki/Tashanna) | Alive | Current All-Mother of the Thrice-Triple Covens. |
 
 ### Fey Courts
 
