@@ -192,26 +192,28 @@ wikitext** (with `==` headings, `[[links]]`, `{{templates}}`).
 ./scripts/wiki_push.sh push "<Page Title>" "<local wikitext file>"
 ```
 
-For append-only operations where you don't want to replace the whole page,
-use the API directly with `appendtext`:
+**WARNING: Do NOT use `appendtext`** — it appends after *everything*
+including `{{Template:Nav-Characters}}`, `[[Category:Characters]]`, and
+`== References ==`, breaking the page structure.
+
+Instead, **fetch the full page, insert the Bot Conjecture section before
+the footer elements, and push the complete page:**
 
 ```bash
-CSRF=$(curl -s -c cookies -b cookies \
-  "${API}?action=query&meta=tokens&type=csrf&format=json" \
-  | jq -r '.query.tokens.csrftoken')
+# 1. Fetch existing page
+curl -s "${API}?action=query&prop=revisions&rvprop=content&rvslots=main&titles=PAGE&format=json" \
+  | jq -r '.query.pages | to_entries[0].value.revisions[0].slots.main["*"]' > /tmp/page_full.txt
 
-curl -s -c cookies -b cookies -X POST \
-  --data-urlencode "title=<Page Title>" \
-  --data-urlencode "appendtext@/tmp/append_content.txt" \
-  --data-urlencode "summary=Bot enrichment: added history/quotes/relationships from session transcripts" \
-  --data-urlencode "token=${CSRF}" \
-  "${API}?action=edit&format=json"
+# 2. Insert Bot Conjecture BEFORE {{Template:Nav-Characters}} / [[Category:]] / ==References==
+#    Strip footer elements, append Bot Conjecture, re-add footer at end
+
+# 3. Push the complete corrected page
+./scripts/wiki_push.sh push "<Page Title>" /tmp/page_full.txt
 ```
 
-**Important:** The append file must be raw mediawiki wikitext with `==`
-headings on their own lines. `wiki_push.sh` auto-detects wikitext (looks
-for `{{` or `^==`) and passes it through without pandoc conversion. If it
-looks like markdown, pandoc will mangle the mediawiki markup.
+**Important:** The file must be raw mediawiki wikitext with `==` headings
+on their own lines. `wiki_push.sh` auto-detects wikitext (looks for `{{`
+or `^==`) and passes it through without pandoc conversion.
 
 ---
 
