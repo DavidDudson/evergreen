@@ -33,7 +33,7 @@ Natural magic, memory, preservation. The forest is alive and must be tended.
 |---|---|---|
 | [**Queen Titania**](https://evergeennova.fandom.com/wiki/Queen_Titania) | Alive (S43) | Ancient Fey queen. Merlin's sister. Guardian of his relics. |
 | [**Lady Caelia**](https://evergeennova.fandom.com/wiki/Caelia) | Alive | Spring Court leader. Domain: birth, renewal. |
-| **Jackie Brush** | Alive | Autumn Court leader. Domain: harvest, endings. |
+| [**Jackie Brush**](https://evergeennova.fandom.com/wiki/Jackie_Brush) | Alive | Autumn Court leader. Domain: harvest, endings. |
 | [**King Oberon**](https://evergeennova.fandom.com/wiki/King_Oberon) | Murdered (S56) | King of the Fey. Murdered 30 April 348. Dagger identical to Bigby's. |
 | [**Queen Mab**](https://evergeennova.fandom.com/wiki/Queen_Mab) | Alive | Winter Court sovereign. Louie's mother. |
 
@@ -41,11 +41,11 @@ Natural magic, memory, preservation. The forest is alive and must be tended.
 
 | Name | Status | Notes |
 |---|---|---|
-| **Prince Phillip** | Alive | Twin soul of Briar Rose. |
+| [**Prince Phillip**](https://evergeennova.fandom.com/wiki/Prince_Phillip) | Alive | Twin soul of Briar Rose. |
 | [**Robert Tremaine**](https://evergeennova.fandom.com/wiki/Robert_Tremaine) | Alive (freed S59) | Drizella's father. Archer. Freed from mirror prison at Everdrift. |
 | [**Hazel the Wise**](https://evergeennova.fandom.com/wiki/Hazel_the_Wise) | Alive | Grandmother of the Covens (~200+ years). Leads formal inquisitions. |
 | [**Glinda the Good**](https://evergeennova.fandom.com/wiki/Glinda_the_Good) | Alive | Psychopomp in Oz. Revealed each PC's death prophecy. |
-| **Vasala/Valassa Farsight** | Alive | Arcane expert. Preserved Mordred's severed hand. |
+| [**Vasala/Valassa Farsight**](https://evergeennova.fandom.com/wiki/Valassa_Farsight) | Alive | Arcane expert. Preserved Mordred's severed hand. |
 | [**Grandmother Alpine**](https://evergeennova.fandom.com/wiki/Grandmother_Alpine) | Alive | Large owl-woman fey. Mordred read her fate: "traitor." |
 | [**Augusta**](https://evergeennova.fandom.com/wiki/Augusta) | Alive | Mab's sister. Keeper of fate. |
 | [**Miss Octavia Muffet**](https://evergeennova.fandom.com/wiki/Miss_Muffet) | Alive | Giant spider fey. Orphanage in Morso. Deal with Grandmother Malyr. |
@@ -53,17 +53,17 @@ Natural magic, memory, preservation. The forest is alive and must be tended.
 | [**Flycatcher**](https://evergeennova.fandom.com/wiki/Flycatcher) | Alive | Informant. Revealed antiseed distribution. Cannot remember the Big Bad Wolf's name. |
 | [**Greta**](https://evergeennova.fandom.com/wiki/Greta) | Alive | Moon-connected. Daughter of Amir High. Accidentally cursed sister Freda to sleep. |
 | [**Old Mother Hubbard**](https://evergeennova.fandom.com/wiki/Old_Mother_Hubbard) | Alive | Wise figure at Goback. Fey trail in her cellar. |
-| **Tinker Bell** | Alive | Summer Court fey investigator. Uncovered wish spell details. |
+| [**Tinker Bell**](https://evergeennova.fandom.com/wiki/Tinker_Bell) | Alive | Summer Court fey investigator. Uncovered wish spell details. |
 | [**Rodrigo**](https://evergeennova.fandom.com/wiki/Rodrigo) | Alive (freed S66) | Cursed lion from Cindershire. Freed by the party. |
-| **The Witch of the Woods** | Alive | Merida's mentor. A witch (not a hag). |
-| **Bessa of the Lone Pine** | Unknown | Sibylla's mentor. Searching for Nimue. |
+| [**The Witch of the Woods**](https://evergeennova.fandom.com/wiki/The_Witch_of_the_Woods) | Alive | Merida's mentor. A witch (not a hag). |
+| [**Bessa of the Lone Pine**](https://evergeennova.fandom.com/wiki/Bessa_of_the_Lone_Pine) | Unknown | Sibylla's mentor. Searching for Nimue. |
 | [**Agnes Crooked Finger**](https://evergeennova.fandom.com/wiki/Agnes_Crookedfinger) | Alive | Mother-rank witch of Rymes. Potential Cunning for Sibylla. |
 | [**The Green Man**](https://evergeennova.fandom.com/wiki/The_Green_Man) | Alive | Fey guardian of the Greenwoods. Said "Sunderance" to Mordred (S3). |
-| **Governor Eustus Moro** | Alive | Old Lord's brother. Secret mercy magistrate in Salasarglumm. |
-| **Tristan Iran** | Alive (freed) | Heir of the Iran dynasty. Freed during the ball revolt. |
-| **Galen Aran** | Alive | Tristan's uncle. Hidden rebel leader. |
-| **Mother Ren** | Alive | Cleric in Mimsy. Twin of Atasha. Freed from demonic pact. |
-| **High Abbot Jor** | Alive | Leader of silent monks at Goback's ziggurat. |
+| [**Governor Eustus Moro**](https://evergeennova.fandom.com/wiki/Governor_Eustus_Moro) | Alive | Old Lord's brother. Secret mercy magistrate in Salasarglumm. |
+| [**Tristan Iran**](https://evergeennova.fandom.com/wiki/Tristan_Iran) | Alive (freed) | Heir of the Iran dynasty. Freed during the ball revolt. |
+| [**Galen Aran**](https://evergeennova.fandom.com/wiki/Galen_Aran) | Alive | Tristan's uncle. Hidden rebel leader. |
+| [**Mother Ren**](https://evergeennova.fandom.com/wiki/Mother_Ren) | Alive | Cleric in Mimsy. Twin of Atasha. Freed from demonic pact. |
+| [**High Abbot Jor**](https://evergeennova.fandom.com/wiki/High_Abbot_Jor) | Alive | Leader of silent monks at Goback's ziggurat. |
 | [**Marquis Stefan**](https://evergeennova.fandom.com/wiki/Marquess_Stefan) | Petrified (S51) | Briar Rose's father. Found in Grimordia's palace. |
 | [**Marquise Leah**](https://evergeennova.fandom.com/wiki/Marchioness_Leah) | Alive (?) (S52) | Briar Rose's mother. Appeared animate during escape. |
 | [**Clara Murse**](https://evergeennova.fandom.com/wiki/Clara_Merst) | Alive | Dead Moon pilgrim. Seeking relic south of Ilix Ridge. |
@@ -72,10 +72,10 @@ Natural magic, memory, preservation. The forest is alive and must be tended.
 
 | Name | Status | Notes |
 |---|---|---|
-| **The Conductor** | Alive | Skeleton operating the Winter Express. |
-| **The Hitchhiker** | Alive | The Conductor's brother. Trickster figure. |
-| **The Winter Giver** | Alive | Jolly gift-giver / evil spirit. Second demonic face. |
-| **The Tea Lady** | Alive | Serves jasmine tea on the Winter Express. |
+| [**The Conductor**](https://evergeennova.fandom.com/wiki/The_Conductor) | Alive | Skeleton operating the Winter Express. |
+| [**The Hitchhiker**](https://evergeennova.fandom.com/wiki/The_Hitchhiker) | Alive | The Conductor's brother. Trickster figure. |
+| [**The Winter Giver**](https://evergeennova.fandom.com/wiki/The_Winter_Giver) | Alive | Jolly gift-giver / evil spirit. Second demonic face. |
+| [**The Tea Lady**](https://evergeennova.fandom.com/wiki/The_Tea_Lady) | Alive | Serves jasmine tea on the Winter Express. |
 | [**Bobby Nos**](https://evergeennova.fandom.com/wiki/Bobby_No_Nose) | Alive | Lizard folk trickster at Goback. |
 
 ### Deities (greenwoods-resonant)
@@ -150,9 +150,9 @@ Power through corruption, nightmare, and reshaping. The old world must be unmade
 | [**Ida Montague**](https://evergeennova.fandom.com/wiki/Ida_Montague) | Destroyed (S41) | Undead vessel for antiseed device. "They made me like this." |
 | [**Equinox**](https://evergeennova.fandom.com/wiki/Equinox) | Destroyed (S57) | Construct in Mordred's likeness. Reduced to sand. |
 | [**Alexander Dunos**](https://evergeennova.fandom.com/wiki/Alexus_Dunloss) | Alive | Red Hand commander. Calm, purposeful. |
-| **Pyromancer Ken** | Deceased | Red Hand mage. Killed during road ambush. |
-| **Captain Sharmaine** | Deceased (S66) | Held Anastasia's memories. Killed by Drizella and Briar. |
-| **The Not-Deer** | Ongoing | Corrupted deer manifesting the Horned King. |
+| [**Pyromancer Ken**](https://evergeennova.fandom.com/wiki/Pyromancer_Ken) | Deceased | Red Hand mage. Killed during road ambush. |
+| [**Captain Sharmaine**](https://evergeennova.fandom.com/wiki/Captain_Sharmaine) | Deceased (S66) | Held Anastasia's memories. Killed by Drizella and Briar. |
+| [**The Not-Deer**](https://evergeennova.fandom.com/wiki/The_Not-Deer) | Ongoing | Corrupted deer manifesting the Horned King. |
 | [**Davy Jones**](https://evergeennova.fandom.com/wiki/Davy_Jones) | Alive | Keeper of the dead at sea. |
 
 ### The Horned King
@@ -200,8 +200,8 @@ Power through agreement, commerce, and accumulated obligation.
 | [**Dean Marikosa**](https://evergeennova.fandom.com/wiki/Dean_Marikosa) | Alive | Dean of Ersatz University. 3rd-age soul mage. Fought at Fall of Arcadia. |
 | [**Emilia Zeneba**](https://evergeennova.fandom.com/wiki/Emilia_Zeneba) | Alive | OXIE. Holds Staff of Action. |
 | [**Osiris Krex**](https://evergeennova.fandom.com/wiki/Osiris_Krex) | Alive | OXIE. Holds Staff of Insight. |
-| **Kristoff Marlo** | Alive | Fugitive wizard in Salasarglumm sewers. Basilisk researcher. |
-| **Amelia** | Alive | OXIE member. Cursed to never sleep. |
+| [**Kristoff Marlo**](https://evergeennova.fandom.com/wiki/Kristoff_Marlo) | Alive | Fugitive wizard in Salasarglumm sewers. Basilisk researcher. |
+| [**Amelia**](https://evergeennova.fandom.com/wiki/Amelia) | Alive | OXIE member. Cursed to never sleep. |
 
 ### Knights & Warriors
 
@@ -212,7 +212,7 @@ Power through agreement, commerce, and accumulated obligation.
 | [**Galahad**](https://evergeennova.fandom.com/wiki/Galahad) | Alive (captive) | Mordred's best friend. Under modify memory by Maeve. |
 | [**Galehaut**](https://evergeennova.fandom.com/wiki/Galehaut) | Alive | Half-giant knight. Trained Mordred. "You can't save everyone." |
 | [**Krennic Silverbarrow**](https://evergeennova.fandom.com/wiki/Krennic_Silverbarrow) | Alive | Duergar agent of the Stewards of Camelot. |
-| **Titus Skye** | Alive | Orc ranger. Bound by devil contract. Killed Jacob Hilton. |
+| [**Titus Skye**](https://evergeennova.fandom.com/wiki/Titus_Skye) | Alive | Orc ranger. Bound by devil contract. Killed Jacob Hilton. |
 
 ### Guild & Civic Leaders
 
@@ -222,7 +222,7 @@ Power through agreement, commerce, and accumulated obligation.
 | [**Matron Simone**](https://evergeennova.fandom.com/wiki/Matron_Simone) | Alive | Sage Hospice head. Licenced Drizella as Medicaster. |
 | [**Lewis Short**](https://evergeennova.fandom.com/wiki/Lewis_Short) | Alive | Chairman of Lowmarsh. Targeted by Shadic Brethren. |
 | [**High Matron Mayana**](https://evergeennova.fandom.com/wiki/High_Matron_Mayana) | Alive | Northern League of Medicasters. Investigating the Blight. |
-| **Lord Edmund** | Alive | Lord of Oronia. Oversaw Devil of Newgate investigation. |
+| [**Lord Edmund**](https://evergeennova.fandom.com/wiki/Lord_Edmund) | Alive | Lord of Oronia. Oversaw Devil of Newgate investigation. |
 | [**Officer Bradley**](https://evergeennova.fandom.com/wiki/Officer_Bradley) | Alive | Lowmarsh law enforcement. |
 
 ### Other Cities Characters
@@ -231,29 +231,29 @@ Power through agreement, commerce, and accumulated obligation.
 |---|---|---|
 | [**Irene Adler**](https://evergeennova.fandom.com/wiki/Irene_Adler) | Alive | Agent of Moriarty. Scar through eyebrow. Opposes Hogson expansion. |
 | [**Billy Bones**](https://evergeennova.fandom.com/wiki/Billy_Bones) | Unknown | Old sailor. Introduced party to Hispaniola crew. |
-| **Captain Alexander Smelt** | Unknown (wounded) | Captain of the Hispaniola. |
+| [**Captain Alexander Smelt**](https://evergeennova.fandom.com/wiki/Captain_Alexander_Smelt) | Unknown (wounded) | Captain of the Hispaniola. |
 | [**Mr. Arrow**](https://evergeennova.fandom.com/wiki/Mr_Arrow) | Unknown | First Mate of the Hispaniola. |
-| **Barnabas Ragdoll** | Alive | Wizard of Oz. Gave Ruby Slippers to Mary under duress. |
+| [**Barnabas Ragdoll**](https://evergeennova.fandom.com/wiki/Barnabas_Ragdoll) | Alive | Wizard of Oz. Gave Ruby Slippers to Mary under duress. |
 | [**Cinderella**](https://evergeennova.fandom.com/wiki/Cinderella) | Alive | Rules Cindershire. Fled when Sharmaine was killed. |
 | [**Victor Frankenstein**](https://evergeennova.fandom.com/wiki/Victor_Frankenstein) | Alive | Surgeon. Reconciled with Adam. Signed a devil's contract. |
 | [**Jacob Hilton**](https://evergeennova.fandom.com/wiki/Jacob_Hilton) | Stopped | The Devil of Newgate. Serial killer connected to Mary via mirror shard. |
 | [**Thori Black**](https://evergeennova.fandom.com/wiki/Thori_Black) | Deceased | Former Lowmarsh treasurer. Killed by shapeshifting fey. |
-| **Father Lucas** | Alive | Bonekeeper's Guild cleric. |
+| [**Father Lucas**](https://evergeennova.fandom.com/wiki/Father_Lucas) | Alive | Bonekeeper's Guild cleric. |
 | **Enoch Hulldrown** | Alive | Bonekeeper's Guild head in Rymes. |
-| **Frond** | Alive | Leshy scholar at Ersatz. Expert on Great Beasts. |
-| **Thr** | Alive | Head librarian at Ersatz. Infernal heritage. |
-| **Kolen** | Alive | Elf at Ersatz. Fey research specialist. |
-| **Zara** | Alive | Blind diviner at Ersatz. Warned: "Stay away from the purple." |
-| **Marabella** | Deceased (ghost) | Ersatz student. Ghost warned about the Tomb. |
+| [**Frond**](https://evergeennova.fandom.com/wiki/Frond) | Alive | Leshy scholar at Ersatz. Expert on Great Beasts. |
+| [**Thr**](https://evergeennova.fandom.com/wiki/Thr) | Alive | Head librarian at Ersatz. Infernal heritage. |
+| [**Kolen**](https://evergeennova.fandom.com/wiki/Kolen) | Alive | Elf at Ersatz. Fey research specialist. |
+| [**Zara**](https://evergeennova.fandom.com/wiki/Zara) | Alive | Blind diviner at Ersatz. Warned: "Stay away from the purple." |
+| [**Marabella**](https://evergeennova.fandom.com/wiki/Marabella) | Deceased (ghost) | Ersatz student. Ghost warned about the Tomb. |
 | [**Chops**](https://evergeennova.fandom.com/wiki/Chops) | Alive | Barkeeper at the Lone Pine in Lowmarsh. |
-| **Corpus** | Alive | Tavern worker at the Lone Pine. |
+| [**Corpus**](https://evergeennova.fandom.com/wiki/Corpus) | Alive | Tavern worker at the Lone Pine. |
 | [**Trevor Becker**](https://evergeennova.fandom.com/wiki/Trevor_Becker) | Alive | Lowmarsh rival establishment. Suspected shady dealings. |
-| **Paul Goodget** | Alive | Lowmarsh farmer. People's Committee member. |
-| **Austin Burton** | Alive | Lowmarsh lumber yard. People's Committee member. |
-| **Oswald Burton** | Alive | Burton Lumber Yard owner. |
-| **Krennic Silver-Po** | Alive | Dwarf rival contractor for Salasarglumm commission. |
-| **Mother Mary Hill** | Alive | Cleric at Goodly Father church in Lowmarsh. |
-| **Vicar Sean Rothwell** | Alive | Vicar of the Goodly Father in Lowmarsh. |
+| [**Paul Goodget**](https://evergeennova.fandom.com/wiki/Paul_Goodget) | Alive | Lowmarsh farmer. People's Committee member. |
+| [**Austin Burton**](https://evergeennova.fandom.com/wiki/Austin_Burton) | Alive | Lowmarsh lumber yard. People's Committee member. |
+| [**Oswald Burton**](https://evergeennova.fandom.com/wiki/Oswald_Burton) | Alive | Burton Lumber Yard owner. |
+| [**Krennic Silver-Po**](https://evergeennova.fandom.com/wiki/Krennic_Silver-Po) | Alive | Dwarf rival contractor for Salasarglumm commission. |
+| [**Mother Mary Hill**](https://evergeennova.fandom.com/wiki/Mother_Mary_Hill) | Alive | Cleric at Goodly Father church in Lowmarsh. |
+| [**Vicar Sean Rothwell**](https://evergeennova.fandom.com/wiki/Vicar_Sean_Rothwell) | Alive | Vicar of the Goodly Father in Lowmarsh. |
 
 ### Deities (cities-resonant)
 
@@ -288,6 +288,6 @@ Some characters sit on the border of factions. Their tag reflects where they *cu
 | Name | Status | Notes |
 |---|---|---|
 | **The Creature (Adam)** | Alive | Frankenstein's monster. Reconciled with Victor. Aligned with party. |
-| **The Tin Man** | Alive | Metal construct in Oz. Frozen in terror. |
-| **The Scarecrow** | Alive | Morgana's construct in Oz. Told party Morgause was his older sister. |
+| [**The Tin Man**](https://evergeennova.fandom.com/wiki/The_Tin_Man) | Alive | Metal construct in Oz. Frozen in terror. |
+| [**The Scarecrow**](https://evergeennova.fandom.com/wiki/The_Scarecrow) | Alive | Morgana's construct in Oz. Told party Morgause was his older sister. |
 | [**Argent Carreau**](https://evergeennova.fandom.com/wiki/Argent_Carreau) | Unknown | Was Anastasia's fiancé under the Beast King. |
