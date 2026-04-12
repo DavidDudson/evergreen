@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
-use models::game_states::GameState;
+use models::game_states::{GameState, should_despawn_world};
 
 use crate::galen;
 use crate::npc_anim;
@@ -37,6 +37,7 @@ impl Plugin for LevelPlugin {
                     spawning::respawn_on_area_change,
                     scenery::respawn_scenery_on_area_change,
                     npcs::respawn_npcs_on_area_change,
+                    galen::respawn_galen_on_area_change,
                     scenery::animate_rustle,
                     npc_labels::attach_labels,
                     npc_labels::sync_interact_icon,
@@ -55,7 +56,7 @@ impl Plugin for LevelPlugin {
                     npcs::despawn_npcs,
                     galen::despawn_galen,
                 )
-                    .run_if(not(in_state(GameState::Paused))),
+                    .run_if(should_despawn_world),
             );
     }
 }

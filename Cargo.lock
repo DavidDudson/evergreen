@@ -1756,7 +1756,10 @@ name = "camera"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "dialog",
  "level",
+ "models",
+ "player",
 ]
 
 [[package]]

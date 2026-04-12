@@ -9,9 +9,15 @@ use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSh
 use models::scenery::SceneryCollider;
 use rand::seq::SliceRandom;
 
+use bevy::math::IVec2;
+
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::npc_wander::NpcWander;
 use crate::spawning::TILE_SIZE_PX;
+use crate::world::{AreaChanged, WorldMap};
+
+/// Galen's home area (the starting area).
+const AREA_GALEN: IVec2 = IVec2::new(0, 0);
 
 // Galen stands on the N arm of the starting area (col 15, row 13).
 // Tile (15, 13) is on columns 14-16 with y >= 7 (North exit guaranteed).
@@ -43,11 +49,20 @@ pub fn spawn_galen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    world: Res<WorldMap>,
     existing: Query<(), With<NpcGalen>>,
 ) {
-    if !existing.is_empty() {
+    if !existing.is_empty() || world.current != AREA_GALEN {
         return;
     }
+    spawn_galen_entity(&mut commands, &asset_server, &mut atlas_layouts);
+}
+
+fn spawn_galen_entity(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    atlas_layouts: &mut Assets<TextureAtlasLayout>,
+) {
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(FRAME_SIZE_PX),
         SHEET_COLS,
@@ -107,6 +122,26 @@ fn galen_pos() -> Vec3 {
 pub fn despawn_galen(mut commands: Commands, q: Query<Entity, With<NpcGalen>>) {
     for entity in &q {
         commands.entity(entity).despawn();
+    }
+}
+
+/// Despawns and conditionally respawns Galen when the player changes area.
+pub fn respawn_galen_on_area_change(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    world: Res<WorldMap>,
+    q: Query<Entity, With<NpcGalen>>,
+    mut events: MessageReader<AreaChanged>,
+) {
+    if events.read().next().is_none() {
+        return;
+    }
+    for entity in &q {
+        commands.entity(entity).despawn();
+    }
+    if world.current == AREA_GALEN {
+        spawn_galen_entity(&mut commands, &asset_server, &mut atlas_layouts);
     }
 }
 

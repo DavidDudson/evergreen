@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use models::game_states::GameState;
+use models::game_states::{GameState, should_despawn_world};
 
 use crate::animation;
 use crate::collision;
@@ -29,7 +29,7 @@ impl Plugin for PlayerPlugin {
             )
             .add_systems(
                 OnExit(GameState::Playing),
-                spawning::despawn.run_if(not(in_state(GameState::Paused))),
+                spawning::despawn.run_if(should_despawn_world),
             );
     }
 }

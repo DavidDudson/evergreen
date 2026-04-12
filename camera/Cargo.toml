@@ -8,4 +8,7 @@ workspace = true
 
 [dependencies]
 bevy = "0.18"
+dialog = { path = "../dialog" }
 level = { path = "../level" }
+models = { path = "../models" }
+player = { path = "../player" }

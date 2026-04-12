@@ -19,6 +19,11 @@ const INTERACT_RADIUS_PX: f32 = 48.0;
 // Runner state
 // ---------------------------------------------------------------------------
 
+/// The NPC entity the player is currently talking to.
+/// Set on dialogue start, cleared on dialogue end.
+#[derive(Resource, Default)]
+pub struct DialogueTarget(pub Option<Entity>);
+
 /// Tracks the current position in an active dialogue script.
 #[derive(Resource, Default)]
 pub struct DialogueRunner {
@@ -117,6 +122,7 @@ pub fn start_dialogue(
     mut talker_q: Query<&mut Talker>,
     scripts: Res<Assets<DialogueScript>>,
     mut runner: ResMut<DialogueRunner>,
+    mut target: ResMut<DialogueTarget>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     let Some(event) = events.read().next() else {
@@ -134,6 +140,7 @@ pub fn start_dialogue(
     };
 
     talker.has_greeted = true;
+    target.0 = Some(event.npc);
     runner.state = RunnerState::Running {
         script: script.clone(),
         remaining: script.lines.clone(),
@@ -282,6 +289,7 @@ pub fn handle_choice(
 pub fn on_dialogue_ended(
     mut events: MessageReader<DialogueEnded>,
     mut runner: ResMut<DialogueRunner>,
+    mut target: ResMut<DialogueTarget>,
     mut lore_book: ResMut<LoreBook>,
     mut next_state: ResMut<NextState<GameState>>,
     time: Res<Time>,
@@ -306,5 +314,6 @@ pub fn on_dialogue_ended(
     }
 
     runner.state = RunnerState::Idle;
+    target.0 = None;
     next_state.set(GameState::Playing);
 }

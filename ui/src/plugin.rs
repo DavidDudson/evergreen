@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use models::game_states::GameState;
+use models::game_states::{GameState, should_despawn_world};
 
 use crate::credits::{self, CreditsScreen};
 use crate::despawn::despawn_all;
@@ -36,7 +36,7 @@ impl Plugin for UiPlugin {
             .add_systems(
                 OnExit(GameState::Playing),
                 (despawn_all::<Hud>, despawn_all::<AlignmentBars>, minimap::despawn)
-                    .run_if(not(in_state(GameState::Paused))),
+                    .run_if(should_despawn_world),
             )
             .add_systems(
                 Update,

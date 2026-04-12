@@ -1,4 +1,4 @@
-use bevy::prelude::States;
+use bevy::prelude::*;
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
@@ -17,4 +17,17 @@ pub enum GameState {
     Settings,
     /// Credits screen, accessible from the main menu.
     Credits,
+}
+
+/// Run condition: true when leaving `Playing` for a state that should
+/// tear down the world (i.e. NOT `Paused`, `Dialogue`, `KeybindConfig`,
+/// or `Settings`).
+pub fn should_despawn_world(state: Res<State<GameState>>) -> bool {
+    !matches!(
+        state.get(),
+        GameState::Paused
+            | GameState::Dialogue
+            | GameState::KeybindConfig
+            | GameState::Settings
+    )
 }

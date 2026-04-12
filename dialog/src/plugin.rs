@@ -14,8 +14,8 @@ use crate::locale::{
     ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap, sync_language, sync_locale,
 };
 use crate::runner::{
-    DialogueRunner, advance_runner, detect_interact_input, detect_interact_range,
-    handle_choice, on_dialogue_ended, start_dialogue,
+    DialogueRunner, DialogueTarget, advance_runner, detect_interact_input,
+    detect_interact_range, handle_choice, on_dialogue_ended, start_dialogue,
 };
 
 pub struct DialogPlugin;
@@ -33,6 +33,7 @@ impl Plugin for DialogPlugin {
             .init_resource::<LoreBook>()
             .init_resource::<LocaleMap>()
             .init_resource::<DialogueRunner>()
+            .init_resource::<DialogueTarget>()
             .init_resource::<PlayerAlignment>();
 
         // Messages
