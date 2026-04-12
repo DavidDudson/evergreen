@@ -246,7 +246,7 @@ fn spawn_bush(
     world_x: f32,
     world_y: f32,
 ) {
-    let z = Layer::SceneryBush.z_f32() - world_y * Y_SORT_SCALE;
+    let z = Layer::Decoration.z_f32() - world_y * Y_SORT_SCALE;
     commands.spawn((
         Scenery,
         Rustleable,
@@ -266,7 +266,7 @@ fn spawn_flower(
     world_x: f32,
     world_y: f32,
 ) {
-    let z = Layer::SceneryFlower.z_f32() - world_y * Y_SORT_SCALE;
+    let z = Layer::Decoration.z_f32() - world_y * Y_SORT_SCALE;
     commands.spawn((
         Scenery,
         Rustleable,
