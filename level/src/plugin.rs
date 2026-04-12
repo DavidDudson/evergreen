@@ -42,7 +42,6 @@ impl Plugin for LevelPlugin {
                     scenery::animate_rustle,
                     npc_labels::attach_labels,
                     npc_labels::sync_interact_icon,
-                    galen::randomise_question,
                     npc_anim::advance_npc_frame,
                     npc_anim::reset_npc_anim_on_change,
                     npc_wander::wander_npcs,

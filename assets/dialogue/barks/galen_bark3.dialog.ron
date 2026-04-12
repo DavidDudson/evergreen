@@ -1,0 +1,8 @@
+DialogueScript(
+    id: "galen.bark.3",
+    speaker_key: "npc.galen.name",
+    keyword_tags: ["galen"],
+    lines: [
+        Speech(text_key: "npc.galen.bark.2"),
+    ],
+)

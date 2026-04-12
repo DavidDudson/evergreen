@@ -197,6 +197,9 @@
     "npc.galen.hello.0": "Ah! Briar Rose. Awake, breathing, and apparently fond of morning walks.",
     "npc.galen.hello.1": "Welcome back to the waking world. I have been saving a question for you.",
     "npc.galen.farewell": "Fascinating. I shall add that to the record.",
+    "npc.galen.bark.0": "Run along now.",
+    "npc.galen.bark.1": "Every story needs a witness.",
+    "npc.galen.bark.2": "The forest is patient. Are you?",
 
     // Q1 — favourite ice cream
     "npc.galen.q1.question": "A trivial question first — purely for science. What is your favourite flavour of ice cream?",

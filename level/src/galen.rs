@@ -1,9 +1,10 @@
-//! Storyteller Galen — the NPC who greets the player on spawn and poses
-//! randomised hero alignment questions.
+//! Storyteller Galen -- the NPC who greets the player on spawn and poses
+//! a single randomised hero alignment question. After the first conversation,
+//! Galen switches to barks.
 
 use bevy::prelude::*;
 use dialog::asset::DialogueScript;
-use dialog::components::{DialogueTrigger, Talker};
+use dialog::components::{BarkPool, Talker};
 use models::layer::Layer;
 use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 use models::scenery::SceneryCollider;
@@ -20,7 +21,6 @@ use crate::world::{AreaChanged, WorldMap};
 const AREA_GALEN: IVec2 = IVec2::new(0, 0);
 
 // Galen stands on the N arm of the starting area (col 15, row 13).
-// Tile (15, 13) is on columns 14-16 with y >= 7 (North exit guaranteed).
 const GALEN_TILE_X: u16 = 15;
 const GALEN_TILE_Y: u16 = 13;
 const GALEN_Z: f32 = Layer::Npc.z_f32();
@@ -28,22 +28,19 @@ const GALEN_SPRITE_SIZE_PX: f32 = 32.0;
 const GALEN_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const GALEN_QUESTION_COUNT: usize = 5;
 
-// Sprite sheet layout: 4 rows (S/E/N/W) × 8 cols (4 idle + 4 walk).
+// Sprite sheet layout: 4 rows (S/E/N/W) x 8 cols (4 idle + 4 walk).
 const SHEET_COLS: u32 = 8;
 const SHEET_ROWS: u32 = 4;
 const FRAME_SIZE_PX: u32 = 32;
 const IDLE_FRAMES: usize = 4;
 const WALK_FRAMES: usize = 4;
 
+const BARK_RADIUS_PX: f32 = 120.0;
+const BARK_COOLDOWN_SECS: f32 = 20.0;
+
 /// Marker for the Storyteller Galen entity.
 #[derive(Component)]
 pub struct NpcGalen;
-
-/// Attached to Galen; holds all hero-question script handles to choose from.
-#[derive(Component)]
-pub struct GalenQuestioner {
-    pub questions: Vec<Handle<DialogueScript>>,
-}
 
 pub fn spawn_galen(
     mut commands: Commands,
@@ -72,10 +69,17 @@ fn spawn_galen_entity(
     );
     let layout_handle = atlas_layouts.add(layout);
     let pos = galen_pos();
+
+    // Pick one random question from the pool.
     let questions: Vec<Handle<DialogueScript>> = (1..=GALEN_QUESTION_COUNT)
         .map(|i| asset_server.load(format!("dialogue/scripts/galen_q{i}.dialog.ron")))
         .collect();
-    let initial = questions[0].clone();
+    let mut rng = rand::thread_rng();
+    let chosen = questions
+        .choose(&mut rng)
+        .expect("question pool is non-empty")
+        .clone();
+
     commands.spawn((
         NpcGalen,
         Name::new("Storyteller Galen"),
@@ -103,8 +107,17 @@ fn spawn_galen_entity(
         NpcAnimFrame::default(),
         NpcAnimTimer::default(),
         NpcWander::new(pos.truncate()),
-        Talker::repeating(initial),
-        GalenQuestioner { questions },
+        // Non-repeating: Galen only asks one question, then stops offering dialogue.
+        Talker::new(chosen),
+        BarkPool {
+            barks: vec![
+                asset_server.load("dialogue/barks/galen_bark1.dialog.ron"),
+                asset_server.load("dialogue/barks/galen_bark2.dialog.ron"),
+                asset_server.load("dialogue/barks/galen_bark3.dialog.ron"),
+            ],
+            trigger_radius_px: BARK_RADIUS_PX,
+            cooldown: Timer::from_seconds(BARK_COOLDOWN_SECS, TimerMode::Once),
+        },
     ));
 }
 
@@ -142,24 +155,5 @@ pub fn respawn_galen_on_area_change(
     }
     if world.current == AREA_GALEN {
         spawn_galen_entity(&mut commands, &asset_server, &mut atlas_layouts);
-    }
-}
-
-/// Randomises Galen's greeting script each time a player enters his interact range.
-///
-/// Uses [`Added<DialogueTrigger>`] to detect new approach events.
-pub fn randomise_question(
-    trigger_q: Query<&DialogueTrigger, Added<DialogueTrigger>>,
-    mut galen_q: Query<(&mut Talker, &GalenQuestioner), With<NpcGalen>>,
-) {
-    let Ok(trigger) = trigger_q.single() else {
-        return;
-    };
-    let Ok((mut talker, questioner)) = galen_q.get_mut(trigger.npc) else {
-        return;
-    };
-    let mut rng = rand::thread_rng();
-    if let Some(handle) = questioner.questions.choose(&mut rng) {
-        talker.greeting = handle.clone();
     }
 }
