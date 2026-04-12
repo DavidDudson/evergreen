@@ -4,6 +4,35 @@ use bevy::math::IVec2;
 
 use crate::terrain::Terrain;
 
+/// Identifies an NPC for area events.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum NpcKind {
+    Mordred,
+    Drizella,
+    Bigby,
+    Gothel,
+    Morgana,
+    Cadwallader,
+}
+
+/// All available NPC kinds, used for random selection.
+pub const ALL_NPCS: [NpcKind; 6] = [
+    NpcKind::Mordred,
+    NpcKind::Drizella,
+    NpcKind::Bigby,
+    NpcKind::Gothel,
+    NpcKind::Morgana,
+    NpcKind::Cadwallader,
+];
+
+/// What happens when the player enters an area.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum AreaEvent {
+    #[default]
+    None,
+    NpcEncounter(NpcKind),
+}
+
 pub const MAP_WIDTH: u16 = 32;
 pub const MAP_HEIGHT: u16 = 18;
 
@@ -43,9 +72,11 @@ impl Direction {
     }
 }
 
-/// One 32×18 section of the world map with defined exit directions.
+/// One 32x18 section of the world map with defined exit directions.
 pub struct Area {
     pub exits: BTreeSet<Direction>,
+    /// What happens when the player enters this area.
+    pub event: AreaEvent,
     /// Row-major grid: index = y * MAP_WIDTH + x.  y=0 is the bottom tile row.
     grid: Vec<Terrain>,
 }
@@ -64,7 +95,7 @@ impl Area {
     ) -> Self {
         let exits = pick_exits(required, &forbidden, seed, area_count);
         let grid = build_grid(&exits);
-        Self { exits, grid }
+        Self { exits, event: AreaEvent::None, grid }
     }
 
     /// An impassable area filled entirely with grass (dense forest).
@@ -74,6 +105,7 @@ impl Area {
         let grid = vec![Terrain::Grass; (u32::from(MAP_WIDTH) * u32::from(MAP_HEIGHT)) as usize];
         Self {
             exits: BTreeSet::new(),
+            event: AreaEvent::None,
             grid,
         }
     }

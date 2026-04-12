@@ -4,7 +4,6 @@ use models::game_states::{GameState, should_despawn_world};
 
 use crate::galen;
 use crate::npc_anim;
-use crate::npc_homes::NpcHomes;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
 use crate::npcs;
@@ -19,14 +18,10 @@ pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
-        let world = WorldMap::new(rand::random());
-        let npc_homes = NpcHomes::assign(&world.area_positions(), world.seed());
-
         app.init_resource::<InteractIconState>()
             .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
-            .insert_resource(npc_homes)
-            .insert_resource(world)
+            .insert_resource(WorldMap::new(rand::random()))
             .add_systems(
                 OnEnter(GameState::Playing),
                 (

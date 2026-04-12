@@ -1,7 +1,6 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
-use level::area::Direction;
-use level::npc_homes::NpcHomes;
+use level::area::{AreaEvent, Direction};
 use level::world::{AreaChanged, WorldMap};
 use models::palette;
 
@@ -36,8 +35,8 @@ const MINIMAP_TOP_PX: u16 = 24;
 /// Distance from the right edge of the screen.
 const MINIMAP_RIGHT_PX: u16 = 5;
 
-/// Size of the NPC icon dot inside a cell.
-const NPC_DOT_SIZE_PX: u16 = 5;
+/// Size of the event icon dot inside a cell.
+const EVENT_DOT_SIZE_PX: u16 = 5;
 
 // ---------------------------------------------------------------------------
 // Components
@@ -55,7 +54,7 @@ pub struct MinimapCell;
 // ---------------------------------------------------------------------------
 
 /// Spawn the minimap container and the initial cells for the starting area.
-pub fn setup(mut commands: Commands, world: Res<WorldMap>, homes: Res<NpcHomes>) {
+pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
     let root = commands
         .spawn((
             MinimapRoot,
@@ -72,7 +71,7 @@ pub fn setup(mut commands: Commands, world: Res<WorldMap>, homes: Res<NpcHomes>)
         ))
         .id();
 
-    build_cells(root, &world, &homes, &mut commands);
+    build_cells(root, &world, &mut commands);
 }
 
 /// Despawn all minimap elements when leaving the Playing state.
@@ -89,7 +88,6 @@ pub fn despawn(
 pub fn refresh(
     mut commands: Commands,
     world: Res<WorldMap>,
-    homes: Res<NpcHomes>,
     root_q: Query<Entity, With<MinimapRoot>>,
     cell_q: Query<Entity, With<MinimapCell>>,
     mut messages: MessageReader<AreaChanged>,
@@ -104,14 +102,14 @@ pub fn refresh(
         commands.entity(entity).despawn();
     }
 
-    build_cells(root, &world, &homes, &mut commands);
+    build_cells(root, &world, &mut commands);
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn build_cells(root: Entity, world: &WorldMap, homes: &NpcHomes, commands: &mut Commands) {
+fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
     let current = world.current;
 
     for dy in -VIEW_RADIUS..=VIEW_RADIUS {
@@ -153,21 +151,19 @@ fn build_cells(root: Entity, world: &WorldMap, homes: &NpcHomes, commands: &mut 
                 ))
                 .id();
 
-            // NPC dot indicator.
-            let has_npc = homes.has_npc(area_pos)
-                || area_pos == IVec2::ZERO; // Galen is always at origin
-            if has_npc {
+            // Event icon: show a colored dot based on the area's event type.
+            if let Some(dot_color) = event_dot_color(&area.event, area_pos) {
                 commands.spawn((
                     MinimapCell,
                     Node {
-                        width: Val::Px(f32::from(NPC_DOT_SIZE_PX)),
-                        height: Val::Px(f32::from(NPC_DOT_SIZE_PX)),
+                        width: Val::Px(f32::from(EVENT_DOT_SIZE_PX)),
+                        height: Val::Px(f32::from(EVENT_DOT_SIZE_PX)),
                         border_radius: BorderRadius::all(Val::Px(
-                            f32::from(NPC_DOT_SIZE_PX) / 2.0,
+                            f32::from(EVENT_DOT_SIZE_PX) / 2.0,
                         )),
                         ..Node::default()
                     },
-                    BackgroundColor(palette::MINIMAP_NPC),
+                    BackgroundColor(dot_color),
                     ChildOf(cell_entity),
                 ));
             }
@@ -192,6 +188,16 @@ fn build_cells(root: Entity, world: &WorldMap, homes: &NpcHomes, commands: &mut 
                 }
             }
         }
+    }
+}
+
+/// Returns the dot color for an area event, or `None` for no icon.
+/// Galen at origin also gets a dot.
+fn event_dot_color(event: &AreaEvent, area_pos: IVec2) -> Option<Color> {
+    match event {
+        AreaEvent::NpcEncounter(_) => Some(palette::MINIMAP_NPC),
+        AreaEvent::None if area_pos == IVec2::ZERO => Some(palette::MINIMAP_NPC),
+        AreaEvent::None => Option::None,
     }
 }
 

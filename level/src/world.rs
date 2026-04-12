@@ -3,8 +3,17 @@ use std::collections::{BTreeSet, HashMap};
 use bevy::math::IVec2;
 use bevy::prelude::*;
 
-use crate::area::{Area, Direction, MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{ALL_NPCS, Area, AreaEvent, Direction, MAP_HEIGHT, MAP_WIDTH, NpcKind};
 use crate::terrain::Terrain;
+
+/// Maximum number of NPC encounters in the world.
+const MAX_NPC_ENCOUNTERS: usize = 3;
+
+/// Minimum Manhattan distance from origin for an NPC encounter.
+const MIN_NPC_DISTANCE: i32 = 3;
+
+/// Probability (out of 100) that an eligible area gets an NPC encounter.
+const NPC_ENCOUNTER_CHANCE: u64 = 30;
 
 /// Fired when the player crosses an area boundary and the current area changes.
 #[derive(Message, Clone, Copy)]
@@ -18,17 +27,34 @@ pub struct WorldMap {
     areas: HashMap<IVec2, Area>,
     pub current: IVec2,
     seed: u64,
+    /// NPCs available for encounters, shuffled at creation.
+    npc_pool: Vec<NpcKind>,
+    /// How many NPC encounters have been placed so far.
+    npc_count: usize,
 }
 
 impl WorldMap {
     /// Create the world and seed the starting 4-way cross area plus two rings
-    /// of neighbours (enough to place all NPCs).
+    /// of neighbours (enough to populate the initial minimap).
     pub fn new(seed: u64) -> Self {
         let start = IVec2::ZERO;
+
+        // Shuffle NPC pool deterministically from seed.
+        let mut npc_pool: Vec<NpcKind> = ALL_NPCS.to_vec();
+        let mut rng = seed.wrapping_mul(7_046_029_254_386_353_131);
+        for i in (1..npc_pool.len()).rev() {
+            rng = lcg(rng);
+            let j = usize::try_from(rng % u64::try_from(i + 1).expect("i+1 fits u64"))
+                .expect("mod fits usize");
+            npc_pool.swap(i, j);
+        }
+
         let mut map = Self {
             areas: HashMap::new(),
             current: start,
             seed,
+            npc_pool,
+            npc_count: 0,
         };
 
         // The origin area is always a 4-way cross (all exits open) so the
@@ -40,29 +66,17 @@ impl WorldMap {
             Direction::West,
         ]);
         let start_seed = map.area_seed(start);
-        // Starting area always has all 4 exits; area_count=0 is irrelevant here.
         let start_area = Area::generate(all_exits, BTreeSet::new(), start_seed, 0);
         map.areas.insert(start, start_area);
         map.ensure_neighbors(start);
 
-        // Generate a second ring of neighbors so we have enough areas for
-        // NPC placement (need at least 6 non-origin areas).
+        // Generate a second ring of neighbors for the minimap.
         let ring1: Vec<IVec2> = map.areas.keys().copied().collect();
         for pos in ring1 {
             map.ensure_neighbors(pos);
         }
 
         map
-    }
-
-    /// All generated area positions.
-    pub fn area_positions(&self) -> Vec<IVec2> {
-        self.areas.keys().copied().collect()
-    }
-
-    /// The world seed, used for deterministic NPC placement.
-    pub fn seed(&self) -> u64 {
-        self.seed
     }
 
     /// Borrow the area that the player currently occupies.
@@ -77,9 +91,19 @@ impl WorldMap {
         self.areas.get(&pos)
     }
 
+    /// All generated area positions.
+    pub fn area_positions(&self) -> Vec<IVec2> {
+        self.areas.keys().copied().collect()
+    }
+
+    /// The world seed.
+    pub fn seed(&self) -> u64 {
+        self.seed
+    }
+
     /// Look up terrain at `(local_x, local_y)` relative to `area_pos`.
     ///
-    /// Coordinates outside the 32×18 area bounds wrap into the adjacent area.
+    /// Coordinates outside the 32x18 area bounds wrap into the adjacent area.
     /// Returns `None` if the neighbouring area has not been generated yet.
     pub fn terrain_at_extended(&self, area_pos: IVec2, local_x: i32, local_y: i32) -> Option<Terrain> {
         let w = i32::from(MAP_WIDTH);
@@ -147,7 +171,20 @@ impl WorldMap {
 
         let seed = self.area_seed(pos);
         let area_count = self.areas.len();
-        let area = Area::generate(required, forbidden, seed, area_count);
+        let mut area = Area::generate(required, forbidden, seed, area_count);
+
+        // Assign event: NPC encounters only beyond MIN_NPC_DISTANCE from origin.
+        let distance = pos.x.abs() + pos.y.abs();
+        if distance >= MIN_NPC_DISTANCE && self.npc_count < MAX_NPC_ENCOUNTERS {
+            let event_rng = lcg(seed.wrapping_add(0xCAFE));
+            if event_rng % 100 < NPC_ENCOUNTER_CHANCE {
+                if let Some(&npc) = self.npc_pool.get(self.npc_count) {
+                    area.event = AreaEvent::NpcEncounter(npc);
+                    self.npc_count += 1;
+                }
+            }
+        }
+
         self.areas.insert(pos, area);
     }
 
@@ -167,7 +204,6 @@ impl WorldMap {
 
     /// Derive a deterministic seed for any grid position from the world seed.
     fn area_seed(&self, pos: IVec2) -> u64 {
-        // Reinterpret i32 bits as u32 (bit-cast via to/from bytes) then widen.
         let px = u64::from(u32::from_ne_bytes(pos.x.to_ne_bytes()));
         let py = u64::from(u32::from_ne_bytes(pos.y.to_ne_bytes()));
         self.seed
@@ -175,4 +211,10 @@ impl WorldMap {
             .wrapping_add(px.wrapping_mul(1_442_695_040_888_963_407))
             .wrapping_add(py.wrapping_mul(2_654_435_761))
     }
+}
+
+fn lcg(state: u64) -> u64 {
+    state
+        .wrapping_mul(6_364_136_223_846_793_005)
+        .wrapping_add(1_442_695_040_888_963_407)
 }
