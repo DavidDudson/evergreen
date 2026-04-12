@@ -36,9 +36,9 @@ const EDGE_ED: u32 = 5;
 const MID_ED: u32 = 7;
 // Centre (ed > 7, max ed on 32x18 map is 8): mostly flowers.
 
-const TREE_ASSETS: [&str; 2] = ["tree_oak.webp", "tree_pine.webp"];
-const BUSH_ASSETS: [&str; 2] = ["bush_round.webp", "bush_flower.webp"];
-const FLOWER_ASSETS: [&str; 2] = ["flower_yellow.webp", "flower_purple.webp"];
+const TREE_ASSETS: [&str; 2] = ["sprites/scenery/trees/tree_oak.webp", "sprites/scenery/trees/tree_pine.webp"];
+const BUSH_ASSETS: [&str; 2] = ["sprites/scenery/bushes/bush_round.webp", "sprites/scenery/bushes/bush_flower.webp"];
+const FLOWER_ASSETS: [&str; 2] = ["sprites/scenery/flowers/flower_yellow.webp", "sprites/scenery/flowers/flower_purple.webp"];
 
 /// Pixel dimensions of one map area.
 #[allow(clippy::as_conversions)]

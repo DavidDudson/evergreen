@@ -119,7 +119,7 @@ fn spawn_neighbors(commands: &mut Commands, asset_server: &AssetServer, world: &
 }
 
 fn spawn_center_area(commands: &mut Commands, asset_server: &AssetServer, world: &WorldMap) {
-    let texture: Handle<Image> = asset_server.load("terrain_wang.webp");
+    let texture: Handle<Image> = asset_server.load("sprites/terrain/terrain_wang.webp");
     let area_pos = world.current;
 
     let map_size = TilemapSize {
@@ -185,7 +185,7 @@ fn spawn_neighbor_area(
     area_pos: IVec2,
     grid_offset: IVec2,
 ) {
-    let texture: Handle<Image> = asset_server.load("terrain_wang.webp");
+    let texture: Handle<Image> = asset_server.load("sprites/terrain/terrain_wang.webp");
 
     let map_size = TilemapSize {
         x: u32::from(MAP_WIDTH),

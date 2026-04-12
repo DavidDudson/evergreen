@@ -72,7 +72,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<
             ChildOf(root),
         ))
         .with_child((
-            ImageNode::new(asset_server.load("icons/cog.webp")),
+            ImageNode::new(asset_server.load("sprites/ui/cog.webp")),
             Node {
                 width: Val::Px(COG_ICON_SIZE_PX),
                 height: Val::Px(COG_ICON_SIZE_PX),
@@ -82,7 +82,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<
 
     commands.entity(root).with_children(|parent| {
             parent.spawn((
-                ImageNode::new(asset_server.load("logo.webp")),
+                ImageNode::new(asset_server.load("sprites/ui/logo.webp")),
                 Node {
                     width: Val::Px(f32::from(LOGO_WIDTH_PX)),
                     height: Val::Px(f32::from(LOGO_HEIGHT_PX)),

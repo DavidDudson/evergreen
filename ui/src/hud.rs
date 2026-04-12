@@ -50,7 +50,7 @@ pub struct AlignmentBarFill(pub AlignmentFaction);
 // ---------------------------------------------------------------------------
 
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let petal_image = asset_server.load("rose_petal.webp");
+    let petal_image = asset_server.load("sprites/ui/rose_petal.webp");
     let half_petal = PETAL_SIZE_PX / 2.0;
     let center = ROSE_CONTAINER_PX / 2.0;
 

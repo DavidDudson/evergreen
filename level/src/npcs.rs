@@ -122,7 +122,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
     match kind {
         NpcKind::Mordred => (
             "Mordred",
-            "npc_mordred_sheet.png",
+            "sprites/npc/npc_mordred_sheet.webp",
             "dialogue/scripts/mordred.dialog.ron",
             &[
                 "dialogue/barks/mordred_barks.dialog.ron",
@@ -132,7 +132,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
         ),
         NpcKind::Drizella => (
             "Drizella Tremaine",
-            "npc_drizella_sheet.png",
+            "sprites/npc/npc_drizella_sheet.webp",
             "dialogue/scripts/drizella.dialog.ron",
             &[
                 "dialogue/barks/drizella_barks.dialog.ron",
@@ -142,7 +142,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
         ),
         NpcKind::Bigby => (
             "Bigby",
-            "npc_bigby_sheet.png",
+            "sprites/npc/npc_bigby_sheet.webp",
             "dialogue/scripts/bigby.dialog.ron",
             &[
                 "dialogue/barks/bigby_barks.dialog.ron",
@@ -152,7 +152,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
         ),
         NpcKind::Gothel => (
             "Dame Gothel",
-            "npc_gothel_sheet.png",
+            "sprites/npc/npc_gothel_sheet.webp",
             "dialogue/scripts/mother_gothel.dialog.ron",
             &[
                 "dialogue/barks/mother_gothel_barks.dialog.ron",
@@ -162,7 +162,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
         ),
         NpcKind::Morgana => (
             "Morgana Le Fay",
-            "npc_morgana_sheet.png",
+            "sprites/npc/npc_morgana_sheet.webp",
             "dialogue/scripts/morgana.dialog.ron",
             &[
                 "dialogue/barks/morgana_barks.dialog.ron",
@@ -172,7 +172,7 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
         ),
         NpcKind::Cadwallader => (
             "Memphis Cadwallader",
-            "npc_cadwallader_sheet.png",
+            "sprites/npc/npc_cadwallader_sheet.webp",
             "dialogue/scripts/cadwallader.dialog.ron",
             &[
                 "dialogue/barks/cadwallader_barks.dialog.ron",

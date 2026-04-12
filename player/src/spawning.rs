@@ -48,7 +48,7 @@ pub fn spawn(
         AnimationFrame::default(),
         AnimationTimer::default(),
         Sprite {
-            image: asset_server.load("briar_sheet.webp"),
+            image: asset_server.load("sprites/player/briar_sheet.webp"),
             texture_atlas: Some(TextureAtlas {
                 layout: layout_handle,
                 index: 0,

@@ -80,7 +80,7 @@ fn spawn_galen_entity(
         NpcGalen,
         Name::new("Storyteller Galen"),
         Sprite {
-            image: asset_server.load("npc_galen_sheet.png"),
+            image: asset_server.load("sprites/npc/npc_galen_sheet.webp"),
             texture_atlas: Some(TextureAtlas {
                 layout: layout_handle,
                 index: 0,
