@@ -4,11 +4,14 @@ use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
 use crate::dialogue_focus;
+use crate::smooth;
 
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
+        app.init_resource::<smooth::CameraOffset>();
+
         app.add_systems(Startup, setup);
 
         app.add_systems(
@@ -17,6 +20,12 @@ impl Plugin for CameraPlugin {
         );
 
         app.add_systems(OnExit(GameState::Dialogue), dialogue_focus::reset_camera);
+
+        // PostUpdate so the offset always sees AreaChanged written in Update.
+        app.add_systems(
+            PostUpdate,
+            smooth::apply_camera_offset.run_if(in_state(GameState::Playing)),
+        );
     }
 }
 

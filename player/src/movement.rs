@@ -20,10 +20,6 @@ const HALF_W: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32 / 2.0; // 256 px
 #[allow(clippy::as_conversions)]
 const HALF_H: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32 / 2.0; // 144 px
 
-// How far inside the opposite edge the player reappears after a transition.
-#[allow(clippy::as_conversions)]
-const MARGIN_PX: f32 = TILE_SIZE_PX as f32 * 2.0; // 32 px
-
 pub fn move_player(
     keyboard: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
@@ -82,13 +78,13 @@ pub fn check_area_transition(
     let pos = transform.translation.truncate();
 
     let crossed = if pos.x > HALF_W {
-        Some((Direction::East, Vec2::new(-HALF_W + MARGIN_PX, pos.y)))
+        Some((Direction::East, Vec2::new(-HALF_W + (pos.x - HALF_W), pos.y)))
     } else if pos.x < -HALF_W {
-        Some((Direction::West, Vec2::new(HALF_W - MARGIN_PX, pos.y)))
+        Some((Direction::West, Vec2::new(HALF_W - (-HALF_W - pos.x), pos.y)))
     } else if pos.y > HALF_H {
-        Some((Direction::North, Vec2::new(pos.x, -HALF_H + MARGIN_PX)))
+        Some((Direction::North, Vec2::new(pos.x, -HALF_H + (pos.y - HALF_H))))
     } else if pos.y < -HALF_H {
-        Some((Direction::South, Vec2::new(pos.x, HALF_H - MARGIN_PX)))
+        Some((Direction::South, Vec2::new(pos.x, HALF_H - (-HALF_H - pos.y))))
     } else {
         None
     };
@@ -107,7 +103,7 @@ pub fn check_area_transition(
 
     world.transition(dir);
     transform.translation = new_pos.extend(transform.translation.z);
-    messages.write(AreaChanged);
+    messages.write(AreaChanged { direction: dir });
 }
 
 // ---------------------------------------------------------------------------

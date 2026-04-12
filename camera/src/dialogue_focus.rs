@@ -35,11 +35,14 @@ pub fn focus_on_dialogue(
     cam_tf.translation.y += (midpoint.y - cam_tf.translation.y) * alpha;
 }
 
-/// Snaps the camera back to the origin when dialogue ends.
-pub fn reset_camera(mut camera_q: Query<&mut Transform, With<Camera2d>>) {
-    let Ok(mut cam_tf) = camera_q.single_mut() else {
+/// Stores the current camera position so the smooth-return system can
+/// lerp it back to the origin over time.
+pub fn reset_camera(
+    camera_q: Query<&Transform, With<Camera2d>>,
+    mut offset: ResMut<crate::smooth::CameraOffset>,
+) {
+    let Ok(cam_tf) = camera_q.single() else {
         return;
     };
-    cam_tf.translation.x = 0.0;
-    cam_tf.translation.y = 0.0;
+    offset.dialogue_return = cam_tf.translation.truncate();
 }

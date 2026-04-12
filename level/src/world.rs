@@ -17,7 +17,9 @@ const NPC_ENCOUNTER_CHANCE: u64 = 30;
 
 /// Fired when the player crosses an area boundary and the current area changes.
 #[derive(Message, Clone, Copy)]
-pub struct AreaChanged;
+pub struct AreaChanged {
+    pub direction: Direction,
+}
 
 /// All generated areas in the world, keyed by grid position.
 ///
@@ -33,6 +35,8 @@ pub struct WorldMap {
     npc_count: usize,
     /// Areas the player has entered.
     visited: HashSet<IVec2>,
+    /// Areas visible on the minimap (visited + their exit neighbors).
+    revealed: HashSet<IVec2>,
 }
 
 impl WorldMap {
@@ -58,6 +62,7 @@ impl WorldMap {
             npc_pool,
             npc_count: 0,
             visited: HashSet::from([start]),
+            revealed: HashSet::from([start]),
         };
 
         // The origin area is always a 4-way cross (all exits open) so the
@@ -72,6 +77,7 @@ impl WorldMap {
         let start_area = Area::generate(all_exits, BTreeSet::new(), start_seed, 0);
         map.areas.insert(start, start_area);
         map.ensure_neighbors(start);
+        map.reveal_exits(start);
 
         // Generate a second ring of neighbors for the minimap.
         let ring1: Vec<IVec2> = map.areas.keys().copied().collect();
@@ -136,21 +142,10 @@ impl WorldMap {
         self.areas.get(&neighbour_pos)?.terrain_at(nx, ny)
     }
 
-    /// Whether an area should be visible on the minimap: visited, or a direct
-    /// neighbor of the current area connected by an exit.
+    /// Whether an area should be visible on the minimap.
+    /// Persists across transitions so previously-seen areas stay visible.
     pub fn is_revealed(&self, pos: IVec2) -> bool {
-        if self.visited.contains(&pos) {
-            return true;
-        }
-        // Show unvisited neighbors that are reachable from the current area.
-        if let Some(current_area) = self.areas.get(&self.current) {
-            for dir in &current_area.exits {
-                if self.current + dir.grid_offset() == pos {
-                    return true;
-                }
-            }
-        }
-        false
+        self.revealed.contains(&pos)
     }
 
     /// Move to the area in `dir`, generating it and its neighbours if needed.
@@ -158,13 +153,28 @@ impl WorldMap {
         let new_pos = self.current + dir.grid_offset();
         self.current = new_pos;
         self.visited.insert(new_pos);
+        self.revealed.insert(new_pos);
         self.ensure_area(new_pos);
         self.ensure_neighbors(new_pos);
+        self.reveal_exits(new_pos);
     }
 
     // -----------------------------------------------------------------------
     // Private helpers
     // -----------------------------------------------------------------------
+
+    /// Mark all exit-connected neighbors of `pos` as revealed on the minimap.
+    fn reveal_exits(&mut self, pos: IVec2) {
+        let exits: Vec<Direction> = self
+            .areas
+            .get(&pos)
+            .map(|a| a.exits.iter().copied().collect())
+            .unwrap_or_default();
+
+        for dir in exits {
+            self.revealed.insert(pos + dir.grid_offset());
+        }
+    }
 
     fn ensure_area(&mut self, pos: IVec2) {
         if self.areas.contains_key(&pos) {
