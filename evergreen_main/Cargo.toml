@@ -16,6 +16,7 @@ level = { path = "../level" }
 player = { path = "../player" }
 dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
+post_processing = { path = "../post_processing" }
 save     = { path = "../save" }
 bevy = { version = "0.18", features = ["webp"] }
 

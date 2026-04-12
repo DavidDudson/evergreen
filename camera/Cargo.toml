@@ -12,3 +12,4 @@ dialog = { path = "../dialog" }
 level = { path = "../level" }
 models = { path = "../models" }
 player = { path = "../player" }
+post_processing = { path = "../post_processing" }

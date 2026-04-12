@@ -8,6 +8,7 @@ use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
 use bevy::prelude::*;
+use level::world::WorldMap;
 use models::palette;
 use std::collections::VecDeque;
 
@@ -60,6 +61,9 @@ pub(crate) struct FrameTimeText;
 pub(crate) struct EntityCountText;
 
 #[derive(Component)]
+pub(crate) struct AreaStatsText;
+
+#[derive(Component)]
 pub(crate) struct HistogramBar(usize);
 
 /// Cached display values — only write Text/Node when the rounded value changes
@@ -69,6 +73,7 @@ struct DisplayCache {
     fps: Option<String>,
     frame_time: Option<String>,
     entity_count: Option<String>,
+    area_stats: Option<String>,
 }
 
 #[derive(Resource)]
@@ -134,6 +139,10 @@ pub(crate) fn setup_overlay(mut commands: Commands, asset_server: Res<AssetServe
         TextColor(palette::BUTTON_TEXT), ChildOf(root),
     ));
     commands.spawn((EntityCountText, Text::new("Entities  --"),
+        TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
+        TextColor(palette::BUTTON_TEXT), ChildOf(root),
+    ));
+    commands.spawn((AreaStatsText, Text::new("Area  --"),
         TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
         TextColor(palette::BUTTON_TEXT), ChildOf(root),
     ));
@@ -203,9 +212,11 @@ pub(crate) fn toggle_overlay(
 pub(crate) fn update_overlay(
     diagnostics: Res<DiagnosticsStore>,
     mut state: ResMut<OverlayState>,
-    mut fps_q: Query<(&mut Text, &mut TextColor), (With<FpsText>, Without<FrameTimeText>, Without<EntityCountText>)>,
-    mut frame_q: Query<&mut Text, (With<FrameTimeText>, Without<FpsText>, Without<EntityCountText>)>,
-    mut entity_q: Query<&mut Text, (With<EntityCountText>, Without<FpsText>, Without<FrameTimeText>)>,
+    world: Option<Res<WorldMap>>,
+    mut fps_q: Query<(&mut Text, &mut TextColor), (With<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>)>,
+    mut frame_q: Query<&mut Text, (With<FrameTimeText>, Without<FpsText>, Without<EntityCountText>, Without<AreaStatsText>)>,
+    mut entity_q: Query<&mut Text, (With<EntityCountText>, Without<FpsText>, Without<FrameTimeText>, Without<AreaStatsText>)>,
+    mut area_q: Query<&mut Text, (With<AreaStatsText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>)>,
     mut bar_q: Query<(&HistogramBar, &mut Node, &mut BackgroundColor)>,
 ) {
     // FPS — also derive the dynamic target frame time from the smoothed reading.
@@ -267,6 +278,22 @@ pub(crate) fn update_overlay(
         }
     }
 
+    // Area stats — position, alignment, biome label
+    if let Some(world) = &world {
+        let pos = world.current;
+        let area_alignment = world
+            .get_area(pos)
+            .map_or(0, |a| a.alignment);
+        let biome = biome_label(area_alignment);
+        let new_str = format!("Area  ({}, {})  {biome} [{area_alignment}]", pos.x, pos.y);
+        if state.cache.area_stats.as_deref() != Some(&new_str) {
+            if let Ok(mut text) = area_q.single_mut() {
+                *text = Text::new(new_str.clone());
+            }
+            state.cache.area_stats = Some(new_str);
+        }
+    }
+
     // Histogram bars — scale and colour relative to the live target frame time.
     // Only mutate components whose value changed to avoid Bevy marking all
     // 60 bar entities dirty every frame.
@@ -303,5 +330,15 @@ fn bar_color(ms: f32) -> Color {
         palette::PERF_WARN
     } else {
         palette::PERF_BAD
+    }
+}
+
+fn biome_label(alignment: u8) -> &'static str {
+    match alignment {
+        1..=25 => "City",
+        26..=50 => "Greenwood",
+        51..=75 => "Deep Green",
+        76..=100 => "Darkwood",
+        _ => "Unknown",
     }
 }

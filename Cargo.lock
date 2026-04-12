@@ -1760,6 +1760,7 @@ dependencies = [
  "level",
  "models",
  "player",
+ "post_processing",
 ]
 
 [[package]]
@@ -2155,6 +2156,7 @@ name = "diagnostics"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "level",
  "models",
 ]
 
@@ -2340,6 +2342,7 @@ dependencies = [
  "level",
  "models",
  "player",
+ "post_processing",
  "save",
  "ui",
 ]
@@ -3913,6 +3916,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a9db96d7fa8782dd8c15ce32ffe8680bbd1e978a43bf51a34d39483540495f5"
 dependencies = [
  "portable-atomic",
+]
+
+[[package]]
+name = "post_processing"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "level",
+ "models",
 ]
 
 [[package]]

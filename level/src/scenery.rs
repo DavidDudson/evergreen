@@ -4,7 +4,7 @@ use bevy::sprite::Anchor;
 use models::layer::Layer;
 use models::scenery::{NeighborScenery, Rustleable, Rustling, Scenery, SceneryCollider};
 
-use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{Area, AreaAlignment, MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::TILE_SIZE_PX;
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::{AreaChanged, WorldMap};
@@ -124,6 +124,60 @@ fn spawn_neighbor_scenery(
     }
 }
 
+/// Compute (tree, bush, flower) density thresholds for a tile position
+/// based on area alignment and distance from edges/corners.
+///
+/// Interpolates between city (sparse), greenwood (balanced), and darkwood
+/// (dense) profiles.
+fn zone_thresholds(alignment: AreaAlignment, cd: u32, ed: u32) -> (usize, usize, usize) {
+    // (tree, bush, flower) at city / greenwood / darkwood
+    let (city, green, dark) = if cd <= CORNER_CD {
+        ((15, 20, 25), (45, 55, 70), (92, 95, 97))
+    } else if ed <= EDGE_ED {
+        ((5, 10, 15), (15, 40, 60), (75, 85, 88))
+    } else if ed <= MID_ED {
+        ((0, 5, 10), (3, 30, 55), (55, 70, 75))
+    } else {
+        ((0, 3, 8), (0, 15, 50), (40, 55, 60))
+    };
+
+    lerp_thresholds(alignment, city, green, dark)
+}
+
+/// Linearly interpolate three anchor points at alignment 1, 50, 100.
+fn lerp_thresholds(
+    alignment: AreaAlignment,
+    city: (usize, usize, usize),
+    green: (usize, usize, usize),
+    dark: (usize, usize, usize),
+) -> (usize, usize, usize) {
+    let a = f32::from(alignment.clamp(1, 100));
+
+    let lerp = |lo: usize, hi: usize, t: f32| -> usize {
+        #[allow(clippy::as_conversions)]
+        let v = lo as f32 + (hi as f32 - lo as f32) * t;
+        #[allow(clippy::as_conversions)]
+        let r = v.round() as usize;
+        r
+    };
+
+    if a <= 50.0 {
+        let t = (a - 1.0) / 49.0;
+        (
+            lerp(city.0, green.0, t),
+            lerp(city.1, green.1, t),
+            lerp(city.2, green.2, t),
+        )
+    } else {
+        let t = (a - 50.0) / 50.0;
+        (
+            lerp(green.0, dark.0, t),
+            lerp(green.1, dark.1, t),
+            lerp(green.2, dark.2, t),
+        )
+    }
+}
+
 fn spawn_area_scenery(
     commands: &mut Commands,
     asset_server: &AssetServer,
@@ -163,29 +217,21 @@ fn spawn_area_scenery(
             let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
             let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
 
+            let (tree_t, bush_t, flower_t) = zone_thresholds(area.alignment, cd, ed);
+
             if is_neighbor {
                 spawn_neighbor_tile_scenery(
-                    hash, cd, ed, xu, yu, world_x, world_y, area_seed, area, asset_server, commands,
+                    hash, tree_t, bush_t, flower_t,
+                    xu, yu, world_x, world_y, area_seed, area, asset_server, commands,
                 );
-            } else {
-                // Corner zone: aggressive trees.
-                if cd <= CORNER_CD {
-                    let is_tree = hash < 65;
-                    if is_tree && !clear_for_tree(area, xu, yu) {
-                        if hash < 70 {
-                            let v = tile_hash(xu, yu, area_seed.wrapping_add(11)) % BUSH_ASSETS.len();
-                            spawn_bush(commands, asset_server, BUSH_ASSETS[v], world_x, world_y);
-                        }
-                    } else {
-                        spawn_by_hash(hash, 65, 75, 80, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
-                    }
-                } else if ed <= EDGE_ED {
-                    spawn_by_hash(hash, 25, 55, 65, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
-                } else if ed <= MID_ED {
-                    spawn_by_hash(hash, 3, 48, 68, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
-                } else {
-                    spawn_by_hash(hash, 0, 15, 55, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
+            } else if cd <= CORNER_CD && hash < tree_t && !clear_for_tree(area, xu, yu) {
+                // Corner fallback: tree blocked, try bush instead.
+                if hash < bush_t {
+                    let v = tile_hash(xu, yu, area_seed.wrapping_add(11)) % BUSH_ASSETS.len();
+                    spawn_bush(commands, asset_server, BUSH_ASSETS[v], world_x, world_y);
                 }
+            } else {
+                spawn_by_hash(hash, tree_t, bush_t, flower_t, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
             }
         }
     }
@@ -195,8 +241,9 @@ fn spawn_area_scenery(
 /// but with `NeighborScenery` marker and no colliders.
 fn spawn_neighbor_tile_scenery(
     hash: usize,
-    cd: u32,
-    ed: u32,
+    tree_t: usize,
+    bush_t: usize,
+    flower_t: usize,
     xu: u32,
     yu: u32,
     world_x: f32,
@@ -206,16 +253,6 @@ fn spawn_neighbor_tile_scenery(
     asset_server: &AssetServer,
     commands: &mut Commands,
 ) {
-    let (tree_t, bush_t, flower_t) = if cd <= CORNER_CD {
-        (65, 75, 80)
-    } else if ed <= EDGE_ED {
-        (25, 55, 65)
-    } else if ed <= MID_ED {
-        (3, 48, 68)
-    } else {
-        (0, 15, 55)
-    };
-
     if hash < tree_t {
         if clear_for_tree(area, xu, yu) {
             let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % TREE_ASSETS.len();

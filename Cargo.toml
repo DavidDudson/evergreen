@@ -27,5 +27,6 @@ members = [
     "player",
     "dialog",
     "keybinds",
+    "post_processing",
     "save",
 ]

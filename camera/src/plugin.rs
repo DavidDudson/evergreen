@@ -3,6 +3,8 @@ use bevy::prelude::*;
 use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
+use post_processing::atmosphere::BiomeAtmosphere;
+
 use crate::dialogue_focus;
 use crate::smooth;
 
@@ -32,6 +34,7 @@ impl Plugin for CameraPlugin {
 fn setup(mut commands: Commands) {
     commands.spawn((
         Camera2d,
+        BiomeAtmosphere::default(),
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
                 min_width: f32::from(MAP_WIDTH) * f32::from(TILE_SIZE_PX),

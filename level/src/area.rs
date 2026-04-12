@@ -15,6 +15,23 @@ pub enum NpcKind {
     Cadwallader,
 }
 
+impl NpcKind {
+    /// Alignment range this NPC will spawn in (min, max).
+    pub fn alignment_range(self) -> (u8, u8) {
+        match self {
+            // City-aligned
+            Self::Cadwallader => (1, 35),
+            Self::Bigby => (1, 35),
+            // Greenwood-aligned
+            Self::Drizella => (25, 75),
+            Self::Gothel => (25, 75),
+            // Darkwood-aligned
+            Self::Mordred => (60, 100),
+            Self::Morgana => (60, 100),
+        }
+    }
+}
+
 /// All available NPC kinds, used for random selection.
 pub const ALL_NPCS: [NpcKind; 6] = [
     NpcKind::Mordred,
@@ -72,11 +89,16 @@ impl Direction {
     }
 }
 
+/// Alignment scale: 1 = city, 50 = greenwood, 100 = darkwood.
+pub type AreaAlignment = u8;
+
 /// One 32x18 section of the world map with defined exit directions.
 pub struct Area {
     pub exits: BTreeSet<Direction>,
     /// What happens when the player enters this area.
     pub event: AreaEvent,
+    /// Biome alignment (1 = city, 50 = greenwood, 100 = darkwood).
+    pub alignment: AreaAlignment,
     /// Row-major grid: index = y * MAP_WIDTH + x.  y=0 is the bottom tile row.
     grid: Vec<Terrain>,
 }
@@ -87,15 +109,17 @@ impl Area {
     /// `area_count` is the number of areas already in the world; the
     /// probability of optional exits decreases as the map approaches the
     /// 15–20 area target size.
+    /// `alignment` controls the biome (1 = city, 50 = greenwood, 100 = darkwood).
     pub fn generate(
         required: BTreeSet<Direction>,
         forbidden: BTreeSet<Direction>,
         seed: u64,
         area_count: usize,
+        alignment: AreaAlignment,
     ) -> Self {
         let exits = pick_exits(required, &forbidden, seed, area_count);
-        let grid = build_grid(&exits);
-        Self { exits, event: AreaEvent::None, grid }
+        let grid = build_grid(&exits, alignment);
+        Self { exits, event: AreaEvent::None, alignment, grid }
     }
 
     /// An impassable area filled entirely with grass (dense forest).
@@ -106,6 +130,7 @@ impl Area {
         Self {
             exits: BTreeSet::new(),
             event: AreaEvent::None,
+            alignment: 100, // dense forest = darkwood
             grid,
         }
     }
@@ -195,17 +220,18 @@ fn pick_exits(
     exits
 }
 
-fn build_grid(exits: &BTreeSet<Direction>) -> Vec<Terrain> {
+fn build_grid(exits: &BTreeSet<Direction>, alignment: AreaAlignment) -> Vec<Terrain> {
     let w = u32::from(MAP_WIDTH);
     let h = u32::from(MAP_HEIGHT);
     // u32 → usize: widening on all supported targets.
     #[allow(clippy::as_conversions)]
     let mut grid = vec![Terrain::Grass; (w * h) as usize];
 
+    let extent = path_extent(alignment);
+
     for y in 0..h {
         for x in 0..w {
-            if is_dirt(x, y, exits) {
-                // u32 → usize: widening on all supported targets.
+            if is_dirt(x, y, &exits, extent) {
                 #[allow(clippy::as_conversions)]
                 let idx = (y * w + x) as usize;
                 grid[idx] = Terrain::Dirt;
@@ -213,23 +239,102 @@ fn build_grid(exits: &BTreeSet<Direction>) -> Vec<Terrain> {
         }
     }
 
+    // City clearings: large open dirt area around the intersection.
+    if alignment < 30 {
+        let clearing_r = city_clearing_radius(alignment);
+        let cx = (PATH_COL_START + PATH_COL_END) / 2;
+        let cy = (PATH_ROW_START + PATH_ROW_END) / 2;
+        for y in 0..h {
+            for x in 0..w {
+                let dx = x.abs_diff(cx);
+                let dy = y.abs_diff(cy);
+                if dx + dy <= clearing_r {
+                    #[allow(clippy::as_conversions)]
+                    let idx = (y * w + x) as usize;
+                    grid[idx] = Terrain::Dirt;
+                }
+            }
+        }
+    }
+
+    // Darkwood scattered dirt patches: random disconnected spots.
+    if alignment > 70 {
+        let seed = u64::from(alignment).wrapping_mul(2_654_435_761);
+        scatter_dirt_patches(&mut grid, w, h, alignment, seed);
+    }
+
     grid
 }
 
-/// Returns `true` when the tile at (x, y) should be dirt given the exit set.
-///
-/// The N/S path covers columns 14–16.  The N arm reaches from the
-/// intersection (rows 7–9) to the top edge; the S arm to the bottom edge.
-/// The E/W path covers rows 7–9.  The E arm reaches from the intersection
-/// to the right edge; the W arm to the left edge.
-fn is_dirt(x: u32, y: u32, exits: &BTreeSet<Direction>) -> bool {
-    let on_vert = (PATH_COL_START..=PATH_COL_END).contains(&x);
-    let on_horiz = (PATH_ROW_START..=PATH_ROW_END).contains(&y);
+/// Total path half-width in tiles from the centre column/row.
+/// City (1) = 5 (11-wide), Greenwood (50) = 2 (5-wide),
+/// Deep green (65) = 1 (2-wide), Darkwood (100) = 0 (1-wide).
+fn path_extent(alignment: AreaAlignment) -> u32 {
+    #[allow(clippy::as_conversions)]
+    match alignment {
+        1..=25 => 5,   // City: wide open roads
+        26..=50 => 2,  // Greenwood: comfortable path
+        51..=65 => 1,  // Deep green: narrow 2-wide trail
+        _ => 0,        // Darkwood: single-tile track
+    }
+}
 
-    (on_vert && exits.contains(&Direction::North) && y >= PATH_ROW_START)
-        || (on_vert && exits.contains(&Direction::South) && y <= PATH_ROW_END)
-        || (on_horiz && exits.contains(&Direction::East) && x >= PATH_COL_START)
-        || (on_horiz && exits.contains(&Direction::West) && x <= PATH_COL_END)
+/// Manhattan-distance clearing radius for city areas.
+/// Lower alignment = bigger clearing (up to 10 tiles).
+fn city_clearing_radius(alignment: AreaAlignment) -> u32 {
+    let t = f32::from(alignment.clamp(1, 30)) / 30.0;
+    #[allow(clippy::as_conversions)]
+    let r = (10.0 * (1.0 - t)).round() as u32;
+    r
+}
+
+/// Scatter small disconnected dirt patches in darkwood areas.
+fn scatter_dirt_patches(grid: &mut [Terrain], w: u32, h: u32, alignment: AreaAlignment, seed: u64) {
+    let intensity = f32::from(alignment.saturating_sub(70)) / 30.0;
+    #[allow(clippy::as_conversions)]
+    let patch_count = (intensity * 8.0).round() as u32;
+    let mut rng = seed;
+
+    for _ in 0..patch_count {
+        rng = lcg(rng);
+        #[allow(clippy::as_conversions)]
+        let px = (rng % u64::from(w)) as u32;
+        rng = lcg(rng);
+        #[allow(clippy::as_conversions)]
+        let py = (rng % u64::from(h)) as u32;
+        rng = lcg(rng);
+        #[allow(clippy::as_conversions)]
+        let radius = (rng % 3) as u32;
+
+        for dy in 0..=radius {
+            for dx in 0..=(radius - dy) {
+                for &(sx, sy) in &[(px + dx, py + dy), (px.wrapping_sub(dx), py + dy),
+                                   (px + dx, py.wrapping_sub(dy)), (px.wrapping_sub(dx), py.wrapping_sub(dy))] {
+                    if sx < w && sy < h {
+                        #[allow(clippy::as_conversions)]
+                        let idx = (sy * w + sx) as usize;
+                        grid[idx] = Terrain::Dirt;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Returns `true` when the tile at (x, y) should be dirt given the exit set
+/// and path half-width.
+fn is_dirt(x: u32, y: u32, exits: &BTreeSet<Direction>, half_w: u32) -> bool {
+    // Centre of the cross intersection.
+    let cx = (PATH_COL_START + PATH_COL_END) / 2; // 15
+    let cy = (PATH_ROW_START + PATH_ROW_END) / 2; // 8
+
+    let on_vert = x.abs_diff(cx) <= half_w;
+    let on_horiz = y.abs_diff(cy) <= half_w;
+
+    (on_vert && exits.contains(&Direction::North) && y >= cy.saturating_sub(half_w))
+        || (on_vert && exits.contains(&Direction::South) && y <= cy + half_w)
+        || (on_horiz && exits.contains(&Direction::East) && x >= cx.saturating_sub(half_w))
+        || (on_horiz && exits.contains(&Direction::West) && x <= cx + half_w)
 }
 
 /// Minimal LCG for cheap deterministic pseudo-randomness.

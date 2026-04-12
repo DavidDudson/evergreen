@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
+use models::alignment::PlayerAlignment;
 use models::game_states::{GameState, should_despawn_world};
 
 use crate::bark_bubbles;
@@ -22,15 +23,17 @@ impl Plugin for LevelPlugin {
         app.init_resource::<InteractIconState>()
             .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
-            .insert_resource(WorldMap::new(rand::random()))
+            .insert_resource(WorldMap::new(rand::random(), 50))
             .add_systems(
                 OnEnter(GameState::Playing),
                 (
+                    regenerate_world,
                     spawning::spawn_tilemap,
                     scenery::spawn_scenery,
                     npcs::spawn_npcs,
                     galen::spawn_galen,
-                ),
+                )
+                    .chain(),
             )
             .add_systems(
                 Update,
@@ -61,4 +64,11 @@ impl Plugin for LevelPlugin {
                     .run_if(should_despawn_world),
             );
     }
+}
+
+/// Regenerate the world with a fresh seed, biased toward the player's
+/// dominant faction alignment.
+fn regenerate_world(mut world: ResMut<WorldMap>, alignment: Res<PlayerAlignment>) {
+    let dominant = alignment.dominant_area_alignment();
+    *world = WorldMap::new(rand::random(), dominant);
 }

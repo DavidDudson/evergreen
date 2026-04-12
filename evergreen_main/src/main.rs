@@ -8,6 +8,7 @@ use keybinds::KeybindsPlugin;
 use level::plugin::LevelPlugin;
 use models::game_states::GameState;
 use player::plugin::PlayerPlugin;
+use post_processing::plugin::PostProcessingPlugin;
 use save::SavePlugin;
 use ui::plugin::UiPlugin;
 use ui::window::window_plugin;
@@ -31,6 +32,7 @@ fn main() {
             CombatPlugin,
             LevelPlugin,
             PlayerPlugin,
+            PostProcessingPlugin,
         ))
         .init_state::<GameState>()
         .run();

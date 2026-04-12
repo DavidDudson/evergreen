@@ -51,4 +51,26 @@ impl PlayerAlignment {
             AlignmentFaction::Cities => self.cities,
         }
     }
+
+    /// Convert to a 1-100 area alignment scale based on the dominant faction.
+    /// 1 = city, 50 = greenwood, 100 = darkwood.
+    pub fn dominant_area_alignment(&self) -> u8 {
+        if self.cities >= self.greenwoods && self.cities >= self.darkwoods {
+            // City dominant: scale 0-10 → 1-25
+            let t = f32::from(self.cities) / f32::from(MAX_ALIGNMENT);
+            #[allow(clippy::as_conversions)]
+            return 1 + (t * 24.0) as u8;
+        }
+        if self.darkwoods >= self.greenwoods {
+            // Darkwood dominant: scale 0-10 → 76-100
+            let t = f32::from(self.darkwoods) / f32::from(MAX_ALIGNMENT);
+            #[allow(clippy::as_conversions)]
+            return 76 + (t * 24.0) as u8;
+        }
+        // Greenwood dominant: scale 0-10 → 26-75
+        let t = f32::from(self.greenwoods) / f32::from(MAX_ALIGNMENT);
+        #[allow(clippy::as_conversions)]
+        let val = 26 + (t * 49.0) as u8;
+        val
+    }
 }
