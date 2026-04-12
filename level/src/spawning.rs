@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
+use models::decoration::Biome;
 use models::layer::Layer;
 use models::tile::Tile;
 
@@ -148,7 +149,7 @@ fn spawn_area_tilemap(
     area: &Area,
     area_pos: IVec2,
 ) {
-    let texture: Handle<Image> = asset_server.load("sprites/terrain/terrain_wang.webp");
+    let texture: Handle<Image> = asset_server.load(terrain_tileset_path(area.alignment));
     let base = area_world_offset(area_pos);
 
     let map_size = TilemapSize {
@@ -275,4 +276,13 @@ fn wang_tile_index_local(
     let wang = terrain::wang_index(nw, ne, sw, se);
     #[allow(clippy::as_conversions)]
     terrain::WANG_TO_ATLAS[wang as usize]
+}
+
+/// Returns the Wang tileset asset path for the given area alignment.
+fn terrain_tileset_path(alignment: u8) -> &'static str {
+    match Biome::from_alignment(alignment) {
+        Biome::City => "sprites/terrain/terrain_wang_city.webp",
+        Biome::Greenwood => "sprites/terrain/terrain_wang.webp",
+        Biome::Darkwood => "sprites/terrain/terrain_wang_darkwood.webp",
+    }
 }
