@@ -116,6 +116,9 @@ fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
         for dx in -VIEW_RADIUS..=VIEW_RADIUS {
             // Flip dy: screen y grows downward, world y grows northward.
             let area_pos = current + IVec2::new(dx, -dy);
+            if !world.is_revealed(area_pos) {
+                continue;
+            }
             let Some(area) = world.get_area(area_pos) else {
                 continue;
             };

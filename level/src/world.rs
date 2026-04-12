@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use bevy::math::IVec2;
 use bevy::prelude::*;
@@ -31,6 +31,8 @@ pub struct WorldMap {
     npc_pool: Vec<NpcKind>,
     /// How many NPC encounters have been placed so far.
     npc_count: usize,
+    /// Areas the player has entered.
+    visited: HashSet<IVec2>,
 }
 
 impl WorldMap {
@@ -55,6 +57,7 @@ impl WorldMap {
             seed,
             npc_pool,
             npc_count: 0,
+            visited: HashSet::from([start]),
         };
 
         // The origin area is always a 4-way cross (all exits open) so the
@@ -133,10 +136,28 @@ impl WorldMap {
         self.areas.get(&neighbour_pos)?.terrain_at(nx, ny)
     }
 
+    /// Whether an area should be visible on the minimap: visited, or a direct
+    /// neighbor of the current area connected by an exit.
+    pub fn is_revealed(&self, pos: IVec2) -> bool {
+        if self.visited.contains(&pos) {
+            return true;
+        }
+        // Show unvisited neighbors that are reachable from the current area.
+        if let Some(current_area) = self.areas.get(&self.current) {
+            for dir in &current_area.exits {
+                if self.current + dir.grid_offset() == pos {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     /// Move to the area in `dir`, generating it and its neighbours if needed.
     pub fn transition(&mut self, dir: Direction) {
         let new_pos = self.current + dir.grid_offset();
         self.current = new_pos;
+        self.visited.insert(new_pos);
         self.ensure_area(new_pos);
         self.ensure_neighbors(new_pos);
     }
