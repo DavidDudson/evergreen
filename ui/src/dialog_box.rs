@@ -287,35 +287,48 @@ pub fn on_choices_ready(
     selected.count = choice_count;
 }
 
-/// Handle choice button hover highlight and click.
+/// Handle choice button click and sync hover with keyboard selection.
 pub fn handle_choice_interaction(
     mut interaction_q: Query<
-        (&Interaction, &mut BackgroundColor, &ChoiceButton),
+        (&Interaction, &ChoiceButton),
         Changed<Interaction>,
     >,
     mut selected: ResMut<SelectedChoice>,
     mut writer: MessageWriter<ChoiceMade>,
-    all_choices: Query<(Entity, &ChoiceButton)>,
-    mut all_bg: Query<&mut BackgroundColor>,
+    choice_q: Query<(Entity, &ChoiceButton)>,
+    mut bg_q: Query<&mut BackgroundColor, With<ChoiceButton>>,
 ) {
-    for (interaction, _bg, choice) in &mut interaction_q {
+    let mut needs_sync = false;
+
+    for (interaction, choice) in &mut interaction_q {
         match interaction {
             Interaction::Pressed => {
                 writer.write(ChoiceMade { index: choice.0 });
             }
             Interaction::Hovered => {
-                // Update keyboard selection to match mouse hover.
-                let hovered_pos = all_choices
+                let hovered_pos = choice_q
                     .iter()
                     .enumerate()
                     .find(|(_, (_, c))| c.0 == choice.0)
                     .map(|(i, _)| i);
                 if let Some(pos) = hovered_pos {
                     selected.index = pos;
-                    sync_highlight(&selected, &all_choices, &mut all_bg);
+                    needs_sync = true;
                 }
             }
             Interaction::None => {}
+        }
+    }
+
+    if needs_sync {
+        for (i, (entity, _)) in choice_q.iter().enumerate() {
+            if let Ok(mut bg) = bg_q.get_mut(entity) {
+                *bg = if i == selected.index {
+                    BackgroundColor(theme::DIALOG_CHOICE_HOVER)
+                } else {
+                    BackgroundColor(theme::DIALOG_CHOICE_BG)
+                };
+            }
         }
     }
 }
@@ -325,7 +338,7 @@ pub fn handle_choice_keyboard(
     keyboard: Res<ButtonInput<KeyCode>>,
     mut selected: ResMut<SelectedChoice>,
     choice_q: Query<(Entity, &ChoiceButton)>,
-    mut bg_q: Query<&mut BackgroundColor>,
+    mut bg_q: Query<&mut BackgroundColor, With<ChoiceButton>>,
     mut writer: MessageWriter<ChoiceMade>,
 ) {
     if selected.count == 0 {
@@ -349,11 +362,18 @@ pub fn handle_choice_keyboard(
     }
 
     if moved {
-        sync_highlight(&selected, &choice_q, &mut bg_q);
+        for (i, (entity, _)) in choice_q.iter().enumerate() {
+            if let Ok(mut bg) = bg_q.get_mut(entity) {
+                *bg = if i == selected.index {
+                    BackgroundColor(theme::DIALOG_CHOICE_HOVER)
+                } else {
+                    BackgroundColor(theme::DIALOG_CHOICE_BG)
+                };
+            }
+        }
     }
 
     if keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::KeyE) {
-        // Find the ChoiceButton at the selected position.
         let target = choice_q
             .iter()
             .enumerate()
@@ -362,23 +382,6 @@ pub fn handle_choice_keyboard(
 
         if let Some(index) = target {
             writer.write(ChoiceMade { index });
-        }
-    }
-}
-
-/// Sync highlight colors to match the currently selected index.
-fn sync_highlight(
-    selected: &SelectedChoice,
-    choice_q: &Query<(Entity, &ChoiceButton)>,
-    bg_q: &mut Query<&mut BackgroundColor>,
-) {
-    for (i, (entity, _)) in choice_q.iter().enumerate() {
-        if let Ok(mut bg) = bg_q.get_mut(entity) {
-            *bg = if i == selected.index {
-                BackgroundColor(theme::DIALOG_CHOICE_HOVER)
-            } else {
-                BackgroundColor(theme::DIALOG_CHOICE_BG)
-            };
         }
     }
 }
