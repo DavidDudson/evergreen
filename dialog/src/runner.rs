@@ -160,6 +160,7 @@ pub fn start_dialogue(
 pub fn advance_runner(
     mut runner: ResMut<DialogueRunner>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    bindings: Res<Keybinds>,
     flags: Res<DialogueFlags>,
     mut line_writer: MessageWriter<DialogueLineReady>,
     mut choice_writer: MessageWriter<ChoicesReady>,
@@ -193,10 +194,9 @@ pub fn advance_runner(
 
     // If we're waiting for a keypress to advance past a speech line.
     if *awaiting_advance {
-        if !keyboard.just_pressed(KeyCode::Space)
-            && !keyboard.just_pressed(KeyCode::Enter)
-            && !keyboard.just_pressed(KeyCode::KeyE)
-        {
+        let advance = keyboard.just_pressed(bindings.key(Action::DialogAdvance))
+            || keyboard.just_pressed(bindings.key(Action::Interact));
+        if !advance {
             return;
         }
         *awaiting_advance = false;

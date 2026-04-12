@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use dialog::events::{ChoiceMade, ChoicesReady, DialogueLineReady};
 use dialog::locale::LocaleMap;
+use keybinds::action::Action;
+use keybinds::bindings::Keybinds;
 
 use crate::fonts::UiFont;
 use crate::theme;
@@ -336,6 +338,7 @@ pub fn handle_choice_interaction(
 /// Navigate choices with keyboard (Up/Down/W/S to move, Enter/E to confirm).
 pub fn handle_choice_keyboard(
     keyboard: Res<ButtonInput<KeyCode>>,
+    bindings: Res<Keybinds>,
     mut selected: ResMut<SelectedChoice>,
     choice_q: Query<(Entity, &ChoiceButton)>,
     mut bg_q: Query<&mut BackgroundColor, With<ChoiceButton>>,
@@ -347,14 +350,18 @@ pub fn handle_choice_keyboard(
 
     let mut moved = false;
 
-    if keyboard.just_pressed(KeyCode::ArrowUp) || keyboard.just_pressed(KeyCode::KeyW) {
+    if keyboard.just_pressed(bindings.key(Action::MoveUp))
+        || keyboard.just_pressed(KeyCode::ArrowUp)
+    {
         if selected.index > 0 {
             selected.index -= 1;
             moved = true;
         }
     }
 
-    if keyboard.just_pressed(KeyCode::ArrowDown) || keyboard.just_pressed(KeyCode::KeyS) {
+    if keyboard.just_pressed(bindings.key(Action::MoveDown))
+        || keyboard.just_pressed(KeyCode::ArrowDown)
+    {
         if selected.index + 1 < selected.count {
             selected.index += 1;
             moved = true;
@@ -373,9 +380,8 @@ pub fn handle_choice_keyboard(
         }
     }
 
-    if keyboard.just_pressed(KeyCode::Enter)
-        || keyboard.just_pressed(KeyCode::KeyE)
-        || keyboard.just_pressed(KeyCode::Space)
+    if keyboard.just_pressed(bindings.key(Action::DialogAdvance))
+        || keyboard.just_pressed(bindings.key(Action::Interact))
     {
         let target = choice_q
             .iter()
