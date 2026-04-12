@@ -67,6 +67,7 @@ impl Plugin for UiPlugin {
                     dialog_box::on_line_ready,
                     dialog_box::on_choices_ready,
                     dialog_box::handle_choice_interaction,
+                    dialog_box::handle_choice_keyboard,
                 )
                     .run_if(in_state(GameState::Dialogue)),
             );
