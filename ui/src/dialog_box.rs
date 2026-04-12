@@ -373,7 +373,10 @@ pub fn handle_choice_keyboard(
         }
     }
 
-    if keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::KeyE) {
+    if keyboard.just_pressed(KeyCode::Enter)
+        || keyboard.just_pressed(KeyCode::KeyE)
+        || keyboard.just_pressed(KeyCode::Space)
+    {
         let target = choice_q
             .iter()
             .enumerate()
