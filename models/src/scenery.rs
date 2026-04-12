@@ -4,6 +4,10 @@ use bevy::prelude::{Component, Timer, TimerMode};
 #[derive(Component, Default)]
 pub struct Scenery;
 
+/// Marker for scenery in neighboring areas (visual border only, no collision).
+#[derive(Component, Default)]
+pub struct NeighborScenery;
+
 /// AABB collider for manual scenery collision (no physics engine).
 /// The collision box is centred at `entity_position + center_offset`.
 #[derive(Component, Clone, Copy)]

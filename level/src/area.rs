@@ -67,6 +67,17 @@ impl Area {
         Self { exits, grid }
     }
 
+    /// An impassable area filled entirely with grass (dense forest).
+    /// Used as a visual border for edges that have no neighboring area.
+    pub fn dense_forest() -> Self {
+        #[allow(clippy::as_conversions)]
+        let grid = vec![Terrain::Grass; (u32::from(MAP_WIDTH) * u32::from(MAP_HEIGHT)) as usize];
+        Self {
+            exits: BTreeSet::new(),
+            grid,
+        }
+    }
+
     pub fn terrain_at(&self, x: u32, y: u32) -> Option<Terrain> {
         if x >= u32::from(MAP_WIDTH) || y >= u32::from(MAP_HEIGHT) {
             return None;
