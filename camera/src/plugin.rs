@@ -23,10 +23,9 @@ impl Plugin for CameraPlugin {
 
         app.add_systems(OnExit(GameState::Dialogue), dialogue_focus::reset_camera);
 
-        // PostUpdate so the offset always sees AreaChanged written in Update.
         app.add_systems(
             PostUpdate,
-            smooth::apply_camera_offset.run_if(in_state(GameState::Playing)),
+            smooth::follow_player.run_if(in_state(GameState::Playing)),
         );
     }
 }

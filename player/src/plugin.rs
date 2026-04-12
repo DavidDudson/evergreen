@@ -3,6 +3,7 @@ use models::game_states::{GameState, should_despawn_world};
 
 use crate::animation;
 use crate::collision;
+use crate::exit_check;
 use crate::movement;
 use crate::rustle;
 use crate::spawning;
@@ -23,6 +24,7 @@ impl Plugin for PlayerPlugin {
                     collision::resolve_scenery_collisions,
                     rustle::trigger_rustle,
                     movement::check_area_transition,
+                    exit_check::check_exit_overlap,
                 )
                     .chain()
                     .run_if(in_state(GameState::Playing)),

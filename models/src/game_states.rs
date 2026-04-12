@@ -17,6 +17,8 @@ pub enum GameState {
     Settings,
     /// Credits screen, accessible from the main menu.
     Credits,
+    /// Player reached the exit -- level complete.
+    LevelComplete,
 }
 
 /// Run condition: true when leaving `Playing` for a state that should

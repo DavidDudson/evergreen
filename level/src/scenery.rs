@@ -2,12 +2,11 @@ use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use models::layer::Layer;
-use models::scenery::{NeighborScenery, Rustleable, Rustling, Scenery, SceneryCollider};
+use models::scenery::{Rustleable, Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, AreaAlignment, MAP_HEIGHT, MAP_WIDTH};
-use crate::spawning::TILE_SIZE_PX;
+use crate::spawning::{TILE_SIZE_PX, area_world_offset};
 use crate::terrain::{tile_hash, Terrain};
-use crate::world::{AreaChanged, WorldMap};
 
 // Trees are 2x2 tiles (32x32 px), anchored at BOTTOM_CENTER of the base tile.
 const TREE_WIDTH_PX: f32 = 32.0;
@@ -46,83 +45,30 @@ const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
 #[allow(clippy::as_conversions)]
 const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
-/// Cardinal neighbor offsets.
-const NEIGHBOR_OFFSETS: [IVec2; 4] = [
-    IVec2::new(0, 1),
-    IVec2::new(0, -1),
-    IVec2::new(1, 0),
-    IVec2::new(-1, 0),
-];
-
-pub fn spawn_scenery(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    world: Res<WorldMap>,
-    existing: Query<(), With<Scenery>>,
-) {
-    if !existing.is_empty() {
-        return;
-    }
-    spawn_area_scenery(&mut commands, &asset_server, &world, IVec2::ZERO, false);
-    spawn_neighbor_scenery(&mut commands, &asset_server, &world);
-}
-
+/// Despawn all scenery on game exit.
 pub fn despawn_scenery(
     mut commands: Commands,
     query: Query<Entity, With<Scenery>>,
-    neighbor_query: Query<Entity, With<NeighborScenery>>,
 ) {
     for entity in &query {
-        commands.entity(entity).despawn();
-    }
-    for entity in &neighbor_query {
         commands.entity(entity).despawn();
     }
 }
 
-pub fn respawn_scenery_on_area_change(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    world: Res<WorldMap>,
-    query: Query<Entity, With<Scenery>>,
-    neighbor_query: Query<Entity, With<NeighborScenery>>,
-    mut events: MessageReader<AreaChanged>,
+/// Spawn scenery for a single area at its absolute world position.
+/// Called from `spawning::ensure_area_spawned`.
+pub fn spawn_area_scenery_at(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    area: &Area,
+    area_pos: IVec2,
 ) {
-    if events.read().next().is_none() {
-        return;
-    }
-    for entity in &query {
-        commands.entity(entity).despawn();
-    }
-    for entity in &neighbor_query {
-        commands.entity(entity).despawn();
-    }
-    spawn_area_scenery(&mut commands, &asset_server, &world, IVec2::ZERO, false);
-    spawn_neighbor_scenery(&mut commands, &asset_server, &world);
+    spawn_area_scenery(commands, asset_server, area, area_pos);
 }
 
 // ---------------------------------------------------------------------------
 // Private helpers
 // ---------------------------------------------------------------------------
-
-fn spawn_neighbor_scenery(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    world: &WorldMap,
-) {
-    let dense_forest = Area::dense_forest();
-
-    for offset in &NEIGHBOR_OFFSETS {
-        let area_pos = world.current + *offset;
-        let has_area = world.get_area(area_pos).is_some();
-        // For dense forest neighbors, use 100% tree density.
-        if has_area {
-            spawn_area_scenery(commands, asset_server, world, *offset, true);
-        } else {
-            spawn_dense_forest_scenery(commands, asset_server, &dense_forest, *offset);
-        }
-    }
-}
 
 /// Compute (tree, bush, flower) density thresholds for a tile position
 /// based on area alignment and distance from edges/corners.
@@ -181,20 +127,13 @@ fn lerp_thresholds(
 fn spawn_area_scenery(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    world: &WorldMap,
-    grid_offset: IVec2,
-    is_neighbor: bool,
+    area: &Area,
+    area_pos: IVec2,
 ) {
     let tile_px = f32::from(TILE_SIZE_PX);
-    #[allow(clippy::as_conversions)]
-    let base_offset_x = -(MAP_W_PX / 2.0) + (grid_offset.x as f32) * MAP_W_PX;
-    #[allow(clippy::as_conversions)]
-    let base_offset_y = -(MAP_H_PX / 2.0) + (grid_offset.y as f32) * MAP_H_PX;
-
-    let area_pos = world.current + grid_offset;
-    let Some(area) = world.get_area(area_pos) else {
-        return;
-    };
+    let base = area_world_offset(area_pos);
+    let base_offset_x = base.x - MAP_W_PX / 2.0;
+    let base_offset_y = base.y - MAP_H_PX / 2.0;
 
     // Unique seed per area from grid position.
     let ax = u32::from_ne_bytes(area_pos.x.to_ne_bytes());
@@ -219,12 +158,7 @@ fn spawn_area_scenery(
 
             let (tree_t, bush_t, flower_t) = zone_thresholds(area.alignment, cd, ed);
 
-            if is_neighbor {
-                spawn_neighbor_tile_scenery(
-                    hash, tree_t, bush_t, flower_t,
-                    xu, yu, world_x, world_y, area_seed, area, asset_server, commands,
-                );
-            } else if cd <= CORNER_CD && hash < tree_t && !clear_for_tree(area, xu, yu) {
+            if cd <= CORNER_CD && hash < tree_t && !clear_for_tree(area, xu, yu) {
                 // Corner fallback: tree blocked, try bush instead.
                 if hash < bush_t {
                     let v = tile_hash(xu, yu, area_seed.wrapping_add(11)) % BUSH_ASSETS.len();
@@ -233,72 +167,6 @@ fn spawn_area_scenery(
             } else {
                 spawn_by_hash(hash, tree_t, bush_t, flower_t, xu, yu, world_x, world_y, area_seed, area, asset_server, commands);
             }
-        }
-    }
-}
-
-/// Spawn scenery for a single neighbor tile using the same density rules
-/// but with `NeighborScenery` marker and no colliders.
-fn spawn_neighbor_tile_scenery(
-    hash: usize,
-    tree_t: usize,
-    bush_t: usize,
-    flower_t: usize,
-    xu: u32,
-    yu: u32,
-    world_x: f32,
-    world_y: f32,
-    area_seed: u32,
-    area: &Area,
-    asset_server: &AssetServer,
-    commands: &mut Commands,
-) {
-    if hash < tree_t {
-        if clear_for_tree(area, xu, yu) {
-            let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % TREE_ASSETS.len();
-            spawn_neighbor_tree(commands, asset_server, TREE_ASSETS[variant], world_x, world_y);
-        }
-    } else if hash < bush_t {
-        let variant = tile_hash(xu, yu, area_seed.wrapping_add(11)) % BUSH_ASSETS.len();
-        spawn_neighbor_bush(commands, asset_server, BUSH_ASSETS[variant], world_x, world_y);
-    } else if hash < flower_t {
-        let variant = tile_hash(xu, yu, area_seed.wrapping_add(12)) % FLOWER_ASSETS.len();
-        spawn_neighbor_flower(commands, asset_server, FLOWER_ASSETS[variant], world_x, world_y);
-    }
-}
-
-/// Spawn dense forest scenery: a tree on every grass tile.
-fn spawn_dense_forest_scenery(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    area: &Area,
-    grid_offset: IVec2,
-) {
-    let tile_px = f32::from(TILE_SIZE_PX);
-    #[allow(clippy::as_conversions)]
-    let base_offset_x = -(MAP_W_PX / 2.0) + (grid_offset.x as f32) * MAP_W_PX;
-    #[allow(clippy::as_conversions)]
-    let base_offset_y = -(MAP_H_PX / 2.0) + (grid_offset.y as f32) * MAP_H_PX;
-
-    let ax = u32::from_ne_bytes(grid_offset.x.to_ne_bytes());
-    let ay = u32::from_ne_bytes(grid_offset.y.to_ne_bytes());
-    let area_seed = ax.wrapping_mul(2_654_435_761).wrapping_add(ay.wrapping_mul(1_013_904_223));
-
-    for x in 0..MAP_WIDTH {
-        for y in 0..MAP_HEIGHT {
-            let xu = u32::from(x);
-            let yu = u32::from(y);
-
-            if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
-                continue;
-            }
-
-            let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
-            let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
-
-            // Dense forest: tree on every tile, alternating variants.
-            let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % TREE_ASSETS.len();
-            spawn_neighbor_tree(commands, asset_server, TREE_ASSETS[variant], world_x, world_y);
         }
     }
 }
@@ -402,68 +270,6 @@ fn spawn_flower(
     commands.spawn((
         Scenery,
         Rustleable,
-        Sprite {
-            image: asset_server.load(path),
-            custom_size: Some(Vec2::splat(FLOWER_SIZE_PX)),
-            ..default()
-        },
-        Transform::from_xyz(world_x, world_y, z),
-    ));
-}
-
-// ---------------------------------------------------------------------------
-// Neighbor area entity spawners (visual only, no collision/rustle)
-// ---------------------------------------------------------------------------
-
-fn spawn_neighbor_tree(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    path: &'static str,
-    world_x: f32,
-    world_y: f32,
-) {
-    let z = Layer::SceneryTree.z_f32() - world_y * Y_SORT_SCALE;
-    commands.spawn((
-        NeighborScenery,
-        Sprite {
-            image: asset_server.load(path),
-            custom_size: Some(Vec2::new(TREE_WIDTH_PX, TREE_HEIGHT_PX)),
-            ..default()
-        },
-        Anchor::BOTTOM_CENTER,
-        Transform::from_xyz(world_x, world_y, z),
-    ));
-}
-
-fn spawn_neighbor_bush(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    path: &'static str,
-    world_x: f32,
-    world_y: f32,
-) {
-    let z = Layer::SceneryBush.z_f32() - world_y * Y_SORT_SCALE;
-    commands.spawn((
-        NeighborScenery,
-        Sprite {
-            image: asset_server.load(path),
-            custom_size: Some(Vec2::splat(BUSH_SIZE_PX)),
-            ..default()
-        },
-        Transform::from_xyz(world_x, world_y, z),
-    ));
-}
-
-fn spawn_neighbor_flower(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    path: &'static str,
-    world_x: f32,
-    world_y: f32,
-) {
-    let z = Layer::SceneryFlower.z_f32() - world_y * Y_SORT_SCALE;
-    commands.spawn((
-        NeighborScenery,
         Sprite {
             image: asset_server.load(path),
             custom_size: Some(Vec2::splat(FLOWER_SIZE_PX)),

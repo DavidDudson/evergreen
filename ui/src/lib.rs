@@ -7,6 +7,7 @@ mod focus;
 mod game_over_menu;
 mod hud;
 mod keybind_screen;
+mod level_complete;
 mod lore_page;
 mod main_menu;
 mod minimap;

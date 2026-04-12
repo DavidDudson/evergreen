@@ -4,13 +4,14 @@ use models::alignment::PlayerAlignment;
 use models::game_states::{GameState, should_despawn_world};
 
 use crate::bark_bubbles;
+use crate::exit;
 use crate::galen;
 use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
 use crate::npcs;
 use crate::scenery;
-use crate::spawning;
+use crate::spawning::{self, SpawnedAreas};
 use crate::world::{AreaChanged, WorldMap};
 
 pub use crate::area::{MAP_HEIGHT, MAP_WIDTH};
@@ -21,6 +22,7 @@ pub struct LevelPlugin;
 impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<InteractIconState>()
+            .init_resource::<SpawnedAreas>()
             .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(rand::random(), 50))
@@ -28,20 +30,16 @@ impl Plugin for LevelPlugin {
                 OnEnter(GameState::Playing),
                 (
                     regenerate_world,
-                    spawning::spawn_tilemap,
-                    scenery::spawn_scenery,
-                    npcs::spawn_npcs,
+                    spawning::spawn_initial_areas,
                     galen::spawn_galen,
+                    exit::spawn_exit,
                 )
                     .chain(),
             )
             .add_systems(
                 Update,
                 (
-                    spawning::respawn_on_area_change,
-                    scenery::respawn_scenery_on_area_change,
-                    npcs::respawn_npcs_on_area_change,
-                    galen::respawn_galen_on_area_change,
+                    spawning::ensure_neighbors_on_area_change,
                     scenery::animate_rustle,
                     npc_labels::attach_labels,
                     npc_labels::sync_interact_icon,
@@ -56,10 +54,11 @@ impl Plugin for LevelPlugin {
             .add_systems(
                 OnExit(GameState::Playing),
                 (
-                    spawning::despawn_tilemap,
+                    spawning::despawn_all_areas,
                     scenery::despawn_scenery,
                     npcs::despawn_npcs,
                     galen::despawn_galen,
+                    exit::despawn_exit,
                 )
                     .run_if(should_despawn_world),
             );
@@ -67,8 +66,16 @@ impl Plugin for LevelPlugin {
 }
 
 /// Regenerate the world with a fresh seed, biased toward the player's
-/// dominant faction alignment.
-fn regenerate_world(mut world: ResMut<WorldMap>, alignment: Res<PlayerAlignment>) {
+/// dominant faction alignment.  Skips if a world is already loaded
+/// (e.g. returning from Dialogue or Paused).
+fn regenerate_world(
+    mut world: ResMut<WorldMap>,
+    alignment: Res<PlayerAlignment>,
+    spawned: Res<SpawnedAreas>,
+) {
+    if !spawned.0.is_empty() {
+        return;
+    }
     let dominant = alignment.dominant_area_alignment();
     *world = WorldMap::new(rand::random(), dominant);
 }

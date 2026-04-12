@@ -35,14 +35,19 @@ pub fn focus_on_dialogue(
     cam_tf.translation.y += (midpoint.y - cam_tf.translation.y) * alpha;
 }
 
-/// Stores the current camera position so the smooth-return system can
-/// lerp it back to the origin over time.
+/// Stores the camera's offset from the player so the smooth-return system
+/// can lerp it back to zero over time.
 pub fn reset_camera(
     camera_q: Query<&Transform, With<Camera2d>>,
+    player_q: Query<&Transform, (With<Player>, Without<Camera2d>)>,
     mut offset: ResMut<crate::smooth::CameraOffset>,
 ) {
     let Ok(cam_tf) = camera_q.single() else {
         return;
     };
-    offset.dialogue_return = cam_tf.translation.truncate();
+    let Ok(player_tf) = player_q.single() else {
+        return;
+    };
+    offset.dialogue_return =
+        cam_tf.translation.truncate() - player_tf.translation.truncate();
 }

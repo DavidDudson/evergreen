@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
@@ -5,10 +7,12 @@ use models::layer::Layer;
 use models::tile::Tile;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::npcs;
+use crate::scenery;
 use crate::terrain::{self, Terrain};
 use crate::world::{AreaChanged, WorldMap};
 
-/// Sprout Lands tiles are 16×16 pixels.
+/// Sprout Lands tiles are 16x16 pixels.
 pub const TILE_SIZE_PX: u16 = 16;
 
 /// Pixel dimensions of one map area.
@@ -17,7 +21,7 @@ const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
 #[allow(clippy::as_conversions)]
 const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
-/// Convert a tile-based size (width × height in tiles) to a pixel `Vec2`.
+/// Convert a tile-based size (width x height in tiles) to a pixel `Vec2`.
 pub fn tile_size(width: Tile, height: Tile) -> Vec2 {
     Vec2::new(
         f32::from(width.0) * f32::from(TILE_SIZE_PX),
@@ -25,21 +29,30 @@ pub fn tile_size(width: Tile, height: Tile) -> Vec2 {
     )
 }
 
-/// Marker for the tilemap entity of the current area.
-#[derive(Component)]
-pub struct Level;
+/// World-space pixel offset for the centre of an area at `grid_pos`.
+pub fn area_world_offset(grid_pos: IVec2) -> Vec2 {
+    #[allow(clippy::as_conversions)]
+    Vec2::new(
+        grid_pos.x as f32 * MAP_W_PX,
+        grid_pos.y as f32 * MAP_H_PX,
+    )
+}
 
-/// Marker for individual tile entities so they can be bulk-despawned.
-#[derive(Component)]
-pub struct LevelTile;
+// ---------------------------------------------------------------------------
+// Components & resources
+// ---------------------------------------------------------------------------
 
-/// Marker for neighbor tilemap entities (visual border areas).
+/// Marker for any area tilemap entity.
 #[derive(Component)]
-pub struct NeighborLevel;
+pub struct AreaTilemap;
 
-/// Marker for individual neighbor tile entities.
+/// Marker for individual tile entities (for bulk despawn).
 #[derive(Component)]
-pub struct NeighborTile;
+pub struct AreaTile;
+
+/// Tracks which areas have had their entities spawned.
+#[derive(Resource, Default)]
+pub struct SpawnedAreas(pub HashSet<IVec2>);
 
 /// Cardinal offsets for the 4 neighbor areas.
 const NEIGHBOR_OFFSETS: [IVec2; 4] = [
@@ -49,143 +62,94 @@ const NEIGHBOR_OFFSETS: [IVec2; 4] = [
     IVec2::new(-1, 0), // West
 ];
 
-pub fn spawn_tilemap(
+// ---------------------------------------------------------------------------
+// Systems
+// ---------------------------------------------------------------------------
+
+/// Spawn the current area and its neighbors on game start.
+pub fn spawn_initial_areas(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     world: Res<WorldMap>,
-    existing: Query<(), With<Level>>,
+    mut spawned: ResMut<SpawnedAreas>,
 ) {
-    if !existing.is_empty() {
-        return;
+    let current = world.current;
+    ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, current, &mut spawned);
+    for offset in &NEIGHBOR_OFFSETS {
+        let pos = current + *offset;
+        ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, pos, &mut spawned);
     }
-    spawn_center_area(&mut commands, &asset_server, &world);
-    spawn_neighbors(&mut commands, &asset_server, &world);
 }
 
-pub fn despawn_tilemap(
-    mut commands: Commands,
-    level_q: Query<Entity, With<Level>>,
-    tile_q: Query<Entity, With<LevelTile>>,
-    neighbor_level_q: Query<Entity, With<NeighborLevel>>,
-    neighbor_tile_q: Query<Entity, With<NeighborTile>>,
-) {
-    despawn_all_of(&mut commands, &level_q);
-    despawn_all_of(&mut commands, &tile_q);
-    despawn_all_of(&mut commands, &neighbor_level_q);
-    despawn_all_of(&mut commands, &neighbor_tile_q);
-}
-
-/// Despawn the current tilemap and spawn one from the new `WorldMap` current area.
-pub fn respawn_on_area_change(
+/// On area change, spawn any new neighbor areas that haven't been spawned yet.
+pub fn ensure_neighbors_on_area_change(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     world: Res<WorldMap>,
-    level_q: Query<Entity, With<Level>>,
-    tile_q: Query<Entity, With<LevelTile>>,
-    neighbor_level_q: Query<Entity, With<NeighborLevel>>,
-    neighbor_tile_q: Query<Entity, With<NeighborTile>>,
+    mut spawned: ResMut<SpawnedAreas>,
     mut events: MessageReader<AreaChanged>,
 ) {
     if events.read().next().is_none() {
         return;
     }
-
-    despawn_all_of(&mut commands, &level_q);
-    despawn_all_of(&mut commands, &tile_q);
-    despawn_all_of(&mut commands, &neighbor_level_q);
-    despawn_all_of(&mut commands, &neighbor_tile_q);
-    spawn_center_area(&mut commands, &asset_server, &world);
-    spawn_neighbors(&mut commands, &asset_server, &world);
+    let current = world.current;
+    ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, current, &mut spawned);
+    for offset in &NEIGHBOR_OFFSETS {
+        let pos = current + *offset;
+        ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, pos, &mut spawned);
+    }
 }
 
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
-
-fn despawn_all_of<T: Component>(commands: &mut Commands, query: &Query<Entity, With<T>>) {
-    for entity in query {
+/// Despawn all area entities on game exit.
+pub fn despawn_all_areas(
+    mut commands: Commands,
+    tilemaps: Query<Entity, With<AreaTilemap>>,
+    tiles: Query<Entity, With<AreaTile>>,
+    mut spawned: ResMut<SpawnedAreas>,
+) {
+    for entity in &tilemaps {
         commands.entity(entity).despawn();
     }
+    for entity in &tiles {
+        commands.entity(entity).despawn();
+    }
+    spawned.0.clear();
 }
 
-fn spawn_neighbors(commands: &mut Commands, asset_server: &AssetServer, world: &WorldMap) {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+fn ensure_area_spawned(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    world: &WorldMap,
+    area_pos: IVec2,
+    spawned: &mut SpawnedAreas,
+) {
+    if spawned.0.contains(&area_pos) {
+        return;
+    }
     let dense_forest = Area::dense_forest();
-
-    for offset in &NEIGHBOR_OFFSETS {
-        let area_pos = world.current + *offset;
-        let area = world.get_area(area_pos).unwrap_or(&dense_forest);
-        spawn_neighbor_area(commands, asset_server, world, area, area_pos, *offset);
-    }
+    let area = world.get_area(area_pos).unwrap_or(&dense_forest);
+    spawn_area_tilemap(commands, asset_server, world, area, area_pos);
+    scenery::spawn_area_scenery_at(commands, asset_server, area, area_pos);
+    npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, area, area_pos);
+    spawned.0.insert(area_pos);
 }
 
-fn spawn_center_area(commands: &mut Commands, asset_server: &AssetServer, world: &WorldMap) {
-    let texture: Handle<Image> = asset_server.load("sprites/terrain/terrain_wang.webp");
-    let area_pos = world.current;
-
-    let map_size = TilemapSize {
-        x: u32::from(MAP_WIDTH),
-        y: u32::from(MAP_HEIGHT),
-    };
-    let tile_size_f32 = f32::from(TILE_SIZE_PX);
-    let ts = TilemapTileSize {
-        x: tile_size_f32,
-        y: tile_size_f32,
-    };
-    let grid_size: TilemapGridSize = ts.into();
-
-    let tilemap_entity = commands.spawn_empty().id();
-    let mut storage = TileStorage::empty(map_size);
-
-    for x in 0..MAP_WIDTH {
-        for y in 0..MAP_HEIGHT {
-            let xu = u32::from(x);
-            let yu = u32::from(y);
-            let tile_pos = TilePos { x: xu, y: yu };
-            let tile_entity = commands
-                .spawn((
-                    LevelTile,
-                    TileBundle {
-                        position: tile_pos,
-                        tilemap_id: TilemapId(tilemap_entity),
-                        texture_index: TileTextureIndex(wang_tile_index(
-                            xu, yu, area_pos, world,
-                        )),
-                        ..Default::default()
-                    },
-                ))
-                .id();
-            storage.set(&tile_pos, tile_entity);
-        }
-    }
-
-    commands.entity(tilemap_entity).insert((
-        Level,
-        TilemapBundle {
-            grid_size,
-            map_type: TilemapType::Square,
-            size: map_size,
-            storage,
-            texture: TilemapTexture::Single(texture),
-            tile_size: ts,
-            transform: Transform::from_translation(Vec3::new(
-                -(MAP_W_PX / 2.0),
-                -(MAP_H_PX / 2.0),
-                Layer::Tilemap.z_f32(),
-            )),
-            ..Default::default()
-        },
-    ));
-}
-
-fn spawn_neighbor_area(
+fn spawn_area_tilemap(
     commands: &mut Commands,
     asset_server: &AssetServer,
     world: &WorldMap,
     area: &Area,
     area_pos: IVec2,
-    grid_offset: IVec2,
 ) {
     let texture: Handle<Image> = asset_server.load("sprites/terrain/terrain_wang.webp");
+    let base = area_world_offset(area_pos);
 
     let map_size = TilemapSize {
         x: u32::from(MAP_WIDTH),
@@ -197,11 +161,6 @@ fn spawn_neighbor_area(
         y: tile_size_f32,
     };
     let grid_size: TilemapGridSize = ts.into();
-
-    #[allow(clippy::as_conversions)]
-    let offset_x = -(MAP_W_PX / 2.0) + (grid_offset.x as f32) * MAP_W_PX;
-    #[allow(clippy::as_conversions)]
-    let offset_y = -(MAP_H_PX / 2.0) + (grid_offset.y as f32) * MAP_H_PX;
 
     let tilemap_entity = commands.spawn_empty().id();
     let mut storage = TileStorage::empty(map_size);
@@ -220,7 +179,7 @@ fn spawn_neighbor_area(
             };
             let tile_entity = commands
                 .spawn((
-                    NeighborTile,
+                    AreaTile,
                     TileBundle {
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_entity),
@@ -234,7 +193,7 @@ fn spawn_neighbor_area(
     }
 
     commands.entity(tilemap_entity).insert((
-        NeighborLevel,
+        AreaTilemap,
         TilemapBundle {
             grid_size,
             map_type: TilemapType::Square,
@@ -243,8 +202,8 @@ fn spawn_neighbor_area(
             texture: TilemapTexture::Single(texture),
             tile_size: ts,
             transform: Transform::from_translation(Vec3::new(
-                offset_x,
-                offset_y,
+                base.x - (MAP_W_PX / 2.0),
+                base.y - (MAP_H_PX / 2.0),
                 Layer::Tilemap.z_f32(),
             )),
             ..Default::default()
@@ -278,7 +237,6 @@ fn wang_tile_index(x: u32, y: u32, area_pos: IVec2, world: &WorldMap) -> u32 {
 }
 
 /// Wang tile index for an area not in the world map (dense forest fallback).
-/// Uses local terrain lookups and falls back to grass for out-of-bounds.
 fn wang_tile_index_local(
     x: u32,
     y: u32,
@@ -297,7 +255,6 @@ fn wang_tile_index_local(
                 return Some(t);
             }
         }
-        // Border tiles: check if the real neighbor has terrain there.
         world.terrain_at_extended(area_pos, nx, ny)
             .or(Some(Terrain::Grass))
     };

@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 use level::plugin::tile_size;
+use level::spawning::area_world_offset;
+use level::world::WorldMap;
 use models::health::Health;
 use models::layer::Layer;
 use models::speed::Speed;
@@ -23,6 +25,7 @@ pub fn spawn(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    world: Res<WorldMap>,
     existing: Query<(), With<Player>>,
 ) {
     // OnEnter(Playing) fires on every entry including resume from pause.
@@ -56,7 +59,11 @@ pub fn spawn(
             custom_size: Some(tile_size(PLAYER_WIDTH, PLAYER_HEIGHT)),
             ..default()
         },
-        Transform::from_xyz(0.0, 0.0, Layer::Player.z_f32()),
+        Transform::from_xyz(
+            area_world_offset(world.current).x,
+            area_world_offset(world.current).y,
+            Layer::Player.z_f32(),
+        ),
     ));
 }
 

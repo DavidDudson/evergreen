@@ -62,6 +62,8 @@ pub struct WorldMap {
     revealed: HashSet<IVec2>,
     /// Biome zone influence points for alignment interpolation.
     zone_seeds: Vec<ZoneSeed>,
+    /// The dead-end area containing the level exit.
+    pub exit_area: IVec2,
 }
 
 impl WorldMap {
@@ -83,39 +85,73 @@ impl WorldMap {
         }
 
         let zone_seeds = generate_zone_seeds(seed);
-        let start = pick_start_position(&zone_seeds, dominant_alignment, seed);
 
         let mut map = Self {
             areas: HashMap::new(),
-            current: start,
+            current: IVec2::ZERO,
             seed,
             npc_pool,
             npc_count: 0,
-            visited: HashSet::from([start]),
-            revealed: HashSet::from([start]),
+            visited: HashSet::new(),
+            revealed: HashSet::new(),
             zone_seeds,
+            exit_area: IVec2::ZERO,
         };
 
-        // The start area is always a 4-way cross (all exits open) so the
-        // player can immediately explore in every direction.
+        // Seed the origin as a 4-way cross to bootstrap generation.
         let all_exits = BTreeSet::from([
             Direction::North,
             Direction::East,
             Direction::South,
             Direction::West,
         ]);
-        let start_seed = map.area_seed(start);
-        let alignment = map.alignment_at(start);
-        let start_area = Area::generate(all_exits, BTreeSet::new(), start_seed, 0, alignment);
-        map.areas.insert(start, start_area);
-        map.ensure_neighbors(start);
+        let origin_seed = map.area_seed(IVec2::ZERO);
+        let origin_align = map.alignment_at(IVec2::ZERO);
+        let origin_area =
+            Area::generate(all_exits, BTreeSet::new(), origin_seed, 0, origin_align);
+        map.areas.insert(IVec2::ZERO, origin_area);
+
+        // Expand the entire map: keep generating neighbors until no new
+        // areas appear. This produces the full 15-20 area world.
+        loop {
+            let positions: Vec<IVec2> = map.areas.keys().copied().collect();
+            let before = map.areas.len();
+            for pos in positions {
+                map.ensure_neighbors(pos);
+            }
+            if map.areas.len() == before {
+                break;
+            }
+        }
+
+        // Find dead-end areas (exactly 1 exit).
+        let dead_ends: Vec<IVec2> = map
+            .areas
+            .iter()
+            .filter(|(_, a)| a.exits.len() == 1)
+            .map(|(pos, _)| *pos)
+            .collect();
+
+        // Pick start: dead end closest to player's alignment-preferred zone.
+        let start = pick_dead_end_for_alignment(
+            &dead_ends,
+            &map.zone_seeds,
+            dominant_alignment,
+            seed,
+        );
+        map.current = start;
+        map.visited.insert(start);
+        map.revealed.insert(start);
         map.reveal_exits(start);
 
-        // Generate a second ring of neighbors for the minimap.
-        let ring1: Vec<IVec2> = map.areas.keys().copied().collect();
-        for pos in ring1 {
-            map.ensure_neighbors(pos);
-        }
+        // Pick exit: dead end farthest from start.
+        let exit = dead_ends
+            .iter()
+            .filter(|&&p| p != start)
+            .max_by_key(|&&p| manhattan(p, start))
+            .copied()
+            .unwrap_or(IVec2::ZERO);
+        map.exit_area = exit;
 
         map
     }
@@ -340,45 +376,10 @@ fn generate_zone_seeds(seed: u64) -> Vec<ZoneSeed> {
     seeds
 }
 
-/// Pick the starting area near the zone seed that best matches the player's
-/// dominant alignment, with weighted randomness.
-fn pick_start_position(
-    zones: &[ZoneSeed],
-    dominant: AreaAlignment,
-    seed: u64,
-) -> IVec2 {
-    if zones.is_empty() {
-        return IVec2::ZERO;
-    }
-
-    // Sort zones by alignment distance to the player's dominant.
-    let mut scored: Vec<(usize, u8)> = zones
-        .iter()
-        .enumerate()
-        .map(|(i, z)| (i, z.alignment.abs_diff(dominant)))
-        .collect();
-    scored.sort_by_key(|&(_, dist)| dist);
-
-    // Weighted pick: 70% best, 20% second, 10% random.
-    let rng = lcg(seed.wrapping_add(0x5747_7));
-    let roll = rng % 100;
-    let idx = if roll < 70 {
-        scored[0].0
-    } else if roll < 90 && scored.len() > 1 {
-        scored[1].0
-    } else {
-        #[allow(clippy::as_conversions)]
-        let pick = (lcg(rng) % zones.len() as u64) as usize;
-        pick
-    };
-
-    zones[idx].pos
-}
-
 /// Compute alignment at a grid position from the nearest zone seed.
 ///
-/// Uses straight nearest-zone assignment with a small deterministic jitter
-/// (up to +/-5) for local variation. No blending -- transitions are sharp.
+/// Uses straight nearest-zone assignment with deterministic jitter
+/// (up to +/-15) for noticeable variation between adjacent areas.
 fn alignment_from_zones(zones: &[ZoneSeed], pos: IVec2) -> AreaAlignment {
     if zones.is_empty() {
         return ANCHOR_LIGHT_GREEN;
@@ -389,20 +390,61 @@ fn alignment_from_zones(zones: &[ZoneSeed], pos: IVec2) -> AreaAlignment {
         .min_by_key(|z| manhattan(pos, z.pos))
         .expect("zones is non-empty");
 
-    // Small deterministic jitter based on position.
+    // Deterministic jitter based on position -- large enough for visible
+    // biome variation between neighbors.
     let px = u64::from(u32::from_ne_bytes(pos.x.to_ne_bytes()));
     let py = u64::from(u32::from_ne_bytes(pos.y.to_ne_bytes()));
     let hash = px
         .wrapping_mul(2_654_435_761)
         .wrapping_add(py.wrapping_mul(1_013_904_223));
     #[allow(clippy::as_conversions)]
-    let jitter = (hash % 11) as i16 - 5; // -5..+5
+    let jitter = (hash % 31) as i16 - 15; // -15..+15
 
+    // Clamp to within 15 of the anchor so adjacent areas can differ by at
+    // most ~30 (each jittering in opposite directions from the same anchor).
+    let anchor = i16::from(nearest.alignment);
     #[allow(clippy::as_conversions)]
-    let raw = (i16::from(nearest.alignment) + jitter).clamp(1, 100) as u8;
+    let raw = (anchor + jitter).clamp(anchor - 15, anchor + 15).clamp(1, 100) as u8;
     raw
 }
 
 fn manhattan(a: IVec2, b: IVec2) -> i32 {
     (a.x - b.x).abs() + (a.y - b.y).abs()
+}
+
+/// Pick a dead-end area near the zone seed closest to the player's alignment.
+fn pick_dead_end_for_alignment(
+    dead_ends: &[IVec2],
+    zones: &[ZoneSeed],
+    dominant: AreaAlignment,
+    seed: u64,
+) -> IVec2 {
+    if dead_ends.is_empty() {
+        return IVec2::ZERO;
+    }
+    if zones.is_empty() {
+        return dead_ends[0];
+    }
+
+    // Find the zone seed closest to the player's alignment.
+    let best_zone = zones
+        .iter()
+        .min_by_key(|z| z.alignment.abs_diff(dominant))
+        .expect("zones is non-empty");
+
+    // Pick the dead end closest to that zone seed, with a small random offset.
+    let rng = lcg(seed.wrapping_add(0xDE_AD));
+    let mut scored: Vec<(IVec2, i32)> = dead_ends
+        .iter()
+        .map(|&p| (p, manhattan(p, best_zone.pos)))
+        .collect();
+    scored.sort_by_key(|&(_, d)| d);
+
+    // 80% closest, 20% second closest.
+    let roll = rng % 100;
+    if roll < 80 || scored.len() < 2 {
+        scored[0].0
+    } else {
+        scored[1].0
+    }
 }

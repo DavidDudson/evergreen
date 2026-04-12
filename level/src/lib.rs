@@ -1,5 +1,6 @@
 pub mod area;
 pub mod bark_bubbles;
+pub mod exit;
 pub mod galen;
 pub mod npc_anim;
 pub mod npc_labels;
@@ -7,6 +8,6 @@ pub mod npc_wander;
 pub mod npcs;
 pub mod plugin;
 pub mod scenery;
-mod spawning;
+pub mod spawning;
 pub mod terrain;
 pub mod world;

@@ -9,6 +9,7 @@ use crate::focus;
 use crate::game_over_menu::{self, GameOverMenu};
 use crate::hud::{self, AlignmentBars, Hud};
 use crate::keybind_screen::{self, KeybindScreen};
+use crate::level_complete::{self, LevelCompleteScreen};
 use crate::lore_page;
 use crate::main_menu::{self, MainMenu};
 use crate::minimap;
@@ -129,6 +130,18 @@ impl Plugin for UiPlugin {
                     keybind_screen::sync_remap_overlay,
                 )
                     .run_if(in_state(GameState::KeybindConfig)),
+            );
+
+        // Level complete
+        app.add_systems(OnEnter(GameState::LevelComplete), level_complete::setup)
+            .add_systems(
+                OnExit(GameState::LevelComplete),
+                despawn_all::<LevelCompleteScreen>,
+            )
+            .add_systems(
+                Update,
+                level_complete::handle_play_again
+                    .run_if(in_state(GameState::LevelComplete)),
             );
     }
 }

@@ -1,7 +1,7 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use level::area::{AreaEvent, Direction};
-use level::world::{AreaChanged, WorldMap};
+use level::world::WorldMap;
 use models::palette;
 
 // ---------------------------------------------------------------------------
@@ -84,15 +84,15 @@ pub fn despawn(
     }
 }
 
-/// Rebuild minimap cells whenever the area changes.
+/// Rebuild minimap cells whenever the world changes (area transition or
+/// re-entering Playing from Dialogue/Pause).
 pub fn refresh(
     mut commands: Commands,
     world: Res<WorldMap>,
     root_q: Query<Entity, With<MinimapRoot>>,
     cell_q: Query<Entity, With<MinimapCell>>,
-    mut messages: MessageReader<AreaChanged>,
 ) {
-    if messages.read().next().is_none() {
+    if !world.is_changed() {
         return;
     }
 

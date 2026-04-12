@@ -13,7 +13,6 @@ use models::scenery::SceneryCollider;
 use crate::area::{AreaEvent, MAP_HEIGHT, MAP_WIDTH, NpcKind};
 use crate::npc_wander::NpcWander;
 use crate::spawning::TILE_SIZE_PX;
-use crate::world::{AreaChanged, WorldMap};
 
 // All NPCs spawn at the path intersection, which is guaranteed dirt.
 const PATH_CENTER_X: u16 = 15;
@@ -43,57 +42,26 @@ pub struct EventNpc;
 // Spawn / despawn systems
 // ---------------------------------------------------------------------------
 
-pub fn spawn_npcs(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    world: Res<WorldMap>,
-    existing: Query<(), With<EventNpc>>,
-) {
-    if !existing.is_empty() {
-        return;
-    }
-    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, &world);
-}
-
 pub fn despawn_npcs(mut commands: Commands, q: Query<Entity, With<EventNpc>>) {
     for entity in &q {
         commands.entity(entity).despawn();
     }
 }
 
-pub fn respawn_npcs_on_area_change(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    world: Res<WorldMap>,
-    q: Query<Entity, With<EventNpc>>,
-    mut events: MessageReader<AreaChanged>,
-) {
-    if events.read().next().is_none() {
-        return;
-    }
-    for entity in &q {
-        commands.entity(entity).despawn();
-    }
-    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, &world);
-}
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
-
-fn spawn_for_area(
+/// Spawn an NPC for the given area at its absolute world position.
+/// Called from `spawning::ensure_area_spawned`.
+pub fn spawn_npc_for_area(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
-    world: &WorldMap,
+    area: &crate::area::Area,
+    area_pos: IVec2,
 ) {
-    let area = world.current_area();
     let AreaEvent::NpcEncounter(npc_kind) = area.event else {
         return;
     };
-    spawn_npc(commands, asset_server, atlas_layouts, npc_kind);
+    let base = crate::spawning::area_world_offset(area_pos);
+    spawn_npc(commands, asset_server, atlas_layouts, npc_kind, base);
 }
 
 fn spawn_npc(
@@ -101,9 +69,10 @@ fn spawn_npc(
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
     kind: NpcKind,
+    base: Vec2,
 ) {
     let (name, sheet, script, barks) = npc_data(kind);
-    let pos = tile_world_pos(PATH_CENTER_X, PATH_CENTER_Y);
+    let pos = tile_world_pos(PATH_CENTER_X, PATH_CENTER_Y, base);
 
     commands.spawn((
         EventNpc,
@@ -183,10 +152,10 @@ fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'stati
     }
 }
 
-fn tile_world_pos(tx: u16, ty: u16) -> Vec3 {
+fn tile_world_pos(tx: u16, ty: u16, base: Vec2) -> Vec3 {
     let tile_px = f32::from(TILE_SIZE_PX);
-    let offset_x = -(f32::from(MAP_WIDTH) * tile_px) / 2.0;
-    let offset_y = -(f32::from(MAP_HEIGHT) * tile_px) / 2.0;
+    let offset_x = base.x - (f32::from(MAP_WIDTH) * tile_px) / 2.0;
+    let offset_y = base.y - (f32::from(MAP_HEIGHT) * tile_px) / 2.0;
     Vec3::new(
         offset_x + f32::from(tx) * tile_px + tile_px / 2.0,
         offset_y + f32::from(ty) * tile_px + tile_px / 2.0,
