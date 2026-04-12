@@ -1,6 +1,7 @@
 pub mod area;
 pub mod galen;
 pub mod npc_anim;
+pub mod npc_homes;
 pub mod npc_labels;
 pub mod npc_wander;
 pub mod npcs;

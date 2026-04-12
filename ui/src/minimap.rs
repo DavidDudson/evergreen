@@ -1,6 +1,7 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use level::area::Direction;
+use level::npc_homes::NpcHomes;
 use level::world::{AreaChanged, WorldMap};
 use models::palette;
 
@@ -9,9 +10,9 @@ use models::palette;
 // ---------------------------------------------------------------------------
 
 /// Width of one area cell in the minimap (px).
-const CELL_W_PX: u16 = 14;
-/// Height of one area cell (px). ~14:9 ≈ 16:9.
-const CELL_H_PX: u16 = 9;
+const CELL_W_PX: u16 = 20;
+/// Height of one area cell (px).
+const CELL_H_PX: u16 = 13;
 /// Gap between cells; exit connectors are drawn here.
 const GAP_PX: u16 = 4;
 /// Horizontal step from one cell origin to the next.
@@ -21,7 +22,7 @@ const STEP_H_PX: u16 = CELL_H_PX + GAP_PX;
 
 /// How many areas to show in each direction from the current one.
 const VIEW_RADIUS: i32 = 2;
-/// Total diameter of the view (5×5 grid = VIEW_RADIUS * 2 + 1).
+/// Total diameter of the view (5x5 grid = VIEW_RADIUS * 2 + 1).
 const VIEW_SIZE: u16 = 5;
 
 /// Inner padding around the cell grid inside the container.
@@ -34,6 +35,9 @@ const CONTAINER_H_PX: u16 = VIEW_SIZE * STEP_H_PX - GAP_PX + PADDING_PX * 2;
 const MINIMAP_TOP_PX: u16 = 24;
 /// Distance from the right edge of the screen.
 const MINIMAP_RIGHT_PX: u16 = 5;
+
+/// Size of the NPC icon dot inside a cell.
+const NPC_DOT_SIZE_PX: u16 = 5;
 
 // ---------------------------------------------------------------------------
 // Components
@@ -51,7 +55,7 @@ pub struct MinimapCell;
 // ---------------------------------------------------------------------------
 
 /// Spawn the minimap container and the initial cells for the starting area.
-pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
+pub fn setup(mut commands: Commands, world: Res<WorldMap>, homes: Res<NpcHomes>) {
     let root = commands
         .spawn((
             MinimapRoot,
@@ -68,7 +72,7 @@ pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
         ))
         .id();
 
-    build_cells(root, &world, &mut commands);
+    build_cells(root, &world, &homes, &mut commands);
 }
 
 /// Despawn all minimap elements when leaving the Playing state.
@@ -85,6 +89,7 @@ pub fn despawn(
 pub fn refresh(
     mut commands: Commands,
     world: Res<WorldMap>,
+    homes: Res<NpcHomes>,
     root_q: Query<Entity, With<MinimapRoot>>,
     cell_q: Query<Entity, With<MinimapCell>>,
     mut messages: MessageReader<AreaChanged>,
@@ -99,14 +104,14 @@ pub fn refresh(
         commands.entity(entity).despawn();
     }
 
-    build_cells(root, &world, &mut commands);
+    build_cells(root, &world, &homes, &mut commands);
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
+fn build_cells(root: Entity, world: &WorldMap, homes: &NpcHomes, commands: &mut Commands) {
     let current = world.current;
 
     for dy in -VIEW_RADIUS..=VIEW_RADIUS {
@@ -130,21 +135,44 @@ fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
             let cell_top = row * STEP_H_PX + PADDING_PX;
 
             // Area cell rectangle.
-            commands.spawn((
-                MinimapCell,
-                Node {
-                    position_type: PositionType::Absolute,
-                    left: Val::Px(f32::from(cell_left)),
-                    top: Val::Px(f32::from(cell_top)),
-                    width: Val::Px(f32::from(CELL_W_PX)),
-                    height: Val::Px(f32::from(CELL_H_PX)),
-                    ..Node::default()
-                },
-                BackgroundColor(color),
-                ChildOf(root),
-            ));
+            let cell_entity = commands
+                .spawn((
+                    MinimapCell,
+                    Node {
+                        position_type: PositionType::Absolute,
+                        left: Val::Px(f32::from(cell_left)),
+                        top: Val::Px(f32::from(cell_top)),
+                        width: Val::Px(f32::from(CELL_W_PX)),
+                        height: Val::Px(f32::from(CELL_H_PX)),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Node::default()
+                    },
+                    BackgroundColor(color),
+                    ChildOf(root),
+                ))
+                .id();
 
-            // Exit connectors — small rectangles bridging the gap to the
+            // NPC dot indicator.
+            let has_npc = homes.has_npc(area_pos)
+                || area_pos == IVec2::ZERO; // Galen is always at origin
+            if has_npc {
+                commands.spawn((
+                    MinimapCell,
+                    Node {
+                        width: Val::Px(f32::from(NPC_DOT_SIZE_PX)),
+                        height: Val::Px(f32::from(NPC_DOT_SIZE_PX)),
+                        border_radius: BorderRadius::all(Val::Px(
+                            f32::from(NPC_DOT_SIZE_PX) / 2.0,
+                        )),
+                        ..Node::default()
+                    },
+                    BackgroundColor(palette::MINIMAP_NPC),
+                    ChildOf(cell_entity),
+                ));
+            }
+
+            // Exit connectors -- small rectangles bridging the gap to the
             // next cell in each exit direction.
             for &dir in &area.exits {
                 if let Some((l, t, w, h)) = connector_rect(dir, cell_left, cell_top) {

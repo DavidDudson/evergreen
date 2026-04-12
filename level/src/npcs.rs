@@ -1,18 +1,9 @@
-//! NPC entity spawning — area-aware.
+//! NPC entity spawning -- area-aware.
 //!
-//! Each NPC belongs to a home area (`IVec2` grid coordinate).  Only NPCs
-//! whose home matches the current area are spawned; they are despawned and
-//! re-spawned whenever the player crosses an area boundary.
-//!
-//! Characters covered:
-//!  - Mordred               (Mythmakers Union PC — area (1, 0))
-//!  - Drizella Tremaine     (Mythmakers Union PC — area (-1, 0))
-//!  - Bigby                 (Mythmakers Union PC — area (0, 1))
-//!  - Dame Gothel           (former All-Mother — area (-1, 1))
-//!  - Morgana Le Fay        (The Begot Queen — area (1, 1))
-//!  - Memphis Cadwallader   (The Imp — area (0, 0))
+//! Each NPC's home area is assigned randomly at world creation via the
+//! `NpcHomes` resource. Only NPCs whose home matches the current area
+//! are spawned; they are despawned and re-spawned on area change.
 
-use bevy::math::IVec2;
 use bevy::prelude::*;
 use dialog::components::{BarkPool, Talker};
 use models::layer::Layer;
@@ -20,45 +11,27 @@ use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSh
 use models::scenery::SceneryCollider;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
+use crate::npc_homes::{NpcHomes, NpcKind};
 use crate::npc_wander::NpcWander;
 use crate::spawning::TILE_SIZE_PX;
 use crate::world::{AreaChanged, WorldMap};
 
 // ---------------------------------------------------------------------------
-// Home areas (world-grid coordinates)
+// Tile positions
 // ---------------------------------------------------------------------------
 
-const AREA_MORDRED: IVec2 = IVec2::new(1, 0);
-const AREA_DRIZELLA: IVec2 = IVec2::new(-1, 0);
-const AREA_BIGBY: IVec2 = IVec2::new(0, 1);
-const AREA_GOTHEL: IVec2 = IVec2::new(-1, 1);
-const AREA_MORGANA: IVec2 = IVec2::new(1, 1);
-const AREA_CADWALLADER: IVec2 = IVec2::new(0, -1);
-
-// ---------------------------------------------------------------------------
-// Path-tile positions (map tile coords, 0-indexed, y=0 is bottom row)
-//
-// The path intersection (col 15, row 8) is guaranteed dirt in every area
-// because any generated area has at least one exit, and that exit's arm
-// always covers the intersection rectangle (cols 14-16, rows 7-9).
-// ---------------------------------------------------------------------------
-
+// All NPCs spawn at the path intersection, which is guaranteed dirt.
 const PATH_CENTER_X: u16 = 15;
 const PATH_CENTER_Y: u16 = 8;
 
-// Cadwallader stands on the N arm of area (0,-1), which has a required North
-// exit (implied by the starting area's South exit). Col 15, row 12: y >= 7 ✓
-const CADWALLADER_TILE_X: u16 = 15;
-const CADWALLADER_TILE_Y: u16 = 12;
-
 const NPC_Z: f32 = Layer::Npc.z_f32();
 const NPC_SPRITE_SIZE_PX: f32 = 32.0;
-/// AABB half-extents for NPC collision — matches the visible character body.
+/// AABB half-extents for NPC collision -- matches the visible character body.
 const NPC_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const BARK_RADIUS_PX: f32 = 120.0;
 const BARK_COOLDOWN_SECS: f32 = 20.0;
 
-// Sprite sheet layout: 4 rows (S/E/N/W) × 8 cols (4 idle + 4 walk).
+// Sprite sheet layout: 4 rows (S/E/N/W) x 8 cols (4 idle + 4 walk).
 const SHEET_COLS: u32 = 8;
 const SHEET_ROWS: u32 = 4;
 const FRAME_SIZE_PX: u32 = 32;
@@ -96,6 +69,7 @@ pub fn spawn_npcs(
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     world: Res<WorldMap>,
+    homes: Res<NpcHomes>,
     existing: Query<
         (),
         Or<(
@@ -111,7 +85,7 @@ pub fn spawn_npcs(
     if !existing.is_empty() {
         return;
     }
-    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, world.current);
+    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, world.current, &homes);
 }
 
 pub fn despawn_npcs(
@@ -138,6 +112,7 @@ pub fn respawn_npcs_on_area_change(
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     world: Res<WorldMap>,
+    homes: Res<NpcHomes>,
     q: Query<
         Entity,
         Or<(
@@ -157,7 +132,7 @@ pub fn respawn_npcs_on_area_change(
     for entity in &q {
         commands.entity(entity).despawn();
     }
-    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, world.current);
+    spawn_for_area(&mut commands, &asset_server, &mut atlas_layouts, world.current, &homes);
 }
 
 // ---------------------------------------------------------------------------
@@ -168,33 +143,30 @@ fn spawn_for_area(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
-    area: IVec2,
+    area: bevy::math::IVec2,
+    homes: &NpcHomes,
 ) {
-    if area == AREA_MORDRED {
+    if homes.npc_at(area, NpcKind::Mordred) {
         spawn_mordred(commands, asset_server, atlas_layouts);
     }
-    if area == AREA_DRIZELLA {
+    if homes.npc_at(area, NpcKind::Drizella) {
         spawn_drizella(commands, asset_server, atlas_layouts);
     }
-    if area == AREA_BIGBY {
+    if homes.npc_at(area, NpcKind::Bigby) {
         spawn_bigby(commands, asset_server, atlas_layouts);
     }
-    if area == AREA_GOTHEL {
+    if homes.npc_at(area, NpcKind::Gothel) {
         spawn_gothel(commands, asset_server, atlas_layouts);
     }
-    if area == AREA_MORGANA {
+    if homes.npc_at(area, NpcKind::Morgana) {
         spawn_morgana(commands, asset_server, atlas_layouts);
     }
-    if area == AREA_CADWALLADER {
+    if homes.npc_at(area, NpcKind::Cadwallader) {
         spawn_cadwallader(commands, asset_server, atlas_layouts);
     }
 }
 
 /// Convert map tile coordinates to world-space pixels (tile centre).
-///
-/// Matches the origin convention used by the tilemap: tile (0, 0) is the
-/// bottom-left corner of the map, which is offset by half the map dimensions
-/// from the world origin.
 fn tile_world_pos(tx: u16, ty: u16) -> Vec3 {
     let tile_px = f32::from(TILE_SIZE_PX);
     let offset_x = -(f32::from(MAP_WIDTH) * tile_px) / 2.0;
@@ -355,7 +327,7 @@ fn spawn_morgana(commands: &mut Commands, asset_server: &AssetServer, layouts: &
 }
 
 fn spawn_cadwallader(commands: &mut Commands, asset_server: &AssetServer, layouts: &mut Assets<TextureAtlasLayout>) {
-    let pos = tile_world_pos(CADWALLADER_TILE_X, CADWALLADER_TILE_Y);
+    let pos = tile_world_pos(PATH_CENTER_X, PATH_CENTER_Y);
     commands.spawn((
         NpcCadwallader,
         Name::new("Memphis Cadwallader"),

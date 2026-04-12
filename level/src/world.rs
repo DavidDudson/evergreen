@@ -21,7 +21,8 @@ pub struct WorldMap {
 }
 
 impl WorldMap {
-    /// Create the world and seed the starting 4-way cross area plus its neighbours.
+    /// Create the world and seed the starting 4-way cross area plus two rings
+    /// of neighbours (enough to place all NPCs).
     pub fn new(seed: u64) -> Self {
         let start = IVec2::ZERO;
         let mut map = Self {
@@ -43,7 +44,25 @@ impl WorldMap {
         let start_area = Area::generate(all_exits, BTreeSet::new(), start_seed, 0);
         map.areas.insert(start, start_area);
         map.ensure_neighbors(start);
+
+        // Generate a second ring of neighbors so we have enough areas for
+        // NPC placement (need at least 6 non-origin areas).
+        let ring1: Vec<IVec2> = map.areas.keys().copied().collect();
+        for pos in ring1 {
+            map.ensure_neighbors(pos);
+        }
+
         map
+    }
+
+    /// All generated area positions.
+    pub fn area_positions(&self) -> Vec<IVec2> {
+        self.areas.keys().copied().collect()
+    }
+
+    /// The world seed, used for deterministic NPC placement.
+    pub fn seed(&self) -> u64 {
+        self.seed
     }
 
     /// Borrow the area that the player currently occupies.
