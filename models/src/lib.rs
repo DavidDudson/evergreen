@@ -3,6 +3,7 @@ extern crate core;
 pub mod alignment;
 pub mod attack;
 pub mod damage_type;
+pub mod decoration;
 pub mod distance;
 pub mod game_states;
 pub mod settings;
