@@ -2,6 +2,11 @@ DialogueScript(
     id: "bigby.greeting",
     speaker_key: "npc.bigby.name",
     keyword_tags: ["xyander", "investigation", "redeye", "beastkin", "cities"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.bigby",
+        image: Some("sprites/npc/npc_bigby.webp"),
+    )),
     lines: [
         Speech(text_key: "npc.bigby.greeting.0"),
         Speech(text_key: "npc.bigby.greeting.1"),

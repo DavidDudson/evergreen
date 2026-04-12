@@ -1,3 +1,4 @@
+use dialog::asset::LoreCategory;
 use dialog::history::{LoreBook, LoreEntry};
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +7,10 @@ pub(crate) struct StoredLoreEntry {
     pub script_id: String,
     pub speaker_key: String,
     pub keyword_tags: Vec<String>,
+    pub category: LoreCategory,
+    pub topic: String,
+    #[serde(default)]
+    pub image: Option<String>,
     pub lines_seen: Vec<String>,
     pub game_time: f32,
 }
@@ -16,6 +21,9 @@ impl From<&LoreEntry> for StoredLoreEntry {
             script_id: e.script_id.clone(),
             speaker_key: e.speaker_key.clone(),
             keyword_tags: e.keyword_tags.clone(),
+            category: e.category,
+            topic: e.topic.clone(),
+            image: e.image.clone(),
             lines_seen: e.lines_seen.clone(),
             game_time: e.game_time,
         }
@@ -28,6 +36,9 @@ impl From<StoredLoreEntry> for LoreEntry {
             script_id: s.script_id,
             speaker_key: s.speaker_key,
             keyword_tags: s.keyword_tags,
+            category: s.category,
+            topic: s.topic,
+            image: s.image,
             lines_seen: s.lines_seen,
             game_time: s.game_time,
         }

@@ -5,6 +5,10 @@ DialogueScript(
     id: "elder_maren.greeting",
     speaker_key: "npc.elder.name",
     keyword_tags: ["history", "world", "lore", "greenwoods"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.elder_maren",
+    )),
     lines: [
         Speech(text_key: "npc.elder.greeting.0"),
         Speech(text_key: "npc.elder.greeting.1"),

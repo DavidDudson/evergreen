@@ -2,6 +2,11 @@ DialogueScript(
     id: "mordred.greeting",
     speaker_key: "npc.mordred.name",
     keyword_tags: ["pendragon", "caliburn", "sunderance", "prophecy", "greenwoods"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.mordred",
+        image: Some("sprites/npc/npc_mordred.webp"),
+    )),
     lines: [
         Speech(text_key: "npc.mordred.greeting.0"),
         Speech(text_key: "npc.mordred.greeting.1"),

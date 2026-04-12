@@ -76,7 +76,11 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(GameState::LorePage), lore_page::teardown)
             .add_systems(
                 Update,
-                (lore_page::handle_back_button, lore_page::handle_filter_buttons)
+                (
+                    lore_page::handle_back_button,
+                    lore_page::handle_category_buttons,
+                    lore_page::handle_topic_buttons,
+                )
                     .run_if(in_state(GameState::LorePage)),
             );
 

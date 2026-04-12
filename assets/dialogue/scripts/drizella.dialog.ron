@@ -2,6 +2,11 @@ DialogueScript(
     id: "drizella.greeting",
     speaker_key: "npc.drizella.name",
     keyword_tags: ["faceless_soldier", "antiseed", "nightmare", "tremaine", "darkwoods"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.drizella",
+        image: Some("sprites/npc/npc_drizella.webp"),
+    )),
     lines: [
         Speech(text_key: "npc.drizella.greeting.0"),
         Speech(text_key: "npc.drizella.greeting.1"),

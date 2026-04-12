@@ -2,6 +2,11 @@ DialogueScript(
     id: "morgana.greeting",
     speaker_key: "npc.morgana.name",
     keyword_tags: ["pendragon", "three_faced_lady", "sunderance", "mordred", "magic", "darkwoods"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.morgana",
+        image: Some("sprites/npc/npc_morgana.webp"),
+    )),
     lines: [
         Speech(text_key: "npc.morgana.greeting.0"),
         Speech(text_key: "npc.morgana.greeting.1"),

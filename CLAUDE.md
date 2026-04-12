@@ -197,3 +197,5 @@ Playing  → KeybindConfig → Playing  (or from PauseMenu)
 - **No inline color constructors** — `Color::srgb()`, `Color::srgba()`, `Color::linear_rgb()`, `Color::linear_rgba()` are banned via `clippy::disallowed_methods`. Define all colors as named constants in `models/src/palette.rs` (the only file with `#[allow(clippy::disallowed_methods)]`).
 - All workspace crates inherit these lints via `[lints] workspace = true` in their `Cargo.toml`.
 - **No em dashes or en dashes** — Use `--` for parenthetical asides or ranges in prose (code, comments, research files, wiki content). Never use `—` (em dash) or `–` (en dash) characters.
+- **All images must be WebP** — Never commit PNG, JPEG, or other image formats to the assets directory. Convert all images to `.webp` before adding them. Use `convert input.png -quality 90 output.webp` (ImageMagick) or equivalent.
+- **Unzipping files** — `unzip` is not installed. Use `nix-shell -p unzip --run "unzip -o file.zip -d output_dir"` instead.

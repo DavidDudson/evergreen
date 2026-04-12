@@ -304,13 +304,19 @@ pub fn on_dialogue_ended(
         ..
     } = runner.state
     {
-        lore_book.record(
-            script.id.clone(),
-            script.speaker_key.clone(),
-            script.keyword_tags.clone(),
-            seen.clone(),
-            time.elapsed_secs(),
-        );
+        // Only record scripts that have lore metadata.
+        if let Some(ref lore) = script.lore {
+            lore_book.record(
+                script.id.clone(),
+                script.speaker_key.clone(),
+                script.keyword_tags.clone(),
+                lore.category,
+                lore.topic.clone(),
+                lore.image.clone(),
+                seen.clone(),
+                time.elapsed_secs(),
+            );
+        }
     }
 
     runner.state = RunnerState::Idle;

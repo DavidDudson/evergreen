@@ -2,6 +2,11 @@ DialogueScript(
     id: "cadwallader.greeting",
     speaker_key: "npc.cadwallader.name",
     keyword_tags: ["deals", "debt", "cadwallader", "rumpelstiltskin", "magic", "cities"],
+    lore: Some(LoreMeta(
+        category: Character,
+        topic: "lore.character.cadwallader",
+        image: Some("sprites/npc/npc_cadwallader.webp"),
+    )),
     lines: [
         Speech(text_key: "npc.cadwallader.greeting.0"),
         Speech(text_key: "npc.cadwallader.greeting.1"),

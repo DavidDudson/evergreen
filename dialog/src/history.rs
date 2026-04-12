@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 
-/// Persistent record of all dialogue the player has witnessed.
+use crate::asset::LoreCategory;
+
+/// Persistent record of lore the player has discovered through dialogue.
 ///
-/// Only entries from scripts that have actually been presented to the player
-/// are stored here — progressive disclosure is enforced by the runner.
+/// Only scripts with `lore` metadata are recorded here. Casual conversation
+/// without lore metadata is not stored.
 #[derive(Resource, Debug, Default)]
 pub struct LoreBook {
     pub entries: Vec<LoreEntry>,
@@ -22,6 +24,9 @@ impl LoreBook {
         script_id: impl Into<String>,
         speaker_key: impl Into<String>,
         keyword_tags: Vec<String>,
+        category: LoreCategory,
+        topic: impl Into<String>,
+        image: Option<String>,
         lines_seen: Vec<String>,
         game_time: f32,
     ) {
@@ -37,10 +42,54 @@ impl LoreBook {
                 script_id: id,
                 speaker_key: speaker_key.into(),
                 keyword_tags,
+                category,
+                topic: topic.into(),
+                image,
                 lines_seen,
                 game_time,
             });
         }
+    }
+
+    /// All unique categories that have at least one entry.
+    pub fn categories(&self) -> Vec<LoreCategory> {
+        let mut cats: Vec<LoreCategory> = self
+            .entries
+            .iter()
+            .map(|e| e.category)
+            .collect();
+        cats.sort_by_key(|c| *c as u8);
+        cats.dedup();
+        cats
+    }
+
+    /// All unique topics within a category.
+    pub fn topics_in(&self, category: LoreCategory) -> Vec<String> {
+        let mut topics: Vec<String> = self
+            .entries
+            .iter()
+            .filter(|e| e.category == category)
+            .map(|e| e.topic.clone())
+            .collect();
+        topics.sort();
+        topics.dedup();
+        topics
+    }
+
+    /// All entries for a given topic.
+    pub fn entries_for_topic(&self, topic: &str) -> Vec<&LoreEntry> {
+        self.entries
+            .iter()
+            .filter(|e| e.topic == topic)
+            .collect()
+    }
+
+    /// Get the image path for a topic (from the first entry that has one).
+    pub fn topic_image(&self, topic: &str) -> Option<&str> {
+        self.entries
+            .iter()
+            .filter(|e| e.topic == topic)
+            .find_map(|e| e.image.as_deref())
     }
 }
 
@@ -53,6 +102,12 @@ pub struct LoreEntry {
     pub speaker_key: String,
     /// Tags for filtering in the Lore page.
     pub keyword_tags: Vec<String>,
+    /// Lore category (Character, Place, Event, etc.).
+    pub category: LoreCategory,
+    /// Locale key for the topic name within the category.
+    pub topic: String,
+    /// Optional asset path to an image for this topic.
+    pub image: Option<String>,
     /// Locale keys of all lines heard so far (may grow across multiple encounters).
     pub lines_seen: Vec<String>,
     /// Game time (seconds) when this entry was first created.

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
-use dialog::history::{LoreBook, LoreEntry};
+use dialog::asset::LoreCategory;
+use dialog::history::LoreBook;
 use dialog::locale::LocaleMap;
 use models::game_states::GameState;
 
@@ -14,12 +15,20 @@ const PAGE_PADDING_PX: f32 = 40.0;
 const TITLE_FONT_SIZE_PX: f32 = 36.0;
 const TITLE_MARGIN_BOTTOM_PX: f32 = 24.0;
 
-const FILTER_FONT_SIZE_PX: f32 = 14.0;
-const FILTER_PADDING_H_PX: f32 = 12.0;
-const FILTER_PADDING_V_PX: f32 = 6.0;
-const FILTER_MARGIN_PX: f32 = 4.0;
-const FILTER_RADIUS_PX: f32 = 4.0;
-const FILTER_ROW_MARGIN_BOTTOM_PX: f32 = 20.0;
+const SIDEBAR_WIDTH_PX: f32 = 180.0;
+const SIDEBAR_GAP_PX: f32 = 16.0;
+
+const CATEGORY_FONT_SIZE_PX: f32 = 16.0;
+const CATEGORY_PADDING_H_PX: f32 = 14.0;
+const CATEGORY_PADDING_V_PX: f32 = 8.0;
+const CATEGORY_MARGIN_PX: f32 = 3.0;
+const CATEGORY_RADIUS_PX: f32 = 4.0;
+
+const TOPIC_FONT_SIZE_PX: f32 = 14.0;
+const TOPIC_PADDING_H_PX: f32 = 12.0;
+const TOPIC_PADDING_V_PX: f32 = 6.0;
+const TOPIC_MARGIN_PX: f32 = 2.0;
+const TOPIC_RADIUS_PX: f32 = 4.0;
 
 const ENTRY_SPEAKER_FONT_SIZE_PX: f32 = 16.0;
 const ENTRY_TEXT_FONT_SIZE_PX: f32 = 14.0;
@@ -27,6 +36,9 @@ const ENTRY_MARGIN_BOTTOM_PX: f32 = 16.0;
 const ENTRY_PADDING_PX: f32 = 12.0;
 const ENTRY_RADIUS_PX: f32 = 6.0;
 const ENTRY_BORDER_PX: f32 = 1.0;
+
+const PORTRAIT_SIZE_PX: f32 = 64.0;
+const PORTRAIT_MARGIN_BOTTOM_PX: f32 = 12.0;
 
 const EMPTY_FONT_SIZE_PX: f32 = 16.0;
 
@@ -44,23 +56,33 @@ const BACK_RADIUS_PX: f32 = 6.0;
 #[derive(Component)]
 pub struct LorePage;
 
-/// Marker for filter bar buttons (so they can be removed on re-filter).
 #[derive(Component)]
-pub(crate) struct LoreFilterButton(String);
+pub(crate) struct LoreCategoryButton(LoreCategory);
+
+#[derive(Component)]
+pub(crate) struct LoreTopicButton(String);
 
 #[derive(Component)]
 pub(crate) struct LoreBackButton;
 
-/// Marker for entry cards — bulk-despawned on filter change.
+/// Marker for the topic list panel (second sidebar column).
 #[derive(Component)]
-pub(crate) struct LoreEntryCard;
+pub(crate) struct LoreTopicList;
 
+/// Marker for the content panel (right side).
 #[derive(Component)]
-pub(crate) struct LoreEntriesRoot;
+pub(crate) struct LoreContentPanel;
 
-/// Currently active tag filter. Empty string = show all.
+/// Marker for dynamically spawned content elements.
+#[derive(Component)]
+pub(crate) struct LoreContentItem;
+
+/// Current selection state.
 #[derive(Resource, Default)]
-pub(crate) struct LoreFilter(String);
+pub(crate) struct LoreSelection {
+    category: Option<LoreCategory>,
+    topic: Option<String>,
+}
 
 // ---------------------------------------------------------------------------
 // Setup / teardown
@@ -72,7 +94,7 @@ pub fn setup(
     locale: Res<LocaleMap>,
     fonts: Res<UiFont>,
 ) {
-    commands.insert_resource(LoreFilter::default());
+    commands.insert_resource(LoreSelection::default());
 
     // Root container
     let root = commands
@@ -107,80 +129,115 @@ pub fn setup(
         ChildOf(root),
     ));
 
-    // Filter row
-    let filter_row = commands
+    // Main content area: sidebar | topic list | content
+    let body = commands
         .spawn((
             Node {
                 flex_direction: FlexDirection::Row,
-                flex_wrap: FlexWrap::Wrap,
-                margin: UiRect::bottom(Val::Px(FILTER_ROW_MARGIN_BOTTOM_PX)),
+                flex_grow: 1.0,
+                column_gap: Val::Px(SIDEBAR_GAP_PX),
+                overflow: Overflow::clip(),
                 ..Node::default()
             },
             ChildOf(root),
         ))
         .id();
 
-    // "All" filter button
-    commands
+    // Category sidebar
+    let sidebar = commands
         .spawn((
-            LoreFilterButton(String::new()),
-            Button,
             Node {
-                padding: UiRect::axes(Val::Px(FILTER_PADDING_H_PX), Val::Px(FILTER_PADDING_V_PX)),
-                margin: UiRect::all(Val::Px(FILTER_MARGIN_PX)),
-                border_radius: BorderRadius::all(Val::Px(FILTER_RADIUS_PX)),
+                flex_direction: FlexDirection::Column,
+                width: Val::Px(SIDEBAR_WIDTH_PX),
+                overflow: Overflow::scroll_y(),
                 ..Node::default()
             },
-            BackgroundColor(theme::BUTTON_BG),
-            ChildOf(filter_row),
+            ChildOf(body),
         ))
-        .with_child((
-            Text::new(locale.get("ui.lore.filter.all").to_string()),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont { font: fonts.0.clone(), font_size: FILTER_FONT_SIZE_PX, ..default() },
-        ));
+        .id();
 
-    // Tag-specific filter buttons
-    let tags = collect_unique_tags(&lore_book);
-    for tag in tags {
+    let categories = lore_book.categories();
+    for cat in &categories {
+        let label = locale.get(cat.locale_key()).to_string();
         commands
             .spawn((
-                LoreFilterButton(tag.clone()),
+                LoreCategoryButton(*cat),
                 Button,
                 Node {
                     padding: UiRect::axes(
-                        Val::Px(FILTER_PADDING_H_PX),
-                        Val::Px(FILTER_PADDING_V_PX),
+                        Val::Px(CATEGORY_PADDING_H_PX),
+                        Val::Px(CATEGORY_PADDING_V_PX),
                     ),
-                    margin: UiRect::all(Val::Px(FILTER_MARGIN_PX)),
-                    border_radius: BorderRadius::all(Val::Px(FILTER_RADIUS_PX)),
+                    margin: UiRect::bottom(Val::Px(CATEGORY_MARGIN_PX)),
+                    border_radius: BorderRadius::all(Val::Px(CATEGORY_RADIUS_PX)),
                     ..Node::default()
                 },
                 BackgroundColor(theme::BUTTON_BG),
-                ChildOf(filter_row),
+                ChildOf(sidebar),
             ))
             .with_child((
-                Text::new(tag),
+                Text::new(label),
                 TextColor(theme::BUTTON_TEXT),
-                TextFont { font: fonts.0.clone(), font_size: FILTER_FONT_SIZE_PX, ..default() },
+                TextFont {
+                    font: fonts.0.clone(),
+                    font_size: CATEGORY_FONT_SIZE_PX,
+                    ..default()
+                },
             ));
     }
 
-    // Scrollable entries area
-    let entries_root = commands
+    // Topic list (populated when a category is selected)
+    commands.spawn((
+        LoreTopicList,
+        Node {
+            flex_direction: FlexDirection::Column,
+            width: Val::Px(SIDEBAR_WIDTH_PX),
+            overflow: Overflow::scroll_y(),
+            ..Node::default()
+        },
+        ChildOf(body),
+    ));
+
+    // Content panel (populated when a topic is selected)
+    let content = commands
         .spawn((
-            LoreEntriesRoot,
+            LoreContentPanel,
             Node {
                 flex_direction: FlexDirection::Column,
                 flex_grow: 1.0,
                 overflow: Overflow::scroll_y(),
                 ..Node::default()
             },
-            ChildOf(root),
+            ChildOf(body),
         ))
         .id();
 
-    spawn_entries(&mut commands, &lore_book, &locale, entries_root, "", fonts.0.clone());
+    // Initial empty state
+    if categories.is_empty() {
+        commands.spawn((
+            LoreContentItem,
+            Text::new(locale.get("ui.lore.empty").to_string()),
+            TextColor(theme::BUTTON_TEXT),
+            TextFont {
+                font: fonts.0.clone(),
+                font_size: EMPTY_FONT_SIZE_PX,
+                ..default()
+            },
+            ChildOf(content),
+        ));
+    } else {
+        commands.spawn((
+            LoreContentItem,
+            Text::new(locale.get("ui.lore.select_category").to_string()),
+            TextColor(theme::BUTTON_TEXT),
+            TextFont {
+                font: fonts.0.clone(),
+                font_size: EMPTY_FONT_SIZE_PX,
+                ..default()
+            },
+            ChildOf(content),
+        ));
+    }
 
     // Back button
     commands
@@ -202,18 +259,19 @@ pub fn setup(
         .with_child((
             Text::new(locale.get("ui.lore.back").to_string()),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font: fonts.0.clone(), font_size: BACK_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font: fonts.0.clone(),
+                font_size: BACK_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 
-pub fn teardown(
-    mut commands: Commands,
-    query: Query<Entity, With<LorePage>>,
-) {
+pub fn teardown(mut commands: Commands, query: Query<Entity, With<LorePage>>) {
     query
         .iter()
         .for_each(|entity| commands.entity(entity).despawn());
-    commands.remove_resource::<LoreFilter>();
+    commands.remove_resource::<LoreSelection>();
 }
 
 // ---------------------------------------------------------------------------
@@ -230,25 +288,27 @@ pub fn handle_back_button(
         .for_each(|_| next_state.set(GameState::MainMenu));
 }
 
-pub fn handle_filter_buttons(
+pub fn handle_category_buttons(
     mut interaction_q: Query<
-        (&Interaction, &LoreFilterButton, &mut BackgroundColor),
+        (&Interaction, &LoreCategoryButton, &mut BackgroundColor),
         Changed<Interaction>,
     >,
-    mut filter: ResMut<LoreFilter>,
+    mut selection: ResMut<LoreSelection>,
     lore_book: Res<LoreBook>,
     locale: Res<LocaleMap>,
     fonts: Res<UiFont>,
-    entries_root_q: Query<Entity, With<LoreEntriesRoot>>,
-    card_q: Query<Entity, With<LoreEntryCard>>,
+    topic_list_q: Query<Entity, With<LoreTopicList>>,
+    topic_btn_q: Query<Entity, With<LoreTopicButton>>,
+    content_panel_q: Query<Entity, With<LoreContentPanel>>,
+    content_item_q: Query<Entity, With<LoreContentItem>>,
     mut commands: Commands,
 ) {
-    let mut new_filter = None;
+    let mut new_cat = None;
 
     for (interaction, button, mut bg) in &mut interaction_q {
         match interaction {
             Interaction::Pressed => {
-                new_filter = Some(button.0.clone());
+                new_cat = Some(button.0);
             }
             Interaction::Hovered => {
                 *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER);
@@ -259,69 +319,149 @@ pub fn handle_filter_buttons(
         }
     }
 
-    let Some(tag) = new_filter else { return };
-    filter.0 = tag.clone();
+    let Some(cat) = new_cat else { return };
+    selection.category = Some(cat);
+    selection.topic = None;
 
-    // Despawn all current entry cards.
-    for entity in &card_q {
+    // Rebuild topic list
+    for entity in &topic_btn_q {
         commands.entity(entity).despawn();
     }
-
-    let Ok(root) = entries_root_q.single() else {
+    let Ok(topic_list) = topic_list_q.single() else {
         return;
     };
 
-    spawn_entries(&mut commands, &lore_book, &locale, root, &tag, fonts.0.clone());
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-fn collect_unique_tags(lore_book: &LoreBook) -> Vec<String> {
-    let mut tags: Vec<String> = lore_book
-        .entries
-        .iter()
-        .flat_map(|e| e.keyword_tags.iter().cloned())
-        .collect();
-    tags.sort();
-    tags.dedup();
-    tags
-}
-
-fn spawn_entries(
-    commands: &mut Commands,
-    lore_book: &LoreBook,
-    locale: &LocaleMap,
-    parent: Entity,
-    filter: &str,
-    font: Handle<Font>,
-) {
-    let entries: Vec<&LoreEntry> = lore_book
-        .entries
-        .iter()
-        .filter(|e| filter.is_empty() || e.keyword_tags.iter().any(|t| t == filter))
-        .collect();
-
-    if entries.is_empty() {
-        commands.spawn((
-            LoreEntryCard,
-            Text::new(locale.get("ui.lore.empty").to_string()),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont {
-                font: font.clone(),
-                font_size: EMPTY_FONT_SIZE_PX,
-                ..default()
-            },
-            ChildOf(parent),
-        ));
-        return;
+    let topics = lore_book.topics_in(cat);
+    for topic_key in &topics {
+        let label = locale.get(topic_key).to_string();
+        commands
+            .spawn((
+                LoreTopicButton(topic_key.clone()),
+                Button,
+                Node {
+                    padding: UiRect::axes(
+                        Val::Px(TOPIC_PADDING_H_PX),
+                        Val::Px(TOPIC_PADDING_V_PX),
+                    ),
+                    margin: UiRect::bottom(Val::Px(TOPIC_MARGIN_PX)),
+                    border_radius: BorderRadius::all(Val::Px(TOPIC_RADIUS_PX)),
+                    ..Node::default()
+                },
+                BackgroundColor(theme::BUTTON_BG),
+                ChildOf(topic_list),
+            ))
+            .with_child((
+                Text::new(label),
+                TextColor(theme::BUTTON_TEXT),
+                TextFont {
+                    font: fonts.0.clone(),
+                    font_size: TOPIC_FONT_SIZE_PX,
+                    ..default()
+                },
+            ));
     }
 
+    // Clear content panel and show prompt
+    for entity in &content_item_q {
+        commands.entity(entity).despawn();
+    }
+    let Ok(content) = content_panel_q.single() else {
+        return;
+    };
+    commands.spawn((
+        LoreContentItem,
+        Text::new(locale.get("ui.lore.select_topic").to_string()),
+        TextColor(theme::BUTTON_TEXT),
+        TextFont {
+            font: fonts.0.clone(),
+            font_size: EMPTY_FONT_SIZE_PX,
+            ..default()
+        },
+        ChildOf(content),
+    ));
+}
+
+pub fn handle_topic_buttons(
+    mut interaction_q: Query<
+        (&Interaction, &LoreTopicButton, &mut BackgroundColor),
+        Changed<Interaction>,
+    >,
+    mut selection: ResMut<LoreSelection>,
+    lore_book: Res<LoreBook>,
+    locale: Res<LocaleMap>,
+    asset_server: Res<AssetServer>,
+    fonts: Res<UiFont>,
+    content_panel_q: Query<Entity, With<LoreContentPanel>>,
+    content_item_q: Query<Entity, With<LoreContentItem>>,
+    mut commands: Commands,
+) {
+    let mut new_topic = None;
+
+    for (interaction, button, mut bg) in &mut interaction_q {
+        match interaction {
+            Interaction::Pressed => {
+                new_topic = Some(button.0.clone());
+            }
+            Interaction::Hovered => {
+                *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER);
+            }
+            Interaction::None => {
+                *bg = BackgroundColor(theme::BUTTON_BG);
+            }
+        }
+    }
+
+    let Some(topic) = new_topic else { return };
+    selection.topic = Some(topic.clone());
+
+    // Clear content panel
+    for entity in &content_item_q {
+        commands.entity(entity).despawn();
+    }
+    let Ok(content) = content_panel_q.single() else {
+        return;
+    };
+
+    // Topic header with optional portrait
+    let topic_image: Option<String> = lore_book.topic_image(&topic).map(String::from);
+    if let Some(ref image_path) = topic_image {
+        commands.spawn((
+            LoreContentItem,
+            ImageNode::new(asset_server.load(image_path.clone())),
+            Node {
+                width: Val::Px(PORTRAIT_SIZE_PX),
+                height: Val::Px(PORTRAIT_SIZE_PX),
+                margin: UiRect::bottom(Val::Px(PORTRAIT_MARGIN_BOTTOM_PX)),
+                ..Node::default()
+            },
+            ChildOf(content),
+        ));
+    }
+
+    // Topic title
+    let topic_name = locale.get(&topic).to_string();
+    commands.spawn((
+        LoreContentItem,
+        Text::new(topic_name),
+        TextColor(theme::TITLE),
+        TextFont {
+            font: fonts.0.clone(),
+            font_size: ENTRY_SPEAKER_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::bottom(Val::Px(ENTRY_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
+        ChildOf(content),
+    ));
+
+    // Entries for this topic
+    let entries = lore_book.entries_for_topic(&topic);
     for entry in entries {
         let card = commands
             .spawn((
-                LoreEntryCard,
+                LoreContentItem,
                 Node {
                     flex_direction: FlexDirection::Column,
                     padding: UiRect::all(Val::Px(ENTRY_PADDING_PX)),
@@ -332,27 +472,29 @@ fn spawn_entries(
                 },
                 BackgroundColor(theme::DIALOG_CHOICE_BG),
                 BorderColor::all(theme::DIALOG_BORDER),
-                ChildOf(parent),
+                ChildOf(content),
             ))
             .id();
 
+        // Speaker name
         commands.spawn((
             Text::new(locale.get(&entry.speaker_key).to_string()),
             TextColor(theme::DIALOG_SPEAKER),
             TextFont {
-                font: font.clone(),
+                font: fonts.0.clone(),
                 font_size: ENTRY_SPEAKER_FONT_SIZE_PX,
                 ..default()
             },
             ChildOf(card),
         ));
 
+        // Dialogue lines
         for line_key in &entry.lines_seen {
             commands.spawn((
                 Text::new(format!("  {}", locale.get(line_key))),
                 TextColor(theme::DIALOG_TEXT),
                 TextFont {
-                    font: font.clone(),
+                    font: fonts.0.clone(),
                     font_size: ENTRY_TEXT_FONT_SIZE_PX,
                     ..default()
                 },

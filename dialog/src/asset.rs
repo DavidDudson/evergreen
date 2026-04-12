@@ -3,6 +3,44 @@ use bevy::reflect::TypePath;
 use models::alignment::AlignmentFaction;
 use serde::Deserialize;
 
+/// Broad category for lore entries displayed in the lore page sidebar.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, serde::Serialize)]
+pub enum LoreCategory {
+    Character,
+    Place,
+    Event,
+    Disease,
+    Item,
+    Faction,
+}
+
+impl LoreCategory {
+    /// Locale key for the category display name.
+    pub fn locale_key(self) -> &'static str {
+        match self {
+            Self::Character => "ui.lore.category.character",
+            Self::Place => "ui.lore.category.place",
+            Self::Event => "ui.lore.category.event",
+            Self::Disease => "ui.lore.category.disease",
+            Self::Item => "ui.lore.category.item",
+            Self::Faction => "ui.lore.category.faction",
+        }
+    }
+}
+
+/// Metadata marking a dialogue script as lore-contributing.
+/// Scripts without this field are casual conversation and not recorded.
+#[derive(Debug, Clone, Deserialize)]
+pub struct LoreMeta {
+    /// Which sidebar category this lore belongs to.
+    pub category: LoreCategory,
+    /// Locale key for the topic name (e.g. `"lore.character.mordred"`).
+    pub topic: String,
+    /// Optional asset path to an image shown on the topic page (e.g. character portrait).
+    #[serde(default)]
+    pub image: Option<String>,
+}
+
 /// A dialogue script loaded from a `.dialog.ron` asset file.
 ///
 /// All strings are locale keys resolved at render time by [`crate::locale::LocaleMap`].
@@ -14,6 +52,10 @@ pub struct DialogueScript {
     pub speaker_key: String,
     /// Tags used to filter entries in the Lore page (e.g. `["history", "nature"]`).
     pub keyword_tags: Vec<String>,
+    /// If present, this script contributes to the lore book when witnessed.
+    /// Scripts without this field are not recorded.
+    #[serde(default)]
+    pub lore: Option<LoreMeta>,
     /// Ordered sequence of lines/choices.
     pub lines: Vec<DialogueLine>,
 }
