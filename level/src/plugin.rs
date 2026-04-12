@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::game_states::{GameState, should_despawn_world};
 
+use crate::bark_bubbles;
 use crate::galen;
 use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
@@ -45,6 +46,8 @@ impl Plugin for LevelPlugin {
                     npc_anim::advance_npc_frame,
                     npc_anim::reset_npc_anim_on_change,
                     npc_wander::wander_npcs,
+                    bark_bubbles::spawn_bark_bubble,
+                    bark_bubbles::tick_bark_bubbles,
                 )
                     .run_if(in_state(GameState::Playing)),
             )

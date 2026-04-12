@@ -1,4 +1,5 @@
 pub mod area;
+pub mod bark_bubbles;
 pub mod galen;
 pub mod npc_anim;
 pub mod npc_labels;
