@@ -29,6 +29,8 @@ fn main() {
             DialogPlugin,
             SavePlugin,
             UiPlugin,
+        ))
+        .add_plugins((
             CombatPlugin,
             LevelPlugin,
             PlayerPlugin,
