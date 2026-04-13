@@ -18,7 +18,7 @@ use crate::spawning::TILE_SIZE_PX;
 const PATH_CENTER_X: u16 = 15;
 const PATH_CENTER_Y: u16 = 8;
 
-const NPC_Z: f32 = Layer::Npc.z_f32();
+const NPC_Z: f32 = Layer::World.z_f32();
 const NPC_SPRITE_SIZE_PX: f32 = 32.0;
 const NPC_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const BARK_RADIUS_PX: f32 = 120.0;

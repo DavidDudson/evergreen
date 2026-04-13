@@ -156,7 +156,7 @@ fn spawn_decoration(
     world_x: f32,
     world_y: f32,
 ) {
-    let z = Layer::Decoration.z_f32() - world_y * Y_SORT_SCALE;
+    let z = Layer::World.z_f32() - world_y * Y_SORT_SCALE;
     let mut entity = commands.spawn((
         Decoration,
         Sprite {

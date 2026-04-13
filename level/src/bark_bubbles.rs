@@ -18,7 +18,7 @@ const BUBBLE_FONT_SIZE_PX: f32 = 10.0;
 /// Max width before wrapping (pixels).
 const BUBBLE_MAX_WIDTH_PX: f32 = 120.0;
 /// Local z to place the bubble above all labels/icons.
-const BUBBLE_LOCAL_Z: f32 = Layer::NpcLabel.z_f32() - Layer::Npc.z_f32() + 2.0;
+const BUBBLE_LOCAL_Z: f32 = Layer::NpcLabel.z_f32() - Layer::World.z_f32() + 2.0;
 
 /// Marker for bark bubble entities so they can be despawned.
 #[derive(Component)]

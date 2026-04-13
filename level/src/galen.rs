@@ -19,7 +19,7 @@ use crate::world::WorldMap;
 // Galen stands on the N arm of the starting area (col 15, row 13).
 const GALEN_TILE_X: u16 = 15;
 const GALEN_TILE_Y: u16 = 13;
-const GALEN_Z: f32 = Layer::Npc.z_f32();
+const GALEN_Z: f32 = Layer::World.z_f32();
 const GALEN_SPRITE_SIZE_PX: f32 = 32.0;
 const GALEN_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const GALEN_QUESTION_COUNT: usize = 5;

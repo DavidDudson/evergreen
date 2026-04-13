@@ -62,7 +62,7 @@ pub fn spawn(
         Transform::from_xyz(
             area_world_offset(world.current).x,
             area_world_offset(world.current).y,
-            Layer::Player.z_f32(),
+            Layer::World.z_f32(),
         ),
     ));
 }

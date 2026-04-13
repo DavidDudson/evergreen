@@ -22,7 +22,7 @@ const ICON_FONT_SIZE_PX: f32 = 13.0;
 /// World-space z for labels and icons — above all scenery.
 /// Labels/icons are children of the NPC entity (NpcLabel z), so their local z
 /// must place their world z above SceneryFlower (12).
-const LABEL_LOCAL_Z: f32 = Layer::NpcLabel.z_f32() - Layer::Npc.z_f32();
+const LABEL_LOCAL_Z: f32 = Layer::NpcLabel.z_f32() - Layer::World.z_f32();
 const ICON_LOCAL_Z: f32 = LABEL_LOCAL_Z + 1.0;
 
 // ---------------------------------------------------------------------------

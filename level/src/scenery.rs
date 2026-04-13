@@ -147,7 +147,7 @@ fn spawn_tree(
     world_x: f32,
     world_y: f32,
 ) {
-    let z = Layer::SceneryTree.z_f32() - world_y * Y_SORT_SCALE;
+    let z = Layer::World.z_f32() - world_y * Y_SORT_SCALE;
     commands.spawn((
         Scenery,
         SceneryCollider {

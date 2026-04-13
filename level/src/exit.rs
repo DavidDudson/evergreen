@@ -55,6 +55,6 @@ fn exit_world_pos(area_pos: IVec2) -> Vec3 {
     Vec3::new(
         offset_x + f32::from(PATH_CENTER_X) * tile_px + tile_px / 2.0,
         offset_y + f32::from(PATH_CENTER_Y) * tile_px + tile_px / 2.0,
-        Layer::Npc.z_f32(),
+        Layer::World.z_f32(),
     )
 }
