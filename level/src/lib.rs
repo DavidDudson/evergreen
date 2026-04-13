@@ -13,4 +13,5 @@ pub mod reveal;
 pub mod scenery;
 pub mod spawning;
 pub mod terrain;
+pub mod weather;
 pub mod world;

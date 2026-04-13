@@ -3,6 +3,9 @@ use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::alignment::PlayerAlignment;
 use models::game_states::{should_despawn_world, GameState};
 
+use models::weather::WeatherState;
+use models::wind::WindStrength;
+
 use crate::bark_bubbles;
 use crate::decorations;
 use crate::exit;
@@ -14,6 +17,7 @@ use crate::npcs;
 use crate::reveal;
 use crate::scenery;
 use crate::spawning::{self, SpawnedAreas};
+use crate::weather;
 use crate::world::{AreaChanged, WorldMap};
 
 pub use crate::area::{MAP_HEIGHT, MAP_WIDTH};
@@ -25,6 +29,8 @@ impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<InteractIconState>()
             .init_resource::<SpawnedAreas>()
+            .init_resource::<WindStrength>()
+            .init_resource::<WeatherState>()
             .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(rand::random(), 50))
@@ -54,6 +60,10 @@ impl Plugin for LevelPlugin {
                     bark_bubbles::tick_bark_bubbles,
                     reveal::detect_reveals,
                     reveal::animate_reveals,
+                    weather::weather_state_machine,
+                    weather::sync_wind_strength,
+                    weather::spawn_weather_particles,
+                    weather::update_weather_particles,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
@@ -66,6 +76,7 @@ impl Plugin for LevelPlugin {
                     npcs::despawn_npcs,
                     galen::despawn_galen,
                     exit::despawn_exit,
+                    weather::despawn_weather_particles,
                 )
                     .run_if(should_despawn_world),
             );

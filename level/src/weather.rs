@@ -219,7 +219,7 @@ pub fn update_weather_particles(
     let dt = time.delta_secs();
     for (entity, mut tf, mut particle) in &mut query {
         particle.lifetime.tick(time.delta());
-        if particle.lifetime.finished() {
+        if particle.lifetime.is_finished() {
             commands.entity(entity).despawn();
             continue;
         }
