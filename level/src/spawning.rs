@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::*;
 use models::decoration::Biome;
 use models::layer::Layer;
+use models::palette;
 use models::tile::Tile;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
@@ -214,6 +215,7 @@ fn spawn_area_tilemap(
             } else {
                 wang_tile_index_local(xu, yu, area, area_pos, world)
             };
+            let tile_color = biome_tile_color(area.alignment, xu, yu, area_pos, world);
             let tile_entity = commands
                 .spawn((
                     AreaTile,
@@ -221,6 +223,7 @@ fn spawn_area_tilemap(
                         position: tile_pos,
                         tilemap_id: TilemapId(tilemap_entity),
                         texture_index: TileTextureIndex(idx),
+                        color: tile_color,
                         ..Default::default()
                     },
                 ))
@@ -316,4 +319,52 @@ fn terrain_tileset_path(alignment: u8) -> &'static str {
         Biome::Greenwood => "sprites/terrain/terrain_wang.webp",
         Biome::Darkwood => "sprites/terrain/terrain_wang_darkwood.webp",
     }
+}
+
+/// Base tile tint color for a biome.
+fn biome_base_tint(biome: Biome) -> Color {
+    match biome {
+        Biome::City => palette::BIOME_CITY_TINT,
+        Biome::Greenwood => palette::BIOME_GREENWOOD_TINT,
+        Biome::Darkwood => palette::BIOME_DARKWOOD_TINT,
+    }
+}
+
+/// Compute a per-tile tint color that lerps between biome tints at area borders.
+/// Tiles in the interior get the area's base biome tint. Tiles in the blend zone
+/// shift toward the neighbor's biome tint (Minecraft-style biome color blending).
+fn biome_tile_color(
+    area_alignment: u8,
+    x: u32,
+    y: u32,
+    area_pos: IVec2,
+    world: &WorldMap,
+) -> TileColor {
+    let blend = blending::blend_at(area_alignment, x, y, area_pos, world);
+    let area_tint = biome_base_tint(Biome::from_alignment(area_alignment));
+
+    if blend.factor < 0.01 {
+        return TileColor(area_tint);
+    }
+
+    let neighbor_align = match blend.neighbor_alignment {
+        Some(a) => a,
+        None => return TileColor(area_tint),
+    };
+    let neighbor_tint = biome_base_tint(Biome::from_alignment(neighbor_align));
+
+    // Lerp RGB channels by the blend factor (0.0 = area color, 0.5 = halfway).
+    let t = blend.factor;
+    let lerp_channel = |a: f32, b: f32| a + (b - a) * t;
+
+    let a = area_tint.to_srgba();
+    let b = neighbor_tint.to_srgba();
+    #[allow(clippy::disallowed_methods)]
+    let blended = Color::srgba(
+        lerp_channel(a.red, b.red),
+        lerp_channel(a.green, b.green),
+        lerp_channel(a.blue, b.blue),
+        1.0,
+    );
+    TileColor(blended)
 }

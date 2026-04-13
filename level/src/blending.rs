@@ -8,6 +8,16 @@ const BLEND_W: u32 = 6;
 /// Vertical blend width in tiles (20% of 18).
 const BLEND_H: u32 = 4;
 
+/// Result of a blend calculation for a single tile.
+pub struct BlendResult {
+    /// Effective alignment after blending (lerped toward neighbor).
+    pub alignment: u8,
+    /// Raw blend factor 0.0 (no neighbor influence) to ~0.5 (edge of area).
+    pub factor: f32,
+    /// The neighbor's alignment, if any neighbor influences this tile.
+    pub neighbor_alignment: Option<u8>,
+}
+
 /// Compute the effective biome alignment for a tile at `(x, y)` within an area,
 /// blending toward neighbor areas near the borders.
 ///
@@ -20,6 +30,17 @@ pub fn blended_alignment(
     area_pos: IVec2,
     world: &WorldMap,
 ) -> u8 {
+    blend_at(area_alignment, x, y, area_pos, world).alignment
+}
+
+/// Full blend calculation returning alignment, factor, and neighbor info.
+pub fn blend_at(
+    area_alignment: u8,
+    x: u32,
+    y: u32,
+    area_pos: IVec2,
+    world: &WorldMap,
+) -> BlendResult {
     let w = u32::from(MAP_WIDTH);
     let h = u32::from(MAP_HEIGHT);
 
@@ -77,9 +98,16 @@ pub fn blended_alignment(
         }
     }
 
-    match best_neighbor_align {
-        Some(neighbor) => lerp_alignment(area_alignment, neighbor, best_t * 0.5),
+    let factor = best_t * 0.5;
+    let alignment = match best_neighbor_align {
+        Some(neighbor) => lerp_alignment(area_alignment, neighbor, factor),
         None => area_alignment,
+    };
+
+    BlendResult {
+        alignment,
+        factor,
+        neighbor_alignment: best_neighbor_align,
     }
 }
 

@@ -141,12 +141,21 @@ fn spawn_area_scenery(
             let hash = tile_hash(xu, yu, area_seed) % 100;
             let ed = edge_dist(x, y);
 
-            let effective_alignment =
-                blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
-            let threshold = tree_threshold(effective_alignment, ed);
+            let blend = blending::blend_at(area.alignment, xu, yu, area_pos, world);
+            let threshold = tree_threshold(blend.alignment, ed);
 
             if hash < threshold && clear_for_tree(area, xu, yu) {
-                let pool = tree_pool(effective_alignment);
+                // In the blend zone, probabilistically pick from the neighbor's
+                // tree pool based on blend factor (Minecraft-style mixing).
+                let mix_hash = tile_hash(xu, yu, area_seed.wrapping_add(20)) % 100;
+                #[allow(clippy::as_conversions)]
+                let mix_threshold = (blend.factor * 100.0) as usize;
+                let pool_alignment = if mix_hash < mix_threshold {
+                    blend.neighbor_alignment.unwrap_or(area.alignment)
+                } else {
+                    area.alignment
+                };
+                let pool = tree_pool(pool_alignment);
                 let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % pool.len();
                 let def = &pool[variant];
                 let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;

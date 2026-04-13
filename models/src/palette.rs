@@ -39,6 +39,11 @@ pub const SCROLLBAR_THUMB: Color = Color::srgb(0.24, 0.48, 0.29);
 // Interact prompt
 pub const INTERACT_PROMPT: Color = Color::srgb(1.0, 0.90, 0.30);
 
+// Biome tile tint colors (used for Minecraft-style biome blending)
+pub const BIOME_CITY_TINT: Color = Color::srgb(0.95, 0.92, 0.80);
+pub const BIOME_GREENWOOD_TINT: Color = Color::srgb(0.85, 0.95, 0.82);
+pub const BIOME_DARKWOOD_TINT: Color = Color::srgb(0.65, 0.70, 0.62);
+
 // General-purpose alpha constants
 pub const TRANSPARENT: Color = Color::srgba(1.0, 1.0, 1.0, 0.0);
 pub const OPAQUE_WHITE: Color = Color::srgba(1.0, 1.0, 1.0, 1.0);
