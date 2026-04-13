@@ -347,8 +347,28 @@ pub(crate) fn update_overlay(
             Without<EntityCountText>,
         ),
     >,
-    mut tod_q: Query<&mut Text, (With<TimeOfDayText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>, Without<WeatherText>)>,
-    mut weather_q: Query<&mut Text, (With<WeatherText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>, Without<TimeOfDayText>)>,
+    mut tod_q: Query<
+        &mut Text,
+        (
+            With<TimeOfDayText>,
+            Without<FpsText>,
+            Without<FrameTimeText>,
+            Without<EntityCountText>,
+            Without<AreaStatsText>,
+            Without<WeatherText>,
+        ),
+    >,
+    mut weather_q: Query<
+        &mut Text,
+        (
+            With<WeatherText>,
+            Without<FpsText>,
+            Without<FrameTimeText>,
+            Without<EntityCountText>,
+            Without<AreaStatsText>,
+            Without<TimeOfDayText>,
+        ),
+    >,
     mut bar_q: Query<(&HistogramBar, &mut Node, &mut BackgroundColor)>,
 ) {
     // FPS — also derive the dynamic target frame time from the smoothed reading.

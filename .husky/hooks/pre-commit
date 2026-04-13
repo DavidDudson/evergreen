@@ -1,7 +1,28 @@
 #!/bin/sh
+set -e
+
 echo "Bumping versions..."
 ./scripts/bump-versions.sh
-echo "Linting..."
+
+echo "Auto-fixing lint issues..."
 cargo fix --allow-staged --allow-dirty
+
 echo "Formatting..."
 cargo fmt
+
+echo "Re-staging fixed files..."
+git add -u
+
+echo "Checking formatting is clean..."
+cargo fmt -- --check || {
+    echo "ERROR: cargo fmt produced changes that weren't staged"
+    exit 1
+}
+
+echo "Building..."
+cargo build || {
+    echo "ERROR: build failed"
+    exit 1
+}
+
+echo "Pre-commit checks passed."
