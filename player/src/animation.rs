@@ -44,8 +44,7 @@ impl FacingDirection {
         let angle = v.y.atan2(v.x);
         #[allow(clippy::as_conversions)] // f32→i32: no From impl; value is a small rounded int
         let octant = (angle / std::f32::consts::FRAC_PI_4).round() as i32;
-        let octant =
-            usize::try_from(octant.rem_euclid(8)).expect("rem_euclid(8) is always 0..=7");
+        let octant = usize::try_from(octant.rem_euclid(8)).expect("rem_euclid(8) is always 0..=7");
         match octant {
             0 => Self::East,
             1 => Self::NorthEast,

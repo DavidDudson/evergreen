@@ -81,103 +81,103 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<
         ));
 
     commands.entity(root).with_children(|parent| {
-            parent.spawn((
-                ImageNode::new(asset_server.load("sprites/ui/logo.webp")),
+        parent.spawn((
+            ImageNode::new(asset_server.load("sprites/ui/logo.webp")),
+            Node {
+                width: Val::Px(f32::from(LOGO_WIDTH_PX)),
+                height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
+                margin: UiRect::bottom(Val::Px(f32::from(LOGO_MARGIN_BOTTOM_PX))),
+                ..Node::default()
+            },
+        ));
+
+        parent
+            .spawn((
+                StartButton,
+                Button,
                 Node {
-                    width: Val::Px(f32::from(LOGO_WIDTH_PX)),
-                    height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
-                    margin: UiRect::bottom(Val::Px(f32::from(LOGO_MARGIN_BOTTOM_PX))),
+                    padding: UiRect::axes(
+                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
+                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
+                    ),
+                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
+                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
                     ..Node::default()
+                },
+                BorderColor::all(theme::ACCENT),
+                BackgroundColor(theme::BUTTON_BG),
+            ))
+            .with_child((
+                Text::new("Begin Journey"),
+                TextColor(theme::BUTTON_TEXT),
+                TextFont {
+                    font: fonts.0.clone(),
+                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
+                    ..default()
                 },
             ));
 
-            parent
-                .spawn((
-                    StartButton,
-                    Button,
-                    Node {
-                        padding: UiRect::axes(
-                            Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                            Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                        ),
-                        margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                        border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                        ..Node::default()
-                    },
-                    BorderColor::all(theme::ACCENT),
-                    BackgroundColor(theme::BUTTON_BG),
-                ))
-                .with_child((
-                    Text::new("Begin Journey"),
-                    TextColor(theme::BUTTON_TEXT),
-                    TextFont {
-                        font: fonts.0.clone(),
-                        font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                        ..default()
-                    },
-                ));
+        parent
+            .spawn((
+                LoreButton,
+                Button,
+                Node {
+                    padding: UiRect::axes(
+                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
+                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
+                    ),
+                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
+                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
+                    ..Node::default()
+                },
+                BorderColor::all(theme::ACCENT),
+                BackgroundColor(theme::BUTTON_BG),
+            ))
+            .with_child((
+                Text::new("Lore"),
+                TextColor(theme::BUTTON_TEXT),
+                TextFont {
+                    font: fonts.0.clone(),
+                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
+                    ..default()
+                },
+            ));
 
-            parent
-                .spawn((
-                    LoreButton,
-                    Button,
-                    Node {
-                        padding: UiRect::axes(
-                            Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                            Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                        ),
-                        margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                        border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                        ..Node::default()
-                    },
-                    BorderColor::all(theme::ACCENT),
-                    BackgroundColor(theme::BUTTON_BG),
-                ))
-                .with_child((
-                    Text::new("Lore"),
-                    TextColor(theme::BUTTON_TEXT),
-                    TextFont {
-                        font: fonts.0.clone(),
-                        font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                        ..default()
-                    },
-                ));
-
-            parent
-                .spawn((
-                    CreditsButton,
-                    Button,
-                    Node {
-                        padding: UiRect::axes(
-                            Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                            Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                        ),
-                        margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                        border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                        ..Node::default()
-                    },
-                    BorderColor::all(theme::ACCENT),
-                    BackgroundColor(theme::BUTTON_BG),
-                ))
-                .with_child((
-                    Text::new("Credits"),
-                    TextColor(theme::BUTTON_TEXT),
-                    TextFont {
-                        font: fonts.0.clone(),
-                        font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                        ..default()
-                    },
-                ));
-        });
+        parent
+            .spawn((
+                CreditsButton,
+                Button,
+                Node {
+                    padding: UiRect::axes(
+                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
+                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
+                    ),
+                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
+                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
+                    ..Node::default()
+                },
+                BorderColor::all(theme::ACCENT),
+                BackgroundColor(theme::BUTTON_BG),
+            ))
+            .with_child((
+                Text::new("Credits"),
+                TextColor(theme::BUTTON_TEXT),
+                TextFont {
+                    font: fonts.0.clone(),
+                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
+                    ..default()
+                },
+            ));
+    });
 }
 
 pub fn button_system(

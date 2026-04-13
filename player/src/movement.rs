@@ -63,11 +63,8 @@ pub fn move_player(
     };
 
     let terrain_mult = terrain_speed_mult(transform.translation.truncate(), &world);
-    let movement = direction
-        * f32::from(speed.0)
-        * f32::from(TILE_SIZE_PX)
-        * terrain_mult
-        * time.delta_secs();
+    let movement =
+        direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * terrain_mult * time.delta_secs();
     transform.translation += movement.extend(0.0);
 }
 

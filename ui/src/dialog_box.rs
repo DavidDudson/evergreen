@@ -77,10 +77,7 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
                 width: Val::Percent(BOX_WIDTH_PERCENT),
                 min_height: Val::Px(BOX_HEIGHT_PX),
                 flex_direction: FlexDirection::Column,
-                padding: UiRect::axes(
-                    Val::Px(BOX_PADDING_H_PX),
-                    Val::Px(BOX_PADDING_V_PX),
-                ),
+                padding: UiRect::axes(Val::Px(BOX_PADDING_H_PX), Val::Px(BOX_PADDING_V_PX)),
                 border: UiRect::all(Val::Px(BOX_BORDER_PX)),
                 border_radius: BorderRadius::all(Val::Px(BOX_RADIUS_PX)),
                 ..Node::default()
@@ -291,10 +288,7 @@ pub fn on_choices_ready(
 
 /// Handle choice button click and sync hover with keyboard selection.
 pub fn handle_choice_interaction(
-    mut interaction_q: Query<
-        (&Interaction, &ChoiceButton),
-        Changed<Interaction>,
-    >,
+    mut interaction_q: Query<(&Interaction, &ChoiceButton), Changed<Interaction>>,
     mut selected: ResMut<SelectedChoice>,
     mut writer: MessageWriter<ChoiceMade>,
     choice_q: Query<(Entity, &ChoiceButton)>,

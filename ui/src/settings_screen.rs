@@ -122,18 +122,49 @@ pub fn setup(mut commands: Commands, settings: Res<GameSettings>, fonts: Res<UiF
     commands.spawn((
         Text::new("Settings"),
         TextColor(theme::TITLE),
-        TextFont { font: font.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
-        Node { margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)), ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: TITLE_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
         ChildOf(root),
     ));
 
     spawn_section_header(&mut commands, root, "AUDIO", font.clone());
-    spawn_volume_row(&mut commands, root, "Master", VolumeDisplay::Master,
-        VolumeButton::MasterDown, VolumeButton::MasterUp, settings.master_volume, font.clone());
-    spawn_volume_row(&mut commands, root, "BGM", VolumeDisplay::Bgm,
-        VolumeButton::BgmDown, VolumeButton::BgmUp, settings.bgm_volume, font.clone());
-    spawn_volume_row(&mut commands, root, "SFX", VolumeDisplay::Sfx,
-        VolumeButton::SfxDown, VolumeButton::SfxUp, settings.sfx_volume, font.clone());
+    spawn_volume_row(
+        &mut commands,
+        root,
+        "Master",
+        VolumeDisplay::Master,
+        VolumeButton::MasterDown,
+        VolumeButton::MasterUp,
+        settings.master_volume,
+        font.clone(),
+    );
+    spawn_volume_row(
+        &mut commands,
+        root,
+        "BGM",
+        VolumeDisplay::Bgm,
+        VolumeButton::BgmDown,
+        VolumeButton::BgmUp,
+        settings.bgm_volume,
+        font.clone(),
+    );
+    spawn_volume_row(
+        &mut commands,
+        root,
+        "SFX",
+        VolumeDisplay::Sfx,
+        VolumeButton::SfxDown,
+        VolumeButton::SfxUp,
+        settings.sfx_volume,
+        font.clone(),
+    );
 
     spawn_section_header(&mut commands, root, "VIDEO", font.clone());
     spawn_fullscreen_row(&mut commands, root, settings.fullscreen, font.clone());
@@ -142,19 +173,42 @@ pub fn setup(mut commands: Commands, settings: Res<GameSettings>, fonts: Res<UiF
     spawn_lang_row(&mut commands, root, &settings.language, font.clone());
 
     // Bottom nav row
-    let nav = commands.spawn((
-        Node {
-            flex_direction: FlexDirection::Row,
-            align_items: AlignItems::Center,
-            margin: UiRect::top(Val::Px(NAV_MARGIN_TOP_PX)),
-            ..Node::default()
-        },
-        ChildOf(root),
-    )).id();
+    let nav = commands
+        .spawn((
+            Node {
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                margin: UiRect::top(Val::Px(NAV_MARGIN_TOP_PX)),
+                ..Node::default()
+            },
+            ChildOf(root),
+        ))
+        .id();
 
-    spawn_nav_btn(&mut commands, nav, KeybindsNavButton, "Key Bindings", theme::BUTTON_BG, font.clone());
-    spawn_nav_btn(&mut commands, nav, SettingsResetButton, "Reset Defaults", theme::DIALOG_CHOICE_BG, font.clone());
-    spawn_nav_btn(&mut commands, nav, SettingsBackButton, "Back", theme::DIALOG_CHOICE_BG, font);
+    spawn_nav_btn(
+        &mut commands,
+        nav,
+        KeybindsNavButton,
+        "Key Bindings",
+        theme::BUTTON_BG,
+        font.clone(),
+    );
+    spawn_nav_btn(
+        &mut commands,
+        nav,
+        SettingsResetButton,
+        "Reset Defaults",
+        theme::DIALOG_CHOICE_BG,
+        font.clone(),
+    );
+    spawn_nav_btn(
+        &mut commands,
+        nav,
+        SettingsBackButton,
+        "Back",
+        theme::DIALOG_CHOICE_BG,
+        font,
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -175,7 +229,10 @@ pub fn handle_volume_buttons(
 }
 
 pub fn handle_fullscreen_button(
-    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<FullscreenButton>)>,
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<FullscreenButton>),
+    >,
     mut settings: ResMut<GameSettings>,
 ) {
     for (interaction, mut bg) in &mut q {
@@ -188,7 +245,10 @@ pub fn handle_fullscreen_button(
 }
 
 pub fn handle_keybinds_nav(
-    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<KeybindsNavButton>)>,
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<KeybindsNavButton>),
+    >,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, mut bg) in &mut q {
@@ -201,7 +261,10 @@ pub fn handle_keybinds_nav(
 }
 
 pub fn handle_reset(
-    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<SettingsResetButton>)>,
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<SettingsResetButton>),
+    >,
     mut settings: ResMut<GameSettings>,
 ) {
     for (interaction, mut bg) in &mut q {
@@ -214,7 +277,10 @@ pub fn handle_reset(
 }
 
 pub fn handle_back(
-    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<SettingsBackButton>)>,
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<SettingsBackButton>),
+    >,
     mut next_state: ResMut<NextState<GameState>>,
     origin: Res<SettingsOrigin>,
 ) {
@@ -253,7 +319,11 @@ pub fn sync_displays(
     mut fs_q: Query<&mut Text, (With<FullscreenDisplay>, Without<VolumeDisplay>)>,
     mut lang_q: Query<
         &mut Text,
-        (With<LangDisplay>, Without<VolumeDisplay>, Without<FullscreenDisplay>),
+        (
+            With<LangDisplay>,
+            Without<VolumeDisplay>,
+            Without<FullscreenDisplay>,
+        ),
     >,
 ) {
     if !settings.is_changed() {
@@ -276,10 +346,7 @@ pub fn sync_displays(
 }
 
 /// Applies fullscreen setting to the Bevy window whenever settings change.
-pub fn apply_fullscreen(
-    settings: Res<GameSettings>,
-    mut window_q: Query<&mut Window>,
-) {
+pub fn apply_fullscreen(settings: Res<GameSettings>, mut window_q: Query<&mut Window>) {
     if !settings.is_changed() {
         return;
     }
@@ -323,8 +390,15 @@ fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str, f
     commands.spawn((
         Text::new("Language"),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
-        Node { flex_grow: 1.0, ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: LABEL_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            flex_grow: 1.0,
+            ..Node::default()
+        },
         ChildOf(row),
     ));
     spawn_step_btn(commands, row, LangButton::Prev, "<", font.clone());
@@ -332,7 +406,11 @@ fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str, f
         LangDisplay,
         Text::new(lang_display_name(current_code)),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font: font.clone(), font_size: VALUE_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font: font.clone(),
+            font_size: VALUE_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             min_width: Val::Px(VALUE_MIN_WIDTH_PX * 3.0),
             justify_content: JustifyContent::Center,
@@ -345,12 +423,20 @@ fn spawn_lang_row(commands: &mut Commands, parent: Entity, current_code: &str, f
 
 fn adjust_volume(settings: &mut GameSettings, btn: VolumeButton) {
     match btn {
-        VolumeButton::MasterDown => settings.master_volume = settings.master_volume.saturating_sub(1),
-        VolumeButton::MasterUp => settings.master_volume = settings.master_volume.saturating_add(1).min(MAX_VOLUME),
+        VolumeButton::MasterDown => {
+            settings.master_volume = settings.master_volume.saturating_sub(1)
+        }
+        VolumeButton::MasterUp => {
+            settings.master_volume = settings.master_volume.saturating_add(1).min(MAX_VOLUME)
+        }
         VolumeButton::BgmDown => settings.bgm_volume = settings.bgm_volume.saturating_sub(1),
-        VolumeButton::BgmUp => settings.bgm_volume = settings.bgm_volume.saturating_add(1).min(MAX_VOLUME),
+        VolumeButton::BgmUp => {
+            settings.bgm_volume = settings.bgm_volume.saturating_add(1).min(MAX_VOLUME)
+        }
         VolumeButton::SfxDown => settings.sfx_volume = settings.sfx_volume.saturating_sub(1),
-        VolumeButton::SfxUp => settings.sfx_volume = settings.sfx_volume.saturating_add(1).min(MAX_VOLUME),
+        VolumeButton::SfxUp => {
+            settings.sfx_volume = settings.sfx_volume.saturating_add(1).min(MAX_VOLUME)
+        }
     }
 }
 
@@ -358,11 +444,17 @@ fn spawn_section_header(commands: &mut Commands, parent: Entity, label: &str, fo
     commands.spawn((
         Text::new(label),
         TextColor(theme::ACCENT),
-        TextFont { font, font_size: SECTION_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font,
+            font_size: SECTION_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             margin: UiRect::new(
-                Val::ZERO, Val::ZERO,
-                Val::Px(SECTION_MARGIN_TOP_PX), Val::Px(SECTION_MARGIN_BOTTOM_PX),
+                Val::ZERO,
+                Val::ZERO,
+                Val::Px(SECTION_MARGIN_TOP_PX),
+                Val::Px(SECTION_MARGIN_BOTTOM_PX),
             ),
             ..Node::default()
         },
@@ -384,8 +476,15 @@ fn spawn_volume_row(
     commands.spawn((
         Text::new(label),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
-        Node { flex_grow: 1.0, ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: LABEL_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            flex_grow: 1.0,
+            ..Node::default()
+        },
         ChildOf(row),
     ));
     spawn_step_btn(commands, row, btn_down, "-", font.clone());
@@ -393,7 +492,11 @@ fn spawn_volume_row(
         display_marker,
         Text::new(format!("{value}")),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font: font.clone(), font_size: VALUE_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font: font.clone(),
+            font_size: VALUE_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             min_width: Val::Px(VALUE_MIN_WIDTH_PX),
             justify_content: JustifyContent::Center,
@@ -404,13 +507,25 @@ fn spawn_volume_row(
     spawn_step_btn(commands, row, btn_up, "+", font);
 }
 
-fn spawn_fullscreen_row(commands: &mut Commands, parent: Entity, fullscreen: bool, font: Handle<Font>) {
+fn spawn_fullscreen_row(
+    commands: &mut Commands,
+    parent: Entity,
+    fullscreen: bool,
+    font: Handle<Font>,
+) {
     let row = spawn_row(commands, parent);
     commands.spawn((
         Text::new("Fullscreen"),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
-        Node { flex_grow: 1.0, ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: LABEL_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            flex_grow: 1.0,
+            ..Node::default()
+        },
         ChildOf(row),
     ));
     commands
@@ -432,24 +547,30 @@ fn spawn_fullscreen_row(commands: &mut Commands, parent: Entity, fullscreen: boo
             FullscreenDisplay,
             Text::new(if fullscreen { "On" } else { "Off" }),
             TextColor(theme::DIALOG_SPEAKER),
-            TextFont { font, font_size: VALUE_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: VALUE_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 
 fn spawn_row(commands: &mut Commands, parent: Entity) -> Entity {
-    commands.spawn((
-        Node {
-            flex_direction: FlexDirection::Row,
-            align_items: AlignItems::Center,
-            min_height: Val::Px(ROW_HEIGHT_PX),
-            padding: UiRect::axes(Val::Px(ROW_PADDING_H_PX), Val::ZERO),
-            margin: UiRect::bottom(Val::Px(ROW_MARGIN_BOTTOM_PX)),
-            border_radius: BorderRadius::all(Val::Px(ROW_RADIUS_PX)),
-            ..Node::default()
-        },
-        BackgroundColor(theme::DIALOG_CHOICE_BG),
-        ChildOf(parent),
-    )).id()
+    commands
+        .spawn((
+            Node {
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                min_height: Val::Px(ROW_HEIGHT_PX),
+                padding: UiRect::axes(Val::Px(ROW_PADDING_H_PX), Val::ZERO),
+                margin: UiRect::bottom(Val::Px(ROW_MARGIN_BOTTOM_PX)),
+                border_radius: BorderRadius::all(Val::Px(ROW_RADIUS_PX)),
+                ..Node::default()
+            },
+            BackgroundColor(theme::DIALOG_CHOICE_BG),
+            ChildOf(parent),
+        ))
+        .id()
 }
 
 fn spawn_step_btn(
@@ -477,7 +598,11 @@ fn spawn_step_btn(
         .with_child((
             Text::new(label),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font, font_size: STEP_BTN_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: STEP_BTN_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 
@@ -507,6 +632,10 @@ fn spawn_nav_btn(
         .with_child((
             Text::new(label),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font, font_size: NAV_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: NAV_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }

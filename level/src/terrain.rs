@@ -30,8 +30,7 @@ pub fn wang_index(nw: bool, ne: bool, sw: bool, se: bool) -> u32 {
 ///
 /// Filled in from the PixelLab tileset metadata after generation.
 /// Placeholder: identity mapping (assumes 4-column sheet in Wang order).
-pub const WANG_TO_ATLAS: [u32; 16] =
-    [6, 7, 10, 9, 2, 11, 4, 15, 5, 14, 1, 8, 3, 0, 13, 12];
+pub const WANG_TO_ATLAS: [u32; 16] = [6, 7, 10, 9, 2, 11, 4, 15, 5, 14, 1, 8, 3, 0, 13, 12];
 
 /// Deterministic tile hash for scenery placement.
 ///

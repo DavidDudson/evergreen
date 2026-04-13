@@ -30,11 +30,7 @@ fn write_storage(key: &str, value: &str) -> Result<(), String> {
 fn read_storage(key: &str) -> Option<String> {
     use web_sys::window;
 
-    window()?
-        .local_storage()
-        .ok()??
-        .get_item(key)
-        .ok()?
+    window()?.local_storage().ok()??.get_item(key).ok()?
 }
 
 // --- Native (dev / test) ----------------------------------------------------
@@ -43,8 +39,7 @@ fn read_storage(key: &str) -> Option<String> {
 fn write_storage(_key: &str, value: &str) -> Result<(), String> {
     use std::fs;
     let path = native_path();
-    fs::create_dir_all(path.parent().expect("path has parent"))
-        .map_err(|e| e.to_string())?;
+    fs::create_dir_all(path.parent().expect("path has parent")).map_err(|e| e.to_string())?;
     fs::write(&path, value).map_err(|e| e.to_string())
 }
 

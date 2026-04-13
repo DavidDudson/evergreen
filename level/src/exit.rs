@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use models::layer::Layer;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
-use crate::spawning::{TILE_SIZE_PX, area_world_offset};
+use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::world::WorldMap;
 
 /// Size of the exit marker sprite (pixels).

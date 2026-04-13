@@ -85,10 +85,7 @@ pub fn sync_interact_icon(
     player_q: Query<Option<&DialogueTrigger>, With<Speed>>,
     mut state: ResMut<InteractIconState>,
 ) {
-    let target_npc = player_q
-        .single()
-        .ok()
-        .and_then(|opt| opt.map(|t| t.npc));
+    let target_npc = player_q.single().ok().and_then(|opt| opt.map(|t| t.npc));
 
     if target_npc == state.for_npc {
         return;

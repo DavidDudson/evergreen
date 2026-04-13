@@ -36,10 +36,7 @@ pub fn advance_npc_frame(
 
 /// Reset frame counter and timer speed when [`NpcAnimKind`] changes.
 pub fn reset_npc_anim_on_change(
-    mut query: Query<
-        (&NpcAnimKind, &mut NpcAnimFrame, &mut NpcAnimTimer),
-        Changed<NpcAnimKind>,
-    >,
+    mut query: Query<(&NpcAnimKind, &mut NpcAnimFrame, &mut NpcAnimTimer), Changed<NpcAnimKind>>,
 ) {
     for (kind, mut frame, mut timer) in &mut query {
         frame.0 = 0;

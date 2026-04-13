@@ -31,7 +31,7 @@ const HISTOGRAM_FRAMES: usize = 60;
 /// 60 fps target — bar colours are always relative to this so green = hitting 60.
 const TARGET_FRAME_MS: f32 = 1000.0 / 60.0;
 const BAR_WARN_MULT: f32 = 1.5; // >1.5× 60fps target → yellow
-const BAR_BAD_MULT: f32 = 2.5;  // >2.5× 60fps target → red
+const BAR_BAD_MULT: f32 = 2.5; // >2.5× 60fps target → red
 const GRAPH_SCALE_MULT: f32 = 4.0; // full bar height = 4× current frame time
 
 /// FPS thresholds for the FPS text colour. These remain absolute because
@@ -128,23 +128,58 @@ pub(crate) fn setup_overlay(mut commands: Commands, asset_server: Res<AssetServe
         ))
         .id();
 
-    spawn_label(&mut commands, root, font.clone(), "F3  PERF", palette::TITLE, HEADER_FONT_SIZE_PX);
+    spawn_label(
+        &mut commands,
+        root,
+        font.clone(),
+        "F3  PERF",
+        palette::TITLE,
+        HEADER_FONT_SIZE_PX,
+    );
 
-    commands.spawn((FpsText, Text::new("FPS  --"),
-        TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
-        TextColor(palette::BUTTON_TEXT), ChildOf(root),
+    commands.spawn((
+        FpsText,
+        Text::new("FPS  --"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
     ));
-    commands.spawn((FrameTimeText, Text::new("Frame  --ms  (-- / --)"),
-        TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
-        TextColor(palette::BUTTON_TEXT), ChildOf(root),
+    commands.spawn((
+        FrameTimeText,
+        Text::new("Frame  --ms  (-- / --)"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
     ));
-    commands.spawn((EntityCountText, Text::new("Entities  --"),
-        TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
-        TextColor(palette::BUTTON_TEXT), ChildOf(root),
+    commands.spawn((
+        EntityCountText,
+        Text::new("Entities  --"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
     ));
-    commands.spawn((AreaStatsText, Text::new("Area  --"),
-        TextFont { font: font.clone(), font_size: FONT_SIZE_PX, ..default() },
-        TextColor(palette::BUTTON_TEXT), ChildOf(root),
+    commands.spawn((
+        AreaStatsText,
+        Text::new("Area  --"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
     ));
 
     // Histogram
@@ -167,19 +202,41 @@ pub(crate) fn setup_overlay(mut commands: Commands, asset_server: Res<AssetServe
     for i in 0..HISTOGRAM_FRAMES {
         commands.spawn((
             HistogramBar(i),
-            Node { width: Val::Px(BAR_WIDTH_PX), height: Val::Px(0.0), ..Node::default() },
+            Node {
+                width: Val::Px(BAR_WIDTH_PX),
+                height: Val::Px(0.0),
+                ..Node::default()
+            },
             BackgroundColor(palette::PERF_GOOD),
             ChildOf(histogram),
         ));
     }
 
-    spawn_label(&mut commands, root, font, "Chrome DevTools > Performance > Record", palette::DIALOG_TEXT, HEADER_FONT_SIZE_PX);
+    spawn_label(
+        &mut commands,
+        root,
+        font,
+        "Chrome DevTools > Performance > Record",
+        palette::DIALOG_TEXT,
+        HEADER_FONT_SIZE_PX,
+    );
 }
 
-fn spawn_label(commands: &mut Commands, parent: Entity, font: Handle<Font>, text: &str, color: Color, size: f32) {
+fn spawn_label(
+    commands: &mut Commands,
+    parent: Entity,
+    font: Handle<Font>,
+    text: &str,
+    color: Color,
+    size: f32,
+) {
     commands.spawn((
         Text::new(text),
-        TextFont { font, font_size: size, ..default() },
+        TextFont {
+            font,
+            font_size: size,
+            ..default()
+        },
         TextColor(color),
         ChildOf(parent),
     ));
@@ -202,7 +259,11 @@ pub(crate) fn toggle_overlay(
     if state.visible {
         state.cache = DisplayCache::default();
     }
-    let display = if state.visible { Display::Flex } else { Display::None };
+    let display = if state.visible {
+        Display::Flex
+    } else {
+        Display::None
+    };
     for mut node in &mut overlay_q {
         node.display = display;
     }
@@ -213,10 +274,42 @@ pub(crate) fn update_overlay(
     diagnostics: Res<DiagnosticsStore>,
     mut state: ResMut<OverlayState>,
     world: Option<Res<WorldMap>>,
-    mut fps_q: Query<(&mut Text, &mut TextColor), (With<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>)>,
-    mut frame_q: Query<&mut Text, (With<FrameTimeText>, Without<FpsText>, Without<EntityCountText>, Without<AreaStatsText>)>,
-    mut entity_q: Query<&mut Text, (With<EntityCountText>, Without<FpsText>, Without<FrameTimeText>, Without<AreaStatsText>)>,
-    mut area_q: Query<&mut Text, (With<AreaStatsText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>)>,
+    mut fps_q: Query<
+        (&mut Text, &mut TextColor),
+        (
+            With<FpsText>,
+            Without<FrameTimeText>,
+            Without<EntityCountText>,
+            Without<AreaStatsText>,
+        ),
+    >,
+    mut frame_q: Query<
+        &mut Text,
+        (
+            With<FrameTimeText>,
+            Without<FpsText>,
+            Without<EntityCountText>,
+            Without<AreaStatsText>,
+        ),
+    >,
+    mut entity_q: Query<
+        &mut Text,
+        (
+            With<EntityCountText>,
+            Without<FpsText>,
+            Without<FrameTimeText>,
+            Without<AreaStatsText>,
+        ),
+    >,
+    mut area_q: Query<
+        &mut Text,
+        (
+            With<AreaStatsText>,
+            Without<FpsText>,
+            Without<FrameTimeText>,
+            Without<EntityCountText>,
+        ),
+    >,
     mut bar_q: Query<(&HistogramBar, &mut Node, &mut BackgroundColor)>,
 ) {
     // FPS — also derive the dynamic target frame time from the smoothed reading.
@@ -281,9 +374,7 @@ pub(crate) fn update_overlay(
     // Area stats — position, alignment, biome label
     if let Some(world) = &world {
         let pos = world.current;
-        let area_alignment = world
-            .get_area(pos)
-            .map_or(0, |a| a.alignment);
+        let area_alignment = world.get_area(pos).map_or(0, |a| a.alignment);
         let biome = biome_label(area_alignment);
         let new_str = format!("Area  ({}, {})  {biome} [{area_alignment}]", pos.x, pos.y);
         if state.cache.area_stats.as_deref() != Some(&new_str) {

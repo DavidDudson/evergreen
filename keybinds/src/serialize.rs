@@ -27,9 +27,7 @@ pub fn to_map(keybinds: &Keybinds) -> HashMap<String, String> {
 pub fn from_map(raw: &HashMap<String, String>) -> Keybinds {
     let mut keybinds = Keybinds::default();
     for (action_s, key_s) in raw {
-        if let (Some(action), Some(key)) =
-            (action_from_name(action_s), keycode_from_name(key_s))
-        {
+        if let (Some(action), Some(key)) = (action_from_name(action_s), keycode_from_name(key_s)) {
             keybinds.set(action, key);
         }
     }

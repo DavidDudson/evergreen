@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use models::player::Player;
-use models::reveal::{FullSprite, Revealable, RevealState, StumpSprite};
+use models::reveal::{FullSprite, RevealState, Revealable, StumpSprite};
 
 /// Distance north of entity base that triggers reveal (pixels).
 const REVEAL_TRIGGER_PX: f32 = 16.0;

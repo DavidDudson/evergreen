@@ -1,11 +1,11 @@
 use bevy::prelude::*;
-use models::game_states::{GameState, should_despawn_world};
+use models::game_states::{should_despawn_world, GameState};
 
 use crate::credits::{self, CreditsScreen};
 use crate::despawn::despawn_all;
-use crate::fonts;
 use crate::dialog_box::{self, DialogBox};
 use crate::focus;
+use crate::fonts;
 use crate::game_over_menu::{self, GameOverMenu};
 use crate::hud::{self, AlignmentBars, Hud};
 use crate::keybind_screen::{self, KeybindScreen};
@@ -31,19 +31,23 @@ impl Plugin for UiPlugin {
 
         // Playing HUD & minimap
         app.add_systems(
-                OnEnter(GameState::Playing),
-                (hud::setup, hud::setup_alignment_bars, minimap::setup),
+            OnEnter(GameState::Playing),
+            (hud::setup, hud::setup_alignment_bars, minimap::setup),
+        )
+        .add_systems(
+            OnExit(GameState::Playing),
+            (
+                despawn_all::<Hud>,
+                despawn_all::<AlignmentBars>,
+                minimap::despawn,
             )
-            .add_systems(
-                OnExit(GameState::Playing),
-                (despawn_all::<Hud>, despawn_all::<AlignmentBars>, minimap::despawn)
-                    .run_if(should_despawn_world),
-            )
-            .add_systems(
-                Update,
-                (hud::sync_petals, hud::sync_alignment_bars, minimap::refresh)
-                    .run_if(in_state(GameState::Playing)),
-            );
+                .run_if(should_despawn_world),
+        )
+        .add_systems(
+            Update,
+            (hud::sync_petals, hud::sync_alignment_bars, minimap::refresh)
+                .run_if(in_state(GameState::Playing)),
+        );
 
         // Game over
         app.add_systems(OnEnter(GameState::GameOver), game_over_menu::setup)
@@ -55,7 +59,10 @@ impl Plugin for UiPlugin {
             .add_systems(OnExit(GameState::Paused), despawn_all::<PauseMenu>)
             .add_systems(
                 Update,
-                (pause_menu::handle_resume, pause_menu::handle_settings_button)
+                (
+                    pause_menu::handle_resume,
+                    pause_menu::handle_settings_button,
+                )
                     .run_if(in_state(GameState::Paused)),
             );
 
@@ -117,7 +124,10 @@ impl Plugin for UiPlugin {
 
         // Keybind config screen
         app.add_systems(OnEnter(GameState::KeybindConfig), keybind_screen::setup)
-            .add_systems(OnExit(GameState::KeybindConfig), despawn_all::<KeybindScreen>)
+            .add_systems(
+                OnExit(GameState::KeybindConfig),
+                despawn_all::<KeybindScreen>,
+            )
             .add_systems(
                 Update,
                 (
@@ -140,8 +150,7 @@ impl Plugin for UiPlugin {
             )
             .add_systems(
                 Update,
-                level_complete::handle_play_again
-                    .run_if(in_state(GameState::LevelComplete)),
+                level_complete::handle_play_again.run_if(in_state(GameState::LevelComplete)),
             );
     }
 }

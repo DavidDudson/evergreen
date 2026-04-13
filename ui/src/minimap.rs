@@ -75,10 +75,7 @@ pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
 }
 
 /// Despawn all minimap elements when leaving the Playing state.
-pub fn despawn(
-    mut commands: Commands,
-    root_q: Query<Entity, With<MinimapRoot>>,
-) {
+pub fn despawn(mut commands: Commands, root_q: Query<Entity, With<MinimapRoot>>) {
     for entity in &root_q {
         commands.entity(entity).despawn();
     }
@@ -207,11 +204,7 @@ fn event_dot_color(event: &AreaEvent, area_pos: IVec2) -> Option<Color> {
 /// Return `(left, top, width, height)` for the connector rectangle that
 /// bridges the GAP between two adjacent cells in the given direction.
 /// Returns `None` when the connector would extend outside the container.
-fn connector_rect(
-    dir: Direction,
-    cell_left: u16,
-    cell_top: u16,
-) -> Option<(u16, u16, u16, u16)> {
+fn connector_rect(dir: Direction, cell_left: u16, cell_top: u16) -> Option<(u16, u16, u16, u16)> {
     let con_w = CELL_W_PX / 2;
     let con_h = CELL_H_PX / 2;
 

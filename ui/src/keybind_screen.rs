@@ -102,7 +102,11 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
     commands.spawn((
         Text::new("Key Bindings"),
         TextColor(theme::TITLE),
-        TextFont { font: font.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font: font.clone(),
+            font_size: TITLE_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
             ..Node::default()
@@ -120,7 +124,11 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
     commands.spawn((
         Text::new("Click a key button, then press the new key. Escape cancels."),
         TextColor(theme::DIALOG_SPEAKER),
-        TextFont { font: font.clone(), font_size: HINT_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font: font.clone(),
+            font_size: HINT_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             margin: UiRect::top(Val::Px(HINT_MARGIN_TOP_PX)),
             ..Node::default()
@@ -159,7 +167,11 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
         .with_child((
             Text::new("Back"),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font: font.clone(), font_size: BACK_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font: font.clone(),
+                font_size: BACK_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 
     // Reset All button
@@ -179,7 +191,11 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
         .with_child((
             Text::new("Reset All"),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font, font_size: RESET_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: RESET_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 
@@ -277,10 +293,7 @@ pub fn refresh_key_labels(
 }
 
 /// Refresh ALL key labels when keybinds change (covers reset_all).
-pub fn sync_all_labels(
-    keybinds: Res<Keybinds>,
-    mut label_q: Query<(&mut Text, &KeyButtonLabel)>,
-) {
+pub fn sync_all_labels(keybinds: Res<Keybinds>, mut label_q: Query<(&mut Text, &KeyButtonLabel)>) {
     if !keybinds.is_changed() {
         return;
     }
@@ -324,7 +337,11 @@ pub fn sync_remap_overlay(
                         a.action.label()
                     )),
                     TextColor(theme::DIALOG_TEXT),
-                    TextFont { font: fonts.0.clone(), font_size: OVERLAY_FONT_SIZE_PX, ..default() },
+                    TextFont {
+                        font: fonts.0.clone(),
+                        font_size: OVERLAY_FONT_SIZE_PX,
+                        ..default()
+                    },
                 ));
         }
         (None, true) => {
@@ -369,8 +386,15 @@ fn spawn_action_row(
     commands.spawn((
         Text::new(action.label()),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font: font.clone(), font_size: LABEL_FONT_SIZE_PX, ..default() },
-        Node { flex_grow: 1.0, ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: LABEL_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            flex_grow: 1.0,
+            ..Node::default()
+        },
         ChildOf(row),
     ));
 
@@ -394,7 +418,11 @@ fn spawn_action_row(
             KeyButtonLabel(action),
             Text::new(keycode_label(key).to_string()),
             TextColor(theme::DIALOG_SPEAKER),
-            TextFont { font: font.clone(), font_size: KEY_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font: font.clone(),
+                font_size: KEY_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 
     // Reset button
@@ -414,7 +442,11 @@ fn spawn_action_row(
         .with_child((
             Text::new("Reset"),
             TextColor(theme::DIALOG_TEXT),
-            TextFont { font, font_size: RESET_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: RESET_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 

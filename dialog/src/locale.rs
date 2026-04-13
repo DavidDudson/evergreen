@@ -1,4 +1,4 @@
-use bevy::asset::{Asset, AssetId, AssetLoader, LoadContext, io::Reader};
+use bevy::asset::{io::Reader, Asset, AssetId, AssetLoader, LoadContext};
 use bevy::prelude::*;
 use bevy::reflect::TypePath;
 use models::settings::GameSettings;
@@ -6,10 +6,7 @@ use std::collections::HashMap;
 
 /// All supported locales as `(code, display_name)` pairs.
 /// Add entries here when adding new locale files under `assets/locale/`.
-pub const AVAILABLE_LOCALES: &[(&str, &str)] = &[
-    ("en-US", "English"),
-    ("es-ES", "Espanol"),
-];
+pub const AVAILABLE_LOCALES: &[(&str, &str)] = &[("en-US", "English"), ("es-ES", "Espanol")];
 
 /// A flat key→string locale map loaded from a `.locale.ron` file.
 #[derive(Asset, TypePath, Debug, Default, Clone)]

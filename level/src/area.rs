@@ -119,7 +119,12 @@ impl Area {
     ) -> Self {
         let exits = pick_exits(required, &forbidden, seed, area_count);
         let grid = build_grid(&exits, alignment);
-        Self { exits, event: AreaEvent::None, alignment, grid }
+        Self {
+            exits,
+            event: AreaEvent::None,
+            alignment,
+            grid,
+        }
     }
 
     /// An impassable area filled entirely with grass (dense forest).
@@ -144,7 +149,6 @@ impl Area {
         let idx = (y * u32::from(MAP_WIDTH) + x) as usize;
         self.grid.get(idx).copied()
     }
-
 }
 
 // ---------------------------------------------------------------------------
@@ -184,22 +188,60 @@ fn pick_exits(
     let roll = rng % 100;
     let ideal: usize = if area_count < 6 {
         // Early: grow fast — prefer 3-4 exits.
-        if roll < 5 { 1 } else if roll < 25 { 2 } else if roll < 75 { 3 } else { 4 }
+        if roll < 5 {
+            1
+        } else if roll < 25 {
+            2
+        } else if roll < 75 {
+            3
+        } else {
+            4
+        }
     } else if area_count < 11 {
         // Growing: balanced toward 3.
-        if roll < 10 { 1 } else if roll < 40 { 2 } else if roll < 85 { 3 } else { 4 }
+        if roll < 10 {
+            1
+        } else if roll < 40 {
+            2
+        } else if roll < 85 {
+            3
+        } else {
+            4
+        }
     } else if area_count < 15 {
         // Middle: original 1-3 distribution.
-        if roll < 20 { 1 } else if roll < 60 { 2 } else if roll < 95 { 3 } else { 4 }
+        if roll < 20 {
+            1
+        } else if roll < 60 {
+            2
+        } else if roll < 95 {
+            3
+        } else {
+            4
+        }
     } else if area_count < 18 {
         // Tapering: mostly 1-2, rare 3.
-        if roll < 50 { 1 } else if roll < 90 { 2 } else { 3 }
+        if roll < 50 {
+            1
+        } else if roll < 90 {
+            2
+        } else {
+            3
+        }
     } else if area_count < 21 {
         // Near cap: dead-ends dominant.
-        if roll < 75 { 1 } else { 2 }
+        if roll < 75 {
+            1
+        } else {
+            2
+        }
     } else {
         // Hard cap zone: almost always a dead-end.
-        if roll < 95 { 1 } else { 2 }
+        if roll < 95 {
+            1
+        } else {
+            2
+        }
     };
     let target = ideal.max(exits.len()).min(exits.len() + optional.len());
     let n_to_add = target - exits.len();
@@ -272,10 +314,10 @@ fn build_grid(exits: &BTreeSet<Direction>, alignment: AreaAlignment) -> Vec<Terr
 fn path_extent(alignment: AreaAlignment) -> u32 {
     #[allow(clippy::as_conversions)]
     match alignment {
-        1..=25 => 5,   // City: wide open roads
-        26..=50 => 2,  // Greenwood: comfortable path
-        51..=65 => 1,  // Deep green: narrow 2-wide trail
-        _ => 0,        // Darkwood: single-tile track
+        1..=25 => 5,  // City: wide open roads
+        26..=50 => 2, // Greenwood: comfortable path
+        51..=65 => 1, // Deep green: narrow 2-wide trail
+        _ => 0,       // Darkwood: single-tile track
     }
 }
 
@@ -308,8 +350,12 @@ fn scatter_dirt_patches(grid: &mut [Terrain], w: u32, h: u32, alignment: AreaAli
 
         for dy in 0..=radius {
             for dx in 0..=(radius - dy) {
-                for &(sx, sy) in &[(px + dx, py + dy), (px.wrapping_sub(dx), py + dy),
-                                   (px + dx, py.wrapping_sub(dy)), (px.wrapping_sub(dx), py.wrapping_sub(dy))] {
+                for &(sx, sy) in &[
+                    (px + dx, py + dy),
+                    (px.wrapping_sub(dx), py + dy),
+                    (px + dx, py.wrapping_sub(dy)),
+                    (px.wrapping_sub(dx), py.wrapping_sub(dy)),
+                ] {
                     if sx < w && sy < h {
                         #[allow(clippy::as_conversions)]
                         let idx = (sy * w + sx) as usize;

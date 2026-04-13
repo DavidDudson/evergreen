@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use rand::seq::SliceRandom;
 
 use crate::asset::DialogueLine;
-use crate::components::BarkPool;
 use crate::asset::DialogueScript;
+use crate::components::BarkPool;
 use crate::events::BarkFired;
 
 /// System: fires a random bark from nearby NPCs with a [`BarkPool`].
@@ -53,6 +53,9 @@ pub fn tick_barks(
 
         let Some(text_key) = text_key else { continue };
 
-        writer.write(BarkFired { npc: entity, text_key });
+        writer.write(BarkFired {
+            npc: entity,
+            text_key,
+        });
     }
 }

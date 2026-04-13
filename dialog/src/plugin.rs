@@ -11,11 +11,11 @@ use crate::events::{
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
 use crate::locale::{
-    ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap, sync_language, sync_locale,
+    sync_language, sync_locale, ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap,
 };
 use crate::runner::{
-    DialogueRunner, DialogueTarget, advance_runner, detect_interact_input,
-    detect_interact_range, handle_choice, on_dialogue_ended, start_dialogue,
+    advance_runner, detect_interact_input, detect_interact_range, handle_choice, on_dialogue_ended,
+    start_dialogue, DialogueRunner, DialogueTarget,
 };
 
 pub struct DialogPlugin;

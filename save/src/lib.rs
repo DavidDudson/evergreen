@@ -1,6 +1,6 @@
 mod file;
 mod lore;
-mod storage;
 pub mod plugin;
+mod storage;
 
 pub use plugin::SavePlugin;

@@ -1,9 +1,8 @@
 mod credits;
 mod despawn;
-pub mod fonts;
-mod settings_screen;
 mod dialog_box;
 mod focus;
+pub mod fonts;
 mod game_over_menu;
 mod hud;
 mod keybind_screen;
@@ -13,5 +12,6 @@ mod main_menu;
 mod minimap;
 mod pause_menu;
 pub mod plugin;
+mod settings_screen;
 pub mod theme;
 pub mod window;

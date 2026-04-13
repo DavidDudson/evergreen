@@ -35,10 +35,7 @@ pub fn tile_size(width: Tile, height: Tile) -> Vec2 {
 /// World-space pixel offset for the centre of an area at `grid_pos`.
 pub fn area_world_offset(grid_pos: IVec2) -> Vec2 {
     #[allow(clippy::as_conversions)]
-    Vec2::new(
-        grid_pos.x as f32 * MAP_W_PX,
-        grid_pos.y as f32 * MAP_H_PX,
-    )
+    Vec2::new(grid_pos.x as f32 * MAP_W_PX, grid_pos.y as f32 * MAP_H_PX)
 }
 
 // ---------------------------------------------------------------------------
@@ -78,10 +75,24 @@ pub fn spawn_initial_areas(
     mut spawned: ResMut<SpawnedAreas>,
 ) {
     let current = world.current;
-    ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, current, &mut spawned);
+    ensure_area_spawned(
+        &mut commands,
+        &asset_server,
+        &mut atlas_layouts,
+        &world,
+        current,
+        &mut spawned,
+    );
     for offset in &NEIGHBOR_OFFSETS {
         let pos = current + *offset;
-        ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, pos, &mut spawned);
+        ensure_area_spawned(
+            &mut commands,
+            &asset_server,
+            &mut atlas_layouts,
+            &world,
+            pos,
+            &mut spawned,
+        );
     }
 }
 
@@ -98,10 +109,24 @@ pub fn ensure_neighbors_on_area_change(
         return;
     }
     let current = world.current;
-    ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, current, &mut spawned);
+    ensure_area_spawned(
+        &mut commands,
+        &asset_server,
+        &mut atlas_layouts,
+        &world,
+        current,
+        &mut spawned,
+    );
     for offset in &NEIGHBOR_OFFSETS {
         let pos = current + *offset;
-        ensure_area_spawned(&mut commands, &asset_server, &mut atlas_layouts, &world, pos, &mut spawned);
+        ensure_area_spawned(
+            &mut commands,
+            &asset_server,
+            &mut atlas_layouts,
+            &world,
+            pos,
+            &mut spawned,
+        );
     }
 }
 
@@ -154,13 +179,8 @@ fn spawn_area_tilemap(
 ) {
     let center_x = u32::from(MAP_WIDTH) / 2;
     let center_y = u32::from(MAP_HEIGHT) / 2;
-    let effective_alignment = blending::blended_alignment(
-        area.alignment,
-        center_x,
-        center_y,
-        area_pos,
-        world,
-    );
+    let effective_alignment =
+        blending::blended_alignment(area.alignment, center_x, center_y, area_pos, world);
     let texture: Handle<Image> = asset_server.load(terrain_tileset_path(effective_alignment));
     let base = area_world_offset(area_pos);
 
@@ -250,13 +270,7 @@ fn wang_tile_index(x: u32, y: u32, area_pos: IVec2, world: &WorldMap) -> u32 {
 }
 
 /// Wang tile index for an area not in the world map (dense forest fallback).
-fn wang_tile_index_local(
-    x: u32,
-    y: u32,
-    area: &Area,
-    area_pos: IVec2,
-    world: &WorldMap,
-) -> u32 {
+fn wang_tile_index_local(x: u32, y: u32, area: &Area, area_pos: IVec2, world: &WorldMap) -> u32 {
     let lx = i32::try_from(x).expect("x fits i32");
     let ly = i32::try_from(y).expect("y fits i32");
 
@@ -268,7 +282,8 @@ fn wang_tile_index_local(
                 return Some(t);
             }
         }
-        world.terrain_at_extended(area_pos, nx, ny)
+        world
+            .terrain_at_extended(area_pos, nx, ny)
             .or(Some(Terrain::Grass))
     };
 

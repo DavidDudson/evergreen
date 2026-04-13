@@ -1,4 +1,4 @@
-use bevy::asset::{Asset, AssetLoader, LoadContext, io::Reader};
+use bevy::asset::{io::Reader, Asset, AssetLoader, LoadContext};
 use bevy::reflect::TypePath;
 use models::alignment::AlignmentFaction;
 use serde::Deserialize;

@@ -160,7 +160,12 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     );
 
     // ── World Builder ──────────────────────────────────────────────────────
-    spawn_section_title(&mut commands, column, "Dungeon Master & World Builder", font.clone());
+    spawn_section_title(
+        &mut commands,
+        column,
+        "Dungeon Master & World Builder",
+        font.clone(),
+    );
     spawn_body(&mut commands, column, "Galen Graham", font.clone());
     spawn_body_italic(
         &mut commands,
@@ -174,10 +179,10 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     // ── Players ───────────────────────────────────────────────────────────
     spawn_section_title(&mut commands, column, "Players", font.clone());
     for (name, character) in [
-        ("Emma Donaldson",   "Drizella Tremaine"),
-        ("Jesse",            "Bigby"),
+        ("Emma Donaldson", "Drizella Tremaine"),
+        ("Jesse", "Bigby"),
         ("Brianna Merriman", "Mordred"),
-        ("David Dudson",     "Darian Sand & Briar Rose"),
+        ("David Dudson", "Darian Sand & Briar Rose"),
     ] {
         spawn_player_line(&mut commands, column, name, character, font.clone());
     }
@@ -191,7 +196,12 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     spawn_divider(&mut commands, column);
 
     // ── Pathfinder & D&D ──────────────────────────────────────────────────
-    spawn_section_title(&mut commands, column, "Paizo & Wizards of the Coast", font.clone());
+    spawn_section_title(
+        &mut commands,
+        column,
+        "Paizo & Wizards of the Coast",
+        font.clone(),
+    );
     spawn_body_italic(
         &mut commands,
         column,
@@ -202,7 +212,12 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     spawn_divider(&mut commands, column);
 
     // ── Fairy Tale Authors ────────────────────────────────────────────────
-    spawn_section_title(&mut commands, column, "The Authors of Fairy Tales", font.clone());
+    spawn_section_title(
+        &mut commands,
+        column,
+        "The Authors of Fairy Tales",
+        font.clone(),
+    );
     spawn_body_italic(
         &mut commands,
         column,
@@ -214,8 +229,15 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     commands.spawn((
         Text::new("✦  ✦  ✦"),
         TextColor(theme::ACCENT),
-        TextFont { font: font.clone(), font_size: CLOSING_FONT_SIZE_PX, ..default() },
-        Node { margin: UiRect::top(Val::Px(CLOSING_MARGIN_TOP_PX)), ..Node::default() },
+        TextFont {
+            font: font.clone(),
+            font_size: CLOSING_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::top(Val::Px(CLOSING_MARGIN_TOP_PX)),
+            ..Node::default()
+        },
         ChildOf(column),
     ));
 
@@ -245,7 +267,11 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
         .with_child((
             Text::new("Back"),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font, font_size: BACK_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: BACK_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }
 
@@ -267,9 +293,15 @@ pub fn sync_scrollbar(
     content_q: Query<&ComputedNode, With<CreditsContent>>,
     mut thumb_q: Query<&mut Node, With<CreditsScrollThumb>>,
 ) {
-    let Ok((scroll_computed, scroll_pos)) = scroll_q.single() else { return; };
-    let Ok(content_computed) = content_q.single() else { return; };
-    let Ok(mut thumb) = thumb_q.single_mut() else { return; };
+    let Ok((scroll_computed, scroll_pos)) = scroll_q.single() else {
+        return;
+    };
+    let Ok(content_computed) = content_q.single() else {
+        return;
+    };
+    let Ok(mut thumb) = thumb_q.single_mut() else {
+        return;
+    };
 
     let viewport_h = scroll_computed.size().y;
     let content_h = content_computed.size().y;
@@ -296,7 +328,11 @@ fn spawn_section_title(commands: &mut Commands, parent: Entity, text: &str, font
     commands.spawn((
         Text::new(text),
         TextColor(theme::TITLE),
-        TextFont { font, font_size: SECTION_TITLE_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font,
+            font_size: SECTION_TITLE_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             margin: UiRect {
                 top: Val::Px(SECTION_TITLE_MARGIN_TOP_PX),
@@ -313,8 +349,15 @@ fn spawn_body(commands: &mut Commands, parent: Entity, text: &str, font: Handle<
     commands.spawn((
         Text::new(text),
         TextColor(theme::BUTTON_TEXT),
-        TextFont { font, font_size: BODY_FONT_SIZE_PX, ..default() },
-        Node { margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)), ..Node::default() },
+        TextFont {
+            font,
+            font_size: BODY_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
         ChildOf(parent),
     ));
 }
@@ -323,8 +366,15 @@ fn spawn_body_italic(commands: &mut Commands, parent: Entity, text: &str, font: 
     commands.spawn((
         Text::new(text),
         TextColor(theme::DIALOG_TEXT),
-        TextFont { font, font_size: BODY_FONT_SIZE_PX, ..default() },
-        Node { margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)), ..Node::default() },
+        TextFont {
+            font,
+            font_size: BODY_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
         ChildOf(parent),
     ));
 }
@@ -339,8 +389,15 @@ fn spawn_player_line(
     commands.spawn((
         Text::new(format!("{name}  —  {character}")),
         TextColor(theme::BUTTON_TEXT),
-        TextFont { font, font_size: BODY_FONT_SIZE_PX, ..default() },
-        Node { margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)), ..Node::default() },
+        TextFont {
+            font,
+            font_size: BODY_FONT_SIZE_PX,
+            ..default()
+        },
+        Node {
+            margin: UiRect::bottom(Val::Px(BODY_LINE_MARGIN_BOTTOM_PX)),
+            ..Node::default()
+        },
         ChildOf(parent),
     ));
 }
@@ -357,8 +414,15 @@ fn spawn_text(
     commands.spawn((
         Text::new(text),
         TextColor(color),
-        TextFont { font, font_size, ..default() },
-        Node { margin, ..Node::default() },
+        TextFont {
+            font,
+            font_size,
+            ..default()
+        },
+        Node {
+            margin,
+            ..Node::default()
+        },
         ChildOf(parent),
     ));
 }

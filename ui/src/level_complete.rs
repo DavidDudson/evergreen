@@ -54,10 +54,7 @@ pub fn setup(mut commands: Commands, font: Res<UiFont>) {
         },
         TextColor(palette::BUTTON_TEXT),
         Node {
-            padding: UiRect::axes(
-                Val::Px(BUTTON_PADDING_H_PX),
-                Val::Px(BUTTON_PADDING_V_PX),
-            ),
+            padding: UiRect::axes(Val::Px(BUTTON_PADDING_H_PX), Val::Px(BUTTON_PADDING_V_PX)),
             ..Node::default()
         },
         BackgroundColor(palette::BUTTON_BG),

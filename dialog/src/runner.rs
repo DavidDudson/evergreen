@@ -6,9 +6,7 @@ use models::speed::Speed;
 
 use crate::asset::{DialogueLine, DialogueScript};
 use crate::components::{DialogueTrigger, Talker};
-use crate::events::{
-    ChoiceMade, ChoicesReady, DialogueEnded, DialogueLineReady, StartDialogue,
-};
+use crate::events::{ChoiceMade, ChoicesReady, DialogueEnded, DialogueLineReady, StartDialogue};
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
 use models::alignment::PlayerAlignment;
@@ -82,7 +80,9 @@ pub fn detect_interact_range(
 
     match (nearest, current_trigger) {
         (Some(npc), None) => {
-            commands.entity(player_entity).insert(DialogueTrigger { npc });
+            commands
+                .entity(player_entity)
+                .insert(DialogueTrigger { npc });
         }
         (None, Some(_)) => {
             commands.entity(player_entity).remove::<DialogueTrigger>();

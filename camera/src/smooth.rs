@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use level::area::{MAP_HEIGHT, MAP_WIDTH};
-use level::spawning::{TILE_SIZE_PX, area_world_offset};
+use level::spawning::{area_world_offset, TILE_SIZE_PX};
 use level::world::WorldMap;
 use player::Player;
 

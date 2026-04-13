@@ -4,12 +4,12 @@ use bevy::sprite::Anchor;
 use models::decoration::Biome;
 use models::layer::Layer;
 use models::palette;
-use models::reveal::{FullSprite, Revealable, RevealState, StumpSprite};
+use models::reveal::{FullSprite, RevealState, Revealable, StumpSprite};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
-use crate::spawning::{TILE_SIZE_PX, area_world_offset};
+use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
 
@@ -173,19 +173,13 @@ fn spawn_area_scenery(
             let hash = tile_hash(xu, yu, area_seed) % 100;
             let ed = edge_dist(x, y);
 
-            let effective_alignment = blending::blended_alignment(
-                area.alignment,
-                xu,
-                yu,
-                area_pos,
-                world,
-            );
+            let effective_alignment =
+                blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
             let threshold = tree_threshold(effective_alignment, ed);
 
             if hash < threshold && clear_for_tree(area, xu, yu) {
                 let pool = tree_pool(effective_alignment);
-                let variant =
-                    tile_hash(xu, yu, area_seed.wrapping_add(10)) % pool.len();
+                let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % pool.len();
                 let def = &pool[variant];
                 let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
                 let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;

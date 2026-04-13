@@ -4,7 +4,7 @@ use bevy::math::IVec2;
 use bevy::prelude::*;
 
 use crate::area::{
-    ALL_NPCS, Area, AreaAlignment, AreaEvent, Direction, MAP_HEIGHT, MAP_WIDTH, NpcKind,
+    Area, AreaAlignment, AreaEvent, Direction, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
 };
 use crate::terrain::Terrain;
 
@@ -107,8 +107,7 @@ impl WorldMap {
         ]);
         let origin_seed = map.area_seed(IVec2::ZERO);
         let origin_align = map.alignment_at(IVec2::ZERO);
-        let origin_area =
-            Area::generate(all_exits, BTreeSet::new(), origin_seed, 0, origin_align);
+        let origin_area = Area::generate(all_exits, BTreeSet::new(), origin_seed, 0, origin_align);
         map.areas.insert(IVec2::ZERO, origin_area);
 
         // Expand the entire map: keep generating neighbors until no new
@@ -133,12 +132,8 @@ impl WorldMap {
             .collect();
 
         // Pick start: dead end closest to player's alignment-preferred zone.
-        let start = pick_dead_end_for_alignment(
-            &dead_ends,
-            &map.zone_seeds,
-            dominant_alignment,
-            seed,
-        );
+        let start =
+            pick_dead_end_for_alignment(&dead_ends, &map.zone_seeds, dominant_alignment, seed);
         map.current = start;
         map.visited.insert(start);
         map.revealed.insert(start);
@@ -182,7 +177,12 @@ impl WorldMap {
     ///
     /// Coordinates outside the 32x18 area bounds wrap into the adjacent area.
     /// Returns `None` if the neighbouring area has not been generated yet.
-    pub fn terrain_at_extended(&self, area_pos: IVec2, local_x: i32, local_y: i32) -> Option<Terrain> {
+    pub fn terrain_at_extended(
+        &self,
+        area_pos: IVec2,
+        local_x: i32,
+        local_y: i32,
+    ) -> Option<Terrain> {
         let w = i32::from(MAP_WIDTH);
         let h = i32::from(MAP_HEIGHT);
 
@@ -239,13 +239,10 @@ impl WorldMap {
 
     /// Find the next unplaced NPC whose alignment range contains `alignment`.
     fn find_npc_for_alignment(&self, alignment: AreaAlignment) -> Option<&NpcKind> {
-        self.npc_pool
-            .iter()
-            .skip(self.npc_count)
-            .find(|npc| {
-                let (lo, hi) = npc.alignment_range();
-                alignment >= lo && alignment <= hi
-            })
+        self.npc_pool.iter().skip(self.npc_count).find(|npc| {
+            let (lo, hi) = npc.alignment_range();
+            alignment >= lo && alignment <= hi
+        })
     }
 
     /// Mark all exit-connected neighbors of `pos` as revealed on the minimap.
@@ -343,7 +340,12 @@ fn lcg(state: u64) -> u64 {
 
 /// Place biome zone seeds at random positions with random alignment anchors.
 fn generate_zone_seeds(seed: u64) -> Vec<ZoneSeed> {
-    let anchors = [ANCHOR_CITY, ANCHOR_LIGHT_GREEN, ANCHOR_DEEP_GREEN, ANCHOR_DARKWOOD];
+    let anchors = [
+        ANCHOR_CITY,
+        ANCHOR_LIGHT_GREEN,
+        ANCHOR_DEEP_GREEN,
+        ANCHOR_DARKWOOD,
+    ];
     let mut seeds = Vec::with_capacity(ZONE_SEED_COUNT);
     let mut rng = lcg(seed.wrapping_add(0xB10_E));
 
@@ -353,12 +355,12 @@ fn generate_zone_seeds(seed: u64) -> Vec<ZoneSeed> {
         for _ in 0..20 {
             rng = lcg(rng);
             #[allow(clippy::as_conversions)]
-            let x = (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32
-                - ZONE_RADIUS;
+            let x =
+                (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32 - ZONE_RADIUS;
             rng = lcg(rng);
             #[allow(clippy::as_conversions)]
-            let y = (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32
-                - ZONE_RADIUS;
+            let y =
+                (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32 - ZONE_RADIUS;
             pos = IVec2::new(x, y);
 
             let far_enough = seeds
@@ -404,7 +406,9 @@ fn alignment_from_zones(zones: &[ZoneSeed], pos: IVec2) -> AreaAlignment {
     // most ~30 (each jittering in opposite directions from the same anchor).
     let anchor = i16::from(nearest.alignment);
     #[allow(clippy::as_conversions)]
-    let raw = (anchor + jitter).clamp(anchor - 15, anchor + 15).clamp(1, 100) as u8;
+    let raw = (anchor + jitter)
+        .clamp(anchor - 15, anchor + 15)
+        .clamp(1, 100) as u8;
     raw
 }
 

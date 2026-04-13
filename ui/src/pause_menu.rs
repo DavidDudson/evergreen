@@ -45,7 +45,11 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     commands.spawn((
         Text::new("Paused"),
         TextColor(theme::TITLE),
-        TextFont { font: fonts.0.clone(), font_size: TITLE_FONT_SIZE_PX, ..default() },
+        TextFont {
+            font: fonts.0.clone(),
+            font_size: TITLE_FONT_SIZE_PX,
+            ..default()
+        },
         Node {
             margin: UiRect::bottom(Val::Px(TITLE_MARGIN_BOTTOM_PX)),
             ..Node::default()
@@ -54,14 +58,17 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     ));
 
     spawn_button(&mut commands, root, ResumeButton, "Resume", fonts.0.clone());
-    spawn_button(&mut commands, root, SettingsButton, "Settings", fonts.0.clone());
+    spawn_button(
+        &mut commands,
+        root,
+        SettingsButton,
+        "Settings",
+        fonts.0.clone(),
+    );
 }
 
 pub fn handle_resume(
-    mut q: Query<
-        (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<ResumeButton>),
-    >,
+    mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<ResumeButton>)>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, mut bg) in &mut q {
@@ -105,10 +112,7 @@ fn spawn_button(
             marker,
             Button,
             Node {
-                padding: UiRect::axes(
-                    Val::Px(BUTTON_PADDING_H_PX),
-                    Val::Px(BUTTON_PADDING_V_PX),
-                ),
+                padding: UiRect::axes(Val::Px(BUTTON_PADDING_H_PX), Val::Px(BUTTON_PADDING_V_PX)),
                 margin: UiRect::bottom(Val::Px(BUTTON_MARGIN_BOTTOM_PX)),
                 border: UiRect::all(Val::Px(BUTTON_BORDER_PX)),
                 border_radius: BorderRadius::all(Val::Px(BUTTON_RADIUS_PX)),
@@ -122,6 +126,10 @@ fn spawn_button(
         .with_child((
             Text::new(label),
             TextColor(theme::BUTTON_TEXT),
-            TextFont { font, font_size: BUTTON_FONT_SIZE_PX, ..default() },
+            TextFont {
+                font,
+                font_size: BUTTON_FONT_SIZE_PX,
+                ..default()
+            },
         ));
 }

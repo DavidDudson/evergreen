@@ -4,21 +4,17 @@ use crate::bindings::Keybinds;
 use crate::remap::{AwaitingRemap, CancelRemap, RemapCompleted, RequestRemap};
 
 /// Handles [`RequestRemap`]: begins listening for the next keypress.
-pub fn handle_request_remap(
-    mut events: MessageReader<RequestRemap>,
-    mut commands: Commands,
-) {
+pub fn handle_request_remap(mut events: MessageReader<RequestRemap>, mut commands: Commands) {
     let Some(event) = events.read().next() else {
         return;
     };
-    commands.insert_resource(AwaitingRemap { action: event.action });
+    commands.insert_resource(AwaitingRemap {
+        action: event.action,
+    });
 }
 
 /// Handles [`CancelRemap`]: removes the awaiting state.
-pub fn handle_cancel_remap(
-    mut events: MessageReader<CancelRemap>,
-    mut commands: Commands,
-) {
+pub fn handle_cancel_remap(mut events: MessageReader<CancelRemap>, mut commands: Commands) {
     if events.read().next().is_some() {
         commands.remove_resource::<AwaitingRemap>();
     }
@@ -49,5 +45,9 @@ pub fn capture_remap_key(
     let had_conflict = keybinds.conflicts(action, pressed);
     keybinds.set(action, pressed);
     commands.remove_resource::<AwaitingRemap>();
-    writer.write(RemapCompleted { action, key: pressed, had_conflict });
+    writer.write(RemapCompleted {
+        action,
+        key: pressed,
+        had_conflict,
+    });
 }

@@ -6,7 +6,7 @@ use keybinds::Keybinds;
 use models::settings::GameSettings;
 use serde::{Deserialize, Serialize};
 
-use crate::lore::{StoredLoreEntry, lore_book_to_stored, stored_to_lore_book};
+use crate::lore::{lore_book_to_stored, stored_to_lore_book, StoredLoreEntry};
 use crate::storage;
 
 // ---------------------------------------------------------------------------

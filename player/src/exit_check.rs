@@ -23,9 +23,7 @@ pub fn check_exit_overlap(
     let pp = player_tf.translation.truncate();
     let ep = exit_tf.translation.truncate();
 
-    if (pp.x - ep.x).abs() < EXIT_TRIGGER_HALF_PX
-        && (pp.y - ep.y).abs() < EXIT_TRIGGER_HALF_PX
-    {
+    if (pp.x - ep.x).abs() < EXIT_TRIGGER_HALF_PX && (pp.y - ep.y).abs() < EXIT_TRIGGER_HALF_PX {
         next_state.set(GameState::LevelComplete);
     }
 }

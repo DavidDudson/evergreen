@@ -63,8 +63,6 @@ impl Keybinds {
 
     /// Returns true if any OTHER action is already bound to `key`.
     pub fn conflicts(&self, action: Action, key: KeyCode) -> bool {
-        self.map
-            .iter()
-            .any(|(a, k)| *a != action && *k == key)
+        self.map.iter().any(|(a, k)| *a != action && *k == key)
     }
 }

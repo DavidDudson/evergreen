@@ -339,10 +339,7 @@ pub fn handle_category_buttons(
                 LoreTopicButton(topic_key.clone()),
                 Button,
                 Node {
-                    padding: UiRect::axes(
-                        Val::Px(TOPIC_PADDING_H_PX),
-                        Val::Px(TOPIC_PADDING_V_PX),
-                    ),
+                    padding: UiRect::axes(Val::Px(TOPIC_PADDING_H_PX), Val::Px(TOPIC_PADDING_V_PX)),
                     margin: UiRect::bottom(Val::Px(TOPIC_MARGIN_PX)),
                     border_radius: BorderRadius::all(Val::Px(TOPIC_RADIUS_PX)),
                     ..Node::default()

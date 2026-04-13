@@ -48,7 +48,12 @@ pub fn spawn_galen(
     if !existing.is_empty() {
         return;
     }
-    spawn_galen_entity(&mut commands, &asset_server, &mut atlas_layouts, world.current);
+    spawn_galen_entity(
+        &mut commands,
+        &asset_server,
+        &mut atlas_layouts,
+        world.current,
+    );
 }
 
 fn spawn_galen_entity(
@@ -144,4 +149,3 @@ pub fn despawn_galen(mut commands: Commands, q: Query<Entity, With<NpcGalen>>) {
         commands.entity(entity).despawn();
     }
 }
-

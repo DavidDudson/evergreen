@@ -10,7 +10,7 @@ use models::layer::Layer;
 use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 use models::scenery::SceneryCollider;
 
-use crate::area::{AreaEvent, MAP_HEIGHT, MAP_WIDTH, NpcKind};
+use crate::area::{AreaEvent, NpcKind, MAP_HEIGHT, MAP_WIDTH};
 use crate::npc_wander::NpcWander;
 use crate::spawning::TILE_SIZE_PX;
 
@@ -87,7 +87,14 @@ fn spawn_npc(
 }
 
 /// Returns (display_name, sheet_path, dialogue_script, bark_paths) for each NPC.
-fn npc_data(kind: NpcKind) -> (&'static str, &'static str, &'static str, &'static [&'static str]) {
+fn npc_data(
+    kind: NpcKind,
+) -> (
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static [&'static str],
+) {
     match kind {
         NpcKind::Mordred => (
             "Mordred",
@@ -210,7 +217,16 @@ fn npc_collider() -> SceneryCollider {
     }
 }
 
-fn npc_anim_bundle(origin: Vec2) -> (NpcFacing, NpcAnimKind, NpcSheet, NpcAnimFrame, NpcAnimTimer, NpcWander) {
+fn npc_anim_bundle(
+    origin: Vec2,
+) -> (
+    NpcFacing,
+    NpcAnimKind,
+    NpcSheet,
+    NpcAnimFrame,
+    NpcAnimTimer,
+    NpcWander,
+) {
     (
         NpcFacing::default(),
         NpcAnimKind::default(),

@@ -53,11 +53,7 @@ impl LoreBook {
 
     /// All unique categories that have at least one entry.
     pub fn categories(&self) -> Vec<LoreCategory> {
-        let mut cats: Vec<LoreCategory> = self
-            .entries
-            .iter()
-            .map(|e| e.category)
-            .collect();
+        let mut cats: Vec<LoreCategory> = self.entries.iter().map(|e| e.category).collect();
         cats.sort_by_key(|c| *c as u8);
         cats.dedup();
         cats
@@ -78,10 +74,7 @@ impl LoreBook {
 
     /// All entries for a given topic.
     pub fn entries_for_topic(&self, topic: &str) -> Vec<&LoreEntry> {
-        self.entries
-            .iter()
-            .filter(|e| e.topic == topic)
-            .collect()
+        self.entries.iter().filter(|e| e.topic == topic).collect()
     }
 
     /// Get the image path for a topic (from the first entry that has one).

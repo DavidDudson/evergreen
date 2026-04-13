@@ -114,7 +114,13 @@ pub fn setup_alignment_bars(
         AlignmentFaction::Darkwoods,
         AlignmentFaction::Cities,
     ] {
-        spawn_alignment_row(&mut commands, root, faction, alignment.get(faction), fonts.0.clone());
+        spawn_alignment_row(
+            &mut commands,
+            root,
+            faction,
+            alignment.get(faction),
+            fonts.0.clone(),
+        );
     }
 }
 
@@ -178,7 +184,11 @@ fn spawn_alignment_row(
 
     commands.spawn((
         Text::new(label),
-        TextFont { font, font_size: ALIGN_LABEL_FONT_PX, ..default() },
+        TextFont {
+            font,
+            font_size: ALIGN_LABEL_FONT_PX,
+            ..default()
+        },
         TextColor(palette::ALIGN_LABEL),
         Node {
             width: Val::Px(ALIGN_LABEL_WIDTH_PX),

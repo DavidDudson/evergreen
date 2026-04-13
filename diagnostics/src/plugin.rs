@@ -2,7 +2,9 @@ use bevy::diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}
 use bevy::prelude::*;
 
 #[cfg(debug_assertions)]
-use crate::overlay::{OverlayState, overlay_visible, setup_overlay, toggle_overlay, update_overlay};
+use crate::overlay::{
+    overlay_visible, setup_overlay, toggle_overlay, update_overlay, OverlayState,
+};
 
 pub struct DiagnosticsPlugin;
 

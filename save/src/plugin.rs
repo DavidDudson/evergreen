@@ -25,11 +25,7 @@ fn load_from_storage(
     }
 }
 
-fn save_on_change(
-    keybinds: Res<Keybinds>,
-    lore: Res<LoreBook>,
-    settings: Res<GameSettings>,
-) {
+fn save_on_change(keybinds: Res<Keybinds>, lore: Res<LoreBook>, settings: Res<GameSettings>) {
     if !keybinds.is_changed() && !lore.is_changed() && !settings.is_changed() {
         return;
     }

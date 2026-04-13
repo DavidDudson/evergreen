@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use models::game_states::{GameState, should_despawn_world};
+use models::game_states::{should_despawn_world, GameState};
 
 use crate::animation;
 use crate::collision;

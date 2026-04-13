@@ -48,6 +48,5 @@ pub fn reset_camera(
     let Ok(player_tf) = player_q.single() else {
         return;
     };
-    offset.dialogue_return =
-        cam_tf.translation.truncate() - player_tf.translation.truncate();
+    offset.dialogue_return = cam_tf.translation.truncate() - player_tf.translation.truncate();
 }

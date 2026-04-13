@@ -27,9 +27,6 @@ pub enum GameState {
 pub fn should_despawn_world(state: Res<State<GameState>>) -> bool {
     !matches!(
         state.get(),
-        GameState::Paused
-            | GameState::Dialogue
-            | GameState::KeybindConfig
-            | GameState::Settings
+        GameState::Paused | GameState::Dialogue | GameState::KeybindConfig | GameState::Settings
     )
 }

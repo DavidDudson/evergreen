@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::alignment::PlayerAlignment;
-use models::game_states::{GameState, should_despawn_world};
+use models::game_states::{should_despawn_world, GameState};
 
 use crate::bark_bubbles;
 use crate::decorations;
