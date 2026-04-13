@@ -19,7 +19,7 @@ use crate::world::WorldMap;
 // Galen stands on the N arm of the starting area (col 15, row 13).
 const GALEN_TILE_X: u16 = 15;
 const GALEN_TILE_Y: u16 = 13;
-const GALEN_Z: f32 = Layer::World.z_f32();
+const Y_SORT_SCALE: f32 = 0.001;
 const GALEN_SPRITE_SIZE_PX: f32 = 32.0;
 const GALEN_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const GALEN_QUESTION_COUNT: usize = 5;
@@ -123,11 +123,20 @@ fn galen_pos(start_area: IVec2) -> Vec3 {
     let base = crate::spawning::area_world_offset(start_area);
     let offset_x = base.x - (f32::from(MAP_WIDTH) * tile_px) / 2.0;
     let offset_y = base.y - (f32::from(MAP_HEIGHT) * tile_px) / 2.0;
+    let world_y = offset_y + f32::from(GALEN_TILE_Y) * tile_px + tile_px / 2.0;
     Vec3::new(
         offset_x + f32::from(GALEN_TILE_X) * tile_px + tile_px / 2.0,
-        offset_y + f32::from(GALEN_TILE_Y) * tile_px + tile_px / 2.0,
-        GALEN_Z,
+        world_y,
+        Layer::World.z_f32() - world_y * Y_SORT_SCALE,
     )
+}
+
+/// Update Galen's z-position for y-sort ordering.
+pub fn update_galen_z(mut query: Query<&mut Transform, With<NpcGalen>>) {
+    let Ok(mut tf) = query.single_mut() else {
+        return;
+    };
+    tf.translation.z = Layer::World.z_f32() - tf.translation.y * Y_SORT_SCALE;
 }
 
 pub fn despawn_galen(mut commands: Commands, q: Query<Entity, With<NpcGalen>>) {

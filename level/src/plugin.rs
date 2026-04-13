@@ -47,6 +47,8 @@ impl Plugin for LevelPlugin {
                     npc_anim::advance_npc_frame,
                     npc_anim::reset_npc_anim_on_change,
                     npc_wander::wander_npcs,
+                    npcs::update_npc_z,
+                    galen::update_galen_z,
                     bark_bubbles::spawn_bark_bubble,
                     bark_bubbles::tick_bark_bubbles,
                 )

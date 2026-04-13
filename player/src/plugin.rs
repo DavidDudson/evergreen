@@ -7,6 +7,7 @@ use crate::exit_check;
 use crate::movement;
 use crate::rustle;
 use crate::spawning;
+use crate::y_sort;
 
 pub use crate::spawning::Player;
 
@@ -25,6 +26,7 @@ impl Plugin for PlayerPlugin {
                     rustle::trigger_rustle,
                     movement::check_area_transition,
                     exit_check::check_exit_overlap,
+                    y_sort::update_player_z,
                 )
                     .chain()
                     .run_if(in_state(GameState::Playing)),

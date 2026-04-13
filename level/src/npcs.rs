@@ -18,7 +18,7 @@ use crate::spawning::TILE_SIZE_PX;
 const PATH_CENTER_X: u16 = 15;
 const PATH_CENTER_Y: u16 = 8;
 
-const NPC_Z: f32 = Layer::World.z_f32();
+const Y_SORT_SCALE: f32 = 0.001;
 const NPC_SPRITE_SIZE_PX: f32 = 32.0;
 const NPC_COLLIDER_HALF: Vec2 = Vec2::new(7.0, 7.0);
 const BARK_RADIUS_PX: f32 = 120.0;
@@ -156,11 +156,19 @@ fn tile_world_pos(tx: u16, ty: u16, base: Vec2) -> Vec3 {
     let tile_px = f32::from(TILE_SIZE_PX);
     let offset_x = base.x - (f32::from(MAP_WIDTH) * tile_px) / 2.0;
     let offset_y = base.y - (f32::from(MAP_HEIGHT) * tile_px) / 2.0;
+    let world_y = offset_y + f32::from(ty) * tile_px + tile_px / 2.0;
     Vec3::new(
         offset_x + f32::from(tx) * tile_px + tile_px / 2.0,
-        offset_y + f32::from(ty) * tile_px + tile_px / 2.0,
-        NPC_Z,
+        world_y,
+        Layer::World.z_f32() - world_y * Y_SORT_SCALE,
     )
+}
+
+/// Update NPC z-positions for y-sort ordering.
+pub fn update_npc_z(mut query: Query<&mut Transform, With<EventNpc>>) {
+    for mut tf in &mut query {
+        tf.translation.z = Layer::World.z_f32() - tf.translation.y * Y_SORT_SCALE;
+    }
 }
 
 fn bark_pool(asset_server: &AssetServer, paths: &[&'static str]) -> BarkPool {
