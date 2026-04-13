@@ -8,6 +8,7 @@ use models::layer::Layer;
 use models::tile::Tile;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::blending;
 use crate::decorations;
 use crate::npcs;
 use crate::scenery;
@@ -151,7 +152,16 @@ fn spawn_area_tilemap(
     area: &Area,
     area_pos: IVec2,
 ) {
-    let texture: Handle<Image> = asset_server.load(terrain_tileset_path(area.alignment));
+    let center_x = u32::from(MAP_WIDTH) / 2;
+    let center_y = u32::from(MAP_HEIGHT) / 2;
+    let effective_alignment = blending::blended_alignment(
+        area.alignment,
+        center_x,
+        center_y,
+        area_pos,
+        world,
+    );
+    let texture: Handle<Image> = asset_server.load(terrain_tileset_path(effective_alignment));
     let base = area_world_offset(area_pos);
 
     let map_size = TilemapSize {
