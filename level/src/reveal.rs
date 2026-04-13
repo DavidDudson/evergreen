@@ -9,15 +9,19 @@ const REVEAL_DURATION_SECS: f32 = 0.3;
 /// Triggers whenever the player's y > entity's y (player is "above" / behind it).
 pub fn detect_reveals(
     player_q: Query<&Transform, With<Player>>,
-    mut revealables: Query<(&Transform, &mut RevealState), (With<Revealable>, Without<Player>)>,
+    mut revealables: Query<(&Transform, &Revealable, &mut RevealState), Without<Player>>,
 ) {
     let Ok(player_tf) = player_q.single() else {
         return;
     };
-    let player_y = player_tf.translation.y;
+    let pp = player_tf.translation.truncate();
 
-    for (tf, mut state) in &mut revealables {
-        let behind = player_y > tf.translation.y;
+    for (tf, revealable, mut state) in &mut revealables {
+        let base = tf.translation.truncate();
+        // Player must be behind (higher y) AND within the sprite's visual width.
+        let behind = pp.y > base.y
+            && pp.y < base.y + revealable.canopy_height_px
+            && (pp.x - base.x).abs() < revealable.half_width_px;
 
         let next = match (&*state, behind) {
             (RevealState::Full, true) => Some(RevealState::Revealing(0.0)),
