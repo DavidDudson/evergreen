@@ -5,8 +5,11 @@ use models::reveal::{RevealState, Revealable};
 /// Duration of the crossfade transition (seconds).
 const REVEAL_DURATION_SECS: f32 = 0.3;
 
-/// Detect when the player is behind revealable entities and trigger transitions.
-/// Triggers whenever the player's y > entity's y (player is "above" / behind it).
+/// Offset from player center to feet (half the player sprite height).
+const PLAYER_FEET_OFFSET_PX: f32 = 16.0;
+
+/// Detect when the player overlaps a revealable entity and trigger transitions.
+/// Uses the player's feet position so even partial overlap triggers the fade.
 pub fn detect_reveals(
     player_q: Query<&Transform, With<Player>>,
     mut revealables: Query<(&Transform, &Revealable, &mut RevealState), Without<Player>>,
@@ -15,12 +18,13 @@ pub fn detect_reveals(
         return;
     };
     let pp = player_tf.translation.truncate();
+    let feet_y = pp.y - PLAYER_FEET_OFFSET_PX;
 
     for (tf, revealable, mut state) in &mut revealables {
         let base = tf.translation.truncate();
-        // Player must be behind (higher y) AND within the sprite's visual width.
-        let behind = pp.y > base.y
-            && pp.y < base.y + revealable.canopy_height_px
+        // Player's feet must be above the entity base, within the canopy height and sprite width.
+        let behind = feet_y > base.y
+            && feet_y < base.y + revealable.canopy_height_px
             && (pp.x - base.x).abs() < revealable.half_width_px;
 
         let next = match (&*state, behind) {

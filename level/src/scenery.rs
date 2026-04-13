@@ -15,8 +15,6 @@ use crate::world::WorldMap;
 // Trees are 48x64 px, anchored at BOTTOM_CENTER.
 const TREE_WIDTH_PX: f32 = 48.0;
 const TREE_HEIGHT_PX: f32 = 64.0;
-const STUMP_HEIGHT_PX: f32 = 32.0;
-
 // Trunk-only collider: roughly 1x1 tile at the base.
 const TREE_COLLIDER_HALF: Vec2 = Vec2::new(8.0, 8.0);
 const TREE_COLLIDER_OFFSET: Vec2 = Vec2::new(0.0, 4.0);
@@ -178,9 +176,9 @@ fn spawn_tree(
             center_offset: TREE_COLLIDER_OFFSET,
         },
         Revealable {
-            canopy_height_px: TREE_HEIGHT_PX - STUMP_HEIGHT_PX,
+            canopy_height_px: TREE_HEIGHT_PX,
             half_width_px: TREE_WIDTH_PX / 2.0,
-            revealed_full_alpha: 0.2,
+            revealed_full_alpha: 0.3,
         },
         RevealState::default(),
         Sprite {
