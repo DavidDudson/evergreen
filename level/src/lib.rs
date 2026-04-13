@@ -1,5 +1,6 @@
 pub mod area;
 pub mod bark_bubbles;
+pub mod blending;
 pub mod decorations;
 pub mod exit;
 pub mod galen;
