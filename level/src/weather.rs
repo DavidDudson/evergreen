@@ -5,7 +5,7 @@ use models::decoration::Biome;
 use models::layer::Layer;
 use models::time::GameClock;
 use models::weather::{ParticleVariant, WeatherKind, WeatherParticle, WeatherState};
-use models::wind::WindStrength;
+use models::wind::{WindDirection, WindStrength};
 
 use crate::world::WorldMap;
 
@@ -80,6 +80,7 @@ const ALL_WEATHER_KINDS: [WeatherKind; WEIGHT_COUNT] = [
 pub fn weather_state_machine(
     mut weather: ResMut<WeatherState>,
     wind: Res<WindStrength>,
+    mut wind_dir: ResMut<WindDirection>,
     clock: Res<GameClock>,
     world: Res<WorldMap>,
 ) {
@@ -131,6 +132,11 @@ pub fn weather_state_machine(
     weather.target_wind = wind_min + (wind_max - wind_min) * wind_frac;
     weather.wind_lerp_start = wind.0;
     weather.wind_lerp_remaining = WeatherState::WIND_LERP_DURATION_SECS;
+
+    // Pick a new random wind direction (radians, 0..2PI).
+    #[allow(clippy::as_conversions)]
+    let dir_frac = (seed.wrapping_add(137) % 1000) as f32 / 1000.0;
+    wind_dir.0 = dir_frac * std::f32::consts::TAU;
 }
 
 /// Smoothly lerp `WindStrength` toward the weather state's target.
@@ -159,6 +165,7 @@ pub fn spawn_weather_particles(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     weather: Res<WeatherState>,
+    wind_dir: Res<WindDirection>,
     camera_q: Query<&Transform, With<Camera2d>>,
     time: Res<Time>,
     world: Res<WorldMap>,
@@ -168,6 +175,7 @@ pub fn spawn_weather_particles(
     };
     let cam_pos = cam_tf.translation.truncate();
     let dt = time.delta_secs();
+    let dir = wind_dir.as_vec2();
 
     let alignment = world.get_area(world.current).map_or(50, |a| a.alignment);
 
@@ -186,7 +194,7 @@ pub fn spawn_weather_particles(
         let count = fractional_to_count(fractional, frame_seed);
         for i in 0..count {
             let s = frame_seed.wrapping_add(u32::try_from(i).unwrap_or(0));
-            spawn_leaf(&mut commands, &asset_server, cam_pos, s, alignment);
+            spawn_leaf(&mut commands, &asset_server, cam_pos, s, alignment, dir);
         }
     }
 
@@ -203,7 +211,7 @@ pub fn spawn_weather_particles(
             let s = frame_seed
                 .wrapping_add(u32::try_from(i).unwrap_or(0))
                 .wrapping_add(5555);
-            spawn_raindrop(&mut commands, &asset_server, cam_pos, s);
+            spawn_raindrop(&mut commands, &asset_server, cam_pos, s, dir);
         }
     }
 }
@@ -246,6 +254,7 @@ fn spawn_leaf(
     cam_pos: Vec2,
     seed: u32,
     alignment: u8,
+    wind_dir: Vec2,
 ) {
     let biome = Biome::from_alignment(alignment);
     let (path, variant) = match biome {
@@ -274,9 +283,12 @@ fn spawn_leaf(
         Layer::Weather.z_f32(),
     );
 
+    // Leaf drifts along wind direction + slight downward fall.
+    let velocity = wind_dir * speed + Vec2::new(0.0, -LEAF_FALL_SPEED_PX);
+
     commands.spawn((
         WeatherParticle {
-            velocity: Vec2::new(speed, -LEAF_FALL_SPEED_PX),
+            velocity,
             lifetime: Timer::from_seconds(LEAF_LIFETIME_SECS, TimerMode::Once),
             variant,
         },
@@ -288,15 +300,24 @@ fn spawn_leaf(
     ));
 }
 
-fn spawn_raindrop(commands: &mut Commands, asset_server: &AssetServer, cam_pos: Vec2, seed: u32) {
+fn spawn_raindrop(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    cam_pos: Vec2,
+    seed: u32,
+    wind_dir: Vec2,
+) {
     let x_offset = hash_f32(seed, VIEWPORT_HALF_W_PX);
     let y_top = cam_pos.y + VIEWPORT_HALF_H_PX;
 
     let pos = Vec3::new(cam_pos.x + x_offset, y_top, Layer::Weather.z_f32());
 
+    // Rain falls down with horizontal drift from wind direction.
+    let velocity = wind_dir * RAIN_DRIFT_SPEED_PX + Vec2::new(0.0, -RAIN_FALL_SPEED_PX);
+
     commands.spawn((
         WeatherParticle {
-            velocity: Vec2::new(RAIN_DRIFT_SPEED_PX, -RAIN_FALL_SPEED_PX),
+            velocity,
             lifetime: Timer::from_seconds(RAIN_LIFETIME_SECS, TimerMode::Once),
             variant: ParticleVariant::Raindrop,
         },

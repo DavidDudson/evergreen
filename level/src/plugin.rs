@@ -4,7 +4,7 @@ use models::alignment::PlayerAlignment;
 use models::game_states::{should_despawn_world, GameState};
 
 use models::weather::WeatherState;
-use models::wind::WindStrength;
+use models::wind::{WindDirection, WindStrength};
 
 use crate::bark_bubbles;
 use crate::creatures;
@@ -32,6 +32,7 @@ impl Plugin for LevelPlugin {
         app.init_resource::<InteractIconState>()
             .init_resource::<SpawnedAreas>()
             .init_resource::<WindStrength>()
+            .init_resource::<WindDirection>()
             .init_resource::<WeatherState>()
             .add_plugins(TilemapPlugin)
             .add_message::<AreaChanged>()

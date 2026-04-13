@@ -12,7 +12,7 @@ use level::world::WorldMap;
 use models::palette;
 use models::time::GameClock;
 use models::weather::WeatherState;
-use models::wind::WindStrength;
+use models::wind::{WindDirection, WindStrength};
 use std::collections::VecDeque;
 
 // ---------------------------------------------------------------------------
@@ -310,6 +310,7 @@ pub(crate) fn update_overlay(
     clock: Option<Res<GameClock>>,
     weather: Option<Res<WeatherState>>,
     wind: Option<Res<WindStrength>>,
+    wind_dir: Option<Res<WindDirection>>,
     mut fps_q: Query<
         (&mut Text, &mut TextColor),
         (
@@ -443,8 +444,9 @@ pub(crate) fn update_overlay(
     // Weather and wind
     if let Some(weather) = &weather {
         let wind_val = wind.as_ref().map_or(0.0, |w| w.0);
+        let dir_label = wind_dir.as_ref().map_or("--", |d| d.label());
         let kind = weather_label(weather.current);
-        let new_str = format!("Weather  {kind}  Wind {wind_val:.2}");
+        let new_str = format!("Weather  {kind}  Wind {wind_val:.2} {dir_label}");
         if state.cache.weather.as_deref() != Some(&new_str) {
             if let Ok(mut text) = weather_q.single_mut() {
                 *text = Text::new(new_str.clone());
