@@ -294,7 +294,7 @@ pub fn creature_state_transitions(
 
         // Timer-based transitions for Idle and Wander.
         ai.timer.tick(time.delta());
-        if ai.timer.finished() {
+        if ai.timer.just_finished() {
             let seed = ai.next_seed();
             match &ai.state {
                 CreatureState::Idle => {

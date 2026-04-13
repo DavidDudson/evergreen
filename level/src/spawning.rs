@@ -9,6 +9,7 @@ use models::tile::Tile;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
+use crate::creatures;
 use crate::decorations;
 use crate::grass;
 use crate::npcs;
@@ -168,6 +169,7 @@ fn ensure_area_spawned(
     scenery::spawn_area_scenery_at(commands, asset_server, area, area_pos, world);
     decorations::spawn_area_decorations(commands, asset_server, area, area_pos, world);
     grass::spawn_area_grass(commands, asset_server, area, area_pos, world);
+    creatures::spawn_area_creatures(commands, asset_server, area, area_pos, world);
     npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, area, area_pos);
     spawned.0.insert(area_pos);
 }

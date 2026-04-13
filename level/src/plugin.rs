@@ -7,6 +7,7 @@ use models::weather::WeatherState;
 use models::wind::WindStrength;
 
 use crate::bark_bubbles;
+use crate::creatures;
 use crate::decorations;
 use crate::exit;
 use crate::galen;
@@ -70,6 +71,16 @@ impl Plugin for LevelPlugin {
                     .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
+                Update,
+                (
+                    creatures::creature_state_transitions,
+                    creatures::creature_movement,
+                    creatures::creature_animation,
+                    creatures::creature_flying_bob,
+                )
+                    .run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
                 OnExit(GameState::Playing),
                 (
                     spawning::despawn_all_areas,
@@ -80,6 +91,7 @@ impl Plugin for LevelPlugin {
                     exit::despawn_exit,
                     weather::despawn_weather_particles,
                     grass::despawn_grass,
+                    creatures::despawn_creatures,
                 )
                     .run_if(should_despawn_world),
             );
