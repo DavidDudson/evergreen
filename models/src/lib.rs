@@ -21,3 +21,5 @@ pub mod speed;
 pub mod textured;
 pub mod tile;
 pub mod time;
+pub mod weather;
+pub mod wind;
