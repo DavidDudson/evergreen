@@ -10,6 +10,9 @@ use bevy::diagnostic::{
 use bevy::prelude::*;
 use level::world::WorldMap;
 use models::palette;
+use models::time::GameClock;
+use models::weather::WeatherState;
+use models::wind::WindStrength;
 use std::collections::VecDeque;
 
 // ---------------------------------------------------------------------------
@@ -64,6 +67,12 @@ pub(crate) struct EntityCountText;
 pub(crate) struct AreaStatsText;
 
 #[derive(Component)]
+pub(crate) struct TimeOfDayText;
+
+#[derive(Component)]
+pub(crate) struct WeatherText;
+
+#[derive(Component)]
 pub(crate) struct HistogramBar(usize);
 
 /// Cached display values — only write Text/Node when the rounded value changes
@@ -74,6 +83,8 @@ struct DisplayCache {
     frame_time: Option<String>,
     entity_count: Option<String>,
     area_stats: Option<String>,
+    time_of_day: Option<String>,
+    weather: Option<String>,
 }
 
 #[derive(Resource)]
@@ -181,6 +192,28 @@ pub(crate) fn setup_overlay(mut commands: Commands, asset_server: Res<AssetServe
         TextColor(palette::BUTTON_TEXT),
         ChildOf(root),
     ));
+    commands.spawn((
+        TimeOfDayText,
+        Text::new("Time  --:--"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
+    ));
+    commands.spawn((
+        WeatherText,
+        Text::new("Weather  --"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
+    ));
 
     // Histogram
     let histogram = commands
@@ -274,6 +307,9 @@ pub(crate) fn update_overlay(
     diagnostics: Res<DiagnosticsStore>,
     mut state: ResMut<OverlayState>,
     world: Option<Res<WorldMap>>,
+    clock: Option<Res<GameClock>>,
+    weather: Option<Res<WeatherState>>,
+    wind: Option<Res<WindStrength>>,
     mut fps_q: Query<
         (&mut Text, &mut TextColor),
         (
@@ -310,6 +346,8 @@ pub(crate) fn update_overlay(
             Without<EntityCountText>,
         ),
     >,
+    mut tod_q: Query<&mut Text, (With<TimeOfDayText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>, Without<WeatherText>)>,
+    mut weather_q: Query<&mut Text, (With<WeatherText>, Without<FpsText>, Without<FrameTimeText>, Without<EntityCountText>, Without<AreaStatsText>, Without<TimeOfDayText>)>,
     mut bar_q: Query<(&HistogramBar, &mut Node, &mut BackgroundColor)>,
 ) {
     // FPS — also derive the dynamic target frame time from the smoothed reading.
@@ -385,6 +423,36 @@ pub(crate) fn update_overlay(
         }
     }
 
+    // Time of day
+    if let Some(clock) = &clock {
+        let hour = clock.hour;
+        #[allow(clippy::as_conversions)]
+        let h = hour as u32;
+        #[allow(clippy::as_conversions)]
+        let m = ((hour - h as f32) * 60.0) as u32;
+        let period = time_period_label(hour);
+        let new_str = format!("Time  {h:02}:{m:02}  {period}");
+        if state.cache.time_of_day.as_deref() != Some(&new_str) {
+            if let Ok(mut text) = tod_q.single_mut() {
+                *text = Text::new(new_str.clone());
+            }
+            state.cache.time_of_day = Some(new_str);
+        }
+    }
+
+    // Weather and wind
+    if let Some(weather) = &weather {
+        let wind_val = wind.as_ref().map_or(0.0, |w| w.0);
+        let kind = weather_label(weather.current);
+        let new_str = format!("Weather  {kind}  Wind {wind_val:.2}");
+        if state.cache.weather.as_deref() != Some(&new_str) {
+            if let Ok(mut text) = weather_q.single_mut() {
+                *text = Text::new(new_str.clone());
+            }
+            state.cache.weather = Some(new_str);
+        }
+    }
+
     // Histogram bars — scale and colour relative to the live target frame time.
     // Only mutate components whose value changed to avoid Bevy marking all
     // 60 bar entities dirty every frame.
@@ -431,5 +499,29 @@ fn biome_label(alignment: u8) -> &'static str {
         51..=75 => "Deep Green",
         76..=100 => "Darkwood",
         _ => "Unknown",
+    }
+}
+
+fn time_period_label(hour: f32) -> &'static str {
+    match hour {
+        h if h < 5.0 => "Night",
+        h if h < 7.0 => "Dawn",
+        h if h < 11.0 => "Morning",
+        h if h < 14.0 => "Midday",
+        h if h < 17.0 => "Afternoon",
+        h if h < 19.0 => "Dusk",
+        h if h < 22.0 => "Evening",
+        _ => "Night",
+    }
+}
+
+fn weather_label(kind: models::weather::WeatherKind) -> &'static str {
+    use models::weather::WeatherKind;
+    match kind {
+        WeatherKind::Clear => "Clear",
+        WeatherKind::Breezy => "Breezy",
+        WeatherKind::Windy => "Windy",
+        WeatherKind::Rain => "Rain",
+        WeatherKind::Storm => "Storm",
     }
 }
