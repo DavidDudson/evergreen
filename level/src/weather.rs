@@ -193,7 +193,7 @@ pub fn spawn_weather_particles(
         let fractional = rate * dt;
         let count = fractional_to_count(fractional, frame_seed);
         for i in 0..count {
-            let s = frame_seed.wrapping_add(u32::try_from(i).unwrap_or(0));
+            let s = frame_seed.wrapping_add(i);
             spawn_leaf(&mut commands, &asset_server, cam_pos, s, alignment, dir);
         }
     }
@@ -208,9 +208,7 @@ pub fn spawn_weather_particles(
         let fractional = rate * dt;
         let count = fractional_to_count(fractional, frame_seed.wrapping_add(7777));
         for i in 0..count {
-            let s = frame_seed
-                .wrapping_add(u32::try_from(i).unwrap_or(0))
-                .wrapping_add(5555);
+            let s = frame_seed.wrapping_add(i).wrapping_add(5555);
             spawn_raindrop(&mut commands, &asset_server, cam_pos, s, dir);
         }
     }

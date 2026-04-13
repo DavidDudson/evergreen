@@ -347,7 +347,7 @@ fn generate_zone_seeds(seed: u64) -> Vec<ZoneSeed> {
         ANCHOR_DARKWOOD,
     ];
     let mut seeds = Vec::with_capacity(ZONE_SEED_COUNT);
-    let mut rng = lcg(seed.wrapping_add(0xB10_E));
+    let mut rng = lcg(seed.wrapping_add(0xB10E));
 
     for i in 0..ZONE_SEED_COUNT {
         // Try up to 20 times to find a position far enough from existing seeds.

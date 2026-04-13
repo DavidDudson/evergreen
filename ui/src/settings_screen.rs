@@ -228,6 +228,7 @@ pub fn handle_volume_buttons(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_fullscreen_button(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),
@@ -244,6 +245,7 @@ pub fn handle_fullscreen_button(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_keybinds_nav(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),
@@ -260,6 +262,7 @@ pub fn handle_keybinds_nav(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_reset(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),
@@ -276,6 +279,7 @@ pub fn handle_reset(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_back(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),
@@ -313,6 +317,7 @@ pub fn handle_lang_buttons(
 }
 
 /// Keeps all display labels in sync with [`GameSettings`].
+#[allow(clippy::type_complexity)]
 pub fn sync_displays(
     settings: Res<GameSettings>,
     mut vol_q: Query<(&mut Text, &VolumeDisplay)>,
@@ -462,6 +467,7 @@ fn spawn_section_header(commands: &mut Commands, parent: Entity, label: &str, fo
     ));
 }
 
+#[allow(clippy::too_many_arguments)]
 fn spawn_volume_row(
     commands: &mut Commands,
     parent: Entity,

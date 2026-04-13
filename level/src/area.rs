@@ -273,7 +273,7 @@ fn build_grid(exits: &BTreeSet<Direction>, alignment: AreaAlignment) -> Vec<Terr
 
     for y in 0..h {
         for x in 0..w {
-            if is_dirt(x, y, &exits, extent) {
+            if is_dirt(x, y, exits, extent) {
                 #[allow(clippy::as_conversions)]
                 let idx = (y * w + x) as usize;
                 grid[idx] = Terrain::Dirt;

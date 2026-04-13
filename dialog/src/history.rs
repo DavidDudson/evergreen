@@ -19,42 +19,26 @@ impl LoreBook {
 
     /// Adds or merges an entry. If the script has been seen before,
     /// newly encountered `lines_seen` keys are appended (for branching scripts).
-    pub fn record(
-        &mut self,
-        script_id: impl Into<String>,
-        speaker_key: impl Into<String>,
-        keyword_tags: Vec<String>,
-        category: LoreCategory,
-        topic: impl Into<String>,
-        image: Option<String>,
-        lines_seen: Vec<String>,
-        game_time: f32,
-    ) {
-        let id = script_id.into();
-        if let Some(existing) = self.entries.iter_mut().find(|e| e.script_id == id) {
-            for line in lines_seen {
+    pub fn record(&mut self, entry: LoreEntry) {
+        if let Some(existing) = self
+            .entries
+            .iter_mut()
+            .find(|e| e.script_id == entry.script_id)
+        {
+            for line in entry.lines_seen {
                 if !existing.lines_seen.contains(&line) {
                     existing.lines_seen.push(line);
                 }
             }
         } else {
-            self.entries.push(LoreEntry {
-                script_id: id,
-                speaker_key: speaker_key.into(),
-                keyword_tags,
-                category,
-                topic: topic.into(),
-                image,
-                lines_seen,
-                game_time,
-            });
+            self.entries.push(entry);
         }
     }
 
     /// All unique categories that have at least one entry.
     pub fn categories(&self) -> Vec<LoreCategory> {
         let mut cats: Vec<LoreCategory> = self.entries.iter().map(|e| e.category).collect();
-        cats.sort_by_key(|c| *c as u8);
+        cats.sort();
         cats.dedup();
         cats
     }

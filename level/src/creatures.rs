@@ -264,6 +264,7 @@ pub fn spawn_area_creatures(
 // ---------------------------------------------------------------------------
 
 /// Transition creature AI states based on timers and player proximity.
+#[allow(clippy::type_complexity)]
 pub fn creature_state_transitions(
     time: Res<Time>,
     player_q: Query<&Transform, With<Player>>,
@@ -316,6 +317,7 @@ pub fn creature_state_transitions(
 }
 
 /// Apply movement velocity to creatures based on their AI state.
+#[allow(clippy::type_complexity)]
 pub fn creature_movement(
     time: Res<Time>,
     player_q: Query<&Transform, With<Player>>,

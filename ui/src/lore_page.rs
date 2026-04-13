@@ -288,6 +288,7 @@ pub fn handle_back_button(
         .for_each(|_| next_state.set(GameState::MainMenu));
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn handle_category_buttons(
     mut interaction_q: Query<
         (&Interaction, &LoreCategoryButton, &mut BackgroundColor),
@@ -378,6 +379,7 @@ pub fn handle_category_buttons(
     ));
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn handle_topic_buttons(
     mut interaction_q: Query<
         (&Interaction, &LoreTopicButton, &mut BackgroundColor),

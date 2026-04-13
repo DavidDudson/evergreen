@@ -23,7 +23,10 @@ impl TryFrom<u8> for Terrain {
 /// A bit is 1 (grass) if a majority (≥2) of the 4 tiles sharing that vertex
 /// are grass. Grass wins on a 2-vs-2 tie.
 pub fn wang_index(nw: bool, ne: bool, sw: bool, se: bool) -> u32 {
-    (nw as u32) << 3 | (ne as u32) << 2 | (sw as u32) << 1 | (se as u32)
+    // bool-to-u32: safe, always yields 0 or 1.
+    #[allow(clippy::as_conversions)]
+    let (nw, ne, sw, se) = (nw as u32, ne as u32, sw as u32, se as u32);
+    nw << 3 | ne << 2 | sw << 1 | se
 }
 
 /// Maps Wang index (0–15) to the bevy_ecs_tilemap texture atlas index.

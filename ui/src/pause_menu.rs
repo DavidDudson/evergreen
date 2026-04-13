@@ -67,6 +67,7 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     );
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_resume(
     mut q: Query<(&Interaction, &mut BackgroundColor), (Changed<Interaction>, With<ResumeButton>)>,
     mut next_state: ResMut<NextState<GameState>>,
@@ -80,6 +81,7 @@ pub fn handle_resume(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub fn handle_settings_button(
     mut q: Query<
         (&Interaction, &mut BackgroundColor),

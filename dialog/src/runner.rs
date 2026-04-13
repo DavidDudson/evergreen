@@ -28,7 +28,9 @@ pub struct DialogueRunner {
     pub(crate) state: RunnerState,
 }
 
+#[derive(Default)]
 pub(crate) enum RunnerState {
+    #[default]
     Idle,
     Running {
         script: DialogueScript,
@@ -43,18 +45,13 @@ pub(crate) enum RunnerState {
     },
 }
 
-impl Default for RunnerState {
-    fn default() -> Self {
-        Self::Idle
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Systems (Playing state)
 // ---------------------------------------------------------------------------
 
 /// Detects when the player is in range of a Talker and marks them with
 /// [`DialogueTrigger`]. Removes the marker when out of range.
+#[allow(clippy::type_complexity)]
 pub fn detect_interact_range(
     talker_q: Query<(Entity, &GlobalTransform), With<Talker>>,
     player_q: Query<(Entity, &GlobalTransform), (With<Speed>, Without<Talker>)>,
@@ -306,16 +303,16 @@ pub fn on_dialogue_ended(
     {
         // Only record scripts that have lore metadata.
         if let Some(ref lore) = script.lore {
-            lore_book.record(
-                script.id.clone(),
-                script.speaker_key.clone(),
-                script.keyword_tags.clone(),
-                lore.category,
-                lore.topic.clone(),
-                lore.image.clone(),
-                seen.clone(),
-                time.elapsed_secs(),
-            );
+            lore_book.record(crate::history::LoreEntry {
+                script_id: script.id.clone(),
+                speaker_key: script.speaker_key.clone(),
+                keyword_tags: script.keyword_tags.clone(),
+                category: lore.category,
+                topic: lore.topic.clone(),
+                image: lore.image.clone(),
+                lines_seen: seen.clone(),
+                game_time: time.elapsed_secs(),
+            });
         }
     }
 

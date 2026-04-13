@@ -25,8 +25,8 @@ pub struct Rustling {
     pub timer: Timer,
 }
 
-impl Rustling {
-    pub fn new() -> Self {
+impl Default for Rustling {
+    fn default() -> Self {
         Self {
             timer: Timer::from_seconds(RUSTLE_DURATION_SECS, TimerMode::Once),
         }

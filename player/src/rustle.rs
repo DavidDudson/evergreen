@@ -7,6 +7,7 @@ use crate::spawning::Player;
 const RUSTLE_RADIUS_PX: f32 = 14.0;
 
 /// Inserts `Rustling` on any `Rustleable` entity overlapping the player.
+#[allow(clippy::type_complexity)]
 pub fn trigger_rustle(
     player_q: Query<&Transform, With<Player>>,
     rustleable_q: Query<(Entity, &Transform), (With<Rustleable>, Without<Rustling>)>,
@@ -18,7 +19,7 @@ pub fn trigger_rustle(
     let pp = player_tf.translation.truncate();
     for (entity, tf) in &rustleable_q {
         if pp.distance(tf.translation.truncate()) < RUSTLE_RADIUS_PX {
-            commands.entity(entity).insert(Rustling::new());
+            commands.entity(entity).insert(Rustling::default());
         }
     }
 }

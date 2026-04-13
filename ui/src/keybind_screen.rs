@@ -240,6 +240,7 @@ pub fn handle_reset_buttons(
 }
 
 /// Handles "Reset All" button.
+#[allow(clippy::type_complexity)]
 pub fn handle_reset_all(
     mut interaction_q: Query<
         (&Interaction, &mut BackgroundColor),
@@ -257,6 +258,7 @@ pub fn handle_reset_all(
 }
 
 /// Handles Back button.
+#[allow(clippy::type_complexity)]
 pub fn handle_back(
     mut interaction_q: Query<
         (&Interaction, &mut BackgroundColor),

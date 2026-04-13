@@ -142,6 +142,7 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
 // ---------------------------------------------------------------------------
 
 /// Display a new speech line.
+#[allow(clippy::type_complexity)]
 pub fn on_line_ready(
     mut events: MessageReader<DialogueLineReady>,
     locale: Res<LocaleMap>,
@@ -200,6 +201,7 @@ pub fn on_line_ready(
 }
 
 /// Display choice buttons.
+#[allow(clippy::type_complexity, clippy::too_many_arguments)]
 pub fn on_choices_ready(
     mut events: MessageReader<ChoicesReady>,
     locale: Res<LocaleMap>,
@@ -344,22 +346,20 @@ pub fn handle_choice_keyboard(
 
     let mut moved = false;
 
-    if keyboard.just_pressed(bindings.key(Action::MoveUp))
-        || keyboard.just_pressed(KeyCode::ArrowUp)
+    if (keyboard.just_pressed(bindings.key(Action::MoveUp))
+        || keyboard.just_pressed(KeyCode::ArrowUp))
+        && selected.index > 0
     {
-        if selected.index > 0 {
-            selected.index -= 1;
-            moved = true;
-        }
+        selected.index -= 1;
+        moved = true;
     }
 
-    if keyboard.just_pressed(bindings.key(Action::MoveDown))
-        || keyboard.just_pressed(KeyCode::ArrowDown)
+    if (keyboard.just_pressed(bindings.key(Action::MoveDown))
+        || keyboard.just_pressed(KeyCode::ArrowDown))
+        && selected.index + 1 < selected.count
     {
-        if selected.index + 1 < selected.count {
-            selected.index += 1;
-            moved = true;
-        }
+        selected.index += 1;
+        moved = true;
     }
 
     if moved {

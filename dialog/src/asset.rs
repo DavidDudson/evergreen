@@ -4,7 +4,9 @@ use models::alignment::AlignmentFaction;
 use serde::Deserialize;
 
 /// Broad category for lore entries displayed in the lore page sidebar.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, serde::Serialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, serde::Serialize,
+)]
 pub enum LoreCategory {
     Character,
     Place,

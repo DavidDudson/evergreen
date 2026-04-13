@@ -3,6 +3,7 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use models::layer::Layer;
+use models::palette;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
@@ -32,7 +33,7 @@ pub fn spawn_exit(
     commands.spawn((
         LevelExit,
         Sprite {
-            color: Color::srgba(0.9, 0.8, 0.2, 0.9),
+            color: palette::LEVEL_EXIT,
             custom_size: Some(Vec2::splat(EXIT_SPRITE_SIZE_PX)),
             ..default()
         },

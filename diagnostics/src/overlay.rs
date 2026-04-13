@@ -303,6 +303,7 @@ pub(crate) fn toggle_overlay(
 }
 
 /// Only runs when `overlay_visible` is true (gated via `run_if` in the plugin).
+#[allow(clippy::type_complexity, clippy::too_many_arguments)]
 pub(crate) fn update_overlay(
     diagnostics: Res<DiagnosticsStore>,
     mut state: ResMut<OverlayState>,
