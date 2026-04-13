@@ -11,6 +11,7 @@ use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
 use crate::npcs;
+use crate::reveal;
 use crate::scenery;
 use crate::spawning::{self, SpawnedAreas};
 use crate::world::{AreaChanged, WorldMap};
@@ -51,6 +52,9 @@ impl Plugin for LevelPlugin {
                     galen::update_galen_z,
                     bark_bubbles::spawn_bark_bubble,
                     bark_bubbles::tick_bark_bubbles,
+                    reveal::detect_reveals,
+                    reveal::animate_reveals,
+                    reveal::animate_reveals_simple,
                 )
                     .run_if(in_state(GameState::Playing)),
             )

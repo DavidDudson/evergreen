@@ -17,9 +17,7 @@ const PLAYER_HEIGHT: Tile = Tile(2);
 pub const PLAYER_SPEED: Speed = Speed(6); // run speed: 6 tiles/s; walk is 2 tiles/s (see movement.rs)
 pub const PLAYER_MAX_HEALTH: Health = Health(10);
 
-#[derive(Component)]
-#[require(Speed)]
-pub struct Player;
+pub use models::player::Player;
 
 pub fn spawn(
     mut commands: Commands,

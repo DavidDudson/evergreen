@@ -13,6 +13,7 @@ pub mod layer;
 pub mod name;
 pub mod npc_anim;
 pub mod palette;
+pub mod player;
 pub mod reveal;
 pub mod scenery;
 pub mod seconds;
