@@ -1,5 +1,6 @@
 pub mod area;
 pub mod bark_bubbles;
+pub mod decorations;
 pub mod exit;
 pub mod galen;
 pub mod npc_anim;

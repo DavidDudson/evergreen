@@ -4,6 +4,7 @@ use models::alignment::PlayerAlignment;
 use models::game_states::{GameState, should_despawn_world};
 
 use crate::bark_bubbles;
+use crate::decorations;
 use crate::exit;
 use crate::galen;
 use crate::npc_anim;
@@ -56,6 +57,7 @@ impl Plugin for LevelPlugin {
                 (
                     spawning::despawn_all_areas,
                     scenery::despawn_scenery,
+                    decorations::despawn_decorations,
                     npcs::despawn_npcs,
                     galen::despawn_galen,
                     exit::despawn_exit,
