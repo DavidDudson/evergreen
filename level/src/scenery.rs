@@ -3,8 +3,7 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use models::decoration::Biome;
 use models::layer::Layer;
-use models::palette;
-use models::reveal::{FullSprite, RevealState, Revealable, StumpSprite};
+use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
@@ -38,53 +37,24 @@ const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 // Tree definitions
 // ---------------------------------------------------------------------------
 
-struct TreeDef {
-    full_path: &'static str,
-    stump_path: &'static str,
-}
-
-const CITY_TREES: &[TreeDef] = &[
-    TreeDef {
-        full_path: "sprites/scenery/trees/city/tree_city_ornamental.webp",
-        stump_path: "sprites/scenery/trees/city/tree_city_ornamental_stump.webp",
-    },
-    TreeDef {
-        full_path: "sprites/scenery/trees/city/tree_city_fruit.webp",
-        stump_path: "sprites/scenery/trees/city/tree_city_fruit_stump.webp",
-    },
+const CITY_TREES: &[&str] = &[
+    "sprites/scenery/trees/city/tree_city_ornamental.webp",
+    "sprites/scenery/trees/city/tree_city_fruit.webp",
 ];
 
-const GREENWOOD_TREES: &[TreeDef] = &[
-    TreeDef {
-        full_path: "sprites/scenery/trees/greenwood/tree_green_oak.webp",
-        stump_path: "sprites/scenery/trees/greenwood/tree_green_oak_stump.webp",
-    },
-    TreeDef {
-        full_path: "sprites/scenery/trees/greenwood/tree_green_birch.webp",
-        stump_path: "sprites/scenery/trees/greenwood/tree_green_birch_stump.webp",
-    },
-    TreeDef {
-        full_path: "sprites/scenery/trees/greenwood/tree_green_maple.webp",
-        stump_path: "sprites/scenery/trees/greenwood/tree_green_maple_stump.webp",
-    },
+const GREENWOOD_TREES: &[&str] = &[
+    "sprites/scenery/trees/greenwood/tree_green_oak.webp",
+    "sprites/scenery/trees/greenwood/tree_green_birch.webp",
+    "sprites/scenery/trees/greenwood/tree_green_maple.webp",
 ];
 
-const DARKWOOD_TREES: &[TreeDef] = &[
-    TreeDef {
-        full_path: "sprites/scenery/trees/darkwood/tree_dark_gnarled.webp",
-        stump_path: "sprites/scenery/trees/darkwood/tree_dark_gnarled_stump.webp",
-    },
-    TreeDef {
-        full_path: "sprites/scenery/trees/darkwood/tree_dark_dead.webp",
-        stump_path: "sprites/scenery/trees/darkwood/tree_dark_dead_stump.webp",
-    },
-    TreeDef {
-        full_path: "sprites/scenery/trees/darkwood/tree_dark_willow.webp",
-        stump_path: "sprites/scenery/trees/darkwood/tree_dark_willow_stump.webp",
-    },
+const DARKWOOD_TREES: &[&str] = &[
+    "sprites/scenery/trees/darkwood/tree_dark_gnarled.webp",
+    "sprites/scenery/trees/darkwood/tree_dark_dead.webp",
+    "sprites/scenery/trees/darkwood/tree_dark_willow.webp",
 ];
 
-fn tree_pool(alignment: u8) -> &'static [TreeDef] {
+fn tree_pool(alignment: u8) -> &'static [&'static str] {
     match Biome::from_alignment(alignment) {
         Biome::City => CITY_TREES,
         Biome::Greenwood => GREENWOOD_TREES,
@@ -196,54 +166,30 @@ fn spawn_area_scenery(
 fn spawn_tree(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    def: &TreeDef,
+    path: &'static str,
     world_x: f32,
     world_y: f32,
 ) {
     let z = Layer::World.z_f32() - world_y * Y_SORT_SCALE;
-    let tree_entity = commands
-        .spawn((
-            Scenery,
-            SceneryCollider {
-                half_extents: TREE_COLLIDER_HALF,
-                center_offset: TREE_COLLIDER_OFFSET,
-            },
-            Revealable {
-                canopy_height_px: TREE_HEIGHT_PX - STUMP_HEIGHT_PX,
-                half_width_px: TREE_WIDTH_PX / 2.0,
-                revealed_full_alpha: 0.0,
-            },
-            RevealState::default(),
-            Transform::from_xyz(world_x, world_y, z),
-            Visibility::default(),
-        ))
-        .id();
-
-    // Full tree sprite (child).
     commands.spawn((
-        FullSprite,
+        Scenery,
+        SceneryCollider {
+            half_extents: TREE_COLLIDER_HALF,
+            center_offset: TREE_COLLIDER_OFFSET,
+        },
+        Revealable {
+            canopy_height_px: TREE_HEIGHT_PX - STUMP_HEIGHT_PX,
+            half_width_px: TREE_WIDTH_PX / 2.0,
+            revealed_full_alpha: 0.2,
+        },
+        RevealState::default(),
         Sprite {
-            image: asset_server.load(def.full_path),
+            image: asset_server.load(path),
             custom_size: Some(Vec2::new(TREE_WIDTH_PX, TREE_HEIGHT_PX)),
             ..default()
         },
         Anchor::BOTTOM_CENTER,
-        Transform::IDENTITY,
-        ChildOf(tree_entity),
-    ));
-
-    // Stump sprite (child, starts invisible).
-    commands.spawn((
-        StumpSprite,
-        Sprite {
-            image: asset_server.load(def.stump_path),
-            custom_size: Some(Vec2::new(TREE_WIDTH_PX, STUMP_HEIGHT_PX)),
-            color: palette::TRANSPARENT,
-            ..default()
-        },
-        Anchor::BOTTOM_CENTER,
-        Transform::IDENTITY,
-        ChildOf(tree_entity),
+        Transform::from_xyz(world_x, world_y, z),
     ));
 }
 

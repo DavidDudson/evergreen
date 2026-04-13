@@ -1,28 +1,23 @@
 use bevy::prelude::*;
 use models::player::Player;
-use models::reveal::{FullSprite, RevealState, Revealable, StumpSprite};
-
-/// Distance north of entity base that triggers reveal (pixels).
-const REVEAL_TRIGGER_PX: f32 = 16.0;
+use models::reveal::{RevealState, Revealable};
 
 /// Duration of the crossfade transition (seconds).
 const REVEAL_DURATION_SECS: f32 = 0.3;
 
 /// Detect when the player is behind revealable entities and trigger transitions.
+/// Triggers whenever the player's y > entity's y (player is "above" / behind it).
 pub fn detect_reveals(
     player_q: Query<&Transform, With<Player>>,
-    mut revealables: Query<(&Transform, &Revealable, &mut RevealState), Without<Player>>,
+    mut revealables: Query<(&Transform, &mut RevealState), (With<Revealable>, Without<Player>)>,
 ) {
     let Ok(player_tf) = player_q.single() else {
         return;
     };
-    let pp = player_tf.translation.truncate();
+    let player_y = player_tf.translation.y;
 
-    for (tf, revealable, mut state) in &mut revealables {
-        let base = tf.translation.truncate();
-        let behind = pp.y > base.y
-            && pp.y < base.y + REVEAL_TRIGGER_PX
-            && (pp.x - base.x).abs() < revealable.half_width_px;
+    for (tf, mut state) in &mut revealables {
+        let behind = player_y > tf.translation.y;
 
         let next = match (&*state, behind) {
             (RevealState::Full, true) => Some(RevealState::Revealing(0.0)),
@@ -37,62 +32,11 @@ pub fn detect_reveals(
     }
 }
 
-/// Animate the crossfade between full and stump sprites (for entities with child sprites).
+/// Animate alpha fade for revealable entities (trees and decorations).
+/// Fades to `revealed_full_alpha` (0.2 for trees, 0.3 for decorations).
 pub fn animate_reveals(
     time: Res<Time>,
-    mut revealables: Query<(&mut RevealState, &Children), With<Revealable>>,
-    mut sprites: Query<&mut Sprite>,
-    full_q: Query<(), With<FullSprite>>,
-    stump_q: Query<(), With<StumpSprite>>,
-) {
-    let dt = time.delta_secs();
-
-    for (mut state, children) in &mut revealables {
-        let (progress, revealing) = match &*state {
-            RevealState::Revealing(p) => (*p, true),
-            RevealState::Hiding(p) => (*p, false),
-            _ => continue,
-        };
-
-        let new_progress = (progress + dt / REVEAL_DURATION_SECS).min(1.0);
-
-        let (full_alpha, stump_alpha) = if revealing {
-            (1.0 - new_progress, new_progress)
-        } else {
-            (new_progress, 1.0 - new_progress)
-        };
-
-        for child in children.iter() {
-            if let Ok(mut sprite) = sprites.get_mut(child) {
-                if full_q.contains(child) {
-                    sprite.color = sprite.color.with_alpha(full_alpha);
-                } else if stump_q.contains(child) {
-                    sprite.color = sprite.color.with_alpha(stump_alpha);
-                }
-            }
-        }
-
-        if new_progress >= 1.0 {
-            *state = if revealing {
-                RevealState::Revealed
-            } else {
-                RevealState::Full
-            };
-        } else {
-            *state = if revealing {
-                RevealState::Revealing(new_progress)
-            } else {
-                RevealState::Hiding(new_progress)
-            };
-        }
-    }
-}
-
-/// Animate alpha fade for revealable entities without child sprites (decorations).
-/// These fade to `revealed_full_alpha` (e.g. 0.3) instead of swapping to a stump.
-pub fn animate_reveals_simple(
-    time: Res<Time>,
-    mut query: Query<(&Revealable, &mut RevealState, &mut Sprite), Without<Children>>,
+    mut query: Query<(&Revealable, &mut RevealState, &mut Sprite)>,
 ) {
     let dt = time.delta_secs();
 

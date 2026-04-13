@@ -54,7 +54,6 @@ impl Plugin for LevelPlugin {
                     bark_bubbles::tick_bark_bubbles,
                     reveal::detect_reveals,
                     reveal::animate_reveals,
-                    reveal::animate_reveals_simple,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
