@@ -1,19 +1,31 @@
 use bevy::core_pipeline::fullscreen_material::FullscreenMaterialPlugin;
 use bevy::prelude::*;
 use models::game_states::GameState;
+use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
 use crate::sync;
+use crate::time_of_day::TimeOfDayMaterial;
+use crate::time_sync;
 
 pub struct PostProcessingPlugin;
 
 impl Plugin for PostProcessingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(FullscreenMaterialPlugin::<BiomeAtmosphere>::default());
+        app.add_plugins(FullscreenMaterialPlugin::<BiomeAtmosphere>::default())
+            .add_plugins(FullscreenMaterialPlugin::<TimeOfDayMaterial>::default());
+
+        app.init_resource::<GameClock>();
 
         app.add_systems(
             Update,
-            sync::sync_atmosphere.run_if(in_state(GameState::Playing)),
+            (sync::sync_atmosphere, time_sync::tick_game_clock)
+                .run_if(in_state(GameState::Playing)),
+        );
+
+        app.add_systems(
+            PostUpdate,
+            time_sync::sync_time_of_day.run_if(in_state(GameState::Playing)),
         );
     }
 }
