@@ -29,7 +29,7 @@ impl FullscreenMaterial for BiomeAtmosphere {
         vec![
             Node2d::Tonemapping.intern(),
             Self::node_label().intern(),
-            crate::time_of_day::TimeOfDayMaterial::node_label().intern(),
+            Node2d::EndMainPassPostProcessing.intern(),
         ]
     }
 }
