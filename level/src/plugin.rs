@@ -10,6 +10,7 @@ use crate::bark_bubbles;
 use crate::decorations;
 use crate::exit;
 use crate::galen;
+use crate::grass;
 use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
@@ -64,6 +65,7 @@ impl Plugin for LevelPlugin {
                     weather::sync_wind_strength,
                     weather::spawn_weather_particles,
                     weather::update_weather_particles,
+                    grass::animate_grass_sway,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
@@ -77,6 +79,7 @@ impl Plugin for LevelPlugin {
                     galen::despawn_galen,
                     exit::despawn_exit,
                     weather::despawn_weather_particles,
+                    grass::despawn_grass,
                 )
                     .run_if(should_despawn_world),
             );
