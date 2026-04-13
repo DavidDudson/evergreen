@@ -3,6 +3,8 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use models::decoration::Biome;
 use models::layer::Layer;
+use models::palette;
+use models::reveal::{FullSprite, Revealable, RevealState, StumpSprite};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
@@ -11,26 +13,20 @@ use crate::spawning::{TILE_SIZE_PX, area_world_offset};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
 
-// Trees are 2x2 tiles (32x32 px), anchored at BOTTOM_CENTER of the base tile.
-const TREE_WIDTH_PX: f32 = 32.0;
-const TREE_HEIGHT_PX: f32 = 32.0;
+// Trees are 48x64 px, anchored at BOTTOM_CENTER.
+const TREE_WIDTH_PX: f32 = 48.0;
+const TREE_HEIGHT_PX: f32 = 64.0;
+const STUMP_HEIGHT_PX: f32 = 32.0;
 
-// Full-sprite AABB colliders (trees only).
-// Tree entity is at BOTTOM_CENTER, so sprite centre is (0, +16) above entity.
-const TREE_COLLIDER_HALF: Vec2 = Vec2::new(16.0, 16.0);
-const TREE_COLLIDER_OFFSET: Vec2 = Vec2::new(0.0, TREE_HEIGHT_PX / 2.0);
+// Trunk-only collider: roughly 1x1 tile at the base.
+const TREE_COLLIDER_HALF: Vec2 = Vec2::new(8.0, 8.0);
+const TREE_COLLIDER_OFFSET: Vec2 = Vec2::new(0.0, 4.0);
 
 // Peak rotation angle for rustle animation (radians).
 const RUSTLE_MAX_ANGLE: f32 = 0.15;
 
 // Z sub-layer scale for back-to-front (y-sort) drawing.
-// Lower world_y = lower on screen = closer to viewer = higher z.
 const Y_SORT_SCALE: f32 = 0.001;
-
-const TREE_ASSETS: [&str; 2] = [
-    "sprites/scenery/trees/tree_oak.webp",
-    "sprites/scenery/trees/tree_pine.webp",
-];
 
 /// Pixel dimensions of one map area.
 #[allow(clippy::as_conversions)]
@@ -38,11 +34,93 @@ const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
 #[allow(clippy::as_conversions)]
 const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
+// ---------------------------------------------------------------------------
+// Tree definitions
+// ---------------------------------------------------------------------------
+
+struct TreeDef {
+    full_path: &'static str,
+    stump_path: &'static str,
+}
+
+const CITY_TREES: &[TreeDef] = &[
+    TreeDef {
+        full_path: "sprites/scenery/trees/city/tree_city_ornamental.webp",
+        stump_path: "sprites/scenery/trees/city/tree_city_ornamental_stump.webp",
+    },
+    TreeDef {
+        full_path: "sprites/scenery/trees/city/tree_city_fruit.webp",
+        stump_path: "sprites/scenery/trees/city/tree_city_fruit_stump.webp",
+    },
+];
+
+const GREENWOOD_TREES: &[TreeDef] = &[
+    TreeDef {
+        full_path: "sprites/scenery/trees/greenwood/tree_green_oak.webp",
+        stump_path: "sprites/scenery/trees/greenwood/tree_green_oak_stump.webp",
+    },
+    TreeDef {
+        full_path: "sprites/scenery/trees/greenwood/tree_green_birch.webp",
+        stump_path: "sprites/scenery/trees/greenwood/tree_green_birch_stump.webp",
+    },
+    TreeDef {
+        full_path: "sprites/scenery/trees/greenwood/tree_green_maple.webp",
+        stump_path: "sprites/scenery/trees/greenwood/tree_green_maple_stump.webp",
+    },
+];
+
+const DARKWOOD_TREES: &[TreeDef] = &[
+    TreeDef {
+        full_path: "sprites/scenery/trees/darkwood/tree_dark_gnarled.webp",
+        stump_path: "sprites/scenery/trees/darkwood/tree_dark_gnarled_stump.webp",
+    },
+    TreeDef {
+        full_path: "sprites/scenery/trees/darkwood/tree_dark_dead.webp",
+        stump_path: "sprites/scenery/trees/darkwood/tree_dark_dead_stump.webp",
+    },
+    TreeDef {
+        full_path: "sprites/scenery/trees/darkwood/tree_dark_willow.webp",
+        stump_path: "sprites/scenery/trees/darkwood/tree_dark_willow_stump.webp",
+    },
+];
+
+fn tree_pool(alignment: u8) -> &'static [TreeDef] {
+    match Biome::from_alignment(alignment) {
+        Biome::City => CITY_TREES,
+        Biome::Greenwood => GREENWOOD_TREES,
+        Biome::Darkwood => DARKWOOD_TREES,
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Density
+// ---------------------------------------------------------------------------
+
+/// Tree spawn probability (0-100 hash threshold) by biome.
+fn tree_threshold(alignment: u8, ed: u32) -> usize {
+    if ed > 6 {
+        return 0;
+    }
+    let base: usize = match Biome::from_alignment(alignment) {
+        Biome::City => 5,
+        Biome::Greenwood => 45,
+        Biome::Darkwood => 80,
+    };
+    if ed <= 2 {
+        base + 15
+    } else if ed <= 4 {
+        base + 10
+    } else {
+        base
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
 /// Despawn all scenery on game exit.
-pub fn despawn_scenery(
-    mut commands: Commands,
-    query: Query<Entity, With<Scenery>>,
-) {
+pub fn despawn_scenery(mut commands: Commands, query: Query<Entity, With<Scenery>>) {
     for entity in &query {
         commands.entity(entity).despawn();
     }
@@ -64,29 +142,9 @@ pub fn spawn_area_scenery_at(
 // Private helpers
 // ---------------------------------------------------------------------------
 
-/// Tree spawn probability (0-100 hash threshold) by biome.
-/// City: sparse. Greenwood: moderate. Darkwood: dense.
-/// Denser near edges, sparser toward center.
-fn tree_threshold(alignment: u8, ed: u32) -> usize {
-    if ed > 6 {
-        return 0;
-    }
-
-    // Base density per biome (out of 100).
-    let base: usize = match Biome::from_alignment(alignment) {
-        Biome::City => 8,
-        Biome::Greenwood => 30,
-        Biome::Darkwood => 65,
-    };
-
-    // Edge proximity bonus.
-    if ed <= 2 {
-        base + 20
-    } else if ed <= 4 {
-        base + 10
-    } else {
-        base
-    }
+/// Simplified clear check -- 1x1 trunk footprint.
+fn clear_for_tree(area: &Area, xu: u32, yu: u32) -> bool {
+    area.terrain_at(xu, yu) == Some(Terrain::Grass)
 }
 
 fn spawn_area_scenery(
@@ -112,14 +170,9 @@ fn spawn_area_scenery(
             let xu = u32::from(x);
             let yu = u32::from(y);
 
-            if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
-                continue;
-            }
-
             let hash = tile_hash(xu, yu, area_seed) % 100;
             let ed = edge_dist(x, y);
 
-            // Use blended alignment for biome-appropriate density near borders.
             let effective_alignment = blending::blended_alignment(
                 area.alignment,
                 xu,
@@ -130,23 +183,16 @@ fn spawn_area_scenery(
             let threshold = tree_threshold(effective_alignment, ed);
 
             if hash < threshold && clear_for_tree(area, xu, yu) {
+                let pool = tree_pool(effective_alignment);
                 let variant =
-                    tile_hash(xu, yu, area_seed.wrapping_add(10)) % TREE_ASSETS.len();
+                    tile_hash(xu, yu, area_seed.wrapping_add(10)) % pool.len();
+                let def = &pool[variant];
                 let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
                 let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
-                spawn_tree(commands, asset_server, TREE_ASSETS[variant], world_x, world_y);
+                spawn_tree(commands, asset_server, def, world_x, world_y);
             }
         }
     }
-}
-
-/// Returns `true` when a 2x2 tree at `(xu, yu)` will not visually overlap any path tile.
-fn clear_for_tree(area: &Area, xu: u32, yu: u32) -> bool {
-    let grass = Some(Terrain::Grass);
-    let above = yu + 1 >= u32::from(MAP_HEIGHT) || area.terrain_at(xu, yu + 1) == grass;
-    let left = xu == 0 || area.terrain_at(xu - 1, yu) == grass;
-    let right = xu + 1 >= u32::from(MAP_WIDTH) || area.terrain_at(xu + 1, yu) == grass;
-    above && left && right
 }
 
 // ---------------------------------------------------------------------------
@@ -156,24 +202,54 @@ fn clear_for_tree(area: &Area, xu: u32, yu: u32) -> bool {
 fn spawn_tree(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    path: &'static str,
+    def: &TreeDef,
     world_x: f32,
     world_y: f32,
 ) {
     let z = Layer::World.z_f32() - world_y * Y_SORT_SCALE;
+    let tree_entity = commands
+        .spawn((
+            Scenery,
+            SceneryCollider {
+                half_extents: TREE_COLLIDER_HALF,
+                center_offset: TREE_COLLIDER_OFFSET,
+            },
+            Revealable {
+                canopy_height_px: TREE_HEIGHT_PX - STUMP_HEIGHT_PX,
+                half_width_px: TREE_WIDTH_PX / 2.0,
+                revealed_full_alpha: 0.0,
+            },
+            RevealState::default(),
+            Transform::from_xyz(world_x, world_y, z),
+            Visibility::default(),
+        ))
+        .id();
+
+    // Full tree sprite (child).
     commands.spawn((
-        Scenery,
-        SceneryCollider {
-            half_extents: TREE_COLLIDER_HALF,
-            center_offset: TREE_COLLIDER_OFFSET,
-        },
+        FullSprite,
         Sprite {
-            image: asset_server.load(path),
+            image: asset_server.load(def.full_path),
             custom_size: Some(Vec2::new(TREE_WIDTH_PX, TREE_HEIGHT_PX)),
             ..default()
         },
         Anchor::BOTTOM_CENTER,
-        Transform::from_xyz(world_x, world_y, z),
+        Transform::IDENTITY,
+        ChildOf(tree_entity),
+    ));
+
+    // Stump sprite (child, starts invisible).
+    commands.spawn((
+        StumpSprite,
+        Sprite {
+            image: asset_server.load(def.stump_path),
+            custom_size: Some(Vec2::new(TREE_WIDTH_PX, STUMP_HEIGHT_PX)),
+            color: palette::TRANSPARENT,
+            ..default()
+        },
+        Anchor::BOTTOM_CENTER,
+        Transform::IDENTITY,
+        ChildOf(tree_entity),
     ));
 }
 

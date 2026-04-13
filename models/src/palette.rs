@@ -39,6 +39,10 @@ pub const SCROLLBAR_THUMB: Color = Color::srgb(0.24, 0.48, 0.29);
 // Interact prompt
 pub const INTERACT_PROMPT: Color = Color::srgb(1.0, 0.90, 0.30);
 
+// General-purpose alpha constants
+pub const TRANSPARENT: Color = Color::srgba(1.0, 1.0, 1.0, 0.0);
+pub const OPAQUE_WHITE: Color = Color::srgba(1.0, 1.0, 1.0, 1.0);
+
 // Performance overlay colours
 pub const PERF_BG: Color = Color::srgba(0.04, 0.04, 0.04, 0.88);
 pub const PERF_GOOD: Color = Color::srgb(0.20, 0.85, 0.35);
