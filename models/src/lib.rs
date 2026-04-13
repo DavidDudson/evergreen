@@ -2,6 +2,7 @@ extern crate core;
 
 pub mod alignment;
 pub mod attack;
+pub mod creature;
 pub mod damage_type;
 pub mod decoration;
 pub mod distance;
