@@ -19,9 +19,9 @@ cargo fmt -- --check || {
     exit 1
 }
 
-echo "Building..."
-cargo build || {
-    echo "ERROR: build failed"
+echo "Running clippy..."
+cargo clippy -- -D warnings || {
+    echo "ERROR: clippy found warnings or errors"
     exit 1
 }
 
