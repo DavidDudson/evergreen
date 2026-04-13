@@ -139,8 +139,8 @@ fn ensure_area_spawned(
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
     spawn_area_tilemap(commands, asset_server, world, area, area_pos);
-    scenery::spawn_area_scenery_at(commands, asset_server, area, area_pos);
-    decorations::spawn_area_decorations(commands, asset_server, area, area_pos);
+    scenery::spawn_area_scenery_at(commands, asset_server, area, area_pos, world);
+    decorations::spawn_area_decorations(commands, asset_server, area, area_pos, world);
     npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, area, area_pos);
     spawned.0.insert(area_pos);
 }

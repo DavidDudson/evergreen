@@ -6,8 +6,10 @@ use models::layer::Layer;
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::blending;
 use crate::spawning::{TILE_SIZE_PX, area_world_offset};
 use crate::terrain::{tile_hash, Terrain};
+use crate::world::WorldMap;
 
 // Trees are 2x2 tiles (32x32 px), anchored at BOTTOM_CENTER of the base tile.
 const TREE_WIDTH_PX: f32 = 32.0;
@@ -53,8 +55,9 @@ pub fn spawn_area_scenery_at(
     asset_server: &AssetServer,
     area: &Area,
     area_pos: IVec2,
+    world: &WorldMap,
 ) {
-    spawn_area_scenery(commands, asset_server, area, area_pos);
+    spawn_area_scenery(commands, asset_server, area, area_pos, world);
 }
 
 // ---------------------------------------------------------------------------
@@ -91,6 +94,7 @@ fn spawn_area_scenery(
     asset_server: &AssetServer,
     area: &Area,
     area_pos: IVec2,
+    world: &WorldMap,
 ) {
     let tile_px = f32::from(TILE_SIZE_PX);
     let base = area_world_offset(area_pos);
@@ -114,7 +118,16 @@ fn spawn_area_scenery(
 
             let hash = tile_hash(xu, yu, area_seed) % 100;
             let ed = edge_dist(x, y);
-            let threshold = tree_threshold(area.alignment, ed);
+
+            // Use blended alignment for biome-appropriate density near borders.
+            let effective_alignment = blending::blended_alignment(
+                area.alignment,
+                xu,
+                yu,
+                area_pos,
+                world,
+            );
+            let threshold = tree_threshold(effective_alignment, ed);
 
             if hash < threshold && clear_for_tree(area, xu, yu) {
                 let variant =

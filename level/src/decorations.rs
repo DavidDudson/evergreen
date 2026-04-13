@@ -5,8 +5,10 @@ use models::layer::Layer;
 use models::scenery::Rustleable;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::blending;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
+use crate::world::WorldMap;
 
 #[allow(clippy::as_conversions)]
 const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
@@ -64,13 +66,8 @@ pub fn spawn_area_decorations(
     asset_server: &AssetServer,
     area: &Area,
     area_pos: IVec2,
+    world: &WorldMap,
 ) {
-    let biome = Biome::from_alignment(area.alignment);
-    let pool = match biome {
-        Biome::City => CITY_DECORATIONS,
-        Biome::Greenwood => GREENWOOD_DECORATIONS,
-        Biome::Darkwood => DARKWOOD_DECORATIONS,
-    };
 
     let tile_px = f32::from(TILE_SIZE_PX);
     let base = area_world_offset(area_pos);
@@ -121,10 +118,25 @@ pub fn spawn_area_decorations(
     let count = count.min(candidates.len());
 
     for (i, &(xu, yu)) in candidates.iter().take(count).enumerate() {
+        // Per-tile blended alignment for biome-appropriate decoration pool.
+        let effective_alignment = blending::blended_alignment(
+            area.alignment,
+            xu,
+            yu,
+            area_pos,
+            world,
+        );
+        let biome = Biome::from_alignment(effective_alignment);
+        let pool = match biome {
+            Biome::City => CITY_DECORATIONS,
+            Biome::Greenwood => GREENWOOD_DECORATIONS,
+            Biome::Darkwood => DARKWOOD_DECORATIONS,
+        };
+
         let variant = tile_hash(
             xu,
             yu,
-            deco_seed.wrapping_add(u32::try_from(i).unwrap_or(0)),
+            deco_seed.wrapping_add(u32::try_from(i).expect("i fits u32")),
         ) % pool.len();
         let def = &pool[variant];
 
