@@ -6,6 +6,7 @@ pub mod damage_type;
 pub mod decoration;
 pub mod distance;
 pub mod game_states;
+pub mod grass;
 pub mod hardness;
 pub mod health;
 pub mod layer;
