@@ -6,6 +6,7 @@
 pub enum Layer {
     Tilemap,
     World,
+    Weather,
     NpcLabel,
 }
 
@@ -14,6 +15,7 @@ impl Layer {
         match self {
             Self::Tilemap => 0,
             Self::World => 5,
+            Self::Weather => 15,
             Self::NpcLabel => 20,
         }
     }
