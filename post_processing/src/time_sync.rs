@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use models::time::GameClock;
 
-use crate::time_of_day::TimeOfDayMaterial;
+use crate::atmosphere::BiomeAtmosphere;
 
 /// Lerp speed for time-of-day transitions (per second).
 const TIME_LERP_SPEED: f32 = 2.0;
@@ -65,20 +65,20 @@ pub fn tick_game_clock(mut clock: ResMut<GameClock>, time: Res<Time>) {
 }
 
 /// Interpolate brightness and tint from the current game hour and write to
-/// the camera's `TimeOfDayMaterial`.
+/// the camera's `BiomeAtmosphere` time-of-day fields.
 pub fn sync_time_of_day(
     clock: Res<GameClock>,
     time: Res<Time>,
-    mut query: Query<&mut TimeOfDayMaterial>,
+    mut query: Query<&mut BiomeAtmosphere>,
 ) {
     let (target_brightness, target_r, target_g, target_b) = period_values(clock.hour);
     let alpha = (TIME_LERP_SPEED * time.delta_secs()).min(1.0);
 
-    for mut mat in &mut query {
-        mat.brightness += (target_brightness - mat.brightness) * alpha;
-        mat.tint_r += (target_r - mat.tint_r) * alpha;
-        mat.tint_g += (target_g - mat.tint_g) * alpha;
-        mat.tint_b += (target_b - mat.tint_b) * alpha;
+    for mut atmo in &mut query {
+        atmo.tod_brightness += (target_brightness - atmo.tod_brightness) * alpha;
+        atmo.tod_tint_r += (target_r - atmo.tod_tint_r) * alpha;
+        atmo.tod_tint_g += (target_g - atmo.tod_tint_g) * alpha;
+        atmo.tod_tint_b += (target_b - atmo.tod_tint_b) * alpha;
     }
 }
 

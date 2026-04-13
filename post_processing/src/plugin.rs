@@ -5,15 +5,13 @@ use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
 use crate::sync;
-use crate::time_of_day::TimeOfDayMaterial;
 use crate::time_sync;
 
 pub struct PostProcessingPlugin;
 
 impl Plugin for PostProcessingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(FullscreenMaterialPlugin::<BiomeAtmosphere>::default())
-            .add_plugins(FullscreenMaterialPlugin::<TimeOfDayMaterial>::default());
+        app.add_plugins(FullscreenMaterialPlugin::<BiomeAtmosphere>::default());
 
         app.init_resource::<GameClock>();
 
