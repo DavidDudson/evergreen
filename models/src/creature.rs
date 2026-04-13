@@ -45,8 +45,7 @@ impl CreatureState {
     pub fn new_wander(seed: u32) -> (Self, Timer) {
         let angle = seeded_frac(seed) * std::f32::consts::TAU;
         let direction = Vec2::new(angle.cos(), angle.sin());
-        let duration =
-            seeded_range(seed.wrapping_add(1), MIN_WANDER_SECS, MAX_WANDER_SECS);
+        let duration = seeded_range(seed.wrapping_add(1), MIN_WANDER_SECS, MAX_WANDER_SECS);
         (
             Self::Wander(direction),
             Timer::from_seconds(duration, TimerMode::Once),
@@ -91,9 +90,7 @@ impl CreatureAi {
 
 /// Hash a seed to a fraction in [0.0, 1.0).
 fn seeded_frac(seed: u32) -> f32 {
-    let h = seed
-        .wrapping_mul(374_761_393)
-        .wrapping_add(668_265_263);
+    let h = seed.wrapping_mul(374_761_393).wrapping_add(668_265_263);
     let h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
     let h = h ^ (h >> 16);
     #[allow(clippy::as_conversions)]

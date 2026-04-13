@@ -94,11 +94,26 @@ fn period_values(hour: f32) -> (f32, f32, f32, f32) {
             lerp(DAWN_START_TINT_B, DAWN_END_TINT_B, t),
         )
     } else if hour < MORNING_END {
-        (MORNING_BRIGHTNESS, MORNING_TINT_R, MORNING_TINT_G, MORNING_TINT_B)
+        (
+            MORNING_BRIGHTNESS,
+            MORNING_TINT_R,
+            MORNING_TINT_G,
+            MORNING_TINT_B,
+        )
     } else if hour < MIDDAY_END {
-        (MIDDAY_BRIGHTNESS, MIDDAY_TINT_R, MIDDAY_TINT_G, MIDDAY_TINT_B)
+        (
+            MIDDAY_BRIGHTNESS,
+            MIDDAY_TINT_R,
+            MIDDAY_TINT_G,
+            MIDDAY_TINT_B,
+        )
     } else if hour < AFTERNOON_END {
-        (AFTERNOON_BRIGHTNESS, AFTERNOON_TINT_R, AFTERNOON_TINT_G, AFTERNOON_TINT_B)
+        (
+            AFTERNOON_BRIGHTNESS,
+            AFTERNOON_TINT_R,
+            AFTERNOON_TINT_G,
+            AFTERNOON_TINT_B,
+        )
     } else if hour < DUSK_END {
         let t = (hour - AFTERNOON_END) / (DUSK_END - AFTERNOON_END);
         (
@@ -108,7 +123,12 @@ fn period_values(hour: f32) -> (f32, f32, f32, f32) {
             lerp(DUSK_START_TINT_B, DUSK_END_TINT_B, t),
         )
     } else if hour < EVENING_END {
-        (EVENING_BRIGHTNESS, EVENING_TINT_R, EVENING_TINT_G, EVENING_TINT_B)
+        (
+            EVENING_BRIGHTNESS,
+            EVENING_TINT_R,
+            EVENING_TINT_G,
+            EVENING_TINT_B,
+        )
     } else {
         (NIGHT_BRIGHTNESS, NIGHT_TINT_R, NIGHT_TINT_G, NIGHT_TINT_B)
     }

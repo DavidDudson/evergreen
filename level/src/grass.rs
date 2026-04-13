@@ -198,8 +198,7 @@ pub fn animate_grass_sway(
 ) {
     let elapsed = time.elapsed_secs();
     for (sway, mut tf) in &mut query {
-        let angle =
-            (elapsed * SWAY_FREQUENCY_HZ + sway.phase).sin() * SWAY_MAX_ANGLE_RAD * wind.0;
+        let angle = (elapsed * SWAY_FREQUENCY_HZ + sway.phase).sin() * SWAY_MAX_ANGLE_RAD * wind.0;
         tf.rotation = Quat::from_rotation_z(angle);
     }
 }

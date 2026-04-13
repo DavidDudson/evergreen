@@ -149,10 +149,8 @@ pub fn sync_wind_strength(
         weather.wind_lerp_remaining = 0.0;
         wind.0 = weather.target_wind;
     } else {
-        let t = 1.0
-            - weather.wind_lerp_remaining / WeatherState::WIND_LERP_DURATION_SECS;
-        wind.0 = weather.wind_lerp_start
-            + (weather.target_wind - weather.wind_lerp_start) * t;
+        let t = 1.0 - weather.wind_lerp_remaining / WeatherState::WIND_LERP_DURATION_SECS;
+        wind.0 = weather.wind_lerp_start + (weather.target_wind - weather.wind_lerp_start) * t;
     }
 }
 
@@ -290,20 +288,11 @@ fn spawn_leaf(
     ));
 }
 
-fn spawn_raindrop(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    cam_pos: Vec2,
-    seed: u32,
-) {
+fn spawn_raindrop(commands: &mut Commands, asset_server: &AssetServer, cam_pos: Vec2, seed: u32) {
     let x_offset = hash_f32(seed, VIEWPORT_HALF_W_PX);
     let y_top = cam_pos.y + VIEWPORT_HALF_H_PX;
 
-    let pos = Vec3::new(
-        cam_pos.x + x_offset,
-        y_top,
-        Layer::Weather.z_f32(),
-    );
+    let pos = Vec3::new(cam_pos.x + x_offset, y_top, Layer::Weather.z_f32());
 
     commands.spawn((
         WeatherParticle {
@@ -335,9 +324,7 @@ fn hash_f32(seed: u32, range: f32) -> f32 {
 
 /// Hash a u32 seed into a float in [0.0, 1.0).
 fn hash_frac(seed: u32) -> f32 {
-    let h = seed
-        .wrapping_mul(374_761_393)
-        .wrapping_add(668_265_263);
+    let h = seed.wrapping_mul(374_761_393).wrapping_add(668_265_263);
     let h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
     let h = h ^ (h >> 16);
     #[allow(clippy::as_conversions)]
