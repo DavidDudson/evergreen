@@ -14,7 +14,9 @@ use models::scenery::SceneryCollider;
 use crate::area::{AreaEvent, NpcKind, MAP_HEIGHT, MAP_WIDTH};
 use crate::light_occluders::spawn_occluder;
 use crate::npc_wander::NpcWander;
+use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::TILE_SIZE_PX;
+use models::shadow::{NPC_SHADOW_HALF_PX, NPC_SHADOW_OFFSET_Y_PX};
 
 // All NPCs spawn at the path intersection, which is guaranteed dirt.
 const PATH_CENTER_X: u16 = 15;
@@ -56,6 +58,7 @@ pub fn spawn_npc_for_area(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    shadow_assets: &DropShadowAssets,
     area: &crate::area::Area,
     area_pos: IVec2,
 ) {
@@ -63,13 +66,14 @@ pub fn spawn_npc_for_area(
         return;
     };
     let base = crate::spawning::area_world_offset(area_pos);
-    spawn_npc(commands, asset_server, atlas_layouts, npc_kind, base);
+    spawn_npc(commands, asset_server, atlas_layouts, shadow_assets, npc_kind, base);
 }
 
 fn spawn_npc(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    shadow_assets: &DropShadowAssets,
     kind: NpcKind,
     base: Vec2,
 ) {
@@ -90,6 +94,7 @@ fn spawn_npc(
         .id();
 
     spawn_occluder(commands, parent, NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX);
+    spawn_drop_shadow(commands, shadow_assets, parent, NPC_SHADOW_HALF_PX, NPC_SHADOW_OFFSET_Y_PX);
 }
 
 /// Returns (display_name, sheet_path, dialogue_script, bark_paths) for each NPC.

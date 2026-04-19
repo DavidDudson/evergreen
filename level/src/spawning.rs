@@ -15,6 +15,7 @@ use crate::decorations;
 use crate::grass;
 use crate::npcs;
 use crate::scenery;
+use crate::shadows::DropShadowAssets;
 use crate::terrain::{self, Terrain};
 use crate::world::{AreaChanged, WorldMap};
 
@@ -74,6 +75,7 @@ pub fn spawn_initial_areas(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    shadow_assets: Res<DropShadowAssets>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
 ) {
@@ -82,6 +84,7 @@ pub fn spawn_initial_areas(
         &mut commands,
         &asset_server,
         &mut atlas_layouts,
+        &shadow_assets,
         &world,
         current,
         &mut spawned,
@@ -92,6 +95,7 @@ pub fn spawn_initial_areas(
             &mut commands,
             &asset_server,
             &mut atlas_layouts,
+            &shadow_assets,
             &world,
             pos,
             &mut spawned,
@@ -104,6 +108,7 @@ pub fn ensure_neighbors_on_area_change(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    shadow_assets: Res<DropShadowAssets>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
     mut events: MessageReader<AreaChanged>,
@@ -116,6 +121,7 @@ pub fn ensure_neighbors_on_area_change(
         &mut commands,
         &asset_server,
         &mut atlas_layouts,
+        &shadow_assets,
         &world,
         current,
         &mut spawned,
@@ -126,6 +132,7 @@ pub fn ensure_neighbors_on_area_change(
             &mut commands,
             &asset_server,
             &mut atlas_layouts,
+            &shadow_assets,
             &world,
             pos,
             &mut spawned,
@@ -157,6 +164,7 @@ fn ensure_area_spawned(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    shadow_assets: &DropShadowAssets,
     world: &WorldMap,
     area_pos: IVec2,
     spawned: &mut SpawnedAreas,
@@ -167,11 +175,11 @@ fn ensure_area_spawned(
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
     spawn_area_tilemap(commands, asset_server, world, area, area_pos);
-    scenery::spawn_area_scenery_at(commands, asset_server, area, area_pos, world);
+    scenery::spawn_area_scenery_at(commands, asset_server, shadow_assets, area, area_pos, world);
     decorations::spawn_area_decorations(commands, asset_server, area, area_pos, world);
-    grass::spawn_area_grass(commands, asset_server, area, area_pos, world);
-    creatures::spawn_area_creatures(commands, asset_server, area, area_pos, world);
-    npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, area, area_pos);
+    grass::spawn_area_grass(commands, asset_server, shadow_assets, area, area_pos, world);
+    creatures::spawn_area_creatures(commands, asset_server, shadow_assets, area, area_pos, world);
+    npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, shadow_assets, area, area_pos);
     spawned.0.insert(area_pos);
 }
 

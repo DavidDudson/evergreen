@@ -10,6 +10,7 @@ use models::wind::WindStrength;
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
 use crate::light_occluders::spawn_occluder;
+use crate::shadows::DropShadowAssets;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -95,6 +96,7 @@ const DARKWOOD_GRASS: &[GrassDef] = &[
 pub fn spawn_area_grass(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    _shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,

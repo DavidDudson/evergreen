@@ -7,6 +7,7 @@ use models::player::Player;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
+use crate::shadows::DropShadowAssets;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -159,6 +160,7 @@ const DARKWOOD_CREATURES: &[CreatureDef] = &[
 pub fn spawn_area_creatures(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    _shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,

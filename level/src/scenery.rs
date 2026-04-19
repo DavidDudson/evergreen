@@ -12,6 +12,7 @@ use models::scenery::{Rustling, Scenery, SceneryCollider};
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
 use crate::light_occluders::spawn_occluder;
+use crate::shadows::DropShadowAssets;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -103,6 +104,7 @@ pub fn despawn_scenery(mut commands: Commands, query: Query<Entity, With<Scenery
 pub fn spawn_area_scenery_at(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    _shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,

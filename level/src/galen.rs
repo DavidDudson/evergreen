@@ -12,9 +12,10 @@ use rand::seq::IndexedRandom;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::npc_wander::NpcWander;
+use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::TILE_SIZE_PX;
-
 use crate::world::WorldMap;
+use models::shadow::{GALEN_SHADOW_HALF_PX, GALEN_SHADOW_OFFSET_Y_PX};
 
 // Galen stands on the N arm of the starting area (col 15, row 13).
 const GALEN_TILE_X: u16 = 15;
@@ -42,6 +43,7 @@ pub fn spawn_galen(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    shadow_assets: Res<DropShadowAssets>,
     world: Res<WorldMap>,
     existing: Query<(), With<NpcGalen>>,
 ) {
@@ -52,6 +54,7 @@ pub fn spawn_galen(
         &mut commands,
         &asset_server,
         &mut atlas_layouts,
+        &shadow_assets,
         world.current,
     );
 }
@@ -60,6 +63,7 @@ fn spawn_galen_entity(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    shadow_assets: &DropShadowAssets,
     start_area: IVec2,
 ) {
     let layout = TextureAtlasLayout::from_grid(
@@ -82,7 +86,7 @@ fn spawn_galen_entity(
         .expect("question pool is non-empty")
         .clone();
 
-    commands.spawn((
+    let parent = commands.spawn((
         NpcGalen,
         Name::new("Storyteller Galen"),
         Sprite {
@@ -120,7 +124,9 @@ fn spawn_galen_entity(
             trigger_radius_px: BARK_RADIUS_PX,
             cooldown: Timer::from_seconds(BARK_COOLDOWN_SECS, TimerMode::Once),
         },
-    ));
+    )).id();
+
+    spawn_drop_shadow(commands, shadow_assets, parent, GALEN_SHADOW_HALF_PX, GALEN_SHADOW_OFFSET_Y_PX);
 }
 
 fn galen_pos(start_area: IVec2) -> Vec3 {
