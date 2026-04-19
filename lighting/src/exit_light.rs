@@ -9,6 +9,8 @@ const LIGHT_EXIT_INTENSITY: f32 = 4.0;
 const LIGHT_EXIT_RADIUS_PX: f32 = 96.0;
 /// Falloff curve exponent (1.0 = linear).
 const LIGHT_EXIT_FALLOFF: f32 = 1.0;
+/// Goal marker is dramatic; let trees/NPCs/grass cast shadows from it.
+const LIGHT_EXIT_CAST_SHADOWS: bool = true;
 
 /// Insert a `PointLight2d` on every `LevelExit` entity that does not yet have one.
 pub fn attach_level_exit_light(
@@ -21,7 +23,7 @@ pub fn attach_level_exit_light(
             intensity: LIGHT_EXIT_INTENSITY,
             radius: LIGHT_EXIT_RADIUS_PX,
             falloff: LIGHT_EXIT_FALLOFF,
-            ..default()
+            cast_shadows: LIGHT_EXIT_CAST_SHADOWS,
         });
     }
 }
