@@ -59,6 +59,7 @@ pub const PERF_BAD: Color = Color::srgb(0.90, 0.20, 0.15);
 
 // 2D point light colors.
 pub const LIGHT_EXIT: Color = Color::srgb(1.0, 0.85, 0.40);
+pub const LIGHT_TORCH: Color = Color::srgb(1.0, 0.70, 0.30);
 
 // 2D lighting ambient color anchors (per time-of-day period).
 pub const AMBIENT_DAY: Color = Color::srgb(1.0, 1.0, 0.95);
