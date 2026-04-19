@@ -3087,6 +3087,8 @@ dependencies = [
  "getrandom 0.4.1",
  "models",
  "rand 0.10.1",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

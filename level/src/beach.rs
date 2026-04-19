@@ -25,7 +25,6 @@ use crate::world::WorldMap;
 // Assets
 // ---------------------------------------------------------------------------
 
-const SAND_SPRITE: &str = "sprites/scenery/ponds/sand_tile.webp";
 const PIER_PLANK_SPRITE: &str = "sprites/scenery/ponds/pier_plank.webp";
 const PIER_POST_SPRITE: &str = "sprites/scenery/ponds/pier_post.webp";
 const CRAB_SPRITE: &str = "sprites/creatures/water/crab.webp";
@@ -34,8 +33,6 @@ const CRAB_SPRITE: &str = "sprites/creatures/water/crab.webp";
 // Tuning
 // ---------------------------------------------------------------------------
 
-/// Sand rendered at the full tile size so edges blend.
-const SAND_SIZE_PX: f32 = 20.0;
 const PLANK_SIZE_PX: f32 = 20.0;
 const CRAB_SIZE_PX: f32 = 10.0;
 
@@ -72,9 +69,11 @@ pub struct Crab {
 // Spawning
 // ---------------------------------------------------------------------------
 
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_area_beach(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    wang: &crate::wang::WangTilesets,
     world: &WorldMap,
     area_pos: IVec2,
 ) {
@@ -83,7 +82,7 @@ pub fn spawn_area_beach(
     let base_offset_y = base.y - MAP_H_PX / 2.0;
     let tile_px = f32::from(TILE_SIZE_PX);
 
-    // Sand tiles (and crabs).
+    // Sand tiles (wang-tiled) + crabs.
     let ax = u32::from_ne_bytes(area_pos.x.to_ne_bytes());
     let ay = u32::from_ne_bytes(area_pos.y.to_ne_bytes());
     let area_seed = ax
@@ -91,43 +90,58 @@ pub fn spawn_area_beach(
         .wrapping_add(ay.wrapping_mul(1_013_904_223))
         .wrapping_add(0xBE_AC_30);
 
-    for local in world.water.sand_in_area(area_pos) {
-        let world_x = base_offset_x
-            + f32::from(u16::try_from(local.x).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
-        let world_y = base_offset_y
-            + f32::from(u16::try_from(local.y).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
-        commands.spawn((
-            SandTile,
-            Scenery,
-            Sprite {
-                image: asset_server.load(SAND_SPRITE),
-                custom_size: Some(Vec2::splat(SAND_SIZE_PX)),
-                ..default()
-            },
-            Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.3),
-        ));
-
-        let hash = tile_hash(local.x, local.y, area_seed);
-        #[allow(clippy::as_conversions)]
-        let crab_roll = u32::try_from(hash % 100).unwrap_or(0);
-        if crab_roll < CRAB_CHANCE {
-            #[allow(clippy::as_conversions)]
-            let phase = (hash.wrapping_mul(31) % 628) as f32 / 100.0;
+    let sand_tileset = &wang.sand_grass;
+    for y in 0..u32::from(crate::area::MAP_HEIGHT) {
+        for x in 0..u32::from(crate::area::MAP_WIDTH) {
+            let mask = crate::water::sand_mask(&world.water, area_pos, x, y);
+            if mask == 0 {
+                continue;
+            }
+            let local = bevy::math::UVec2::new(x, y);
+            let world_x = base_offset_x
+                + f32::from(u16::try_from(x).unwrap_or(0)) * tile_px
+                + tile_px / 2.0;
+            let world_y = base_offset_y
+                + f32::from(u16::try_from(y).unwrap_or(0)) * tile_px
+                + tile_px / 2.0;
             commands.spawn((
-                SandTile, // reuse teardown query
-                Crab {
-                    phase,
-                    base_x: world_x,
-                },
+                SandTile,
+                Scenery,
                 Sprite {
-                    image: asset_server.load(CRAB_SPRITE),
-                    custom_size: Some(Vec2::splat(CRAB_SIZE_PX)),
+                    image: sand_tileset.texture.clone(),
+                    texture_atlas: Some(TextureAtlas {
+                        layout: sand_tileset.layout.clone(),
+                        index: sand_tileset.lut[usize::from(mask)],
+                    }),
+                    custom_size: Some(Vec2::splat(tile_px)),
                     ..default()
                 },
-                Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.8),
+                Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.3),
             ));
+
+            // Crabs only spawn on fully-sand tiles (mask = 0b1111).
+            if mask == 0b1111 && world.water.has_sand(area_pos, local) {
+                let hash = tile_hash(x, y, area_seed);
+                #[allow(clippy::as_conversions)]
+                let crab_roll = u32::try_from(hash % 100).unwrap_or(0);
+                if crab_roll < CRAB_CHANCE {
+                    #[allow(clippy::as_conversions)]
+                    let phase = (hash.wrapping_mul(31) % 628) as f32 / 100.0;
+                    commands.spawn((
+                        SandTile,
+                        Crab {
+                            phase,
+                            base_x: world_x,
+                        },
+                        Sprite {
+                            image: asset_server.load(CRAB_SPRITE),
+                            custom_size: Some(Vec2::splat(CRAB_SIZE_PX)),
+                            ..default()
+                        },
+                        Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.8),
+                    ));
+                }
+            }
         }
     }
 

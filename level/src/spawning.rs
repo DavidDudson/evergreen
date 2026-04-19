@@ -71,11 +71,13 @@ const NEIGHBOR_OFFSETS: [IVec2; 4] = [
 // ---------------------------------------------------------------------------
 
 /// Spawn the current area and its neighbors on game start.
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_initial_areas(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     shadow_assets: Res<DropShadowAssets>,
+    wang: Res<crate::wang::WangTilesets>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
 ) {
@@ -85,6 +87,7 @@ pub fn spawn_initial_areas(
         &asset_server,
         &mut atlas_layouts,
         &shadow_assets,
+        &wang,
         &world,
         current,
         &mut spawned,
@@ -96,6 +99,7 @@ pub fn spawn_initial_areas(
             &asset_server,
             &mut atlas_layouts,
             &shadow_assets,
+            &wang,
             &world,
             pos,
             &mut spawned,
@@ -104,11 +108,13 @@ pub fn spawn_initial_areas(
 }
 
 /// On area change, spawn any new neighbor areas that haven't been spawned yet.
+#[allow(clippy::too_many_arguments)]
 pub fn ensure_neighbors_on_area_change(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     shadow_assets: Res<DropShadowAssets>,
+    wang: Res<crate::wang::WangTilesets>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
     mut events: MessageReader<AreaChanged>,
@@ -122,6 +128,7 @@ pub fn ensure_neighbors_on_area_change(
         &asset_server,
         &mut atlas_layouts,
         &shadow_assets,
+        &wang,
         &world,
         current,
         &mut spawned,
@@ -133,6 +140,7 @@ pub fn ensure_neighbors_on_area_change(
             &asset_server,
             &mut atlas_layouts,
             &shadow_assets,
+            &wang,
             &world,
             pos,
             &mut spawned,
@@ -160,11 +168,13 @@ pub fn despawn_all_areas(
 // Helpers
 // ---------------------------------------------------------------------------
 
+#[allow(clippy::too_many_arguments)]
 fn ensure_area_spawned(
     commands: &mut Commands,
     asset_server: &AssetServer,
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
     shadow_assets: &DropShadowAssets,
+    wang: &crate::wang::WangTilesets,
     world: &WorldMap,
     area_pos: IVec2,
     spawned: &mut SpawnedAreas,
@@ -175,8 +185,8 @@ fn ensure_area_spawned(
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
     spawn_area_tilemap(commands, asset_server, world, area, area_pos);
-    crate::water::spawn_area_water(commands, asset_server, world, area_pos);
-    crate::beach::spawn_area_beach(commands, asset_server, world, area_pos);
+    crate::water::spawn_area_water(commands, asset_server, wang, world, area_pos);
+    crate::beach::spawn_area_beach(commands, asset_server, wang, world, area_pos);
     crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
     crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
     scenery::spawn_area_scenery_at(commands, asset_server, shadow_assets, area, area_pos, world);

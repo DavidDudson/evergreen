@@ -179,15 +179,8 @@ const LAKE_SEED_COUNT: usize = 2;
 /// 4-neighbour deltas for flood-fill (N/S/E/W).
 const TILE_NEIGHBOURS_4: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
-/// Sprite asset paths by water kind.
-const POND_PLAIN_SPRITE: &str = "sprites/scenery/ponds/pond_plain.webp";
-const POND_HOTSPRING_SPRITE: &str = "sprites/scenery/ponds/pond_hotspring.webp";
-const RIVER_NS_SPRITE: &str = "sprites/scenery/ponds/river_vertical.webp";
-const RIVER_EW_SPRITE: &str = "sprites/scenery/ponds/river_horizontal.webp";
-const WATERFALL_TOP_SPRITE: &str = "sprites/scenery/ponds/waterfall_top.webp";
-const WATERFALL_FALL_SPRITE: &str = "sprites/scenery/ponds/waterfall_fall.webp";
+/// Stepping-stone sprite (placed over walkable river tiles).
 const STONE_SPRITE: &str = "sprites/scenery/ponds/stepping_stone.webp";
-const OCEAN_SPRITE: &str = "sprites/scenery/ponds/ocean.webp";
 
 /// Rendered sprite size in pixels (wider than a tile so neighbours overlap
 /// and the pond outline looks organic).
@@ -414,7 +407,10 @@ fn carve_river(map: &mut WaterMap, world: &WorldMap, pos: IVec2, axis: RiverAxis
             continue;
         }
         // River can run through grass; any other terrain (dirt path etc.) also OK.
-        let kind = if waterfall_at_north && y == u32::from(MAP_HEIGHT) - 1 {
+        // Top ~20% of the area becomes waterfall when the area faces the
+        // north world edge (no neighbour beyond).
+        let waterfall_start_row = u32::from(MAP_HEIGHT) * 4 / 5;
+        let kind = if waterfall_at_north && y >= waterfall_start_row {
             WaterKind::Waterfall
         } else {
             match axis {
@@ -547,10 +543,13 @@ fn pick_seed_tile(
 // Spawning
 // ---------------------------------------------------------------------------
 
-/// Spawn sprite + collider entities for every water tile in `area_pos`.
+/// Spawn wang-tiled water sprites for every tile position in `area_pos`
+/// that has at least one water-owning vertex. Transition tiles on land
+/// adjacent to water render automatically.
 pub fn spawn_area_water(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    wang: &crate::wang::WangTilesets,
     world: &WorldMap,
     area_pos: IVec2,
 ) {
@@ -559,54 +558,65 @@ pub fn spawn_area_water(
     let base_offset_y = base.y - MAP_H_PX / 2.0;
     let tile_px = f32::from(TILE_SIZE_PX);
 
-    for (local, kind) in world.water.tiles_in_area(area_pos) {
-        let world_x = base_offset_x + f32::from(u16::try_from(local.x).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
-        let world_y = base_offset_y + f32::from(u16::try_from(local.y).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
-        let path = match kind {
-            WaterKind::Plain | WaterKind::Lake => POND_PLAIN_SPRITE,
-            WaterKind::HotSpring => POND_HOTSPRING_SPRITE,
-            WaterKind::RiverNS => RIVER_NS_SPRITE,
-            WaterKind::RiverEW => RIVER_EW_SPRITE,
-            WaterKind::Waterfall => WATERFALL_TOP_SPRITE,
-            WaterKind::Ocean => OCEAN_SPRITE,
-        };
-        let has_stone = world.water.has_stone(area_pos, local);
-        let phase = phase_for_tile(area_pos, local);
-        let mut entity = commands.spawn((
-            WaterTile { kind },
-            AnimatedWater { phase },
-            Scenery,
-            Sprite {
-                image: asset_server.load(path),
-                custom_size: Some(Vec2::splat(WATER_SPRITE_SIZE_PX)),
-                ..default()
-            },
-            Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.5),
-        ));
-        // Stones make the tile walkable -- no collider on stone river tiles.
-        // Waterfalls are rendered but not physically blocking (at edge of world).
-        if !has_stone && !matches!(kind, WaterKind::Waterfall) {
-            entity.insert(SceneryCollider {
-                half_extents: Vec2::splat(WATER_COLLIDER_HALF_PX),
-                center_offset: Vec2::ZERO,
-            });
-        }
+    // Each kind family uses one wang tileset and one same-kind predicate.
+    let families: [(&crate::wang::WangTileset, fn(WaterKind) -> bool, WaterKind); 5] = [
+        (
+            &wang.pond_grass,
+            |k| matches!(k, WaterKind::Plain | WaterKind::Lake),
+            WaterKind::Plain,
+        ),
+        (&wang.hotspring_grass, |k| k == WaterKind::HotSpring, WaterKind::HotSpring),
+        (
+            &wang.river_grass,
+            |k| matches!(k, WaterKind::RiverNS | WaterKind::RiverEW),
+            WaterKind::RiverNS,
+        ),
+        (&wang.waterfall_grass, |k| k == WaterKind::Waterfall, WaterKind::Waterfall),
+        (&wang.ocean_sand, |k| k == WaterKind::Ocean, WaterKind::Ocean),
+    ];
 
-        // Waterfalls also spawn a side-view cascading sprite just above the
-        // top edge so the drop reads visually.
-        if matches!(kind, WaterKind::Waterfall) {
-            commands.spawn((
-                WaterTile { kind },
-                Scenery,
-                Sprite {
-                    image: asset_server.load(WATERFALL_FALL_SPRITE),
-                    custom_size: Some(Vec2::splat(WATER_SPRITE_SIZE_PX)),
-                    ..default()
-                },
-                Transform::from_xyz(world_x, world_y + tile_px, Layer::Tilemap.z_f32() + 0.6),
-            ));
+    for y in 0..u32::from(MAP_HEIGHT) {
+        for x in 0..u32::from(MAP_WIDTH) {
+            for &(tileset, predicate, marker_kind) in &families {
+                let mask = kind_mask(&world.water, area_pos, x, y, predicate);
+                if mask == 0 {
+                    continue;
+                }
+                let world_x = base_offset_x + f32::from(u16::try_from(x).unwrap_or(0)) * tile_px
+                    + tile_px / 2.0;
+                let world_y = base_offset_y + f32::from(u16::try_from(y).unwrap_or(0)) * tile_px
+                    + tile_px / 2.0;
+                let atlas_idx = tileset.lut[usize::from(mask)];
+                let local = UVec2::new(x, y);
+                let is_center = mask == 0b1111;
+                let has_stone = world.water.has_stone(area_pos, local);
+                let z = Layer::Tilemap.z_f32() + 0.4 + f32::from(u16::try_from(mask).unwrap_or(0)) * 0.001;
+                let mut entity = commands.spawn((
+                    WaterTile { kind: marker_kind },
+                    AnimatedWater {
+                        phase: phase_for_tile(area_pos, local),
+                    },
+                    Scenery,
+                    Sprite {
+                        image: tileset.texture.clone(),
+                        texture_atlas: Some(TextureAtlas {
+                            layout: tileset.layout.clone(),
+                            index: atlas_idx,
+                        }),
+                        custom_size: Some(Vec2::splat(tile_px)),
+                        ..default()
+                    },
+                    Transform::from_xyz(world_x, world_y, z),
+                ));
+                // Only fully-water tiles block the player. Transition (partial)
+                // tiles are walkable so players can step onto shore edges.
+                if is_center && !has_stone {
+                    entity.insert(SceneryCollider {
+                        half_extents: Vec2::splat(WATER_COLLIDER_HALF_PX),
+                        center_offset: Vec2::ZERO,
+                    });
+                }
+            }
         }
     }
 
@@ -633,6 +643,69 @@ pub fn spawn_area_water(
 /// hop-bob animation while a player is standing on a stone.
 #[derive(Component)]
 pub struct SteppingStone;
+
+/// Wang corner mask for a tile at `(x, y)` given a same-kind predicate.
+/// Returns 0 when no vertex of this tile is adjacent to a matching water
+/// tile. Bit order matches `wang::wang_mask`.
+fn kind_mask(
+    water: &WaterMap,
+    area_pos: IVec2,
+    x: u32,
+    y: u32,
+    same: fn(WaterKind) -> bool,
+) -> u8 {
+    let nw = vertex_is_kind(water, area_pos, x, y + 1, same);
+    let ne = vertex_is_kind(water, area_pos, x + 1, y + 1, same);
+    let sw = vertex_is_kind(water, area_pos, x, y, same);
+    let se = vertex_is_kind(water, area_pos, x + 1, y, same);
+    crate::wang::wang_mask(nw, ne, sw, se)
+}
+
+/// True if any of the (up to 4) tiles touching vertex `(vx, vy)` matches
+/// `same`. Vertices land on the integer grid; a vertex at `(vx, vy)` is
+/// shared by tiles `(vx-1, vy-1)`, `(vx, vy-1)`, `(vx-1, vy)`, `(vx, vy)`.
+fn vertex_is_kind(
+    water: &WaterMap,
+    area_pos: IVec2,
+    vx: u32,
+    vy: u32,
+    same: fn(WaterKind) -> bool,
+) -> bool {
+    for (dx, dy) in [(-1, -1), (0, -1), (-1, 0), (0, 0)] {
+        let tile_x = i32::try_from(vx).unwrap_or(0) + dx;
+        let tile_y = i32::try_from(vy).unwrap_or(0) + dy;
+        if let Some(tile_key) = neighbour_key(area_pos, UVec2::new(0, 0), tile_x, tile_y) {
+            if let Some(kind) = water.get(tile_key.0, tile_key.1) {
+                if same(kind) {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+/// Wang mask for sand tiles at `(x, y)` in `area_pos`.
+pub fn sand_mask(water: &WaterMap, area_pos: IVec2, x: u32, y: u32) -> u8 {
+    let nw = sand_vertex(water, area_pos, x, y + 1);
+    let ne = sand_vertex(water, area_pos, x + 1, y + 1);
+    let sw = sand_vertex(water, area_pos, x, y);
+    let se = sand_vertex(water, area_pos, x + 1, y);
+    crate::wang::wang_mask(nw, ne, sw, se)
+}
+
+fn sand_vertex(water: &WaterMap, area_pos: IVec2, vx: u32, vy: u32) -> bool {
+    for (dx, dy) in [(-1, -1), (0, -1), (-1, 0), (0, 0)] {
+        let tile_x = i32::try_from(vx).unwrap_or(0) + dx;
+        let tile_y = i32::try_from(vy).unwrap_or(0) + dy;
+        if let Some(tile_key) = neighbour_key(area_pos, UVec2::new(0, 0), tile_x, tile_y) {
+            if water.has_sand(tile_key.0, tile_key.1) {
+                return true;
+            }
+        }
+    }
+    false
+}
 
 /// Per-frame system: pulse every water sprite's scale + alpha so the sheet
 /// of ponds / rivers / oceans reads as moving without custom atlas frames.

@@ -18,6 +18,7 @@ pub mod scenery;
 pub mod shadows;
 pub mod spawning;
 pub mod terrain;
+pub mod wang;
 pub mod water;
 pub mod water_fauna;
 pub mod water_flora;

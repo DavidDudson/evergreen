@@ -127,9 +127,17 @@ pub fn spawn_area_scenery_at(
 // Private helpers
 // ---------------------------------------------------------------------------
 
-/// Simplified clear check -- 1x1 trunk footprint.
-fn clear_for_tree(area: &Area, xu: u32, yu: u32) -> bool {
-    area.terrain_at(xu, yu) == Some(Terrain::Grass)
+/// Simplified clear check -- 1x1 trunk footprint. Trees refuse to grow on
+/// water tiles (ponds, rivers, ocean, waterfall) or sand.
+fn clear_for_tree(area: &Area, world: &WorldMap, area_pos: IVec2, xu: u32, yu: u32) -> bool {
+    if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
+        return false;
+    }
+    let local = bevy::math::UVec2::new(xu, yu);
+    if world.water.get(area_pos, local).is_some() || world.water.has_sand(area_pos, local) {
+        return false;
+    }
+    true
 }
 
 fn spawn_area_scenery(
@@ -162,7 +170,7 @@ fn spawn_area_scenery(
             let blend = blending::blend_at(area.alignment, xu, yu, area_pos, world);
             let threshold = tree_threshold(blend.alignment, ed);
 
-            if hash < threshold && clear_for_tree(area, xu, yu) {
+            if hash < threshold && clear_for_tree(area, world, area_pos, xu, yu) {
                 // In the blend zone, probabilistically pick from the neighbor's
                 // tree pool based on blend factor (Minecraft-style mixing).
                 let mix_hash = tile_hash(xu, yu, area_seed.wrapping_add(20)) % 100;

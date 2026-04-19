@@ -23,6 +23,7 @@ use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
 use crate::beach;
 use crate::puddles;
+use crate::wang;
 use crate::water;
 use crate::water_fauna;
 use crate::water_flora;
@@ -44,7 +45,7 @@ impl Plugin for LevelPlugin {
             .init_resource::<puddles::PuddleSpawnTimer>()
             .init_resource::<puddles::SteamAccumulator>()
             .add_plugins(TilemapPlugin)
-            .add_systems(Startup, shadows::init_shadow_assets)
+            .add_systems(Startup, (shadows::init_shadow_assets, wang::init_wang_tilesets))
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(rand::random(), 50))
             .add_systems(
