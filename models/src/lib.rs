@@ -19,6 +19,7 @@ pub mod player;
 pub mod reveal;
 pub mod scenery;
 pub mod seconds;
+pub mod shadow;
 pub mod settings;
 pub mod speed;
 pub mod textured;

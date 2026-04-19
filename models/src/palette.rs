@@ -69,6 +69,14 @@ pub const AMBIENT_DAWN: Color = Color::srgb(1.0, 0.85, 0.65);
 pub const AMBIENT_DUSK: Color = Color::srgb(0.85, 0.55, 0.55);
 pub const AMBIENT_NIGHT: Color = Color::srgb(0.4, 0.5, 0.8);
 
+// Weather particle colors.
+pub const FIREFLY: Color = Color::srgb(2.0, 3.0, 0.5);
+pub const DUST_MOTE: Color = Color::srgb(0.9, 0.85, 0.75);
+pub const FOG: Color = Color::srgba(0.6, 0.65, 0.7, 0.35);
+
+// Drop shadow color.
+pub const DROP_SHADOW: Color = Color::srgba(0.0, 0.0, 0.0, 0.4);
+
 /// Linearly interpolate between two colors in linear (non-gamma) color space.
 pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {
     let a = a.to_linear();

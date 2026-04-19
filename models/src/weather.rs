@@ -97,6 +97,9 @@ pub enum ParticleVariant {
     PaperScrap,
     Raindrop,
     Splash,
+    Firefly,
+    DustMote,
+    FogPatch,
 }
 
 /// Marker and data for a weather particle entity.
