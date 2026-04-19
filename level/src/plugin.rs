@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::alignment::PlayerAlignment;
 use models::game_states::{should_despawn_world, GameState};
+use models::time::GameClock;
 
 use models::weather::WeatherState;
 use models::wind::{WindDirection, WindStrength};
@@ -77,6 +78,10 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 Update,
+                (shadows::animate_shadow_sun,).run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                Update,
                 (weather::spawn_dust_motes, weather::spawn_fog_patches)
                     .run_if(in_state(GameState::Playing)),
             )
@@ -108,11 +113,15 @@ impl Plugin for LevelPlugin {
     }
 }
 
+/// Maximum hour value (exclusive) when randomising a new game's start time.
+const HOURS_PER_DAY: f32 = 24.0;
+
 /// Regenerate the world with a fresh seed, biased toward the player's
 /// dominant faction alignment.  Skips if a world is already loaded
 /// (e.g. returning from Dialogue or Paused).
 fn regenerate_world(
     mut world: ResMut<WorldMap>,
+    mut clock: ResMut<GameClock>,
     alignment: Res<PlayerAlignment>,
     spawned: Res<SpawnedAreas>,
 ) {
@@ -121,4 +130,5 @@ fn regenerate_world(
     }
     let dominant = alignment.dominant_area_alignment();
     *world = WorldMap::new(rand::random(), dominant);
+    clock.hour = rand::random::<f32>() * HOURS_PER_DAY;
 }

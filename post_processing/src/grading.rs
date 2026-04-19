@@ -15,10 +15,10 @@ const ALIGNMENT_GREENWOOD: f32 = 50.0;
 /// Anchor alignment for the darkwood biome.
 const ALIGNMENT_DARKWOOD: f32 = 100.0;
 
-/// City: warm afternoon stone, slight desaturation.
+/// City: bright, near-neutral daylight on stone; only a whisper of warmth.
 const CITY_EXPOSURE: f32 = 0.05;
-const CITY_TEMPERATURE: f32 = 0.18;
-const CITY_TINT: f32 = -0.05;
+const CITY_TEMPERATURE: f32 = 0.04;
+const CITY_TINT: f32 = 0.0;
 const CITY_POST_SATURATION: f32 = 0.92;
 
 /// Greenwood: vivid, neutral white balance.

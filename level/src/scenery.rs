@@ -3,16 +3,12 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use models::decoration::Biome;
 use models::layer::Layer;
-use models::lighting::{
-    TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX,
-};
 use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 use models::shadow::{TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
-use crate::light_occluders::spawn_occluder;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
@@ -76,14 +72,14 @@ fn tree_threshold(alignment: u8, ed: u32) -> usize {
         return 0;
     }
     let base: usize = match Biome::from_alignment(alignment) {
-        Biome::City => 5,
-        Biome::Greenwood => 45,
-        Biome::Darkwood => 80,
+        Biome::City => 3,
+        Biome::Greenwood => 35,
+        Biome::Darkwood => 65,
     };
     if ed <= 2 {
-        base + 15
+        base + 12
     } else if ed <= 4 {
-        base + 10
+        base + 8
     } else {
         base
     }
@@ -210,8 +206,6 @@ fn spawn_tree(
         ))
         .id();
 
-    spawn_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
-    spawn_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
     spawn_drop_shadow(
         commands,
         shadow_assets,

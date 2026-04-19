@@ -23,6 +23,15 @@ pub(crate) struct ResumeButton;
 #[derive(Component)]
 pub(crate) struct SettingsButton;
 
+#[derive(Component)]
+pub(crate) struct QuitToMenuButton;
+
+/// Flag set by the pause-menu quit button. Picked up one frame later by
+/// `handle_quit_pending` (running in `Playing`) to transition to `MainMenu`,
+/// which triggers the normal `OnExit(Playing)` world cleanup.
+#[derive(Resource, Default)]
+pub struct QuitToMenuRequested(pub bool);
+
 pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
@@ -65,6 +74,13 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
         "Settings",
         fonts.0.clone(),
     );
+    spawn_button(
+        &mut commands,
+        root,
+        QuitToMenuButton,
+        "Quit to Main Menu",
+        fonts.0.clone(),
+    );
 }
 
 #[allow(clippy::type_complexity)]
@@ -99,6 +115,42 @@ pub fn handle_settings_button(
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
         }
+    }
+}
+
+/// Flip `QuitToMenuRequested` + bounce out of Paused into Playing. The next
+/// frame's `handle_quit_pending` sees the flag while in Playing and transitions
+/// to MainMenu, which fires `OnExit(Playing)` cleanup via `should_despawn_world`.
+#[allow(clippy::type_complexity)]
+pub fn handle_quit_to_menu_button(
+    mut q: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<QuitToMenuButton>),
+    >,
+    mut next_state: ResMut<NextState<GameState>>,
+    mut pending: ResMut<QuitToMenuRequested>,
+) {
+    for (interaction, mut bg) in &mut q {
+        match interaction {
+            Interaction::Pressed => {
+                pending.0 = true;
+                next_state.set(GameState::Playing);
+            }
+            Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
+            Interaction::None => *bg = BackgroundColor(theme::BUTTON_BG),
+        }
+    }
+}
+
+/// Consumes the flag while in Playing and routes to MainMenu so the standard
+/// world-despawn chain fires.
+pub fn handle_quit_pending(
+    mut pending: ResMut<QuitToMenuRequested>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    if pending.0 {
+        pending.0 = false;
+        next_state.set(GameState::MainMenu);
     }
 }
 

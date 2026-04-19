@@ -76,8 +76,9 @@ pub const FIREFLY: Color = Color::srgb(6.0, 9.0, 1.5);
 pub const DUST_MOTE: Color = Color::srgb(0.9, 0.85, 0.75);
 pub const FOG: Color = Color::srgba(0.6, 0.65, 0.7, 0.35);
 
-// Drop shadow color.
-pub const DROP_SHADOW: Color = Color::srgba(0.0, 0.0, 0.0, 0.4);
+// Base tint applied to the baked soft-edge drop shadow sprite. Alpha is
+// modulated per-frame by time-of-day fade.
+pub const DROP_SHADOW_TINT: Color = Color::srgba(0.0, 0.0, 0.0, 0.45);
 
 /// Linearly interpolate between two colors in linear (non-gamma) color space.
 pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {

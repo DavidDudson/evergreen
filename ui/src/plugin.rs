@@ -23,6 +23,7 @@ impl Plugin for UiPlugin {
         app.init_resource::<fonts::UiFont>();
 
         app.init_resource::<SettingsOrigin>();
+        app.init_resource::<pause_menu::QuitToMenuRequested>();
 
         // Main menu
         app.add_systems(OnEnter(GameState::MainMenu), main_menu::setup)
@@ -62,8 +63,13 @@ impl Plugin for UiPlugin {
                 (
                     pause_menu::handle_resume,
                     pause_menu::handle_settings_button,
+                    pause_menu::handle_quit_to_menu_button,
                 )
                     .run_if(in_state(GameState::Paused)),
+            )
+            .add_systems(
+                Update,
+                pause_menu::handle_quit_pending.run_if(in_state(GameState::Playing)),
             );
 
         // Dialog box (shown during NPC conversation)

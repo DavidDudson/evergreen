@@ -9,12 +9,10 @@ use models::wind::WindStrength;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
-use crate::light_occluders::spawn_occluder;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
-use models::lighting::{GRASS_OCCLUDER_HALF_PX, GRASS_OCCLUDER_OFFSET_PX};
 use models::shadow::{GRASS_SHADOW_HALF_PX, GRASS_SHADOW_OFFSET_Y_PX};
 
 // ---------------------------------------------------------------------------
@@ -191,12 +189,6 @@ pub fn spawn_area_grass(
             ))
             .id();
 
-        spawn_occluder(
-            commands,
-            parent,
-            GRASS_OCCLUDER_HALF_PX,
-            GRASS_OCCLUDER_OFFSET_PX,
-        );
         spawn_drop_shadow(
             commands,
             shadow_assets,

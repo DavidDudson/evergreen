@@ -7,12 +7,10 @@
 use bevy::prelude::*;
 use dialog::components::{BarkPool, Talker};
 use models::layer::Layer;
-use models::lighting::{NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX};
 use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 use models::scenery::SceneryCollider;
 
 use crate::area::{AreaEvent, NpcKind, MAP_HEIGHT, MAP_WIDTH};
-use crate::light_occluders::spawn_occluder;
 use crate::npc_wander::NpcWander;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::TILE_SIZE_PX;
@@ -100,7 +98,6 @@ fn spawn_npc(
         ))
         .id();
 
-    spawn_occluder(commands, parent, NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX);
     spawn_drop_shadow(
         commands,
         shadow_assets,
