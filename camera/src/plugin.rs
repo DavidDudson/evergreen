@@ -6,6 +6,7 @@ use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
 use post_processing::atmosphere::BiomeAtmosphere;
+use post_processing::bloom_setup::pixel_art_bloom;
 
 use crate::dialogue_focus;
 use crate::smooth;
@@ -38,6 +39,7 @@ fn setup(mut commands: Commands) {
         Hdr,
         Tonemapping::TonyMcMapface,
         DebandDither::Enabled,
+        pixel_art_bloom(),
         BiomeAtmosphere::default(),
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
