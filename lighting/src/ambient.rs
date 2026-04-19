@@ -5,8 +5,9 @@ use models::palette::{
 };
 use models::time::GameClock;
 
-/// Period-end hours -- mirror those used by `tick_game_clock`. Kept local so
-/// `lighting` does not depend on `post_processing`'s internal layout.
+/// Period transition hours -- `h >= constant` enters the transition toward
+/// the next anchor (strict `<` comparisons in `target_for_hour` mean the
+/// boundary hour belongs to the later period at t=0).
 const NIGHT_END: f32 = 5.0;
 const DAWN_END: f32 = 7.0;
 const MORNING_END: f32 = 11.0;
@@ -133,9 +134,11 @@ mod tests {
     }
 
     #[test]
-    fn ambient_at_dusk_anchor_returns_dusk() {
-        let t = target_for_hour(19.0);
-        approx_color(t.color, AMBIENT_DUSK);
+    fn ambient_in_dusk_plateau_returns_dusk() {
+        // 18.0 sits squarely in the AFTERNOON_END..DUSK_END plateau where
+        // `target_for_hour` returns the DUSK constant directly (no lerp).
+        let t = target_for_hour(18.0);
+        assert_eq!(t.color, AMBIENT_DUSK);
         approx(t.brightness, DUSK_BRIGHTNESS);
     }
 
@@ -152,5 +155,19 @@ mod tests {
         let expected_brightness =
             NIGHT_BRIGHTNESS + (DAWN_BRIGHTNESS - NIGHT_BRIGHTNESS) * 0.5;
         approx(t.brightness, expected_brightness);
+    }
+
+    #[test]
+    fn ambient_after_evening_end_returns_night() {
+        let t = target_for_hour(23.0);
+        assert_eq!(t.color, AMBIENT_NIGHT);
+        approx(t.brightness, NIGHT_BRIGHTNESS);
+    }
+
+    #[test]
+    fn ambient_at_hour_24_clamps_to_night() {
+        let t = target_for_hour(24.0);
+        assert_eq!(t.color, AMBIENT_NIGHT);
+        approx(t.brightness, NIGHT_BRIGHTNESS);
     }
 }
