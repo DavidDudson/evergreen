@@ -49,6 +49,8 @@ Goal: get `bevy_light_2d` building and on the camera with no behavior change yet
 
 - [ ] **Step 1: Create `lighting/Cargo.toml`**
 
+YAGNI: do not add path deps for `level`/`models`/`player`/`post_processing` here. Each later task adds its own dep when first needed.
+
 ```toml
 [package]
 name = "lighting"
@@ -61,10 +63,6 @@ workspace = true
 [dependencies]
 bevy = "0.18.1"
 bevy_light_2d = "0.9"
-level = { path = "../level" }
-models = { path = "../models" }
-player = { path = "../player" }
-post_processing = { path = "../post_processing" }
 ```
 
 - [ ] **Step 2: Create `lighting/src/lib.rs`**
@@ -214,6 +212,14 @@ Goal: lift the existing time-of-day brightness/tint logic out of `post_processin
 - Modify: `lighting/src/plugin.rs`
 - Modify: `models/src/palette.rs` (add ambient color constants)
 
+- [ ] **Step 0: Add `models` dep to `lighting/Cargo.toml`**
+
+Append under `[dependencies]`:
+
+```toml
+models = { path = "../models" }
+```
+
 - [ ] **Step 1: Add ambient color constants to palette**
 
 Edit `/home/ddudson/repos/evergreen/models/src/palette.rs`. Append at the bottom of the file:
@@ -232,7 +238,7 @@ Create `/home/ddudson/repos/evergreen/lighting/src/ambient.rs` with this exact c
 
 ```rust
 use bevy::prelude::*;
-use bevy_light_2d::prelude::AmbientLight2d;
+use bevy_light_2d::prelude::{AmbientLight2d, Light2d};
 use models::palette::{AMBIENT_DAWN, AMBIENT_DAY, AMBIENT_DUSK, AMBIENT_NIGHT};
 use models::time::GameClock;
 
@@ -326,18 +332,21 @@ pub fn target_for_hour(hour: f32) -> AmbientTarget {
     }
 }
 
-/// Per-frame system: lerp the camera's `AmbientLight2d` toward the time-of-day
-/// target. Mirrors the alpha scheme used by `sync_atmosphere`.
+/// Per-frame system: lerp the camera's `Light2d.ambient_light` toward the
+/// time-of-day target. `bevy_light_2d` 0.9 wraps `AmbientLight2d` inside
+/// `Light2d`; query and mutate the wrapper.
 pub fn sync_ambient_light(
     clock: Res<GameClock>,
     time: Res<Time>,
-    mut query: Query<&mut AmbientLight2d, With<Camera2d>>,
+    mut query: Query<&mut Light2d, With<Camera2d>>,
 ) {
     let target = target_for_hour(clock.hour);
     let alpha = (AMBIENT_LERP_SPEED * time.delta_secs()).min(1.0);
-    for mut ambient in &mut query {
-        ambient.brightness += (target.brightness - ambient.brightness) * alpha;
-        ambient.color = lerp_color(ambient.color, target.color, alpha);
+    for mut light in &mut query {
+        light.ambient_light.brightness +=
+            (target.brightness - light.ambient_light.brightness) * alpha;
+        light.ambient_light.color =
+            lerp_color(light.ambient_light.color, target.color, alpha);
     }
 }
 
@@ -423,6 +432,8 @@ impl Plugin for LightingPlugin {
     }
 }
 ```
+
+NOTE: `bevy_light_2d` 0.9 does NOT expose `AmbientLight2d` as a standalone component -- it lives inside `Light2d { ambient_light: AmbientLight2d { ... } }`. The `sync_ambient_light` query must be `Query<&mut Light2d, With<Camera2d>>` and write to `light.ambient_light.color` / `.brightness`. The Step 2 module body above uses `Query<&mut AmbientLight2d, ...>` -- adjust to query `Light2d` instead and update accordingly.
 
 NOTE: Use `Update` (not `PostUpdate`) so the ambient lerp visibly catches up each frame; the existing `sync_time_of_day` ran in `PostUpdate` only because it shared the camera's `BiomeAtmosphere` mutation with `sync_atmosphere`. For lighting we have a dedicated `AmbientLight2d` component, no contention.
 
@@ -612,6 +623,16 @@ Goal: attach a warm yellow `PointLight2d` to the `LevelExit` entity so the goal 
 - Modify: `models/src/palette.rs` (add LIGHT_EXIT)
 - Modify: `lighting/src/plugin.rs` (register attach_level_exit_light)
 
+- [ ] **Step 0: Add `level` dep to `lighting/Cargo.toml`**
+
+Append under `[dependencies]`:
+
+```toml
+level = { path = "../level" }
+```
+
+(`models` is already added in T2.)
+
 - [ ] **Step 1: Add LIGHT_EXIT to palette**
 
 Edit `/home/ddudson/repos/evergreen/models/src/palette.rs`. Append at the bottom:
@@ -712,6 +733,10 @@ Goal: insert/remove a `PointLight2d` on the player based on biome alignment + ti
 - Modify: `models/src/palette.rs` (add LIGHT_TORCH)
 - Modify: `lighting/src/plugin.rs` (register update_player_torch)
 - Modify: `lighting/Cargo.toml` -- already has `level` dep; no change
+
+- [ ] **Step 0: Verify `lighting/Cargo.toml` deps**
+
+`Player` marker lives at `models::player::Player`, not in the `player` crate. No new dep needed -- `models` already covers it.
 
 - [ ] **Step 1: Add LIGHT_TORCH to palette**
 

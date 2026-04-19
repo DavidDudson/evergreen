@@ -1,8 +1,6 @@
 use bevy::prelude::*;
 use bevy_light_2d::prelude::Light2d;
-use models::palette::{
-    lerp_linear_color, AMBIENT_DAWN, AMBIENT_DAY, AMBIENT_DUSK, AMBIENT_NIGHT,
-};
+use models::palette::{lerp_linear_color, AMBIENT_DAWN, AMBIENT_DAY, AMBIENT_DUSK, AMBIENT_NIGHT};
 use models::time::GameClock;
 
 /// Period transition hours -- `h >= constant` enters the transition toward
@@ -153,8 +151,7 @@ mod tests {
     #[test]
     fn ambient_lerps_smoothly_in_dawn() {
         let t = target_for_hour(6.0);
-        let expected_brightness =
-            NIGHT_BRIGHTNESS + (DAWN_BRIGHTNESS - NIGHT_BRIGHTNESS) * 0.5;
+        let expected_brightness = NIGHT_BRIGHTNESS + (DAWN_BRIGHTNESS - NIGHT_BRIGHTNESS) * 0.5;
         approx(t.brightness, expected_brightness);
     }
 

@@ -76,16 +76,18 @@ fn spawn_npc(
     let (name, sheet, script, barks) = npc_data(kind);
     let pos = tile_world_pos(PATH_CENTER_X, PATH_CENTER_Y, base);
 
-    let parent = commands.spawn((
-        EventNpc,
-        Name::new(name),
-        npc_sprite(asset_server, atlas_layouts, sheet),
-        npc_collider(),
-        Transform::from_translation(pos),
-        npc_anim_bundle(pos.truncate()),
-        Talker::new(asset_server.load(script)),
-        bark_pool(asset_server, barks),
-    )).id();
+    let parent = commands
+        .spawn((
+            EventNpc,
+            Name::new(name),
+            npc_sprite(asset_server, atlas_layouts, sheet),
+            npc_collider(),
+            Transform::from_translation(pos),
+            npc_anim_bundle(pos.truncate()),
+            Talker::new(asset_server.load(script)),
+            bark_pool(asset_server, barks),
+        ))
+        .id();
 
     spawn_occluder(commands, parent, NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX);
 }

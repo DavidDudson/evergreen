@@ -188,7 +188,12 @@ pub fn spawn_area_grass(
             ))
             .id();
 
-        spawn_occluder(commands, parent, GRASS_OCCLUDER_HALF_PX, GRASS_OCCLUDER_OFFSET_PX);
+        spawn_occluder(
+            commands,
+            parent,
+            GRASS_OCCLUDER_HALF_PX,
+            GRASS_OCCLUDER_OFFSET_PX,
+        );
     }
 }
 

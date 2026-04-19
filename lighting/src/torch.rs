@@ -27,8 +27,7 @@ const DEFAULT_AREA_ALIGNMENT: AreaAlignment = 50;
 
 /// Pure predicate: should the torch be on for this alignment + hour?
 pub fn should_torch_be_on(alignment: AreaAlignment, hour: f32) -> bool {
-    alignment > DARKWOOD_TORCH_THRESHOLD
-        || !(TORCH_HOUR_START..=TORCH_HOUR_END).contains(&hour)
+    alignment > DARKWOOD_TORCH_THRESHOLD || !(TORCH_HOUR_START..=TORCH_HOUR_END).contains(&hour)
 }
 
 fn torch_component() -> PointLight2d {

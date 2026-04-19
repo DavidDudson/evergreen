@@ -7,12 +7,7 @@ use bevy_light_2d::prelude::{LightOccluder2d, LightOccluder2dShape};
 
 /// Spawn a single rect-shaped occluder as a child of `parent` at `offset`
 /// (relative to parent transform) with the given `half_size`.
-pub fn spawn_occluder(
-    commands: &mut Commands,
-    parent: Entity,
-    half_size: Vec2,
-    offset: Vec2,
-) {
+pub fn spawn_occluder(commands: &mut Commands, parent: Entity, half_size: Vec2, offset: Vec2) {
     commands.spawn((
         LightOccluder2d {
             shape: LightOccluder2dShape::Rectangle { half_size },
