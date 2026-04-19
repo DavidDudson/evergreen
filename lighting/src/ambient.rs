@@ -134,11 +134,12 @@ mod tests {
     }
 
     #[test]
-    fn ambient_in_dusk_plateau_returns_dusk() {
-        // 18.0 sits squarely in the AFTERNOON_END..DUSK_END plateau where
-        // `target_for_hour` returns the DUSK constant directly (no lerp).
-        let t = target_for_hour(18.0);
-        assert_eq!(t.color, AMBIENT_DUSK);
+    fn ambient_at_dusk_anchor_returns_dusk() {
+        // DUSK has no plateau -- it's only the anchor at the AFTERNOON_END→DUSK_END
+        // and DUSK_END→EVENING_END transition boundary. h=19.0 enters the
+        // DUSK→NIGHT lerp at t=0, which produces DUSK exactly.
+        let t = target_for_hour(19.0);
+        approx_color(t.color, AMBIENT_DUSK);
         approx(t.brightness, DUSK_BRIGHTNESS);
     }
 
