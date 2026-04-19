@@ -26,11 +26,6 @@ impl Plugin for PostProcessingPlugin {
                 .run_if(in_state(GameState::Playing)),
         );
 
-        app.add_systems(
-            PostUpdate,
-            time_sync::sync_time_of_day.run_if(in_state(GameState::Playing)),
-        );
-
         app.add_systems(OnExit(GameState::Playing), reset_color_grading);
     }
 }
