@@ -113,8 +113,8 @@ pub fn spawn_area_water_fauna(
             + tile_px / 2.0;
         let hash = tile_hash(local.x, local.y, area_seed);
 
-        // Water striders skate on any water.
-        if (hash.wrapping_mul(3) % 100) < usize_of(STRIDER_CHANCE) {
+        // Water striders skate only on still water (not rivers).
+        if kind.is_still() && (hash.wrapping_mul(3) % 100) < usize_of(STRIDER_CHANCE) {
             spawn_strider(commands, asset_server, world_x, world_y, hash);
         }
 

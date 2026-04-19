@@ -13,6 +13,7 @@ use crate::animation::{
     AnimationFrame, AnimationKind, AnimationTimer, FacingDirection, FRAME_H_PX, FRAME_W_PX,
     SHEET_COLS, SHEET_ROWS,
 };
+use crate::hop::HopBob;
 
 const PLAYER_WIDTH: Tile = Tile(1);
 const PLAYER_HEIGHT: Tile = Tile(2);
@@ -52,6 +53,7 @@ pub fn spawn(
             AnimationKind::default(),
             AnimationFrame::default(),
             AnimationTimer::default(),
+            HopBob::default(),
             Sprite {
                 image: asset_server.load("sprites/player/briar_sheet.webp"),
                 texture_atlas: Some(TextureAtlas {

@@ -122,6 +122,7 @@ impl Plugin for LevelPlugin {
                     grass::despawn_grass,
                     creatures::despawn_creatures,
                     water::despawn_water,
+                    water::despawn_stones,
                     water_flora::despawn_water_flora,
                     water_fauna::despawn_water_fauna,
                     puddles::despawn_puddles,

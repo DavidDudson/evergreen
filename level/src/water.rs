@@ -20,7 +20,7 @@ use bevy::prelude::*;
 use models::layer::Layer;
 use models::scenery::{Scenery, SceneryCollider};
 
-use crate::area::{MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{Area, Direction, MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::Terrain;
 use crate::world::WorldMap;
@@ -39,6 +39,13 @@ pub enum WaterKind {
     HotSpring,
     /// Large multi-area body of water. Frogs, lily pads, striders.
     Lake,
+    /// River flowing vertically (north-south).
+    RiverNS,
+    /// River flowing horizontally (east-west).
+    RiverEW,
+    /// River pouring over the top edge of the world. Rendered differently
+    /// from regular river tiles (vertical falling sprite).
+    Waterfall,
 }
 
 impl WaterKind {
@@ -52,6 +59,16 @@ impl WaterKind {
 
     pub fn spawns_steam(self) -> bool {
         matches!(self, Self::HotSpring)
+    }
+
+    /// Whether this tile is a flowing river segment (or waterfall).
+    pub fn is_river(self) -> bool {
+        matches!(self, Self::RiverNS | Self::RiverEW | Self::Waterfall)
+    }
+
+    /// Still-water kinds where insects can rest on the surface.
+    pub fn is_still(self) -> bool {
+        matches!(self, Self::Plain | Self::HotSpring | Self::Lake)
     }
 }
 
@@ -68,6 +85,8 @@ pub struct WaterTile {
 #[derive(Default, Debug)]
 pub struct WaterMap {
     tiles: HashMap<WaterKey, WaterKind>,
+    /// Tiles where a stepping stone sits on top of the water (walkable).
+    stones: std::collections::HashSet<WaterKey>,
 }
 
 impl WaterMap {
@@ -89,6 +108,20 @@ impl WaterMap {
         TILE_NEIGHBOURS_4
             .iter()
             .any(|&(dx, dy)| neighbour_key(area_pos, local, dx, dy).is_some_and(|k| !self.tiles.contains_key(&k)))
+    }
+
+    /// Is there a stepping stone on this water tile (walkable)?
+    pub fn has_stone(&self, area_pos: IVec2, local: UVec2) -> bool {
+        self.stones.contains(&(area_pos, local))
+    }
+
+    /// Every stone in one area.
+    pub fn stones_in_area(&self, area_pos: IVec2) -> Vec<UVec2> {
+        self.stones
+            .iter()
+            .filter(|(a, _)| *a == area_pos)
+            .map(|(_, local)| *local)
+            .collect()
     }
 }
 
@@ -124,6 +157,11 @@ const TILE_NEIGHBOURS_4: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 /// Sprite asset paths by water kind.
 const POND_PLAIN_SPRITE: &str = "sprites/scenery/ponds/pond_plain.webp";
 const POND_HOTSPRING_SPRITE: &str = "sprites/scenery/ponds/pond_hotspring.webp";
+const RIVER_NS_SPRITE: &str = "sprites/scenery/ponds/river_vertical.webp";
+const RIVER_EW_SPRITE: &str = "sprites/scenery/ponds/river_horizontal.webp";
+const WATERFALL_TOP_SPRITE: &str = "sprites/scenery/ponds/waterfall_top.webp";
+const WATERFALL_FALL_SPRITE: &str = "sprites/scenery/ponds/waterfall_fall.webp";
+const STONE_SPRITE: &str = "sprites/scenery/ponds/stepping_stone.webp";
 
 /// Rendered sprite size in pixels (wider than a tile so neighbours overlap
 /// and the pond outline looks organic).
@@ -196,7 +234,102 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
         }
     }
 
-    WaterMap { tiles }
+    let mut map = WaterMap {
+        tiles,
+        stones: std::collections::HashSet::new(),
+    };
+    generate_rivers(&mut map, world, &mut rng);
+    map
+}
+
+// ---------------------------------------------------------------------------
+// River generation
+// ---------------------------------------------------------------------------
+
+/// River flow axis. Always perpendicular to the area's road exits.
+#[derive(Debug, Clone, Copy)]
+enum RiverAxis {
+    NorthSouth,
+    EastWest,
+}
+
+/// Per-area chance (out of 100) to add a river when the axis is valid.
+const RIVER_CHANCE: u64 = 45;
+
+/// Central 3x3 block where road crosses river -- stones go here.
+const CROSSING_COL_START: u32 = 14;
+const CROSSING_COL_END: u32 = 16;
+const CROSSING_ROW_START: u32 = 7;
+const CROSSING_ROW_END: u32 = 9;
+
+fn river_axis_for(area: &Area) -> Option<RiverAxis> {
+    let n = area.exits.contains(&Direction::North);
+    let s = area.exits.contains(&Direction::South);
+    let e = area.exits.contains(&Direction::East);
+    let w = area.exits.contains(&Direction::West);
+    match (n, s, e, w) {
+        // Road runs N/S -> river flows perpendicular E/W.
+        (true, true, false, false) => Some(RiverAxis::EastWest),
+        // Road runs E/W -> river flows perpendicular N/S.
+        (false, false, true, true) => Some(RiverAxis::NorthSouth),
+        _ => None,
+    }
+}
+
+fn generate_rivers(map: &mut WaterMap, world: &WorldMap, rng: &mut u64) {
+    for pos in world.area_positions() {
+        let Some(area) = world.get_area(pos) else {
+            continue;
+        };
+        let Some(axis) = river_axis_for(area) else {
+            continue;
+        };
+        *rng = lcg(*rng);
+        if *rng % 100 >= RIVER_CHANCE {
+            continue;
+        }
+        carve_river(map, world, pos, axis);
+    }
+}
+
+fn carve_river(map: &mut WaterMap, world: &WorldMap, pos: IVec2, axis: RiverAxis) {
+    let waterfall_at_north = matches!(axis, RiverAxis::NorthSouth)
+        && world.get_area(pos + Direction::North.grid_offset()).is_none();
+
+    let iter: Vec<(u32, u32)> = match axis {
+        RiverAxis::NorthSouth => (0..u32::from(MAP_HEIGHT))
+            .flat_map(|y| (CROSSING_COL_START..=CROSSING_COL_END).map(move |x| (x, y)))
+            .collect(),
+        RiverAxis::EastWest => (0..u32::from(MAP_WIDTH))
+            .flat_map(|x| (CROSSING_ROW_START..=CROSSING_ROW_END).map(move |y| (x, y)))
+            .collect(),
+    };
+
+    for (x, y) in iter {
+        let key = (pos, UVec2::new(x, y));
+        // Skip if there's already a pond/lake here (river joins body naturally).
+        if map.tiles.contains_key(&key) {
+            continue;
+        }
+        // River can run through grass; any other terrain (dirt path etc.) also OK.
+        let kind = if waterfall_at_north && y == u32::from(MAP_HEIGHT) - 1 {
+            WaterKind::Waterfall
+        } else {
+            match axis {
+                RiverAxis::NorthSouth => WaterKind::RiverNS,
+                RiverAxis::EastWest => WaterKind::RiverEW,
+            }
+        };
+        map.tiles.insert(key, kind);
+
+        // Central 3x3 crossing gets stepping stones (walkable).
+        if (CROSSING_COL_START..=CROSSING_COL_END).contains(&x)
+            && (CROSSING_ROW_START..=CROSSING_ROW_END).contains(&y)
+            && !matches!(kind, WaterKind::Waterfall)
+        {
+            map.stones.insert(key);
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -332,14 +465,14 @@ pub fn spawn_area_water(
         let path = match kind {
             WaterKind::Plain | WaterKind::Lake => POND_PLAIN_SPRITE,
             WaterKind::HotSpring => POND_HOTSPRING_SPRITE,
+            WaterKind::RiverNS => RIVER_NS_SPRITE,
+            WaterKind::RiverEW => RIVER_EW_SPRITE,
+            WaterKind::Waterfall => WATERFALL_TOP_SPRITE,
         };
-        commands.spawn((
+        let has_stone = world.water.has_stone(area_pos, local);
+        let mut entity = commands.spawn((
             WaterTile { kind },
             Scenery,
-            SceneryCollider {
-                half_extents: Vec2::splat(WATER_COLLIDER_HALF_PX),
-                center_offset: Vec2::ZERO,
-            },
             Sprite {
                 image: asset_server.load(path),
                 custom_size: Some(Vec2::splat(WATER_SPRITE_SIZE_PX)),
@@ -347,11 +480,64 @@ pub fn spawn_area_water(
             },
             Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.5),
         ));
+        // Stones make the tile walkable -- no collider on stone river tiles.
+        // Waterfalls are rendered but not physically blocking (at edge of world).
+        if !has_stone && !matches!(kind, WaterKind::Waterfall) {
+            entity.insert(SceneryCollider {
+                half_extents: Vec2::splat(WATER_COLLIDER_HALF_PX),
+                center_offset: Vec2::ZERO,
+            });
+        }
+
+        // Waterfalls also spawn a side-view cascading sprite just above the
+        // top edge so the drop reads visually.
+        if matches!(kind, WaterKind::Waterfall) {
+            commands.spawn((
+                WaterTile { kind },
+                Scenery,
+                Sprite {
+                    image: asset_server.load(WATERFALL_FALL_SPRITE),
+                    custom_size: Some(Vec2::splat(WATER_SPRITE_SIZE_PX)),
+                    ..default()
+                },
+                Transform::from_xyz(world_x, world_y + tile_px, Layer::Tilemap.z_f32() + 0.6),
+            ));
+        }
+    }
+
+    // Stepping stones rendered on top of the river water at crossings.
+    for local in world.water.stones_in_area(area_pos) {
+        let world_x = base_offset_x + f32::from(u16::try_from(local.x).unwrap_or(0)) * tile_px
+            + tile_px / 2.0;
+        let world_y = base_offset_y + f32::from(u16::try_from(local.y).unwrap_or(0)) * tile_px
+            + tile_px / 2.0;
+        commands.spawn((
+            SteppingStone,
+            Scenery,
+            Sprite {
+                image: asset_server.load(STONE_SPRITE),
+                custom_size: Some(Vec2::splat(WATER_SPRITE_SIZE_PX)),
+                ..default()
+            },
+            Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + 0.7),
+        ));
     }
 }
 
+/// Marker for stepping-stone sprites. Player systems use this to trigger the
+/// hop-bob animation while a player is standing on a stone.
+#[derive(Component)]
+pub struct SteppingStone;
+
 /// Despawn every water tile on world teardown.
 pub fn despawn_water(mut commands: Commands, q: Query<Entity, With<WaterTile>>) {
+    for entity in &q {
+        commands.entity(entity).despawn();
+    }
+}
+
+/// Despawn every stepping stone on world teardown.
+pub fn despawn_stones(mut commands: Commands, q: Query<Entity, With<SteppingStone>>) {
     for entity in &q {
         commands.entity(entity).despawn();
     }
