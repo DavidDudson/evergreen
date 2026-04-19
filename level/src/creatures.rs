@@ -1,10 +1,10 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use models::creature::{Creature, CreatureAi, CreatureState, MovementType};
-use models::shadow::{CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX};
 use models::decoration::Biome;
 use models::layer::Layer;
 use models::player::Player;
+use models::shadow::{CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
@@ -249,17 +249,25 @@ pub fn spawn_area_creatures(
             .wrapping_add(u32::try_from(i).expect("i fits u32"))
             .wrapping_mul(2_654_435_761);
 
-        let parent = commands.spawn((
-            Creature,
-            CreatureAi::new(def.speed, def.movement, entity_seed),
-            Sprite {
-                image: asset_server.load(def.path),
-                custom_size: Some(Vec2::splat(CREATURE_SPRITE_SIZE_PX)),
-                ..default()
-            },
-            Transform::from_xyz(world_x, world_y, z),
-        )).id();
-        spawn_drop_shadow(commands, shadow_assets, parent, CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX);
+        let parent = commands
+            .spawn((
+                Creature,
+                CreatureAi::new(def.speed, def.movement, entity_seed),
+                Sprite {
+                    image: asset_server.load(def.path),
+                    custom_size: Some(Vec2::splat(CREATURE_SPRITE_SIZE_PX)),
+                    ..default()
+                },
+                Transform::from_xyz(world_x, world_y, z),
+            ))
+            .id();
+        spawn_drop_shadow(
+            commands,
+            shadow_assets,
+            parent,
+            CREATURE_SHADOW_HALF_PX,
+            CREATURE_SHADOW_OFFSET_Y_PX,
+        );
     }
 }
 

@@ -66,7 +66,14 @@ pub fn spawn_npc_for_area(
         return;
     };
     let base = crate::spawning::area_world_offset(area_pos);
-    spawn_npc(commands, asset_server, atlas_layouts, shadow_assets, npc_kind, base);
+    spawn_npc(
+        commands,
+        asset_server,
+        atlas_layouts,
+        shadow_assets,
+        npc_kind,
+        base,
+    );
 }
 
 fn spawn_npc(
@@ -94,7 +101,13 @@ fn spawn_npc(
         .id();
 
     spawn_occluder(commands, parent, NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX);
-    spawn_drop_shadow(commands, shadow_assets, parent, NPC_SHADOW_HALF_PX, NPC_SHADOW_OFFSET_Y_PX);
+    spawn_drop_shadow(
+        commands,
+        shadow_assets,
+        parent,
+        NPC_SHADOW_HALF_PX,
+        NPC_SHADOW_OFFSET_Y_PX,
+    );
 }
 
 /// Returns (display_name, sheet_path, dialogue_script, bark_paths) for each NPC.

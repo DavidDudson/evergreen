@@ -7,7 +7,6 @@ use models::weather::WeatherState;
 use models::wind::{WindDirection, WindStrength};
 
 use crate::bark_bubbles;
-use crate::shadows;
 use crate::creatures;
 use crate::decorations;
 use crate::exit;
@@ -19,6 +18,7 @@ use crate::npc_wander;
 use crate::npcs;
 use crate::reveal;
 use crate::scenery;
+use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
 use crate::weather;
 use crate::world::{AreaChanged, WorldMap};
@@ -77,10 +77,7 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 Update,
-                (
-                    weather::spawn_dust_motes,
-                    weather::spawn_fog_patches,
-                )
+                (weather::spawn_dust_motes, weather::spawn_fog_patches)
                     .run_if(in_state(GameState::Playing)),
             )
             .add_systems(

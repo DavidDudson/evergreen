@@ -179,7 +179,14 @@ fn ensure_area_spawned(
     decorations::spawn_area_decorations(commands, asset_server, area, area_pos, world);
     grass::spawn_area_grass(commands, asset_server, shadow_assets, area, area_pos, world);
     creatures::spawn_area_creatures(commands, asset_server, shadow_assets, area, area_pos, world);
-    npcs::spawn_npc_for_area(commands, asset_server, atlas_layouts, shadow_assets, area, area_pos);
+    npcs::spawn_npc_for_area(
+        commands,
+        asset_server,
+        atlas_layouts,
+        shadow_assets,
+        area,
+        area_pos,
+    );
     spawned.0.insert(area_pos);
 }
 

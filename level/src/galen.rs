@@ -86,47 +86,55 @@ fn spawn_galen_entity(
         .expect("question pool is non-empty")
         .clone();
 
-    let parent = commands.spawn((
-        NpcGalen,
-        Name::new("Storyteller Galen"),
-        Sprite {
-            image: asset_server.load("sprites/npc/npc_galen_sheet.webp"),
-            texture_atlas: Some(TextureAtlas {
-                layout: layout_handle,
-                index: 0,
-            }),
-            custom_size: Some(Vec2::splat(GALEN_SPRITE_SIZE_PX)),
-            ..default()
-        },
-        SceneryCollider {
-            half_extents: GALEN_COLLIDER_HALF,
-            center_offset: Vec2::ZERO,
-        },
-        Transform::from_translation(pos),
-        NpcFacing::default(),
-        NpcAnimKind::default(),
-        NpcSheet {
-            idle_frames: IDLE_FRAMES,
-            walk_frames: WALK_FRAMES,
-            cols: SHEET_COLS.try_into().expect("SHEET_COLS fits usize"),
-        },
-        NpcAnimFrame::default(),
-        NpcAnimTimer::default(),
-        NpcWander::new(pos.truncate()),
-        // Non-repeating: Galen only asks one question, then stops offering dialogue.
-        Talker::new(chosen),
-        BarkPool {
-            barks: vec![
-                asset_server.load("dialogue/barks/galen_bark1.dialog.ron"),
-                asset_server.load("dialogue/barks/galen_bark2.dialog.ron"),
-                asset_server.load("dialogue/barks/galen_bark3.dialog.ron"),
-            ],
-            trigger_radius_px: BARK_RADIUS_PX,
-            cooldown: Timer::from_seconds(BARK_COOLDOWN_SECS, TimerMode::Once),
-        },
-    )).id();
+    let parent = commands
+        .spawn((
+            NpcGalen,
+            Name::new("Storyteller Galen"),
+            Sprite {
+                image: asset_server.load("sprites/npc/npc_galen_sheet.webp"),
+                texture_atlas: Some(TextureAtlas {
+                    layout: layout_handle,
+                    index: 0,
+                }),
+                custom_size: Some(Vec2::splat(GALEN_SPRITE_SIZE_PX)),
+                ..default()
+            },
+            SceneryCollider {
+                half_extents: GALEN_COLLIDER_HALF,
+                center_offset: Vec2::ZERO,
+            },
+            Transform::from_translation(pos),
+            NpcFacing::default(),
+            NpcAnimKind::default(),
+            NpcSheet {
+                idle_frames: IDLE_FRAMES,
+                walk_frames: WALK_FRAMES,
+                cols: SHEET_COLS.try_into().expect("SHEET_COLS fits usize"),
+            },
+            NpcAnimFrame::default(),
+            NpcAnimTimer::default(),
+            NpcWander::new(pos.truncate()),
+            // Non-repeating: Galen only asks one question, then stops offering dialogue.
+            Talker::new(chosen),
+            BarkPool {
+                barks: vec![
+                    asset_server.load("dialogue/barks/galen_bark1.dialog.ron"),
+                    asset_server.load("dialogue/barks/galen_bark2.dialog.ron"),
+                    asset_server.load("dialogue/barks/galen_bark3.dialog.ron"),
+                ],
+                trigger_radius_px: BARK_RADIUS_PX,
+                cooldown: Timer::from_seconds(BARK_COOLDOWN_SECS, TimerMode::Once),
+            },
+        ))
+        .id();
 
-    spawn_drop_shadow(commands, shadow_assets, parent, GALEN_SHADOW_HALF_PX, GALEN_SHADOW_OFFSET_Y_PX);
+    spawn_drop_shadow(
+        commands,
+        shadow_assets,
+        parent,
+        GALEN_SHADOW_HALF_PX,
+        GALEN_SHADOW_OFFSET_Y_PX,
+    );
 }
 
 fn galen_pos(start_area: IVec2) -> Vec3 {

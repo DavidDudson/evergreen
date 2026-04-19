@@ -6,9 +6,9 @@ use models::layer::Layer;
 use models::lighting::{
     TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX,
 };
-use models::shadow::{TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX};
 use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
+use models::shadow::{TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
@@ -212,7 +212,13 @@ fn spawn_tree(
 
     spawn_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
     spawn_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
-    spawn_drop_shadow(commands, shadow_assets, parent, TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX);
+    spawn_drop_shadow(
+        commands,
+        shadow_assets,
+        parent,
+        TREE_SHADOW_HALF_PX,
+        TREE_SHADOW_OFFSET_Y_PX,
+    );
 }
 
 // ---------------------------------------------------------------------------
