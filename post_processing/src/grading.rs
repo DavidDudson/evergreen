@@ -100,7 +100,11 @@ pub fn apply_target(grading: &mut ColorGrading, target: BiomeGradingTarget) {
 pub const GRADING_LERP_SPEED: f32 = 2.5;
 
 /// Lerp current grading toward target by `alpha` (0..1, single-frame step).
-pub fn step_toward(current: BiomeGradingTarget, target: BiomeGradingTarget, alpha: f32) -> BiomeGradingTarget {
+pub fn step_toward(
+    current: BiomeGradingTarget,
+    target: BiomeGradingTarget,
+    alpha: f32,
+) -> BiomeGradingTarget {
     current.lerp(target, alpha.clamp(0.0, 1.0))
 }
 

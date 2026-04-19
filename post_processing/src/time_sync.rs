@@ -134,4 +134,3 @@ fn period_values(hour: f32) -> (f32, f32, f32, f32) {
         (NIGHT_BRIGHTNESS, NIGHT_TINT_R, NIGHT_TINT_G, NIGHT_TINT_B)
     }
 }
-
