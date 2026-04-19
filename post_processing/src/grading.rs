@@ -1,4 +1,3 @@
-#[cfg(not(test))]
 use bevy::render::view::{ColorGrading, ColorGradingGlobal};
 
 /// Alignment scale: 1 = full city, 50 = greenwood, 100 = full darkwood.
@@ -86,7 +85,6 @@ pub fn target_for_alignment(alignment: AreaAlignment) -> BiomeGradingTarget {
 
 /// Apply a `BiomeGradingTarget` to a `ColorGrading` component (writes the
 /// `global` section, leaves shadows/midtones/highlights untouched).
-#[cfg(not(test))]
 pub fn apply_target(grading: &mut ColorGrading, target: BiomeGradingTarget) {
     grading.global = ColorGradingGlobal {
         exposure: target.exposure,
