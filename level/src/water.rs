@@ -83,13 +83,10 @@ pub struct WaterTile {
     pub kind: WaterKind,
 }
 
-/// Marker added to every water sprite. A shared animation system gives it a
-/// subtle scale + alpha pulse so the water reads as "alive" without requiring
-/// per-frame sprite sheets.
+/// Marker added to every water sprite. A shared animation system alpha-pulses
+/// all water in lockstep so wang-tiled edges stay seamless.
 #[derive(Component)]
-pub struct AnimatedWater {
-    pub phase: f32,
-}
+pub struct AnimatedWater;
 
 /// All generated water tiles in the world.
 #[derive(Default, Debug)]
@@ -593,9 +590,7 @@ pub fn spawn_area_water(
                 let z = Layer::Tilemap.z_f32() + 0.4 + f32::from(u16::try_from(mask).unwrap_or(0)) * 0.001;
                 let mut entity = commands.spawn((
                     WaterTile { kind: marker_kind },
-                    AnimatedWater {
-                        phase: phase_for_tile(area_pos, local),
-                    },
+                    AnimatedWater,
                     Scenery,
                     Sprite {
                         image: tileset.texture.clone(),
@@ -707,37 +702,17 @@ fn sand_vertex(water: &WaterMap, area_pos: IVec2, vx: u32, vy: u32) -> bool {
     false
 }
 
-/// Per-frame system: pulse every water sprite's scale + alpha so the sheet
-/// of ponds / rivers / oceans reads as moving without custom atlas frames.
-pub fn animate_water_surface(
-    time: Res<Time>,
-    mut query: Query<(&AnimatedWater, &mut Transform, &mut Sprite)>,
-) {
-    const FREQ_HZ: f32 = 0.7;
-    const SCALE_AMPLITUDE: f32 = 0.035;
-    const ALPHA_AMPLITUDE: f32 = 0.08;
-    let t = time.elapsed_secs();
-    for (water, mut tf, mut sprite) in &mut query {
-        let s = (t * FREQ_HZ * std::f32::consts::TAU + water.phase).sin();
-        let scale = 1.0 + s * SCALE_AMPLITUDE;
-        tf.scale.x = scale;
-        tf.scale.y = scale;
-        let alpha = 1.0 - ALPHA_AMPLITUDE + s.abs() * ALPHA_AMPLITUDE;
+/// Per-frame system: pulse every water sprite's alpha in lockstep so wang-tiled
+/// water bodies keep seamless edges. No per-tile phase (would reveal seams)
+/// and no scale animation (would gap between neighbours).
+pub fn animate_water_surface(time: Res<Time>, mut query: Query<&mut Sprite, With<AnimatedWater>>) {
+    const FREQ_HZ: f32 = 0.55;
+    const ALPHA_AMPLITUDE: f32 = 0.06;
+    let s = (time.elapsed_secs() * FREQ_HZ * std::f32::consts::TAU).sin();
+    let alpha = 1.0 - ALPHA_AMPLITUDE + s.abs() * ALPHA_AMPLITUDE;
+    for mut sprite in &mut query {
         sprite.color = sprite.color.with_alpha(alpha);
     }
-}
-
-fn phase_for_tile(area_pos: IVec2, local: UVec2) -> f32 {
-    let ax = u32::from_ne_bytes(area_pos.x.to_ne_bytes());
-    let ay = u32::from_ne_bytes(area_pos.y.to_ne_bytes());
-    let h = ax
-        .wrapping_mul(2_654_435_761)
-        .wrapping_add(ay.wrapping_mul(1_013_904_223))
-        .wrapping_add(local.x.wrapping_mul(73))
-        .wrapping_add(local.y.wrapping_mul(109));
-    #[allow(clippy::as_conversions)]
-    let frac = (h % 10_000) as f32 / 10_000.0;
-    frac * std::f32::consts::TAU
 }
 
 /// Despawn every water tile on world teardown.

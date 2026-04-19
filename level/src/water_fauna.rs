@@ -4,14 +4,13 @@
 //! through the full `creatures` AI; instead a cheap animation system
 //! bobs them in place.
 
-use bevy::math::{IVec2, UVec2, Vec2};
+use bevy::math::{IVec2, Vec2};
 use bevy::prelude::*;
 use models::layer::Layer;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
-use crate::terrain::{tile_hash, Terrain};
-use crate::water::WaterMap;
+use crate::terrain::tile_hash;
 use crate::world::WorldMap;
 
 // ---------------------------------------------------------------------------
@@ -31,8 +30,9 @@ const FISH_SHADOW_SPRITE: &str = "sprites/creatures/water/fish_shadow.webp";
 const FROG_CHANCE: u32 = 35;
 /// Per water-tile chance (out of 100) to spawn a water strider.
 const STRIDER_CHANCE: u32 = 40;
-/// Per edge-adjacent water tile chance (out of 100) to spawn a dragonfly.
-const DRAGONFLY_CHANCE: u32 = 30;
+/// Per edge-adjacent pond/lake water tile chance (out of 1000) to spawn a
+/// dragonfly. Dragonflies avoid salt water and rapids -- ponds/lakes only.
+const DRAGONFLY_CHANCE_PER_1000: u32 = 70;
 /// Per ocean tile chance (out of 1000) to spawn a fish shadow drifter.
 const FISH_CHANCE_PER_1000: u32 = 4;
 
@@ -47,9 +47,11 @@ const FISH_SPEED_PX: f32 = 8.0;
 const FISH_MEANDER_FREQ_HZ: f32 = 0.5;
 const FISH_MEANDER_AMPLITUDE_PX: f32 = 4.0;
 
-/// Dragonfly hover amplitude + frequency.
-const DRAGONFLY_HOVER_AMPLITUDE_PX: f32 = 4.0;
-const DRAGONFLY_HOVER_FREQ_HZ: f32 = 1.2;
+/// Dragonfly drift: Lissajous-style path so they wander rather than just bob.
+const DRAGONFLY_DRIFT_RADIUS_X_PX: f32 = 14.0;
+const DRAGONFLY_DRIFT_RADIUS_Y_PX: f32 = 8.0;
+const DRAGONFLY_DRIFT_FREQ_X_HZ: f32 = 0.35;
+const DRAGONFLY_DRIFT_FREQ_Y_HZ: f32 = 0.5;
 
 /// Water strider horizontal skate amplitude + frequency.
 const STRIDER_SKATE_AMPLITUDE_PX: f32 = 3.0;
@@ -84,6 +86,7 @@ pub struct WaterStrider {
 #[derive(Component)]
 pub struct Dragonfly {
     pub phase: f32,
+    pub base_x: f32,
     pub base_y: f32,
 }
 
@@ -149,25 +152,18 @@ pub fn spawn_area_water_fauna(
             spawn_frog(commands, asset_server, world_x, world_y, hash);
         }
 
-        // Dragonflies hover over edge water (visually at shoreline).
-        if water.is_edge_tile(area_pos, local)
-            && (hash.wrapping_mul(11) % 100) < usize_of(DRAGONFLY_CHANCE)
+        // Dragonflies: ponds + lakes only, shoreline, very rare.
+        if kind.spawns_lily_pads()
+            && water.is_edge_tile(area_pos, local)
+            && (hash.wrapping_mul(11) % 1000) < usize_of(DRAGONFLY_CHANCE_PER_1000)
         {
             spawn_dragonfly(commands, asset_server, world_x, world_y, hash);
         }
     }
 
-    // Occasional dragonfly over grass adjacent to water.
-    spawn_pondside_dragonflies(
-        commands,
-        asset_server,
-        world,
-        area_pos,
-        area_seed,
-        base_offset_x,
-        base_offset_y,
-        tile_px,
-    );
+    // Pondside dragonflies on land disabled -- rarity is already driven by the
+    // per-edge-tile roll above so they don't crowd the shore.
+    let _ = (area_seed, tile_px, base_offset_x, base_offset_y, world);
 }
 
 fn usize_of(val: u32) -> usize {
@@ -236,7 +232,11 @@ fn spawn_dragonfly(
     let phase = (hash.wrapping_mul(17) % 628) as f32 / 100.0;
     commands.spawn((
         WaterCreature,
-        Dragonfly { phase, base_y: y },
+        Dragonfly {
+            phase,
+            base_x: x,
+            base_y: y,
+        },
         Sprite {
             image: asset_server.load(DRAGONFLY_SPRITE),
             custom_size: Some(Vec2::splat(DRAGONFLY_SIZE_PX)),
@@ -246,59 +246,6 @@ fn spawn_dragonfly(
     ));
 }
 
-#[allow(clippy::too_many_arguments)]
-fn spawn_pondside_dragonflies(
-    commands: &mut Commands,
-    asset_server: &AssetServer,
-    world: &WorldMap,
-    area_pos: IVec2,
-    area_seed: u32,
-    base_offset_x: f32,
-    base_offset_y: f32,
-    tile_px: f32,
-) {
-    let Some(area) = world.get_area(area_pos) else {
-        return;
-    };
-    let water = &world.water;
-    for y in 0..MAP_HEIGHT {
-        for x in 0..MAP_WIDTH {
-            let xu = u32::from(x);
-            let yu = u32::from(y);
-            let local = UVec2::new(xu, yu);
-            if water.get(area_pos, local).is_some() {
-                continue;
-            }
-            if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
-                continue;
-            }
-            if !neighbour_has_water(water, area_pos, local) {
-                continue;
-            }
-            let hash = tile_hash(xu, yu, area_seed.wrapping_add(7));
-            if (hash.wrapping_mul(13) % 100) >= usize_of(DRAGONFLY_CHANCE / 2) {
-                continue;
-            }
-            let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
-            let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
-            spawn_dragonfly(commands, asset_server, world_x, world_y, hash);
-        }
-    }
-}
-
-fn neighbour_has_water(water: &WaterMap, area_pos: IVec2, local: UVec2) -> bool {
-    const DELTAS: [(i32, i32); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
-    DELTAS.iter().any(|&(dx, dy)| {
-        let nx = i32::try_from(local.x).unwrap_or(0) + dx;
-        let ny = i32::try_from(local.y).unwrap_or(0) + dy;
-        if !(0..i32::from(MAP_WIDTH)).contains(&nx) || !(0..i32::from(MAP_HEIGHT)).contains(&ny) {
-            return false;
-        }
-        #[allow(clippy::cast_sign_loss, clippy::as_conversions)]
-        let n_local = UVec2::new(nx as u32, ny as u32);
-        water.get(area_pos, n_local).is_some()
-    })
-}
 
 // ---------------------------------------------------------------------------
 // Animation
@@ -346,8 +293,13 @@ pub fn animate_water_fauna(
             + (t * STRIDER_SKATE_FREQ_HZ + strider.phase).sin() * STRIDER_SKATE_AMPLITUDE_PX;
     }
     for (fly, mut tf) in &mut dragonflies {
-        let offset = (t * DRAGONFLY_HOVER_FREQ_HZ + fly.phase).sin() * DRAGONFLY_HOVER_AMPLITUDE_PX;
-        tf.translation.y = fly.base_y + offset;
+        // Lissajous wander: separate X/Y frequencies so path never repeats on
+        // the same orbit -- feels more like actual dragonfly flight.
+        tf.translation.x = fly.base_x
+            + (t * DRAGONFLY_DRIFT_FREQ_X_HZ + fly.phase).sin() * DRAGONFLY_DRIFT_RADIUS_X_PX;
+        tf.translation.y = fly.base_y
+            + (t * DRAGONFLY_DRIFT_FREQ_Y_HZ + fly.phase * 1.3).cos()
+                * DRAGONFLY_DRIFT_RADIUS_Y_PX;
     }
     let dt = time.delta_secs();
     for (fish, mut tf) in &mut fish {
