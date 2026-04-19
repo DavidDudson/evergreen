@@ -1,3 +1,4 @@
+use bevy::math::Vec2;
 use bevy::post_process::bloom::{Bloom, BloomCompositeMode, BloomPrefilter};
 
 /// Bloom intensity tuned low for pixel art -- only true highlights halo.
@@ -9,8 +10,8 @@ const BLOOM_LOW_FREQUENCY_BOOST_CURVATURE: f32 = 0.95;
 /// Highpass filter response (1.0 = no highpass; lower preserves more haze).
 const BLOOM_HIGH_PASS_FREQUENCY: f32 = 1.0;
 /// Threshold (in HDR linear units) above which a pixel contributes to bloom.
-/// Pixel art bloom needs a high threshold so only emissive (>1.0) sprites trigger.
-const BLOOM_PREFILTER_THRESHOLD: f32 = 0.9;
+/// Set at 1.0 so only emissive (>1.0) sprites trigger; standard sprites stay sharp.
+const BLOOM_PREFILTER_THRESHOLD: f32 = 1.0;
 /// Soft knee around the threshold for smoother transitions.
 const BLOOM_PREFILTER_THRESHOLD_SOFTNESS: f32 = 0.4;
 /// Maximum dimension of the bloom mip chain, in pixels. Matches Bevy's default.
@@ -29,6 +30,6 @@ pub fn pixel_art_bloom() -> Bloom {
         },
         composite_mode: BloomCompositeMode::Additive,
         max_mip_dimension: BLOOM_MAX_MIP_DIMENSION_PX,
-        scale: bevy::math::Vec2::ONE,
+        scale: Vec2::ONE,
     }
 }
