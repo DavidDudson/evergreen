@@ -14,6 +14,7 @@ pub mod npcs;
 pub mod plugin;
 pub mod reveal;
 pub mod scenery;
+pub mod shadows;
 pub mod spawning;
 pub mod terrain;
 pub mod weather;

@@ -7,6 +7,7 @@ use models::weather::WeatherState;
 use models::wind::{WindDirection, WindStrength};
 
 use crate::bark_bubbles;
+use crate::shadows;
 use crate::creatures;
 use crate::decorations;
 use crate::exit;
@@ -35,6 +36,7 @@ impl Plugin for LevelPlugin {
             .init_resource::<WindDirection>()
             .init_resource::<WeatherState>()
             .add_plugins(TilemapPlugin)
+            .add_systems(Startup, shadows::init_shadow_assets)
             .add_message::<AreaChanged>()
             .insert_resource(WorldMap::new(rand::random(), 50))
             .add_systems(
