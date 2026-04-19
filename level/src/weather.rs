@@ -461,6 +461,39 @@ fn spawn_firefly(
     ));
 }
 
+/// Firefly pulse frequency (Hz).
+const FIREFLY_PULSE_FREQ_HZ: f32 = 2.5;
+/// Firefly pulse alpha range: [BASE - AMP, BASE + AMP].
+const FIREFLY_PULSE_BASE: f32 = 0.6;
+const FIREFLY_PULSE_AMP: f32 = 0.4;
+
+/// Per-frame system: pulse each firefly's material alpha.
+pub fn animate_fireflies(
+    time: Res<Time>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    query: Query<(Entity, &MeshMaterial2d<ColorMaterial>, &WeatherParticle)>,
+) {
+    let elapsed = time.elapsed_secs();
+    for (entity, mat_handle, particle) in &query {
+        if particle.variant != ParticleVariant::Firefly {
+            continue;
+        }
+        let phase = entity_phase(entity);
+        let pulse = FIREFLY_PULSE_BASE
+            + FIREFLY_PULSE_AMP * (elapsed * FIREFLY_PULSE_FREQ_HZ + phase).sin();
+        if let Some(mat) = materials.get_mut(&mat_handle.0) {
+            mat.color = mat.color.with_alpha(pulse);
+        }
+    }
+}
+
+fn entity_phase(entity: Entity) -> f32 {
+    let bits = entity.to_bits();
+    #[allow(clippy::as_conversions)]
+    let frac = ((bits.wrapping_mul(2_654_435_761) % 10_000) as f32) / 10_000.0;
+    frac * std::f32::consts::TAU
+}
+
 #[cfg(test)]
 mod firefly_tests {
     use super::*;
