@@ -8,7 +8,7 @@ use dialog::components::{BarkPool, Talker};
 use models::layer::Layer;
 use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 use models::scenery::SceneryCollider;
-use rand::seq::SliceRandom;
+use rand::seq::IndexedRandom;
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::npc_wander::NpcWander;
@@ -76,7 +76,7 @@ fn spawn_galen_entity(
     let questions: Vec<Handle<DialogueScript>> = (1..=GALEN_QUESTION_COUNT)
         .map(|i| asset_server.load(format!("dialogue/scripts/galen_q{i}.dialog.ron")))
         .collect();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let chosen = questions
         .choose(&mut rng)
         .expect("question pool is non-empty")

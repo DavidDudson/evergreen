@@ -18,7 +18,7 @@ dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
 post_processing = { path = "../post_processing" }
 save     = { path = "../save" }
-bevy = { version = "0.18", features = ["webp"] }
+bevy = { version = "0.18.1", features = ["webp"] }
 
 [dev-dependencies]
 husky-rs = "0.3.2"

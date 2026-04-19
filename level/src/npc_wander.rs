@@ -8,7 +8,7 @@ use bevy::prelude::*;
 use dialog::components::DialogueTrigger;
 use models::npc_anim::{NpcAnimKind, NpcFacing};
 use models::speed::Speed;
-use rand::Rng;
+use rand::RngExt;
 
 /// NPC walk speed in pixels per second.
 const WANDER_SPEED_PX: f32 = 16.0;
@@ -104,8 +104,8 @@ pub fn wander_npcs(
                 // Hit radius boundary — stop early.
                 wander.state = WanderState::Idle;
                 *anim_kind = NpcAnimKind::Idle;
-                let mut rng = rand::thread_rng();
-                let dur = rng.gen_range(IDLE_MIN_SECS..IDLE_MAX_SECS);
+                let mut rng = rand::rng();
+                let dur = rng.random_range(IDLE_MIN_SECS..IDLE_MAX_SECS);
                 wander.timer = Timer::from_seconds(dur, TimerMode::Once);
                 continue;
             }
@@ -116,21 +116,21 @@ pub fn wander_npcs(
         }
 
         // ---- Transition ----
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         match wander.state {
             WanderState::Idle => {
-                let angle = rng.gen_range(0.0..std::f32::consts::TAU);
+                let angle = rng.random_range(0.0..std::f32::consts::TAU);
                 let dir = Vec2::new(angle.cos(), angle.sin());
                 *facing = NpcFacing::from_vec2(dir);
                 *anim_kind = NpcAnimKind::Walk;
                 wander.state = WanderState::Walking(dir);
-                let dur = rng.gen_range(WALK_MIN_SECS..WALK_MAX_SECS);
+                let dur = rng.random_range(WALK_MIN_SECS..WALK_MAX_SECS);
                 wander.timer = Timer::from_seconds(dur, TimerMode::Once);
             }
             WanderState::Walking(_) => {
                 *anim_kind = NpcAnimKind::Idle;
                 wander.state = WanderState::Idle;
-                let dur = rng.gen_range(IDLE_MIN_SECS..IDLE_MAX_SECS);
+                let dur = rng.random_range(IDLE_MIN_SECS..IDLE_MAX_SECS);
                 wander.timer = Timer::from_seconds(dur, TimerMode::Once);
             }
         }

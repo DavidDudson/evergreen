@@ -7,6 +7,6 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18"
+bevy = "0.18.1"
 models = { path = "../models" }
 derive_more = { version = "2.1.1", features = ["full"] }

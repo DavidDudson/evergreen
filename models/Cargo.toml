@@ -7,6 +7,6 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18"
+bevy = "0.18.1"
 derive_more = { version = "2.1.1", features = ["full"] }
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use rand::seq::SliceRandom;
+use rand::seq::IndexedRandom;
 
 use crate::asset::DialogueLine;
 use crate::asset::DialogueScript;
@@ -22,7 +22,7 @@ pub fn tick_barks(
     };
     let player_pos = player_tf.translation().truncate();
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     for (entity, mut pool, tf) in &mut bark_q {
         pool.cooldown.tick(time.delta());

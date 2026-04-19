@@ -7,11 +7,11 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18"
+bevy = "0.18.1"
 keybinds = { path = "../keybinds" }
 models = { path = "../models" }
-serde = { version = "1", features = ["derive"] }
-ron = "0.9"
-rand = "0.8"
-getrandom = { version = "0.2", features = ["js"] }
-futures-lite = "2"
+serde = { version = "1.0.228", features = ["derive"] }
+ron = "0.12"
+rand = "0.10"
+getrandom = { version = "0.4", features = ["wasm_js"] }
+futures-lite = "2.6.1"
