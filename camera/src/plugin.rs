@@ -37,6 +37,9 @@ fn setup(mut commands: Commands) {
     commands.spawn((
         Camera2d,
         Hdr,
+        // HDR + MSAA is unsupported on WebGL2 and crashes at runtime.
+        // Pixel art also gains nothing from MSAA.
+        Msaa::Off,
         Tonemapping::TonyMcMapface,
         DebandDither::Enabled,
         pixel_art_bloom(),

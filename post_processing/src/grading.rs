@@ -113,7 +113,7 @@ pub fn step_toward(
 pub fn sync_color_grading(
     world: Res<WorldMap>,
     time: Res<Time>,
-    mut query: Query<&mut ColorGrading>,
+    mut query: Query<&mut ColorGrading, With<Camera2d>>,
 ) {
     let alignment = world
         .get_area(world.current)
@@ -130,6 +130,14 @@ pub fn sync_color_grading(
         };
         let next = step_toward(current, target, alpha);
         apply_target(&mut grading, next);
+    }
+}
+
+/// Reset the camera's `ColorGrading` to defaults so menus and non-gameplay
+/// states render with neutral grading instead of inheriting the last biome.
+pub fn reset_color_grading(mut query: Query<&mut ColorGrading, With<Camera2d>>) {
+    for mut grading in &mut query {
+        *grading = ColorGrading::default();
     }
 }
 

@@ -4,7 +4,7 @@ use models::game_states::GameState;
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
-use crate::grading::sync_color_grading;
+use crate::grading::{reset_color_grading, sync_color_grading};
 use crate::sync;
 use crate::time_sync;
 
@@ -30,5 +30,7 @@ impl Plugin for PostProcessingPlugin {
             PostUpdate,
             time_sync::sync_time_of_day.run_if(in_state(GameState::Playing)),
         );
+
+        app.add_systems(OnExit(GameState::Playing), reset_color_grading);
     }
 }
