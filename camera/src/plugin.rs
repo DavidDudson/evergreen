@@ -1,7 +1,7 @@
 use bevy::camera::ScalingMode;
 use bevy::core_pipeline::tonemapping::{DebandDither, Tonemapping};
 use bevy::prelude::*;
-use bevy::render::view::Hdr;
+use bevy::render::view::{ColorGrading, Hdr};
 use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
@@ -41,6 +41,7 @@ fn setup(mut commands: Commands) {
         DebandDither::Enabled,
         pixel_art_bloom(),
         BiomeAtmosphere::default(),
+        ColorGrading::default(),
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
                 min_width: f32::from(MAP_WIDTH) * f32::from(TILE_SIZE_PX),

@@ -4,6 +4,7 @@ use models::game_states::GameState;
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
+use crate::grading::sync_color_grading;
 use crate::sync;
 use crate::time_sync;
 
@@ -17,7 +18,11 @@ impl Plugin for PostProcessingPlugin {
 
         app.add_systems(
             Update,
-            (sync::sync_atmosphere, time_sync::tick_game_clock)
+            (
+                sync::sync_atmosphere,
+                time_sync::tick_game_clock,
+                sync_color_grading,
+            )
                 .run_if(in_state(GameState::Playing)),
         );
 

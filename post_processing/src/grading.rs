@@ -1,5 +1,7 @@
+use bevy::prelude::*;
 use bevy::render::view::{ColorGrading, ColorGradingGlobal};
 use level::area::AreaAlignment;
+use level::world::WorldMap;
 
 use crate::math::lerp;
 
@@ -97,6 +99,29 @@ pub const GRADING_LERP_SPEED: f32 = 2.5;
 /// Lerp current grading toward target by `alpha` (0..1, single-frame step).
 pub fn step_toward(current: BiomeGradingTarget, target: BiomeGradingTarget, alpha: f32) -> BiomeGradingTarget {
     current.lerp(target, alpha.clamp(0.0, 1.0))
+}
+
+/// Per-frame system: read current area's alignment from `WorldMap`,
+/// compute the target `BiomeGradingTarget`, lerp the camera's grading toward it.
+pub fn sync_color_grading(
+    world: Res<WorldMap>,
+    time: Res<Time>,
+    mut query: Query<&mut ColorGrading>,
+) {
+    let alignment = world.get_area(world.current).map_or(50, |a| a.alignment);
+    let target = target_for_alignment(alignment);
+    let alpha = (GRADING_LERP_SPEED * time.delta_secs()).min(1.0);
+
+    for mut grading in &mut query {
+        let current = BiomeGradingTarget {
+            exposure: grading.global.exposure,
+            temperature: grading.global.temperature,
+            tint: grading.global.tint,
+            post_saturation: grading.global.post_saturation,
+        };
+        let next = step_toward(current, target, alpha);
+        apply_target(&mut grading, next);
+    }
 }
 
 #[cfg(test)]
