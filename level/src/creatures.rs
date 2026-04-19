@@ -1,13 +1,14 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use models::creature::{Creature, CreatureAi, CreatureState, MovementType};
+use models::shadow::{CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX};
 use models::decoration::Biome;
 use models::layer::Layer;
 use models::player::Player;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
-use crate::shadows::DropShadowAssets;
+use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -160,7 +161,7 @@ const DARKWOOD_CREATURES: &[CreatureDef] = &[
 pub fn spawn_area_creatures(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    _shadow_assets: &DropShadowAssets,
+    shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -248,7 +249,7 @@ pub fn spawn_area_creatures(
             .wrapping_add(u32::try_from(i).expect("i fits u32"))
             .wrapping_mul(2_654_435_761);
 
-        commands.spawn((
+        let parent = commands.spawn((
             Creature,
             CreatureAi::new(def.speed, def.movement, entity_seed),
             Sprite {
@@ -257,7 +258,8 @@ pub fn spawn_area_creatures(
                 ..default()
             },
             Transform::from_xyz(world_x, world_y, z),
-        ));
+        )).id();
+        spawn_drop_shadow(commands, shadow_assets, parent, CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX);
     }
 }
 

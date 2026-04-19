@@ -6,13 +6,14 @@ use models::layer::Layer;
 use models::lighting::{
     TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX,
 };
+use models::shadow::{TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX};
 use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
 use crate::light_occluders::spawn_occluder;
-use crate::shadows::DropShadowAssets;
+use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -104,12 +105,12 @@ pub fn despawn_scenery(mut commands: Commands, query: Query<Entity, With<Scenery
 pub fn spawn_area_scenery_at(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    _shadow_assets: &DropShadowAssets,
+    shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
 ) {
-    spawn_area_scenery(commands, asset_server, area, area_pos, world);
+    spawn_area_scenery(commands, asset_server, shadow_assets, area, area_pos, world);
 }
 
 // ---------------------------------------------------------------------------
@@ -124,6 +125,7 @@ fn clear_for_tree(area: &Area, xu: u32, yu: u32) -> bool {
 fn spawn_area_scenery(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    shadow_assets: &DropShadowAssets,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -166,7 +168,7 @@ fn spawn_area_scenery(
                 let def = &pool[variant];
                 let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
                 let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
-                spawn_tree(commands, asset_server, def, world_x, world_y);
+                spawn_tree(commands, asset_server, shadow_assets, def, world_x, world_y);
             }
         }
     }
@@ -179,6 +181,7 @@ fn spawn_area_scenery(
 fn spawn_tree(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    shadow_assets: &DropShadowAssets,
     path: &'static str,
     world_x: f32,
     world_y: f32,
@@ -209,6 +212,7 @@ fn spawn_tree(
 
     spawn_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
     spawn_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
+    spawn_drop_shadow(commands, shadow_assets, parent, TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX);
 }
 
 // ---------------------------------------------------------------------------
