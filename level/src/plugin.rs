@@ -66,6 +66,7 @@ impl Plugin for LevelPlugin {
                     weather::weather_state_machine,
                     weather::sync_wind_strength,
                     weather::spawn_weather_particles,
+                    weather::spawn_fireflies,
                     weather::update_weather_particles,
                     grass::animate_grass_sway,
                 )
