@@ -1,8 +1,12 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
+use bevy_light_2d::prelude::{LightOccluder2d, LightOccluder2dShape};
 use models::decoration::Biome;
 use models::layer::Layer;
+use models::lighting::{
+    TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX,
+};
 use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 
@@ -178,25 +182,45 @@ fn spawn_tree(
     world_y: f32,
 ) {
     let z = Layer::World.z_f32() - world_y * Y_SORT_SCALE;
+    let parent = commands
+        .spawn((
+            Scenery,
+            SceneryCollider {
+                half_extents: TREE_COLLIDER_HALF,
+                center_offset: TREE_COLLIDER_OFFSET,
+            },
+            Revealable {
+                canopy_height_px: TREE_HEIGHT_PX,
+                half_width_px: TREE_WIDTH_PX / 2.0,
+                revealed_full_alpha: 0.3,
+            },
+            RevealState::default(),
+            Sprite {
+                image: asset_server.load(path),
+                custom_size: Some(Vec2::new(TREE_WIDTH_PX, TREE_HEIGHT_PX)),
+                ..default()
+            },
+            Anchor::BOTTOM_CENTER,
+            Transform::from_xyz(world_x, world_y, z),
+        ))
+        .id();
+
+    spawn_tree_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
+    spawn_tree_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
+}
+
+fn spawn_tree_occluder(
+    commands: &mut Commands,
+    parent: Entity,
+    half_size: Vec2,
+    offset: Vec2,
+) {
     commands.spawn((
-        Scenery,
-        SceneryCollider {
-            half_extents: TREE_COLLIDER_HALF,
-            center_offset: TREE_COLLIDER_OFFSET,
+        LightOccluder2d {
+            shape: LightOccluder2dShape::Rectangle { half_size },
         },
-        Revealable {
-            canopy_height_px: TREE_HEIGHT_PX,
-            half_width_px: TREE_WIDTH_PX / 2.0,
-            revealed_full_alpha: 0.3,
-        },
-        RevealState::default(),
-        Sprite {
-            image: asset_server.load(path),
-            custom_size: Some(Vec2::new(TREE_WIDTH_PX, TREE_HEIGHT_PX)),
-            ..default()
-        },
-        Anchor::BOTTOM_CENTER,
-        Transform::from_xyz(world_x, world_y, z),
+        Transform::from_translation(offset.extend(0.0)),
+        ChildOf(parent),
     ));
 }
 

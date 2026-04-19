@@ -11,6 +11,7 @@ pub mod grass;
 pub mod hardness;
 pub mod health;
 pub mod layer;
+pub mod lighting;
 pub mod name;
 pub mod npc_anim;
 pub mod palette;

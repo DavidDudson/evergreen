@@ -949,6 +949,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_light_2d"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d40446e54d26895cdf32a5c6c0f5dd3104bbdeff53fc392ec85fb2d164fa51a"
+dependencies = [
+ "bevy",
+ "smallvec",
+]
+
+[[package]]
 name = "bevy_log"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1756,6 +1766,7 @@ name = "camera"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_light_2d",
  "dialog",
  "level",
  "models",
@@ -2360,6 +2371,7 @@ dependencies = [
  "husky-rs",
  "keybinds",
  "level",
+ "lighting",
  "models",
  "player",
  "post_processing",
@@ -3070,6 +3082,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_ecs_tilemap",
+ "bevy_light_2d",
  "dialog",
  "getrandom 0.4.1",
  "models",
@@ -3128,6 +3141,16 @@ checksum = "3c8469b4a23b962c1396b9b451dda50ef5b283e8dd309d69033475fa9b334324"
 dependencies = [
  "libc",
  "pkg-config",
+]
+
+[[package]]
+name = "lighting"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_light_2d",
+ "level",
+ "models",
 ]
 
 [[package]]
