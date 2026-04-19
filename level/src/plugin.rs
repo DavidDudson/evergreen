@@ -21,6 +21,10 @@ use crate::reveal;
 use crate::scenery;
 use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
+use crate::puddles;
+use crate::water;
+use crate::water_fauna;
+use crate::water_flora;
 use crate::weather;
 use crate::world::{AreaChanged, WorldMap};
 
@@ -36,6 +40,8 @@ impl Plugin for LevelPlugin {
             .init_resource::<WindStrength>()
             .init_resource::<WindDirection>()
             .init_resource::<WeatherState>()
+            .init_resource::<puddles::PuddleSpawnTimer>()
+            .init_resource::<puddles::SteamAccumulator>()
             .add_plugins(TilemapPlugin)
             .add_systems(Startup, shadows::init_shadow_assets)
             .add_message::<AreaChanged>()
@@ -78,7 +84,15 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 Update,
-                (shadows::animate_shadow_sun,).run_if(in_state(GameState::Playing)),
+                (
+                    shadows::animate_shadow_sun,
+                    water_fauna::animate_water_fauna,
+                    puddles::spawn_puddles,
+                    puddles::fade_puddles_when_clear,
+                    puddles::spawn_hotspring_steam,
+                    puddles::update_steam,
+                )
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 Update,
@@ -107,6 +121,11 @@ impl Plugin for LevelPlugin {
                     weather::despawn_weather_particles,
                     grass::despawn_grass,
                     creatures::despawn_creatures,
+                    water::despawn_water,
+                    water_flora::despawn_water_flora,
+                    water_fauna::despawn_water_fauna,
+                    puddles::despawn_puddles,
+                    puddles::despawn_steam,
                 )
                     .run_if(should_despawn_world),
             );

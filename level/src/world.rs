@@ -7,6 +7,7 @@ use crate::area::{
     Area, AreaAlignment, AreaEvent, Direction, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
 };
 use crate::terrain::Terrain;
+use crate::water::{generate_water_bodies, WaterMap};
 
 /// Maximum number of NPC encounters in the world.
 const MAX_NPC_ENCOUNTERS: usize = 3;
@@ -64,6 +65,8 @@ pub struct WorldMap {
     zone_seeds: Vec<ZoneSeed>,
     /// The dead-end area containing the level exit.
     pub exit_area: IVec2,
+    /// Water tiles (ponds, hot springs, lakes) generated after terrain.
+    pub water: WaterMap,
 }
 
 impl WorldMap {
@@ -96,6 +99,7 @@ impl WorldMap {
             revealed: HashSet::new(),
             zone_seeds,
             exit_area: IVec2::ZERO,
+            water: WaterMap::default(),
         };
 
         // Seed the origin as a 4-way cross to bootstrap generation.
@@ -147,6 +151,9 @@ impl WorldMap {
             .copied()
             .unwrap_or(IVec2::ZERO);
         map.exit_area = exit;
+
+        // Water bodies generated last so flood-fill can use final terrain.
+        map.water = generate_water_bodies(&map, seed);
 
         map
     }
