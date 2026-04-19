@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use level::plugin::tile_size;
+use level::shadows::{spawn_drop_shadow, DropShadowAssets};
 use level::spawning::area_world_offset;
 use level::world::WorldMap;
 use models::health::Health;
 use models::layer::Layer;
+use models::shadow::{PLAYER_SHADOW_HALF_PX, PLAYER_SHADOW_OFFSET_Y_PX};
 use models::speed::Speed;
 use models::tile::Tile;
 
@@ -24,6 +26,7 @@ pub fn spawn(
     asset_server: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     world: Res<WorldMap>,
+    shadow_assets: Res<DropShadowAssets>,
     existing: Query<(), With<Player>>,
 ) {
     // OnEnter(Playing) fires on every entry including resume from pause.
@@ -40,29 +43,39 @@ pub fn spawn(
     );
     let layout_handle = atlas_layouts.add(layout);
 
-    commands.spawn((
-        Player,
-        PLAYER_SPEED,
-        PLAYER_MAX_HEALTH,
-        FacingDirection::default(),
-        AnimationKind::default(),
-        AnimationFrame::default(),
-        AnimationTimer::default(),
-        Sprite {
-            image: asset_server.load("sprites/player/briar_sheet.webp"),
-            texture_atlas: Some(TextureAtlas {
-                layout: layout_handle,
-                index: 0,
-            }),
-            custom_size: Some(tile_size(PLAYER_WIDTH, PLAYER_HEIGHT)),
-            ..default()
-        },
-        Transform::from_xyz(
-            area_world_offset(world.current).x,
-            area_world_offset(world.current).y,
-            Layer::World.z_f32(),
-        ),
-    ));
+    let parent = commands
+        .spawn((
+            Player,
+            PLAYER_SPEED,
+            PLAYER_MAX_HEALTH,
+            FacingDirection::default(),
+            AnimationKind::default(),
+            AnimationFrame::default(),
+            AnimationTimer::default(),
+            Sprite {
+                image: asset_server.load("sprites/player/briar_sheet.webp"),
+                texture_atlas: Some(TextureAtlas {
+                    layout: layout_handle,
+                    index: 0,
+                }),
+                custom_size: Some(tile_size(PLAYER_WIDTH, PLAYER_HEIGHT)),
+                ..default()
+            },
+            Transform::from_xyz(
+                area_world_offset(world.current).x,
+                area_world_offset(world.current).y,
+                Layer::World.z_f32(),
+            ),
+        ))
+        .id();
+
+    spawn_drop_shadow(
+        &mut commands,
+        &shadow_assets,
+        parent,
+        PLAYER_SHADOW_HALF_PX,
+        PLAYER_SHADOW_OFFSET_Y_PX,
+    );
 }
 
 pub fn despawn(mut commands: Commands, query: Query<Entity, With<Player>>) {
