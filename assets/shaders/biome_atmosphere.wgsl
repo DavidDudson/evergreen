@@ -13,6 +13,20 @@ struct BiomeAtmosphere {
 
 @group(0) @binding(2) var<uniform> settings: BiomeAtmosphere;
 
+// 4x4 Bayer ordered-dither matrix, normalized to [0, 1).
+fn bayer_4x4(coord: vec2<u32>) -> f32 {
+    let i = (coord.y % 4u) * 4u + (coord.x % 4u);
+    var m: array<u32, 16> = array<u32, 16>(
+        0u,  8u,  2u,  10u,
+        12u, 4u,  14u, 6u,
+        3u,  11u, 1u,  9u,
+        15u, 7u,  13u, 5u,
+    );
+    return f32(m[i]) / 16.0;
+}
+
+const DITHER_STEP: f32 = 1.0 / 255.0;
+
 @fragment
 fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     let color = textureSample(screen_texture, texture_sampler, in.uv);
@@ -28,5 +42,12 @@ fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     let raw_vignette = smoothstep(vignette_radius, vignette_radius + vignette_soft, dist);
     let vignette = 1.0 - raw_vignette * settings.darkness;
 
-    return vec4<f32>(color.rgb * darken * vignette, color.a);
+    var rgb = color.rgb * darken * vignette;
+
+    // -- Bayer dither, scaled by darkness so city = no dither, darkwood = full --
+    let frag_coord = vec2<u32>(in.position.xy);
+    let dither = (bayer_4x4(frag_coord) - 0.5) * DITHER_STEP * settings.darkness;
+    rgb = rgb + vec3<f32>(dither, dither, dither);
+
+    return vec4<f32>(rgb, color.a);
 }
