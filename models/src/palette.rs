@@ -70,7 +70,9 @@ pub const AMBIENT_DUSK: Color = Color::srgb(0.85, 0.55, 0.55);
 pub const AMBIENT_NIGHT: Color = Color::srgb(0.4, 0.5, 0.8);
 
 // Weather particle colors.
-pub const FIREFLY: Color = Color::srgb(2.0, 3.0, 0.5);
+// Firefly is emissive (>>1.0) so it survives bevy_light_2d's multiplicative
+// ambient pass at night (brightness 0.30) and still exceeds bloom threshold (1.0).
+pub const FIREFLY: Color = Color::srgb(6.0, 9.0, 1.5);
 pub const DUST_MOTE: Color = Color::srgb(0.9, 0.85, 0.75);
 pub const FOG: Color = Color::srgba(0.6, 0.65, 0.7, 0.35);
 

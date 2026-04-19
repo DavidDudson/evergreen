@@ -450,6 +450,7 @@ fn spawn_firefly(
             lifetime: Timer::from_seconds(FIREFLY_LIFETIME_SECS, TimerMode::Once),
             variant: ParticleVariant::Firefly,
         },
+        Firefly,
         Mesh2d(mesh),
         MeshMaterial2d(material),
         Transform::from_translation(Vec3::new(
@@ -466,26 +467,43 @@ const FIREFLY_PULSE_FREQ_HZ: f32 = 2.5;
 /// Firefly pulse alpha range: [BASE - AMP, BASE + AMP].
 const FIREFLY_PULSE_BASE: f32 = 0.6;
 const FIREFLY_PULSE_AMP: f32 = 0.4;
+/// Firefly vertical bob frequency (Hz).
+const FIREFLY_BOB_FREQ_HZ: f32 = 1.5;
+/// Firefly vertical bob amplitude (pixels).
+const FIREFLY_BOB_AMP_PX: f32 = 8.0;
 
-/// Per-frame system: pulse each firefly's material alpha.
+/// Per-frame system: pulse each firefly's material alpha and apply a sine
+/// vertical bob so they feel alive.
+#[allow(clippy::type_complexity)]
 pub fn animate_fireflies(
     time: Res<Time>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    query: Query<(Entity, &MeshMaterial2d<ColorMaterial>, &WeatherParticle)>,
+    mut query: Query<
+        (Entity, &MeshMaterial2d<ColorMaterial>, &mut Transform),
+        (With<WeatherParticle>, With<Firefly>),
+    >,
 ) {
     let elapsed = time.elapsed_secs();
-    for (entity, mat_handle, particle) in &query {
-        if particle.variant != ParticleVariant::Firefly {
-            continue;
-        }
+    let dt = time.delta_secs();
+    for (entity, mat_handle, mut tf) in &mut query {
         let phase = entity_phase(entity);
         let pulse = FIREFLY_PULSE_BASE
             + FIREFLY_PULSE_AMP * (elapsed * FIREFLY_PULSE_FREQ_HZ + phase).sin();
         if let Some(mat) = materials.get_mut(&mat_handle.0) {
             mat.color = mat.color.with_alpha(pulse);
         }
+        // Sine bob: add per-frame y-delta. Derivative of sin gives cos for velocity.
+        let bob_vel = (elapsed * FIREFLY_BOB_FREQ_HZ + phase).cos()
+            * FIREFLY_BOB_AMP_PX
+            * FIREFLY_BOB_FREQ_HZ
+            * std::f32::consts::TAU;
+        tf.translation.y += bob_vel * dt;
     }
 }
+
+/// Marker for firefly particles so animation/queries filter cheaply.
+#[derive(Component)]
+pub struct Firefly;
 
 fn entity_phase(entity: Entity) -> f32 {
     let bits = entity.to_bits();
