@@ -4,6 +4,7 @@ use models::game_states::GameState;
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
+use crate::clock::tick_game_clock;
 use crate::grading::{reset_color_grading, sync_color_grading};
 use crate::sync;
 
@@ -23,8 +24,4 @@ impl Plugin for PostProcessingPlugin {
 
         app.add_systems(OnExit(GameState::Playing), reset_color_grading);
     }
-}
-
-fn tick_game_clock(mut clock: ResMut<GameClock>, time: Res<Time>) {
-    clock.tick(time.delta_secs());
 }

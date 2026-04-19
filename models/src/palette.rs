@@ -48,8 +48,10 @@ pub const BIOME_DARKWOOD_TINT: Color = Color::srgb(0.65, 0.70, 0.62);
 pub const TRANSPARENT: Color = Color::srgba(1.0, 1.0, 1.0, 0.0);
 pub const OPAQUE_WHITE: Color = Color::srgba(1.0, 1.0, 1.0, 1.0);
 
-// Level exit marker color. Emissive (>1.0) so HDR bloom haloes the goal sprite.
-pub const LEVEL_EXIT: Color = Color::srgb(2.5, 2.0, 0.5);
+// Level exit marker color. Emissive (>>1.0) so the goal sprite stays bright
+// after the multiplicative `bevy_light_2d` lighting pass even at night
+// (ambient brightness 0.30) and still triggers HDR bloom (threshold 1.0).
+pub const LEVEL_EXIT: Color = Color::srgb(6.0, 5.0, 1.5);
 
 // Performance overlay colours
 pub const PERF_BG: Color = Color::srgba(0.04, 0.04, 0.04, 0.88);

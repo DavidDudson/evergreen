@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_light_2d::prelude::Light2d;
+use bevy_light_2d::prelude::{AmbientLight2d, Light2d};
 use models::palette::{lerp_linear_color, AMBIENT_DAWN, AMBIENT_DAY, AMBIENT_DUSK, AMBIENT_NIGHT};
 use models::time::GameClock;
 
@@ -95,6 +95,18 @@ pub fn sync_ambient_light(
             (target.brightness - light.ambient_light.brightness) * alpha;
         light.ambient_light.color =
             lerp_linear_color(light.ambient_light.color, target.color, alpha);
+    }
+}
+
+/// Reset the camera's ambient to neutral white so menus/GameOver/etc. don't
+/// inherit night-tinted blue from the last gameplay frame. Mirror of
+/// `post_processing::grading::reset_color_grading`.
+pub fn reset_ambient_light(mut query: Query<&mut Light2d, With<Camera2d>>) {
+    for mut light in &mut query {
+        light.ambient_light = AmbientLight2d {
+            color: Color::WHITE,
+            brightness: 1.0,
+        };
     }
 }
 

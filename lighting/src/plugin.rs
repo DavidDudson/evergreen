@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_light_2d::plugin::Light2dPlugin;
 use models::game_states::GameState;
 
-use crate::ambient::sync_ambient_light;
+use crate::ambient::{reset_ambient_light, sync_ambient_light};
 use crate::exit_light::attach_level_exit_light;
 use crate::torch::update_player_torch;
 
@@ -21,5 +21,6 @@ impl Plugin for LightingPlugin {
             )
                 .run_if(in_state(GameState::Playing)),
         );
+        app.add_systems(OnExit(GameState::Playing), reset_ambient_light);
     }
 }
