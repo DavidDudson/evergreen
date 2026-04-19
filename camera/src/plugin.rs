@@ -1,5 +1,7 @@
 use bevy::camera::ScalingMode;
+use bevy::core_pipeline::tonemapping::{DebandDither, Tonemapping};
 use bevy::prelude::*;
+use bevy::render::view::Hdr;
 use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
@@ -33,6 +35,9 @@ impl Plugin for CameraPlugin {
 fn setup(mut commands: Commands) {
     commands.spawn((
         Camera2d,
+        Hdr,
+        Tonemapping::TonyMcMapface,
+        DebandDither::Enabled,
         BiomeAtmosphere::default(),
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: ScalingMode::AutoMin {
