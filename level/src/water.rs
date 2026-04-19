@@ -46,6 +46,8 @@ pub enum WaterKind {
     /// River pouring over the top edge of the world. Rendered differently
     /// from regular river tiles (vertical falling sprite).
     Waterfall,
+    /// Ocean at the world edge. Fish shadows drift across these tiles.
+    Ocean,
 }
 
 impl WaterKind {
@@ -81,12 +83,23 @@ pub struct WaterTile {
     pub kind: WaterKind,
 }
 
+/// Marker added to every water sprite. A shared animation system gives it a
+/// subtle scale + alpha pulse so the water reads as "alive" without requiring
+/// per-frame sprite sheets.
+#[derive(Component)]
+pub struct AnimatedWater {
+    pub phase: f32,
+}
+
 /// All generated water tiles in the world.
 #[derive(Default, Debug)]
 pub struct WaterMap {
     tiles: HashMap<WaterKey, WaterKind>,
     /// Tiles where a stepping stone sits on top of the water (walkable).
     stones: std::collections::HashSet<WaterKey>,
+    /// Sand tiles inland of ocean tiles. Not water -- but stored here so
+    /// spawn systems only need a single map to query.
+    sand: std::collections::HashSet<WaterKey>,
 }
 
 impl WaterMap {
@@ -118,6 +131,18 @@ impl WaterMap {
     /// Every stone in one area.
     pub fn stones_in_area(&self, area_pos: IVec2) -> Vec<UVec2> {
         self.stones
+            .iter()
+            .filter(|(a, _)| *a == area_pos)
+            .map(|(_, local)| *local)
+            .collect()
+    }
+
+    pub fn has_sand(&self, area_pos: IVec2, local: UVec2) -> bool {
+        self.sand.contains(&(area_pos, local))
+    }
+
+    pub fn sand_in_area(&self, area_pos: IVec2) -> Vec<UVec2> {
+        self.sand
             .iter()
             .filter(|(a, _)| *a == area_pos)
             .map(|(_, local)| *local)
@@ -162,6 +187,7 @@ const RIVER_EW_SPRITE: &str = "sprites/scenery/ponds/river_horizontal.webp";
 const WATERFALL_TOP_SPRITE: &str = "sprites/scenery/ponds/waterfall_top.webp";
 const WATERFALL_FALL_SPRITE: &str = "sprites/scenery/ponds/waterfall_fall.webp";
 const STONE_SPRITE: &str = "sprites/scenery/ponds/stepping_stone.webp";
+const OCEAN_SPRITE: &str = "sprites/scenery/ponds/ocean.webp";
 
 /// Rendered sprite size in pixels (wider than a tile so neighbours overlap
 /// and the pond outline looks organic).
@@ -237,9 +263,80 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
     let mut map = WaterMap {
         tiles,
         stones: std::collections::HashSet::new(),
+        sand: std::collections::HashSet::new(),
     };
     generate_rivers(&mut map, world, &mut rng);
+    if world.has_ocean {
+        generate_ocean_and_sand(&mut map, world);
+    }
     map
+}
+
+// ---------------------------------------------------------------------------
+// Ocean / sand
+// ---------------------------------------------------------------------------
+
+fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
+    let width = u32::from(MAP_WIDTH);
+    let height = u32::from(MAP_HEIGHT);
+    for pos in world.area_positions() {
+        let missing = missing_neighbours(world, pos);
+        if missing.is_empty() {
+            continue;
+        }
+        for y in 0..height {
+            for x in 0..width {
+                let dist = edge_distance_to_missing(x, y, width, height, &missing);
+                let Some(dist) = dist else {
+                    continue;
+                };
+                let local = UVec2::new(x, y);
+                let key = (pos, local);
+                if dist < OCEAN_DEPTH {
+                    // Ocean tiles overwrite anything except stepping stones.
+                    if !map.stones.contains(&key) {
+                        map.tiles.insert(key, WaterKind::Ocean);
+                    }
+                } else if dist < OCEAN_DEPTH + SAND_DEPTH && !map.tiles.contains_key(&key) {
+                    map.sand.insert(key);
+                }
+            }
+        }
+    }
+}
+
+/// Directions (from a given area) whose neighbour area does not exist --
+/// those become world-edge facing and are where ocean spills outward.
+fn missing_neighbours(world: &WorldMap, pos: IVec2) -> Vec<Direction> {
+    [
+        Direction::North,
+        Direction::South,
+        Direction::East,
+        Direction::West,
+    ]
+    .into_iter()
+    .filter(|d| world.get_area(pos + d.grid_offset()).is_none())
+    .collect()
+}
+
+/// Shortest distance (tiles) from `(x,y)` to the nearest edge that faces a
+/// missing neighbour. Returns `None` when there's no such edge.
+fn edge_distance_to_missing(
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+    missing: &[Direction],
+) -> Option<u32> {
+    missing
+        .iter()
+        .map(|dir| match dir {
+            Direction::North => height.saturating_sub(1).saturating_sub(y),
+            Direction::South => y,
+            Direction::East => width.saturating_sub(1).saturating_sub(x),
+            Direction::West => x,
+        })
+        .min()
 }
 
 // ---------------------------------------------------------------------------
@@ -255,6 +352,11 @@ enum RiverAxis {
 
 /// Per-area chance (out of 100) to add a river when the axis is valid.
 const RIVER_CHANCE: u64 = 45;
+
+/// Ocean band depth (tiles) along the outermost edge of an edge-facing area.
+const OCEAN_DEPTH: u32 = 4;
+/// Sand band depth (tiles) inland of the ocean band.
+const SAND_DEPTH: u32 = 2;
 
 /// Central 3x3 block where road crosses river -- stones go here.
 const CROSSING_COL_START: u32 = 14;
@@ -468,10 +570,13 @@ pub fn spawn_area_water(
             WaterKind::RiverNS => RIVER_NS_SPRITE,
             WaterKind::RiverEW => RIVER_EW_SPRITE,
             WaterKind::Waterfall => WATERFALL_TOP_SPRITE,
+            WaterKind::Ocean => OCEAN_SPRITE,
         };
         let has_stone = world.water.has_stone(area_pos, local);
+        let phase = phase_for_tile(area_pos, local);
         let mut entity = commands.spawn((
             WaterTile { kind },
+            AnimatedWater { phase },
             Scenery,
             Sprite {
                 image: asset_server.load(path),
@@ -528,6 +633,39 @@ pub fn spawn_area_water(
 /// hop-bob animation while a player is standing on a stone.
 #[derive(Component)]
 pub struct SteppingStone;
+
+/// Per-frame system: pulse every water sprite's scale + alpha so the sheet
+/// of ponds / rivers / oceans reads as moving without custom atlas frames.
+pub fn animate_water_surface(
+    time: Res<Time>,
+    mut query: Query<(&AnimatedWater, &mut Transform, &mut Sprite)>,
+) {
+    const FREQ_HZ: f32 = 0.7;
+    const SCALE_AMPLITUDE: f32 = 0.035;
+    const ALPHA_AMPLITUDE: f32 = 0.08;
+    let t = time.elapsed_secs();
+    for (water, mut tf, mut sprite) in &mut query {
+        let s = (t * FREQ_HZ * std::f32::consts::TAU + water.phase).sin();
+        let scale = 1.0 + s * SCALE_AMPLITUDE;
+        tf.scale.x = scale;
+        tf.scale.y = scale;
+        let alpha = 1.0 - ALPHA_AMPLITUDE + s.abs() * ALPHA_AMPLITUDE;
+        sprite.color = sprite.color.with_alpha(alpha);
+    }
+}
+
+fn phase_for_tile(area_pos: IVec2, local: UVec2) -> f32 {
+    let ax = u32::from_ne_bytes(area_pos.x.to_ne_bytes());
+    let ay = u32::from_ne_bytes(area_pos.y.to_ne_bytes());
+    let h = ax
+        .wrapping_mul(2_654_435_761)
+        .wrapping_add(ay.wrapping_mul(1_013_904_223))
+        .wrapping_add(local.x.wrapping_mul(73))
+        .wrapping_add(local.y.wrapping_mul(109));
+    #[allow(clippy::as_conversions)]
+    let frac = (h % 10_000) as f32 / 10_000.0;
+    frac * std::f32::consts::TAU
+}
 
 /// Despawn every water tile on world teardown.
 pub fn despawn_water(mut commands: Commands, q: Query<Entity, With<WaterTile>>) {

@@ -21,6 +21,7 @@ use crate::reveal;
 use crate::scenery;
 use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
+use crate::beach;
 use crate::puddles;
 use crate::water;
 use crate::water_fauna;
@@ -91,6 +92,8 @@ impl Plugin for LevelPlugin {
                     puddles::fade_puddles_when_clear,
                     puddles::spawn_hotspring_steam,
                     puddles::update_steam,
+                    water::animate_water_surface,
+                    beach::animate_crabs,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
@@ -127,6 +130,8 @@ impl Plugin for LevelPlugin {
                     water_fauna::despawn_water_fauna,
                     puddles::despawn_puddles,
                     puddles::despawn_steam,
+                    beach::despawn_sand,
+                    beach::despawn_piers,
                 )
                     .run_if(should_despawn_world),
             );

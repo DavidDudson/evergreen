@@ -68,20 +68,34 @@ fn tree_pool(alignment: u8) -> &'static [&'static str] {
 
 /// Tree spawn probability (0-100 hash threshold) by biome.
 fn tree_threshold(alignment: u8, ed: u32) -> usize {
-    if ed > 6 {
+    let biome = Biome::from_alignment(alignment);
+
+    // Dead zone: no trees deep in the middle of an area. Darkwood's dead zone
+    // is tighter so its centre opens up for navigation even more than the
+    // other biomes.
+    let dead_zone = match biome {
+        Biome::Darkwood => 4,
+        _ => 6,
+    };
+    if ed > dead_zone {
         return 0;
     }
-    let base: usize = match Biome::from_alignment(alignment) {
+
+    let base: usize = match biome {
         Biome::City => 3,
         Biome::Greenwood => 35,
         Biome::Darkwood => 65,
     };
+
+    // Thick at the border tiles, thinning toward the centre. The final tier
+    // (ed > 4) is the "middle band" -- kept deliberately sparse so the play
+    // area stays readable.
     if ed <= 2 {
         base + 12
     } else if ed <= 4 {
-        base + 8
+        base + 4
     } else {
-        base
+        base / 3
     }
 }
 

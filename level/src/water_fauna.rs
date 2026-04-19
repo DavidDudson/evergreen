@@ -21,6 +21,7 @@ use crate::world::WorldMap;
 const FROG_SPRITE: &str = "sprites/creatures/greenwood/frog.webp";
 const STRIDER_SPRITE: &str = "sprites/creatures/water/water_strider.webp";
 const DRAGONFLY_SPRITE: &str = "sprites/creatures/water/dragonfly.webp";
+const FISH_SHADOW_SPRITE: &str = "sprites/creatures/water/fish_shadow.webp";
 
 // ---------------------------------------------------------------------------
 // Tuning
@@ -32,11 +33,19 @@ const FROG_CHANCE: u32 = 35;
 const STRIDER_CHANCE: u32 = 40;
 /// Per edge-adjacent water tile chance (out of 100) to spawn a dragonfly.
 const DRAGONFLY_CHANCE: u32 = 30;
+/// Per ocean tile chance (out of 1000) to spawn a fish shadow drifter.
+const FISH_CHANCE_PER_1000: u32 = 4;
 
 /// Visual sizes (square sprites, scaled to this pixel size).
 const FROG_SIZE_PX: f32 = 8.0;
 const STRIDER_SIZE_PX: f32 = 6.0;
 const DRAGONFLY_SIZE_PX: f32 = 10.0;
+const FISH_SIZE_PX: f32 = 14.0;
+
+/// Fish drift speed + meander params.
+const FISH_SPEED_PX: f32 = 8.0;
+const FISH_MEANDER_FREQ_HZ: f32 = 0.5;
+const FISH_MEANDER_AMPLITUDE_PX: f32 = 4.0;
 
 /// Dragonfly hover amplitude + frequency.
 const DRAGONFLY_HOVER_AMPLITUDE_PX: f32 = 4.0;
@@ -78,6 +87,13 @@ pub struct Dragonfly {
     pub base_y: f32,
 }
 
+#[derive(Component)]
+pub struct FishShadow {
+    pub phase: f32,
+    pub dir_x: f32,
+    pub base_y: f32,
+}
+
 /// Generic marker so teardown can despawn all water creatures in one query.
 #[derive(Component)]
 pub struct WaterCreature;
@@ -112,6 +128,13 @@ pub fn spawn_area_water_fauna(
             + f32::from(u16::try_from(local.y).unwrap_or(0)) * tile_px
             + tile_px / 2.0;
         let hash = tile_hash(local.x, local.y, area_seed);
+
+        // Fish shadows drift under ocean tiles (very sparse -- per-mille roll).
+        if matches!(kind, crate::water::WaterKind::Ocean)
+            && (hash.wrapping_mul(19) % 1000) < usize_of(FISH_CHANCE_PER_1000)
+        {
+            spawn_fish(commands, asset_server, world_x, world_y, hash);
+        }
 
         // Water striders skate only on still water (not rivers).
         if kind.is_still() && (hash.wrapping_mul(3) % 100) < usize_of(STRIDER_CHANCE) {
@@ -178,6 +201,27 @@ fn spawn_frog(commands: &mut Commands, asset_server: &AssetServer, x: f32, y: f3
             ..default()
         },
         Transform::from_xyz(x, y, Layer::Tilemap.z_f32() + 0.9),
+    ));
+}
+
+fn spawn_fish(commands: &mut Commands, asset_server: &AssetServer, x: f32, y: f32, hash: usize) {
+    #[allow(clippy::as_conversions)]
+    let phase = (hash.wrapping_mul(41) % 628) as f32 / 100.0;
+    let dir_x = if hash % 2 == 0 { 1.0 } else { -1.0 };
+    commands.spawn((
+        WaterCreature,
+        FishShadow {
+            phase,
+            dir_x,
+            base_y: y,
+        },
+        Sprite {
+            image: asset_server.load(FISH_SHADOW_SPRITE),
+            custom_size: Some(Vec2::splat(FISH_SIZE_PX)),
+            color: models::palette::FISH_SHADOW_TINT,
+            ..default()
+        },
+        Transform::from_xyz(x, y, Layer::Tilemap.z_f32() + 0.55),
     ));
 }
 
@@ -260,18 +304,37 @@ fn neighbour_has_water(water: &WaterMap, area_pos: IVec2, local: UVec2) -> bool 
 // Animation
 // ---------------------------------------------------------------------------
 
-type FrogQuery<'w, 's> =
-    Query<'w, 's, (&'static Frog, &'static mut Transform), (Without<WaterStrider>, Without<Dragonfly>)>;
-type StriderQuery<'w, 's> =
-    Query<'w, 's, (&'static WaterStrider, &'static mut Transform), (Without<Frog>, Without<Dragonfly>)>;
-type DragonflyQuery<'w, 's> =
-    Query<'w, 's, (&'static Dragonfly, &'static mut Transform), (Without<Frog>, Without<WaterStrider>)>;
+type FrogQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static Frog, &'static mut Transform),
+    (Without<WaterStrider>, Without<Dragonfly>, Without<FishShadow>),
+>;
+type StriderQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static WaterStrider, &'static mut Transform),
+    (Without<Frog>, Without<Dragonfly>, Without<FishShadow>),
+>;
+type DragonflyQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static Dragonfly, &'static mut Transform),
+    (Without<Frog>, Without<WaterStrider>, Without<FishShadow>),
+>;
+type FishQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static FishShadow, &'static mut Transform),
+    (Without<Frog>, Without<WaterStrider>, Without<Dragonfly>),
+>;
 
 pub fn animate_water_fauna(
     time: Res<Time>,
     mut frogs: FrogQuery,
     mut striders: StriderQuery,
     mut dragonflies: DragonflyQuery,
+    mut fish: FishQuery,
 ) {
     let t = time.elapsed_secs();
     for (frog, mut tf) in &mut frogs {
@@ -279,12 +342,18 @@ pub fn animate_water_fauna(
             frog.base_y + (t * FROG_BOB_FREQ_HZ + frog.phase).sin() * FROG_BOB_AMPLITUDE_PX;
     }
     for (strider, mut tf) in &mut striders {
-        tf.translation.x =
-            strider.base_x + (t * STRIDER_SKATE_FREQ_HZ + strider.phase).sin() * STRIDER_SKATE_AMPLITUDE_PX;
+        tf.translation.x = strider.base_x
+            + (t * STRIDER_SKATE_FREQ_HZ + strider.phase).sin() * STRIDER_SKATE_AMPLITUDE_PX;
     }
     for (fly, mut tf) in &mut dragonflies {
         let offset = (t * DRAGONFLY_HOVER_FREQ_HZ + fly.phase).sin() * DRAGONFLY_HOVER_AMPLITUDE_PX;
         tf.translation.y = fly.base_y + offset;
+    }
+    let dt = time.delta_secs();
+    for (fish, mut tf) in &mut fish {
+        tf.translation.x += fish.dir_x * FISH_SPEED_PX * dt;
+        tf.translation.y = fish.base_y
+            + (t * FISH_MEANDER_FREQ_HZ + fish.phase).sin() * FISH_MEANDER_AMPLITUDE_PX;
     }
 }
 

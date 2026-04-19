@@ -65,8 +65,10 @@ pub struct WorldMap {
     zone_seeds: Vec<ZoneSeed>,
     /// The dead-end area containing the level exit.
     pub exit_area: IVec2,
-    /// Water tiles (ponds, hot springs, lakes) generated after terrain.
+    /// Water tiles (ponds, hot springs, lakes, rivers, ocean) generated after terrain.
     pub water: WaterMap,
+    /// Whether this world has an ocean surrounding its boundary.
+    pub has_ocean: bool,
 }
 
 impl WorldMap {
@@ -89,6 +91,9 @@ impl WorldMap {
 
         let zone_seeds = generate_zone_seeds(seed);
 
+        // Seeded coin flip: ~60% of worlds have an ocean border.
+        let has_ocean = (seed.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> 32) % 100 < 60;
+
         let mut map = Self {
             areas: HashMap::new(),
             current: IVec2::ZERO,
@@ -100,6 +105,7 @@ impl WorldMap {
             zone_seeds,
             exit_area: IVec2::ZERO,
             water: WaterMap::default(),
+            has_ocean,
         };
 
         // Seed the origin as a 4-way cross to bootstrap generation.

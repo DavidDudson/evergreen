@@ -176,6 +176,7 @@ fn ensure_area_spawned(
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
     spawn_area_tilemap(commands, asset_server, world, area, area_pos);
     crate::water::spawn_area_water(commands, asset_server, world, area_pos);
+    crate::beach::spawn_area_beach(commands, asset_server, world, area_pos);
     crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
     crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
     scenery::spawn_area_scenery_at(commands, asset_server, shadow_assets, area, area_pos, world);

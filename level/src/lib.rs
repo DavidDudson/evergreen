@@ -1,5 +1,6 @@
 pub mod area;
 pub mod bark_bubbles;
+pub mod beach;
 pub mod blending;
 pub mod creatures;
 pub mod decorations;

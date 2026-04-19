@@ -80,6 +80,10 @@ pub const FOG: Color = Color::srgba(0.6, 0.65, 0.7, 0.35);
 // modulated per-frame by time-of-day fade.
 pub const DROP_SHADOW_TINT: Color = Color::srgba(0.0, 0.0, 0.0, 0.45);
 
+/// Translucent dark blue applied to fish-shadow silhouettes drifting under
+/// ocean tiles.
+pub const FISH_SHADOW_TINT: Color = Color::srgba(0.05, 0.08, 0.15, 0.45);
+
 /// Linearly interpolate between two colors in linear (non-gamma) color space.
 pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {
     let a = a.to_linear();
