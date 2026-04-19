@@ -5,6 +5,9 @@ use level::world::WorldMap;
 
 use crate::math::lerp;
 
+/// Fallback alignment when the current area is missing (greenwood -- safe neutral).
+const DEFAULT_AREA_ALIGNMENT: AreaAlignment = 50;
+
 /// Anchor alignment for the city biome.
 const ALIGNMENT_CITY: f32 = 1.0;
 /// Anchor alignment for the greenwood biome.
@@ -108,7 +111,9 @@ pub fn sync_color_grading(
     time: Res<Time>,
     mut query: Query<&mut ColorGrading>,
 ) {
-    let alignment = world.get_area(world.current).map_or(50, |a| a.alignment);
+    let alignment = world
+        .get_area(world.current)
+        .map_or(DEFAULT_AREA_ALIGNMENT, |a| a.alignment);
     let target = target_for_alignment(alignment);
     let alpha = (GRADING_LERP_SPEED * time.delta_secs()).min(1.0);
 
