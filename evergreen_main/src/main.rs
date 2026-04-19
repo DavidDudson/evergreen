@@ -8,6 +8,7 @@ use keybinds::KeybindsPlugin;
 use level::plugin::LevelPlugin;
 use models::game_states::GameState;
 use player::plugin::PlayerPlugin;
+use lighting::plugin::LightingPlugin;
 use post_processing::plugin::PostProcessingPlugin;
 use save::SavePlugin;
 use ui::plugin::UiPlugin;
@@ -35,6 +36,7 @@ fn main() {
             LevelPlugin,
             PlayerPlugin,
             PostProcessingPlugin,
+            LightingPlugin,
         ))
         .init_state::<GameState>()
         .run();
