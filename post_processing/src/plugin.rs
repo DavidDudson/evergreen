@@ -1,6 +1,6 @@
 use bevy::core_pipeline::fullscreen_material::FullscreenMaterialPlugin;
 use bevy::prelude::*;
-use models::game_states::GameState;
+use models::game_states::{should_despawn_world, GameState};
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
@@ -22,6 +22,10 @@ impl Plugin for PostProcessingPlugin {
                 .run_if(in_state(GameState::Playing)),
         );
 
-        app.add_systems(OnExit(GameState::Playing), reset_color_grading);
+        // Reset only on true world teardown -- keep grading during Paused/Dialogue.
+        app.add_systems(
+            OnExit(GameState::Playing),
+            reset_color_grading.run_if(should_despawn_world),
+        );
     }
 }
