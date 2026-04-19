@@ -15,7 +15,7 @@ use ui::window::window_plugin;
 
 fn main() {
     App::new()
-        .add_plugins((
+        .add_plugins(
             DefaultPlugins
                 .set(window_plugin())
                 .set(ImagePlugin::default_nearest())
@@ -23,14 +23,14 @@ fn main() {
                     meta_check: AssetMetaCheck::Never,
                     ..default()
                 }),
+        )
+        .add_plugins((
             CameraPlugin,
             DiagnosticsPlugin,
             KeybindsPlugin,
             DialogPlugin,
             SavePlugin,
             UiPlugin,
-        ))
-        .add_plugins((
             CombatPlugin,
             LevelPlugin,
             PlayerPlugin,

@@ -2,6 +2,8 @@
 
 A friendly game about a lost druid finding her way in life.
 
+Play in browser: <https://daviddudson.github.io/evergreen/>
+
 ## Run
 
 Although this can be cross compiled to many platforms, the primary platform is WASM.

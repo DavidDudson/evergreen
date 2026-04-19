@@ -1,3 +1,4 @@
+#[cfg(debug_assertions)]
 use bevy::diagnostic::{EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin};
 use bevy::prelude::*;
 
@@ -8,8 +9,8 @@ use crate::overlay::{
 
 pub struct DiagnosticsPlugin;
 
-#[cfg(debug_assertions)]
 impl Plugin for DiagnosticsPlugin {
+    #[cfg(debug_assertions)]
     fn build(&self, app: &mut App) {
         app.add_plugins((
             FrameTimeDiagnosticsPlugin::default(),
@@ -21,4 +22,7 @@ impl Plugin for DiagnosticsPlugin {
         app.add_systems(Update, toggle_overlay);
         app.add_systems(Update, update_overlay.run_if(overlay_visible));
     }
+
+    #[cfg(not(debug_assertions))]
+    fn build(&self, _app: &mut App) {}
 }
