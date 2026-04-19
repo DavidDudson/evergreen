@@ -10,3 +10,4 @@ workspace = true
 bevy = "0.18.1"
 bevy_light_2d = "0.9"
 models = { path = "../models" }
+level = { path = "../level" }
