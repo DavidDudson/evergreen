@@ -6,6 +6,7 @@ pub mod decorations;
 pub mod exit;
 pub mod galen;
 pub mod grass;
+pub mod light_occluders;
 pub mod npc_anim;
 pub mod npc_labels;
 pub mod npc_wander;

@@ -7,10 +7,12 @@
 use bevy::prelude::*;
 use dialog::components::{BarkPool, Talker};
 use models::layer::Layer;
+use models::lighting::{NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX};
 use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 use models::scenery::SceneryCollider;
 
 use crate::area::{AreaEvent, NpcKind, MAP_HEIGHT, MAP_WIDTH};
+use crate::light_occluders::spawn_occluder;
 use crate::npc_wander::NpcWander;
 use crate::spawning::TILE_SIZE_PX;
 
@@ -74,7 +76,7 @@ fn spawn_npc(
     let (name, sheet, script, barks) = npc_data(kind);
     let pos = tile_world_pos(PATH_CENTER_X, PATH_CENTER_Y, base);
 
-    commands.spawn((
+    let parent = commands.spawn((
         EventNpc,
         Name::new(name),
         npc_sprite(asset_server, atlas_layouts, sheet),
@@ -83,7 +85,9 @@ fn spawn_npc(
         npc_anim_bundle(pos.truncate()),
         Talker::new(asset_server.load(script)),
         bark_pool(asset_server, barks),
-    ));
+    )).id();
+
+    spawn_occluder(commands, parent, NPC_BODY_HALF_PX, NPC_BODY_OFFSET_PX);
 }
 
 /// Returns (display_name, sheet_path, dialogue_script, bark_paths) for each NPC.

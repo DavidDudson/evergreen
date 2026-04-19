@@ -1,7 +1,6 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use bevy_light_2d::prelude::{LightOccluder2d, LightOccluder2dShape};
 use models::decoration::Biome;
 use models::layer::Layer;
 use models::lighting::{
@@ -12,6 +11,7 @@ use models::scenery::{Rustling, Scenery, SceneryCollider};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
+use crate::light_occluders::spawn_occluder;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
@@ -205,23 +205,8 @@ fn spawn_tree(
         ))
         .id();
 
-    spawn_tree_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
-    spawn_tree_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
-}
-
-fn spawn_tree_occluder(
-    commands: &mut Commands,
-    parent: Entity,
-    half_size: Vec2,
-    offset: Vec2,
-) {
-    commands.spawn((
-        LightOccluder2d {
-            shape: LightOccluder2dShape::Rectangle { half_size },
-        },
-        Transform::from_translation(offset.extend(0.0)),
-        ChildOf(parent),
-    ));
+    spawn_occluder(commands, parent, TREE_TRUNK_HALF_PX, TREE_TRUNK_OFFSET_PX);
+    spawn_occluder(commands, parent, TREE_CANOPY_HALF_PX, TREE_CANOPY_OFFSET_PX);
 }
 
 // ---------------------------------------------------------------------------
