@@ -13,6 +13,8 @@ const BLOOM_HIGH_PASS_FREQUENCY: f32 = 1.0;
 const BLOOM_PREFILTER_THRESHOLD: f32 = 0.9;
 /// Soft knee around the threshold for smoother transitions.
 const BLOOM_PREFILTER_THRESHOLD_SOFTNESS: f32 = 0.4;
+/// Maximum dimension of the bloom mip chain, in pixels. Matches Bevy's default.
+const BLOOM_MAX_MIP_DIMENSION_PX: u32 = 512;
 
 /// Returns a `Bloom` component tuned for the project's pixel-art look.
 pub fn pixel_art_bloom() -> Bloom {
@@ -26,7 +28,7 @@ pub fn pixel_art_bloom() -> Bloom {
             threshold_softness: BLOOM_PREFILTER_THRESHOLD_SOFTNESS,
         },
         composite_mode: BloomCompositeMode::Additive,
-        max_mip_dimension: 512,
+        max_mip_dimension: BLOOM_MAX_MIP_DIMENSION_PX,
         scale: bevy::math::Vec2::ONE,
     }
 }
