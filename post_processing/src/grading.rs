@@ -1,7 +1,7 @@
 use bevy::render::view::{ColorGrading, ColorGradingGlobal};
+use level::area::AreaAlignment;
 
-/// Alignment scale: 1 = full city, 50 = greenwood, 100 = full darkwood.
-type AreaAlignment = u8;
+use crate::math::lerp;
 
 /// Anchor alignment for the city biome.
 const ALIGNMENT_CITY: f32 = 1.0;
@@ -65,10 +65,6 @@ impl BiomeGradingTarget {
             post_saturation: lerp(self.post_saturation, other.post_saturation, t),
         }
     }
-}
-
-fn lerp(a: f32, b: f32, t: f32) -> f32 {
-    a + (b - a) * t
 }
 
 /// Map an alignment value to a target grading by interpolating between anchors.
@@ -151,19 +147,24 @@ mod tests {
         approx(t.exposure, CITY_EXPOSURE);
     }
 
+    fn approx_target(actual: BiomeGradingTarget, expected: BiomeGradingTarget) {
+        approx(actual.exposure, expected.exposure);
+        approx(actual.temperature, expected.temperature);
+        approx(actual.tint, expected.tint);
+        approx(actual.post_saturation, expected.post_saturation);
+    }
+
     #[test]
     fn step_toward_zero_alpha_returns_current() {
         let current = BiomeGradingTarget::CITY;
         let target = BiomeGradingTarget::DARKWOOD;
-        let result = step_toward(current, target, 0.0);
-        approx(result.exposure, current.exposure);
+        approx_target(step_toward(current, target, 0.0), current);
     }
 
     #[test]
     fn step_toward_one_alpha_returns_target() {
         let current = BiomeGradingTarget::CITY;
         let target = BiomeGradingTarget::DARKWOOD;
-        let result = step_toward(current, target, 1.0);
-        approx(result.exposure, target.exposure);
+        approx_target(step_toward(current, target, 1.0), target);
     }
 }

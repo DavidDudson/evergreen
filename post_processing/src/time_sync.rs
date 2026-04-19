@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
+use crate::math::lerp;
 
 /// Lerp speed for time-of-day transitions (per second).
 const TIME_LERP_SPEED: f32 = 2.0;
@@ -134,6 +135,3 @@ fn period_values(hour: f32) -> (f32, f32, f32, f32) {
     }
 }
 
-fn lerp(a: f32, b: f32, t: f32) -> f32 {
-    a + (b - a) * t
-}
