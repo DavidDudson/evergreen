@@ -75,7 +75,11 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 Update,
-                weather::spawn_dust_motes.run_if(in_state(GameState::Playing)),
+                (
+                    weather::spawn_dust_motes,
+                    weather::spawn_fog_patches,
+                )
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 Update,

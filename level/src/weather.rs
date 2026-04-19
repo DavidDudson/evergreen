@@ -575,6 +575,106 @@ fn spawn_dust_mote(
     ));
 }
 
+// ---------------------------------------------------------------------------
+// Fog
+// ---------------------------------------------------------------------------
+
+/// Fog patches per second in darkwood.
+const FOG_PATCHES_PER_SEC: f32 = 0.3;
+/// Fog patch lifetime.
+const FOG_LIFETIME_SECS: f32 = 12.0;
+/// Fog patch drift speed (pixels/sec).
+const FOG_DRIFT_SPEED_PX: f32 = 15.0;
+/// Fog patch ellipse half-size (x, y) in world pixels.
+const FOG_HALF_PX_X: f32 = 16.0;
+const FOG_HALF_PX_Y: f32 = 8.0;
+/// Alignment threshold above which fog spawns.
+const FOG_ALIGNMENT_THRESHOLD: AreaAlignment = 75;
+
+/// Pure predicate: should fog patches spawn for this alignment?
+pub fn fog_active(alignment: AreaAlignment) -> bool {
+    alignment > FOG_ALIGNMENT_THRESHOLD
+}
+
+use models::palette::FOG;
+
+/// Per-frame system: spawn fog patches in darkwood areas.
+pub fn spawn_fog_patches(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    wind_dir: Res<WindDirection>,
+    camera_q: Query<&Transform, With<Camera2d>>,
+    time: Res<Time>,
+    world: Res<WorldMap>,
+) {
+    let alignment = world.get_area(world.current).map_or(50, |a| a.alignment);
+    if !fog_active(alignment) {
+        return;
+    }
+    let Ok(cam_tf) = camera_q.single() else {
+        return;
+    };
+    let cam_pos = cam_tf.translation.truncate();
+    let dir = wind_dir.as_vec2();
+
+    let dt = time.delta_secs();
+    let frame_seed = f32_to_seed(time.elapsed_secs()).wrapping_add(77777);
+    let count = fractional_to_count(FOG_PATCHES_PER_SEC * dt, frame_seed);
+
+    for i in 0..count {
+        let s = frame_seed.wrapping_add(i).wrapping_add(11111);
+        spawn_fog_patch(&mut commands, &mut meshes, &mut materials, cam_pos, s, dir);
+    }
+}
+
+fn spawn_fog_patch(
+    commands: &mut Commands,
+    meshes: &mut Assets<Mesh>,
+    materials: &mut Assets<ColorMaterial>,
+    cam_pos: Vec2,
+    seed: u32,
+    wind_dir: Vec2,
+) {
+    let x_offset = hash_f32(seed, VIEWPORT_HALF_W_PX);
+    let y_offset = hash_f32(seed.wrapping_add(1), VIEWPORT_HALF_H_PX);
+    let velocity = wind_dir * FOG_DRIFT_SPEED_PX;
+
+    let mesh = meshes.add(Circle::new(1.0));
+    let material = materials.add(ColorMaterial::from(FOG));
+
+    commands.spawn((
+        WeatherParticle {
+            velocity,
+            lifetime: Timer::from_seconds(FOG_LIFETIME_SECS, TimerMode::Once),
+            variant: ParticleVariant::FogPatch,
+        },
+        Mesh2d(mesh),
+        MeshMaterial2d(material),
+        Transform::from_translation(Vec3::new(
+            cam_pos.x + x_offset,
+            cam_pos.y + y_offset,
+            Layer::Weather.z_f32(),
+        ))
+        .with_scale(Vec3::new(FOG_HALF_PX_X, FOG_HALF_PX_Y, 1.0)),
+    ));
+}
+
+#[cfg(test)]
+mod fog_tests {
+    use super::*;
+
+    #[test]
+    fn fog_active_in_darkwood() {
+        assert!(fog_active(80));
+    }
+
+    #[test]
+    fn fog_inactive_in_greenwood() {
+        assert!(!fog_active(50));
+    }
+}
+
 #[cfg(test)]
 mod dust_mote_tests {
     use super::*;
