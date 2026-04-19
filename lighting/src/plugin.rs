@@ -1,5 +1,8 @@
 use bevy::prelude::*;
 use bevy_light_2d::plugin::Light2dPlugin;
+use models::game_states::GameState;
+
+use crate::ambient::sync_ambient_light;
 
 /// Top-level lighting plugin -- composes `bevy_light_2d` + project systems.
 pub struct LightingPlugin;
@@ -7,5 +10,9 @@ pub struct LightingPlugin;
 impl Plugin for LightingPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(Light2dPlugin);
+        app.add_systems(
+            Update,
+            sync_ambient_light.run_if(in_state(GameState::Playing)),
+        );
     }
 }

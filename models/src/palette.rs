@@ -56,3 +56,21 @@ pub const PERF_BG: Color = Color::srgba(0.04, 0.04, 0.04, 0.88);
 pub const PERF_GOOD: Color = Color::srgb(0.20, 0.85, 0.35);
 pub const PERF_WARN: Color = Color::srgb(0.95, 0.75, 0.10);
 pub const PERF_BAD: Color = Color::srgb(0.90, 0.20, 0.15);
+
+// 2D lighting ambient color anchors (per time-of-day period).
+pub const AMBIENT_DAY: Color = Color::srgb(1.0, 1.0, 0.95);
+pub const AMBIENT_DAWN: Color = Color::srgb(1.0, 0.85, 0.65);
+pub const AMBIENT_DUSK: Color = Color::srgb(0.85, 0.55, 0.55);
+pub const AMBIENT_NIGHT: Color = Color::srgb(0.4, 0.5, 0.8);
+
+/// Linearly interpolate between two colors in linear (non-gamma) color space.
+pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {
+    let a = a.to_linear();
+    let b = b.to_linear();
+    Color::linear_rgba(
+        a.red + (b.red - a.red) * t,
+        a.green + (b.green - a.green) * t,
+        a.blue + (b.blue - a.blue) * t,
+        a.alpha + (b.alpha - a.alpha) * t,
+    )
+}
