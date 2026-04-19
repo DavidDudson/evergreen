@@ -9,9 +9,11 @@ use models::wind::WindStrength;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::blending;
+use crate::light_occluders::spawn_occluder;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
+use models::lighting::{GRASS_OCCLUDER_HALF_PX, GRASS_OCCLUDER_OFFSET_PX};
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -174,15 +176,19 @@ pub fn spawn_area_grass(
         #[allow(clippy::as_conversions)]
         let phase = (tile_hash(xu, yu, grass_seed) % 6283) as f32 / 1000.0;
 
-        commands.spawn((
-            GrassTuft,
-            WindSway { phase },
-            Sprite {
-                image: asset_server.load(def.path),
-                ..default()
-            },
-            Transform::from_xyz(world_x, world_y, z),
-        ));
+        let parent = commands
+            .spawn((
+                GrassTuft,
+                WindSway { phase },
+                Sprite {
+                    image: asset_server.load(def.path),
+                    ..default()
+                },
+                Transform::from_xyz(world_x, world_y, z),
+            ))
+            .id();
+
+        spawn_occluder(commands, parent, GRASS_OCCLUDER_HALF_PX, GRASS_OCCLUDER_OFFSET_PX);
     }
 }
 
