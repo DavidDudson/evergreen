@@ -34,8 +34,6 @@ const BACK_PADDING_H_PX: f32 = 32.0;
 const BACK_PADDING_V_PX: f32 = 12.0;
 const BACK_MARGIN_TOP_PX: f32 = 40.0;
 const BACK_MARGIN_BOTTOM_PX: f32 = 60.0;
-const BACK_BORDER_PX: f32 = 2.0;
-const BACK_RADIUS_PX: f32 = 6.0;
 
 const SCROLLBAR_WIDTH_PX: f32 = 8.0;
 const SCROLLBAR_THUMB_MIN_HEIGHT_PX: f32 = 24.0;
@@ -242,37 +240,11 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     ));
 
     // ── Back button ───────────────────────────────────────────────────────
-    commands
-        .spawn((
-            CreditsBackButton,
-            Button,
-            Node {
-                padding: UiRect::axes(Val::Px(BACK_PADDING_H_PX), Val::Px(BACK_PADDING_V_PX)),
-                margin: UiRect::new(
-                    Val::Auto,
-                    Val::Auto,
-                    Val::Px(BACK_MARGIN_TOP_PX),
-                    Val::Px(BACK_MARGIN_BOTTOM_PX),
-                ),
-                border: UiRect::all(Val::Px(BACK_BORDER_PX)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                border_radius: BorderRadius::all(Val::Px(BACK_RADIUS_PX)),
-                ..Node::default()
-            },
-            BorderColor::all(theme::ACCENT),
-            BackgroundColor(theme::BUTTON_BG),
-            ChildOf(column),
-        ))
-        .with_child((
-            Text::new("Back"),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont {
-                font,
-                font_size: BACK_FONT_SIZE_PX,
-                ..default()
-            },
-        ));
+    crate::widgets::ButtonBuilder::new("Back", CreditsBackButton, font)
+        .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
+        .font_size(BACK_FONT_SIZE_PX)
+        .margin(BACK_MARGIN_TOP_PX, BACK_MARGIN_BOTTOM_PX)
+        .spawn(&mut commands, column);
 }
 
 // ---------------------------------------------------------------------------

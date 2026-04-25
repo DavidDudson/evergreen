@@ -19,6 +19,8 @@ pub struct ButtonBuilder<M: Component> {
     padding_v_px: f32,
     margin_top_px: f32,
     margin_bottom_px: f32,
+    margin_left_px: f32,
+    margin_right_px: f32,
     border_px: f32,
     radius_px: f32,
     font_size_px: f32,
@@ -37,6 +39,8 @@ impl<M: Component> ButtonBuilder<M> {
             padding_v_px: spacing::BUTTON_PADDING_V_PX,
             margin_top_px: spacing::BUTTON_MARGIN_TOP_PX,
             margin_bottom_px: spacing::BUTTON_MARGIN_BOTTOM_PX,
+            margin_left_px: 0.0,
+            margin_right_px: 0.0,
             border_px: spacing::BUTTON_BORDER_PX,
             radius_px: spacing::BUTTON_RADIUS_PX,
             font_size_px: typography::BUTTON_FONT_SIZE_PX,
@@ -63,6 +67,12 @@ impl<M: Component> ButtonBuilder<M> {
         self
     }
 
+    pub fn margin_x(mut self, left_px: f32, right_px: f32) -> Self {
+        self.margin_left_px = left_px;
+        self.margin_right_px = right_px;
+        self
+    }
+
     pub fn colors(mut self, background: Color, text: Color, border: Color) -> Self {
         self.background_color = background;
         self.text_color = text;
@@ -80,7 +90,8 @@ impl<M: Component> ButtonBuilder<M> {
                     margin: UiRect {
                         top: Val::Px(self.margin_top_px),
                         bottom: Val::Px(self.margin_bottom_px),
-                        ..UiRect::default()
+                        left: Val::Px(self.margin_left_px),
+                        right: Val::Px(self.margin_right_px),
                     },
                     border: UiRect::all(Val::Px(self.border_px)),
                     border_radius: BorderRadius::all(Val::Px(self.radius_px)),

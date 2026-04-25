@@ -36,8 +36,6 @@ const NAV_PADDING_H_PX: f32 = 24.0;
 const NAV_PADDING_V_PX: f32 = 10.0;
 const NAV_MARGIN_TOP_PX: f32 = 24.0;
 const NAV_MARGIN_RIGHT_PX: f32 = 12.0;
-const NAV_BORDER_PX: f32 = 2.0;
-const NAV_RADIUS_PX: f32 = 6.0;
 
 const MAX_VOLUME: u8 = 10;
 
@@ -620,28 +618,11 @@ fn spawn_nav_btn(
     bg: bevy::prelude::Color,
     font: Handle<Font>,
 ) {
-    commands
-        .spawn((
-            marker,
-            Button,
-            Node {
-                padding: UiRect::axes(Val::Px(NAV_PADDING_H_PX), Val::Px(NAV_PADDING_V_PX)),
-                margin: UiRect::right(Val::Px(NAV_MARGIN_RIGHT_PX)),
-                border: UiRect::all(Val::Px(NAV_BORDER_PX)),
-                border_radius: BorderRadius::all(Val::Px(NAV_RADIUS_PX)),
-                ..Node::default()
-            },
-            BorderColor::all(theme::ACCENT),
-            BackgroundColor(bg),
-            ChildOf(parent),
-        ))
-        .with_child((
-            Text::new(label),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont {
-                font,
-                font_size: NAV_FONT_SIZE_PX,
-                ..default()
-            },
-        ));
+    crate::widgets::ButtonBuilder::new(label, marker, font)
+        .padding(NAV_PADDING_H_PX, NAV_PADDING_V_PX)
+        .font_size(NAV_FONT_SIZE_PX)
+        .margin(0.0, 0.0)
+        .margin_x(0.0, NAV_MARGIN_RIGHT_PX)
+        .colors(bg, theme::BUTTON_TEXT, theme::ACCENT)
+        .spawn(commands, parent);
 }

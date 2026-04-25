@@ -41,8 +41,6 @@ const BACK_FONT_SIZE_PX: f32 = 18.0;
 const BACK_PADDING_H_PX: f32 = 24.0;
 const BACK_PADDING_V_PX: f32 = 10.0;
 const BACK_MARGIN_TOP_PX: f32 = 20.0;
-const BACK_BORDER_PX: f32 = 2.0;
-const BACK_RADIUS_PX: f32 = 6.0;
 
 const OVERLAY_FONT_SIZE_PX: f32 = 24.0;
 
@@ -152,29 +150,11 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
         .id();
 
     // Back button
-    commands
-        .spawn((
-            BackButton,
-            Button,
-            Node {
-                padding: UiRect::axes(Val::Px(BACK_PADDING_H_PX), Val::Px(BACK_PADDING_V_PX)),
-                border: UiRect::all(Val::Px(BACK_BORDER_PX)),
-                border_radius: BorderRadius::all(Val::Px(BACK_RADIUS_PX)),
-                ..Node::default()
-            },
-            BorderColor::all(theme::ACCENT),
-            BackgroundColor(theme::BUTTON_BG),
-            ChildOf(bottom_row),
-        ))
-        .with_child((
-            Text::new("Back"),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont {
-                font: font.clone(),
-                font_size: BACK_FONT_SIZE_PX,
-                ..default()
-            },
-        ));
+    crate::widgets::ButtonBuilder::new("Back", BackButton, font.clone())
+        .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
+        .font_size(BACK_FONT_SIZE_PX)
+        .margin(0.0, 0.0)
+        .spawn(&mut commands, bottom_row);
 
     // Reset All button
     commands
