@@ -1,4 +1,5 @@
 mod credits;
+pub mod design_tokens;
 mod despawn;
 mod dialog_box;
 mod focus;
@@ -14,4 +15,5 @@ mod pause_menu;
 pub mod plugin;
 mod settings_screen;
 pub mod theme;
+pub mod widgets;
 pub mod window;

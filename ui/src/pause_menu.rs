@@ -4,15 +4,10 @@ use models::game_states::GameState;
 use crate::fonts::UiFont;
 use crate::settings_screen::SettingsOrigin;
 use crate::theme;
+use crate::widgets::ButtonBuilder;
 
 const TITLE_FONT_SIZE_PX: f32 = 48.0;
 const TITLE_MARGIN_BOTTOM_PX: f32 = 32.0;
-const BUTTON_FONT_SIZE_PX: f32 = 22.0;
-const BUTTON_PADDING_H_PX: f32 = 32.0;
-const BUTTON_PADDING_V_PX: f32 = 12.0;
-const BUTTON_MARGIN_BOTTOM_PX: f32 = 12.0;
-const BUTTON_BORDER_PX: f32 = 2.0;
-const BUTTON_RADIUS_PX: f32 = 6.0;
 
 #[derive(Component)]
 pub struct PauseMenu;
@@ -66,21 +61,10 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
         ChildOf(root),
     ));
 
-    spawn_button(&mut commands, root, ResumeButton, "Resume", fonts.0.clone());
-    spawn_button(
-        &mut commands,
-        root,
-        SettingsButton,
-        "Settings",
-        fonts.0.clone(),
-    );
-    spawn_button(
-        &mut commands,
-        root,
-        QuitToMenuButton,
-        "Quit to Main Menu",
-        fonts.0.clone(),
-    );
+    ButtonBuilder::new("Resume", ResumeButton, fonts.0.clone()).spawn(&mut commands, root);
+    ButtonBuilder::new("Settings", SettingsButton, fonts.0.clone()).spawn(&mut commands, root);
+    ButtonBuilder::new("Quit to Main Menu", QuitToMenuButton, fonts.0.clone())
+        .spawn(&mut commands, root);
 }
 
 #[allow(clippy::type_complexity)]
@@ -154,36 +138,3 @@ pub fn handle_quit_pending(
     }
 }
 
-fn spawn_button(
-    commands: &mut Commands,
-    parent: Entity,
-    marker: impl Component,
-    label: &str,
-    font: Handle<Font>,
-) {
-    commands
-        .spawn((
-            marker,
-            Button,
-            Node {
-                padding: UiRect::axes(Val::Px(BUTTON_PADDING_H_PX), Val::Px(BUTTON_PADDING_V_PX)),
-                margin: UiRect::bottom(Val::Px(BUTTON_MARGIN_BOTTOM_PX)),
-                border: UiRect::all(Val::Px(BUTTON_BORDER_PX)),
-                border_radius: BorderRadius::all(Val::Px(BUTTON_RADIUS_PX)),
-                justify_content: JustifyContent::Center,
-                ..Node::default()
-            },
-            BorderColor::all(theme::ACCENT),
-            BackgroundColor(theme::BUTTON_BG),
-            ChildOf(parent),
-        ))
-        .with_child((
-            Text::new(label),
-            TextColor(theme::BUTTON_TEXT),
-            TextFont {
-                font,
-                font_size: BUTTON_FONT_SIZE_PX,
-                ..default()
-            },
-        ));
-}

@@ -4,16 +4,15 @@ use models::game_states::GameState;
 use crate::fonts::UiFont;
 use crate::settings_screen::SettingsOrigin;
 use crate::theme;
+use crate::widgets::ButtonBuilder;
 
 const LOGO_WIDTH_PX: u16 = 512;
 const LOGO_HEIGHT_PX: u16 = 256;
 const LOGO_MARGIN_BOTTOM_PX: u16 = 24;
-const BUTTON_FONT_SIZE_PX: u16 = 26;
-const BUTTON_PADDING_H_PX: u16 = 40;
-const BUTTON_PADDING_V_PX: u16 = 14;
-const BUTTON_MARGIN_TOP_PX: u16 = 8;
-const BUTTON_BORDER_PX: u16 = 2;
-const BUTTON_RADIUS_PX: u16 = 6;
+/// Main menu uses larger buttons than the design-token defaults.
+const MENU_BUTTON_FONT_SIZE_PX: f32 = 26.0;
+const MENU_BUTTON_PADDING_H_PX: f32 = 40.0;
+const MENU_BUTTON_PADDING_V_PX: f32 = 14.0;
 const COG_BUTTON_SIZE_PX: f32 = 44.0;
 const COG_ICON_SIZE_PX: f32 = 28.0;
 const COG_MARGIN_PX: f32 = 12.0;
@@ -80,104 +79,29 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<
             },
         ));
 
-    commands.entity(root).with_children(|parent| {
-        parent.spawn((
-            ImageNode::new(asset_server.load("sprites/ui/logo.webp")),
-            Node {
-                width: Val::Px(f32::from(LOGO_WIDTH_PX)),
-                height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
-                margin: UiRect::bottom(Val::Px(f32::from(LOGO_MARGIN_BOTTOM_PX))),
-                ..Node::default()
-            },
-        ));
+    commands.spawn((
+        ImageNode::new(asset_server.load("sprites/ui/logo.webp")),
+        Node {
+            width: Val::Px(f32::from(LOGO_WIDTH_PX)),
+            height: Val::Px(f32::from(LOGO_HEIGHT_PX)),
+            margin: UiRect::bottom(Val::Px(f32::from(LOGO_MARGIN_BOTTOM_PX))),
+            ..Node::default()
+        },
+        ChildOf(root),
+    ));
 
-        parent
-            .spawn((
-                StartButton,
-                Button,
-                Node {
-                    padding: UiRect::axes(
-                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                    ),
-                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                    ..Node::default()
-                },
-                BorderColor::all(theme::ACCENT),
-                BackgroundColor(theme::BUTTON_BG),
-            ))
-            .with_child((
-                Text::new("Begin Journey"),
-                TextColor(theme::BUTTON_TEXT),
-                TextFont {
-                    font: fonts.0.clone(),
-                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                    ..default()
-                },
-            ));
-
-        parent
-            .spawn((
-                LoreButton,
-                Button,
-                Node {
-                    padding: UiRect::axes(
-                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                    ),
-                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                    ..Node::default()
-                },
-                BorderColor::all(theme::ACCENT),
-                BackgroundColor(theme::BUTTON_BG),
-            ))
-            .with_child((
-                Text::new("Lore"),
-                TextColor(theme::BUTTON_TEXT),
-                TextFont {
-                    font: fonts.0.clone(),
-                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                    ..default()
-                },
-            ));
-
-        parent
-            .spawn((
-                CreditsButton,
-                Button,
-                Node {
-                    padding: UiRect::axes(
-                        Val::Px(f32::from(BUTTON_PADDING_H_PX)),
-                        Val::Px(f32::from(BUTTON_PADDING_V_PX)),
-                    ),
-                    margin: UiRect::top(Val::Px(f32::from(BUTTON_MARGIN_TOP_PX))),
-                    border: UiRect::all(Val::Px(f32::from(BUTTON_BORDER_PX))),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    border_radius: BorderRadius::all(Val::Px(f32::from(BUTTON_RADIUS_PX))),
-                    ..Node::default()
-                },
-                BorderColor::all(theme::ACCENT),
-                BackgroundColor(theme::BUTTON_BG),
-            ))
-            .with_child((
-                Text::new("Credits"),
-                TextColor(theme::BUTTON_TEXT),
-                TextFont {
-                    font: fonts.0.clone(),
-                    font_size: f32::from(BUTTON_FONT_SIZE_PX),
-                    ..default()
-                },
-            ));
-    });
+    ButtonBuilder::new("Begin Journey", StartButton, fonts.0.clone())
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
+    ButtonBuilder::new("Lore", LoreButton, fonts.0.clone())
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
+    ButtonBuilder::new("Credits", CreditsButton, fonts.0.clone())
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
 }
 
 pub fn button_system(
