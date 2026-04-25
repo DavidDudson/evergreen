@@ -28,6 +28,9 @@ pub(crate) struct TimeOfDayText;
 pub(crate) struct WeatherText;
 
 #[derive(Component)]
+pub(crate) struct BreakdownText;
+
+#[derive(Component)]
 pub(crate) struct HistogramBar(pub usize);
 
 /// Cached display values -- only write Text/Node when the rounded value changes
@@ -40,6 +43,7 @@ pub(crate) struct DisplayCache {
     pub area_stats: Option<String>,
     pub time_of_day: Option<String>,
     pub weather: Option<String>,
+    pub breakdown: Option<String>,
 }
 
 #[derive(Resource)]

@@ -4,8 +4,8 @@ use bevy::prelude::*;
 use models::palette;
 
 use super::components::{
-    AreaStatsText, EntityCountText, FpsText, FrameTimeText, HistogramBar, PerfOverlay,
-    TimeOfDayText, WeatherText,
+    AreaStatsText, BreakdownText, EntityCountText, FpsText, FrameTimeText, HistogramBar,
+    PerfOverlay, TimeOfDayText, WeatherText,
 };
 
 const OVERLAY_FONT: &str = "fonts/NotoSans-Regular.ttf";
@@ -13,7 +13,7 @@ const FONT_SIZE_PX: f32 = 12.0;
 const HEADER_FONT_SIZE_PX: f32 = 11.0;
 const PANEL_PADDING_PX: f32 = 8.0;
 const PANEL_MARGIN_PX: f32 = 8.0;
-const PANEL_WIDTH_PX: f32 = 230.0;
+const PANEL_WIDTH_PX: f32 = 250.0;
 const ROW_GAP_PX: f32 = 3.0;
 const BAR_WIDTH_PX: f32 = 3.0;
 const BAR_GAP_PX: f32 = 1.0;
@@ -74,6 +74,27 @@ pub(crate) fn setup_overlay(mut commands: Commands, asset_server: Res<AssetServe
         TextColor(palette::BUTTON_TEXT),
         ChildOf(root),
     ));
+
+    spawn_label(
+        &mut commands,
+        root,
+        font.clone(),
+        "STAGE BREAKDOWN  (avg ms)",
+        palette::TITLE,
+        HEADER_FONT_SIZE_PX,
+    );
+    commands.spawn((
+        BreakdownText,
+        Text::new("First       --\nPreUpdate   --\nUpdate      --\nPostUpdate  --\nLast        --\nCPU total   --"),
+        TextFont {
+            font: font.clone(),
+            font_size: FONT_SIZE_PX,
+            ..default()
+        },
+        TextColor(palette::BUTTON_TEXT),
+        ChildOf(root),
+    ));
+
     commands.spawn((
         EntityCountText,
         Text::new("Entities  --"),

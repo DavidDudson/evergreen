@@ -9,10 +9,10 @@ use crate::serialize::{from_map, to_map};
 /// [`Keybinds::default_key`]. Keep this in lockstep with the `Action` enum --
 /// every variant must appear here so [`Keybinds::default_key`] never panics.
 const DEFAULT_BINDINGS: &[(Action, KeyCode)] = &[
-    (Action::MoveUp, KeyCode::KeyW),
-    (Action::MoveDown, KeyCode::KeyS),
-    (Action::MoveLeft, KeyCode::KeyA),
-    (Action::MoveRight, KeyCode::KeyD),
+    (Action::MoveUp, KeyCode::ArrowUp),
+    (Action::MoveDown, KeyCode::ArrowDown),
+    (Action::MoveLeft, KeyCode::ArrowLeft),
+    (Action::MoveRight, KeyCode::ArrowRight),
     (Action::Sprint, KeyCode::ShiftLeft),
     (Action::Interact, KeyCode::KeyE),
     (Action::Pause, KeyCode::Escape),

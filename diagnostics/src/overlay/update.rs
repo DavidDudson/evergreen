@@ -12,11 +12,12 @@ use models::weather::WeatherState;
 use models::wind::{WindDirection, WindStrength};
 
 use super::components::{
-    AreaStatsText, DisplayCache, EntityCountText, FpsText, FrameTimeText, HistogramBar,
-    OverlayState, PerfOverlay, TimeOfDayText, WeatherText,
+    AreaStatsText, BreakdownText, DisplayCache, EntityCountText, FpsText, FrameTimeText,
+    HistogramBar, OverlayState, PerfOverlay, TimeOfDayText, WeatherText,
 };
 use super::histogram::update_bars;
 use super::setup::{BAR_MAX_HEIGHT_PX, HISTOGRAM_FRAMES};
+use crate::frame_stages::FrameStageTimings;
 
 /// FPS thresholds for the FPS text colour. These remain absolute because
 /// the player cares whether the game is fast, not just consistent.
@@ -59,6 +60,7 @@ pub(crate) fn toggle_overlay(
 #[allow(clippy::type_complexity, clippy::too_many_arguments)]
 pub(crate) fn update_overlay(
     diagnostics: Res<DiagnosticsStore>,
+    stage_timings: Res<FrameStageTimings>,
     mut state: ResMut<OverlayState>,
     world: Option<Res<WorldMap>>,
     clock: Option<Res<GameClock>>,
@@ -72,6 +74,7 @@ pub(crate) fn update_overlay(
             Without<FrameTimeText>,
             Without<EntityCountText>,
             Without<AreaStatsText>,
+            Without<BreakdownText>,
         ),
     >,
     mut frame_q: Query<
@@ -81,6 +84,7 @@ pub(crate) fn update_overlay(
             Without<FpsText>,
             Without<EntityCountText>,
             Without<AreaStatsText>,
+            Without<BreakdownText>,
         ),
     >,
     mut entity_q: Query<
@@ -90,6 +94,7 @@ pub(crate) fn update_overlay(
             Without<FpsText>,
             Without<FrameTimeText>,
             Without<AreaStatsText>,
+            Without<BreakdownText>,
         ),
     >,
     mut area_q: Query<
@@ -99,6 +104,7 @@ pub(crate) fn update_overlay(
             Without<FpsText>,
             Without<FrameTimeText>,
             Without<EntityCountText>,
+            Without<BreakdownText>,
         ),
     >,
     mut tod_q: Query<
@@ -110,6 +116,7 @@ pub(crate) fn update_overlay(
             Without<EntityCountText>,
             Without<AreaStatsText>,
             Without<WeatherText>,
+            Without<BreakdownText>,
         ),
     >,
     mut weather_q: Query<
@@ -121,6 +128,19 @@ pub(crate) fn update_overlay(
             Without<EntityCountText>,
             Without<AreaStatsText>,
             Without<TimeOfDayText>,
+            Without<BreakdownText>,
+        ),
+    >,
+    mut breakdown_q: Query<
+        &mut Text,
+        (
+            With<BreakdownText>,
+            Without<FpsText>,
+            Without<FrameTimeText>,
+            Without<EntityCountText>,
+            Without<AreaStatsText>,
+            Without<TimeOfDayText>,
+            Without<WeatherText>,
         ),
     >,
     mut bar_q: Query<(&HistogramBar, &mut Node, &mut BackgroundColor)>,
@@ -228,6 +248,24 @@ pub(crate) fn update_overlay(
             }
             state.cache.weather = Some(new_str);
         }
+    }
+
+    // Stage breakdown -- per-schedule CPU timings.
+    let stages = stage_timings.smoothed();
+    let new_breakdown = format!(
+        "First       {:>5.2}\nPreUpdate   {:>5.2}\nUpdate      {:>5.2}\nPostUpdate  {:>5.2}\nLast        {:>5.2}\nCPU total   {:>5.2}",
+        stages.first,
+        stages.pre_update,
+        stages.update,
+        stages.post_update,
+        stages.last,
+        stages.cpu_total(),
+    );
+    if state.cache.breakdown.as_deref() != Some(&new_breakdown) {
+        if let Ok(mut text) = breakdown_q.single_mut() {
+            *text = Text::new(new_breakdown.clone());
+        }
+        state.cache.breakdown = Some(new_breakdown);
     }
 
     update_bars(&state, &mut bar_q, BAR_MAX_HEIGHT_PX);
