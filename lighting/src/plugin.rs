@@ -2,9 +2,9 @@ use bevy::prelude::*;
 use bevy_light_2d::plugin::Light2dPlugin;
 use models::game_states::{should_despawn_world, GameState};
 
-use crate::ambient::{reset_ambient_light, sync_ambient_light};
-use crate::exit_light::attach_level_exit_light;
-use crate::torch::update_player_torch;
+use crate::ambient::{reset_ambient_light, sync_ambient_light, DayCycleProfile};
+use crate::exit_light::{attach_level_exit_light, ExitLightConfig};
+use crate::torch::{update_player_torch, TorchConfig};
 
 /// Top-level lighting plugin -- composes `bevy_light_2d` + project systems.
 pub struct LightingPlugin;
@@ -12,6 +12,9 @@ pub struct LightingPlugin;
 impl Plugin for LightingPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(Light2dPlugin);
+        app.init_resource::<DayCycleProfile>();
+        app.init_resource::<TorchConfig>();
+        app.init_resource::<ExitLightConfig>();
         app.add_systems(
             Update,
             (

@@ -3,27 +3,48 @@ use bevy_light_2d::prelude::PointLight2d;
 use level::exit::LevelExit;
 use models::palette::LIGHT_EXIT;
 
-/// Intensity of the level-exit point light (HDR scale).
-const LIGHT_EXIT_INTENSITY: f32 = 4.0;
-/// Radius of the level-exit point light, in world pixels.
-const LIGHT_EXIT_RADIUS_PX: f32 = 96.0;
-/// Falloff curve exponent (1.0 = linear).
-const LIGHT_EXIT_FALLOFF: f32 = 1.0;
-/// Goal marker is dramatic; let trees/NPCs/grass cast shadows from it.
-const LIGHT_EXIT_CAST_SHADOWS: bool = true;
+/// Tunable exit-light parameters. Replace via `app.insert_resource(ExitLightConfig { ... })`
+/// to override defaults from a plugin or scene.
+#[derive(Resource, Debug, Clone)]
+pub struct ExitLightConfig {
+    pub color: Color,
+    pub intensity: f32,
+    pub radius_px: f32,
+    pub falloff: f32,
+    pub cast_shadows: bool,
+}
+
+impl Default for ExitLightConfig {
+    fn default() -> Self {
+        Self {
+            color: LIGHT_EXIT,
+            intensity: 4.0,
+            radius_px: 96.0,
+            falloff: 1.0,
+            cast_shadows: true,
+        }
+    }
+}
+
+impl ExitLightConfig {
+    pub fn point_light(&self) -> PointLight2d {
+        PointLight2d {
+            color: self.color,
+            intensity: self.intensity,
+            radius: self.radius_px,
+            falloff: self.falloff,
+            cast_shadows: self.cast_shadows,
+        }
+    }
+}
 
 /// Insert a `PointLight2d` on every `LevelExit` entity that does not yet have one.
 pub fn attach_level_exit_light(
     mut commands: Commands,
+    config: Res<ExitLightConfig>,
     query: Query<Entity, (With<LevelExit>, Without<PointLight2d>)>,
 ) {
     for entity in &query {
-        commands.entity(entity).insert(PointLight2d {
-            color: LIGHT_EXIT,
-            intensity: LIGHT_EXIT_INTENSITY,
-            radius: LIGHT_EXIT_RADIUS_PX,
-            falloff: LIGHT_EXIT_FALLOFF,
-            cast_shadows: LIGHT_EXIT_CAST_SHADOWS,
-        });
+        commands.entity(entity).insert(config.point_light());
     }
 }
