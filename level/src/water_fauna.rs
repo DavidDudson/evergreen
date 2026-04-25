@@ -132,39 +132,73 @@ pub fn spawn_area_water_fauna(
             + tile_px / 2.0;
         let hash = tile_hash(local.x, local.y, area_seed);
 
-        // Fish shadows drift under ocean tiles (very sparse -- per-mille roll).
-        if matches!(kind, crate::water::WaterKind::Ocean)
-            && (hash.wrapping_mul(19) % 1000) < usize_of(FISH_CHANCE_PER_1000)
-        {
-            spawn_fish(commands, asset_server, world_x, world_y, hash);
-        }
-
-        // Water striders skate only on still water (not rivers).
-        if kind.is_still() && (hash.wrapping_mul(3) % 100) < usize_of(STRIDER_CHANCE) {
-            spawn_strider(commands, asset_server, world_x, world_y, hash);
-        }
-
-        // Frogs on plain + lake tiles only, edge preferred (visually on lily pads).
-        if kind.spawns_frogs()
-            && water.is_edge_tile(area_pos, local)
-            && (hash.wrapping_mul(5) % 100) < usize_of(FROG_CHANCE)
-        {
-            spawn_frog(commands, asset_server, world_x, world_y, hash);
-        }
-
-        // Dragonflies: ponds + lakes only, shoreline, very rare.
-        if kind.spawns_lily_pads()
-            && water.is_edge_tile(area_pos, local)
-            && (hash.wrapping_mul(11) % 1000) < usize_of(DRAGONFLY_CHANCE_PER_1000)
-        {
-            spawn_dragonfly(commands, asset_server, world_x, world_y, hash);
+        for rule in FAUNA_RULES {
+            if !(rule.applies_to)(kind) {
+                continue;
+            }
+            if rule.edge_only && !water.is_edge_tile(area_pos, local) {
+                continue;
+            }
+            let denom = usize::try_from(rule.chance_denominator).unwrap_or(100);
+            let mult = usize::try_from(rule.hash_mult).unwrap_or(1);
+            if hash.wrapping_mul(mult) % denom < usize_of(rule.chance_numerator) {
+                (rule.spawn)(commands, asset_server, world_x, world_y, hash);
+            }
         }
     }
 
-    // Pondside dragonflies on land disabled -- rarity is already driven by the
-    // per-edge-tile roll above so they don't crowd the shore.
     let _ = (area_seed, tile_px, base_offset_x, base_offset_y, world);
 }
+
+/// Declarative rule set for water fauna spawning. To add a new fauna type,
+/// implement a `spawn_*` function and add a `FaunaRule` entry.
+struct FaunaRule {
+    applies_to: fn(crate::water::WaterKind) -> bool,
+    edge_only: bool,
+    chance_numerator: u32,
+    chance_denominator: u32,
+    hash_mult: u32,
+    spawn: fn(&mut Commands, &AssetServer, f32, f32, usize),
+}
+
+const FAUNA_RULES: &[FaunaRule] = &[
+    // Fish shadows drift under ocean tiles (very sparse -- per-mille roll).
+    FaunaRule {
+        applies_to: crate::water::WaterKind::is_ocean,
+        edge_only: false,
+        chance_numerator: FISH_CHANCE_PER_1000,
+        chance_denominator: 1000,
+        hash_mult: 19,
+        spawn: spawn_fish,
+    },
+    // Water striders skate only on still water (not rivers).
+    FaunaRule {
+        applies_to: crate::water::WaterKind::is_still,
+        edge_only: false,
+        chance_numerator: STRIDER_CHANCE,
+        chance_denominator: 100,
+        hash_mult: 3,
+        spawn: spawn_strider,
+    },
+    // Frogs on plain + lake tiles only, edge preferred (visually on lily pads).
+    FaunaRule {
+        applies_to: crate::water::WaterKind::spawns_frogs,
+        edge_only: true,
+        chance_numerator: FROG_CHANCE,
+        chance_denominator: 100,
+        hash_mult: 5,
+        spawn: spawn_frog,
+    },
+    // Dragonflies: ponds + lakes only, shoreline, very rare.
+    FaunaRule {
+        applies_to: crate::water::WaterKind::spawns_lily_pads,
+        edge_only: true,
+        chance_numerator: DRAGONFLY_CHANCE_PER_1000,
+        chance_denominator: 1000,
+        hash_mult: 11,
+        spawn: spawn_dragonfly,
+    },
+];
 
 fn usize_of(val: u32) -> usize {
     usize::try_from(val).unwrap_or(0)

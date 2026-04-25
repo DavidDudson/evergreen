@@ -58,6 +58,11 @@ impl WaterKind {
     pub fn is_still(self) -> bool {
         matches!(self, Self::Plain | Self::HotSpring | Self::Lake)
     }
+
+    /// True for ocean tiles. Used by fauna rules.
+    pub fn is_ocean(self) -> bool {
+        matches!(self, Self::Ocean)
+    }
 }
 
 /// `(area grid position, local tile within area)` key for a single water tile.
