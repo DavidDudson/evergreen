@@ -5,6 +5,7 @@ pub mod biome_registry;
 pub mod blending;
 pub mod creatures;
 pub mod decorations;
+pub mod enemies;
 pub mod exit;
 pub mod galen;
 pub mod grass;

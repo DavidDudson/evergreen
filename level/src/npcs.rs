@@ -177,11 +177,12 @@ fn npc_data(
                 "dialogue/barks/cadwallader_barks3.dialog.ron",
             ],
         ),
-        // BloodyMary uses Morgana's sheet + dialogue as a placeholder until
-        // dedicated art and scripts ship.
+        // BloodyMary now has dedicated art (4-row x 8-col sheet built from
+        // pixellab rotations + breathing-idle + walking-4-frames). Dialogue
+        // scripts still alias Morgana until Mary's own writing lands.
         NpcKind::BloodyMary => (
             "Bloody Mary",
-            "sprites/npc/npc_morgana_sheet.webp",
+            "sprites/npc/npc_bloody_mary_sheet.webp",
             "dialogue/scripts/morgana.dialog.ron",
             &[
                 "dialogue/barks/morgana_barks.dialog.ron",

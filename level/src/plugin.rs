@@ -12,6 +12,7 @@ use crate::beach;
 use crate::biome_registry::BiomeRegistry;
 use crate::creatures;
 use crate::decorations;
+use crate::enemies;
 use crate::galen;
 use crate::grass;
 use crate::npc_anim;
@@ -149,6 +150,7 @@ impl Plugin for LevelPlugin {
                     beach::despawn_sand,
                     beach::despawn_piers,
                     portal::despawn_portals,
+                    enemies::despawn_enemies,
                 )
                     .run_if(should_despawn_world),
             );
