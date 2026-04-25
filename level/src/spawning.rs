@@ -247,7 +247,9 @@ fn ensure_area_spawned(
 }
 
 const PORTAL_SPRITE_SIZE_PX: f32 = 32.0;
-const PORTAL_Z_BIAS: f32 = 0.5;
+/// Portal sits just above the tilemap floor but below the World layer so
+/// NPCs (which Y-sort within `Layer::World`) always render on top.
+const PORTAL_Z_BIAS: f32 = 0.85;
 
 fn spawn_portal_for_area(
     commands: &mut Commands,
@@ -278,7 +280,7 @@ fn spawn_portal_for_area(
                 custom_size: Some(Vec2::splat(PORTAL_SPRITE_SIZE_PX)),
                 ..default()
             },
-            Transform::from_xyz(world_x, world_y, Layer::World.z_f32() + PORTAL_Z_BIAS),
+            Transform::from_xyz(world_x, world_y, Layer::Tilemap.z_f32() + PORTAL_Z_BIAS),
         ))
         .id();
 

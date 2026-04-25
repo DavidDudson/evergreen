@@ -12,7 +12,6 @@ use crate::beach;
 use crate::biome_registry::BiomeRegistry;
 use crate::creatures;
 use crate::decorations;
-use crate::exit;
 use crate::galen;
 use crate::grass;
 use crate::npc_anim;
@@ -62,7 +61,6 @@ impl Plugin for LevelPlugin {
                     regenerate_world,
                     spawning::spawn_initial_areas,
                     galen::spawn_galen,
-                    exit::spawn_exit,
                 )
                     .chain(),
             )
@@ -138,7 +136,6 @@ impl Plugin for LevelPlugin {
                     decorations::despawn_decorations,
                     npcs::despawn_npcs,
                     galen::despawn_galen,
-                    exit::despawn_exit,
                     weather::despawn_weather_particles,
                     grass::despawn_grass,
                     creatures::despawn_creatures,

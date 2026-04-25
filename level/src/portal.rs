@@ -76,19 +76,24 @@ pub const ALL_PORTAL_KINDS: [PortalKind; 3] = [
 
 /// Pick the portal kind that should spawn in a map. From the eligible kinds
 /// (those whose target alignment is within [`PORTAL_BRIDGE_RANGE`] of the
-/// map's alignment), pick deterministically by `seed`. Returns `None` if no
-/// portal kind matches -- in which case the map has no portal.
-pub fn pick_portal_kind(map_alignment: AreaAlignment, seed: u64) -> Option<PortalKind> {
+/// map's alignment), pick deterministically by `seed`. Falls back to the
+/// nearest-alignment kind so every map has a portal.
+pub fn pick_portal_kind(map_alignment: AreaAlignment, seed: u64) -> PortalKind {
     let eligible: Vec<PortalKind> = ALL_PORTAL_KINDS
         .iter()
         .copied()
         .filter(|p| p.eligible_for(map_alignment))
         .collect();
-    if eligible.is_empty() {
-        return None;
+    if !eligible.is_empty() {
+        let idx = usize::try_from(seed % u64::try_from(eligible.len()).unwrap_or(1)).unwrap_or(0);
+        return eligible[idx];
     }
-    let idx = usize::try_from(seed % u64::try_from(eligible.len()).unwrap_or(1)).unwrap_or(0);
-    eligible.get(idx).copied()
+    // Fallback: pick the kind whose target alignment is closest to the map.
+    ALL_PORTAL_KINDS
+        .iter()
+        .copied()
+        .min_by_key(|p| p.target_alignment().abs_diff(map_alignment))
+        .unwrap_or(PortalKind::MushroomCircle)
 }
 
 /// Per-map portal placement: which kind, which area it sits in, and the

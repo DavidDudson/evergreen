@@ -21,8 +21,10 @@ const NPC_ENCOUNTER_CHANCE: u64 = 30;
 
 /// Alignment ceiling for the city biome -- areas with alignment <= this are
 /// treated as urban and reject road exits toward missing neighbours so a
-/// grass buffer sits between the road and the beach.
-const CITY_ALIGNMENT_MAX: u8 = 25;
+/// grass buffer sits between the road and the beach. Tight (10) so
+/// greenwood maps still grow toward their target area count when they
+/// happen to sit on the coast.
+const CITY_ALIGNMENT_MAX: u8 = 10;
 
 /// Map sizing formula bounds. `MAP_AREAS_AT_MIN` areas at alignment 1,
 /// `MAP_AREAS_AT_HI_ALIGN` areas at alignment `MAP_SIZE_PEAK_ALIGNMENT`,
@@ -241,25 +243,23 @@ impl WorldMap {
         // in a dead-end area that isn't the start or exit. If only the
         // start+exit are available, fall back to the exit area; if no
         // dead-end at all, no portal this map.
-        if let Some(kind) = pick_portal_kind(alignment, seed.wrapping_add(0xC0FE_5A75)) {
-            let portal_area = dead_ends
-                .iter()
-                .copied()
-                .find(|&p| p != start && p != exit)
-                .or(Some(exit))
-                .unwrap_or(IVec2::ZERO);
-            // Place portal centred in the area for now (mid-tile).
-            map.portal = Some(PortalPlacement {
-                kind,
-                area_pos: portal_area,
-                tile_x: u32::from(MAP_WIDTH) / 2,
-                tile_y: u32::from(MAP_HEIGHT) / 2,
-            });
-            // Override the portal area's NPC encounter to the portal kind's
-            // signature NPC -- Cadwallader / Bloody Mary / Mother Gothel.
-            if let Some(area) = map.areas.get_mut(&portal_area) {
-                area.event = AreaEvent::NpcEncounter(kind.signature_npc());
-            }
+        let kind = pick_portal_kind(alignment, seed.wrapping_add(0xC0FE_5A75));
+        let portal_area = dead_ends
+            .iter()
+            .copied()
+            .find(|&p| p != start && p != exit)
+            .or(Some(exit))
+            .unwrap_or(IVec2::ZERO);
+        map.portal = Some(PortalPlacement {
+            kind,
+            area_pos: portal_area,
+            tile_x: u32::from(MAP_WIDTH) / 2,
+            tile_y: u32::from(MAP_HEIGHT) / 2,
+        });
+        // Override the portal area's NPC encounter to the portal kind's
+        // signature NPC -- Cadwallader / Bloody Mary / Mother Gothel.
+        if let Some(area) = map.areas.get_mut(&portal_area) {
+            area.event = AreaEvent::NpcEncounter(kind.signature_npc());
         }
 
         // Water bodies generated last so flood-fill can use final terrain.
