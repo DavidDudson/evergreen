@@ -63,6 +63,9 @@ pub const SCROLLBAR_THUMB: Color = tw::GREEN_700;
 // Interact prompt
 pub const INTERACT_PROMPT: Color = tw::YELLOW_400;
 
+// Faux drop-shadow tint for floating panels (offset behind, low alpha).
+pub const PANEL_SHADOW: Color = Color::srgba(0.0, 0.0, 0.0, 0.35);
+
 // Biome tile tint colors (used for Minecraft-style biome blending)
 pub const BIOME_CITY_TINT: Color = Color::srgb(0.95, 0.92, 0.80);
 pub const BIOME_GREENWOOD_TINT: Color = Color::srgb(0.85, 0.95, 0.82);
