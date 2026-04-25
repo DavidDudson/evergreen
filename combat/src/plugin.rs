@@ -13,8 +13,8 @@ impl Plugin for CombatPlugin {
             .add_message::<DeathEvent>()
             .add_systems(
                 Update,
-                (systems::apply_damage, systems::handle_deaths)
-                    .run_if(in_state(GameState::Playing)),
+                systems::apply_damage.run_if(in_state(GameState::Playing)),
             );
+        app.add_observer(systems::default_death_observer);
     }
 }
