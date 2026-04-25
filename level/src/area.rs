@@ -116,9 +116,10 @@ impl Area {
         seed: u64,
         area_count: usize,
         alignment: AreaAlignment,
+        area_pos: IVec2,
     ) -> Self {
         let exits = pick_exits(required, &forbidden, seed, area_count);
-        let grid = build_grid(&exits, alignment);
+        let grid = build_grid(&exits, alignment, area_pos);
         Self {
             exits,
             event: AreaEvent::None,
@@ -262,7 +263,11 @@ fn pick_exits(
     exits
 }
 
-fn build_grid(exits: &BTreeSet<Direction>, alignment: AreaAlignment) -> Vec<Terrain> {
+fn build_grid(
+    exits: &BTreeSet<Direction>,
+    alignment: AreaAlignment,
+    area_pos: IVec2,
+) -> Vec<Terrain> {
     let w = u32::from(MAP_WIDTH);
     let h = u32::from(MAP_HEIGHT);
     // u32 → usize: widening on all supported targets.
@@ -273,7 +278,7 @@ fn build_grid(exits: &BTreeSet<Direction>, alignment: AreaAlignment) -> Vec<Terr
 
     for y in 0..h {
         for x in 0..w {
-            if is_dirt(x, y, exits, extent) {
+            if is_dirt(x, y, exits, extent, area_pos) {
                 #[allow(clippy::as_conversions)]
                 let idx = (y * w + x) as usize;
                 grid[idx] = Terrain::Dirt;
@@ -369,18 +374,51 @@ fn scatter_dirt_patches(grid: &mut [Terrain], w: u32, h: u32, alignment: AreaAli
 
 /// Returns `true` when the tile at (x, y) should be dirt given the exit set
 /// and path half-width.
-fn is_dirt(x: u32, y: u32, exits: &BTreeSet<Direction>, half_w: u32) -> bool {
-    // Centre of the cross intersection.
-    let cx = (PATH_COL_START + PATH_COL_END) / 2; // 15
-    let cy = (PATH_ROW_START + PATH_ROW_END) / 2; // 8
+/// Maximum lateral wobble (in tiles) of a path away from its straight
+/// centreline. Sampled per axial position along the path so adjacent tiles
+/// share noise; uses world-absolute coords for cross-area continuity.
+const PATH_JITTER_TILES: i32 = 1;
+
+fn is_dirt(
+    x: u32,
+    y: u32,
+    exits: &BTreeSet<Direction>,
+    half_w: u32,
+    area_pos: IVec2,
+) -> bool {
+    // Centre of the cross intersection (nominal, before jitter).
+    let cx_nom = (PATH_COL_START + PATH_COL_END) / 2; // 15
+    let cy_nom = (PATH_ROW_START + PATH_ROW_END) / 2; // 8
+
+    // Jitter the vertical path's column at this y, sampled in world-absolute
+    // y so the wobble is continuous across area boundaries; same for
+    // horizontal path's row at this x.
+    let map_w = i32::from(MAP_WIDTH);
+    let map_h = i32::from(MAP_HEIGHT);
+    let world_y = area_pos.y * map_h + i32::try_from(y).unwrap_or(0);
+    let world_x = area_pos.x * map_w + i32::try_from(x).unwrap_or(0);
+    let cx = jitter_centre(cx_nom, world_y, 0xC1);
+    let cy = jitter_centre(cy_nom, world_x, 0xD2);
 
     let on_vert = x.abs_diff(cx) <= half_w;
     let on_horiz = y.abs_diff(cy) <= half_w;
 
-    (on_vert && exits.contains(&Direction::North) && y >= cy.saturating_sub(half_w))
-        || (on_vert && exits.contains(&Direction::South) && y <= cy + half_w)
-        || (on_horiz && exits.contains(&Direction::East) && x >= cx.saturating_sub(half_w))
-        || (on_horiz && exits.contains(&Direction::West) && x <= cx + half_w)
+    (on_vert && exits.contains(&Direction::North) && y >= cy_nom.saturating_sub(half_w))
+        || (on_vert && exits.contains(&Direction::South) && y <= cy_nom + half_w)
+        || (on_horiz && exits.contains(&Direction::East) && x >= cx_nom.saturating_sub(half_w))
+        || (on_horiz && exits.contains(&Direction::West) && x <= cx_nom + half_w)
+}
+
+fn jitter_centre(nominal: u32, tangent: i32, salt: u32) -> u32 {
+    #[allow(clippy::as_conversions)] // i32 bit-pattern reuse for hashing
+    let t = tangent as u32;
+    let mut h = t.wrapping_mul(2_654_435_761).wrapping_add(salt);
+    h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
+    h ^= h >> 16;
+    let modulo = u32::try_from(PATH_JITTER_TILES * 2 + 1).unwrap_or(1);
+    let r = i32::try_from(h % modulo).unwrap_or(0) - PATH_JITTER_TILES;
+    let signed = i32::try_from(nominal).unwrap_or(0).saturating_add(r).max(0);
+    u32::try_from(signed).unwrap_or(nominal)
 }
 
 /// Minimal LCG for cheap deterministic pseudo-randomness.

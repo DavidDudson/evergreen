@@ -27,6 +27,11 @@ const MIN_ZONE_SPACING: i32 = 2;
 /// Maximum placement radius from origin for zone seeds.
 const ZONE_RADIUS: i32 = 5;
 
+/// Alignment ceiling for the city biome -- areas with alignment <= this are
+/// treated as urban and reject road exits toward missing neighbours so a
+/// grass buffer sits between the road and the beach.
+const CITY_ALIGNMENT_MAX: u8 = 25;
+
 /// Alignment anchors for the biome types (spread to avoid averaging to 50).
 const ANCHOR_CITY: u8 = 10;
 const ANCHOR_LIGHT_GREEN: u8 = 35;
@@ -117,7 +122,14 @@ impl WorldMap {
         ]);
         let origin_seed = map.area_seed(IVec2::ZERO);
         let origin_align = map.alignment_at(IVec2::ZERO);
-        let origin_area = Area::generate(all_exits, BTreeSet::new(), origin_seed, 0, origin_align);
+        let origin_area = Area::generate(
+            all_exits,
+            BTreeSet::new(),
+            origin_seed,
+            0,
+            origin_align,
+            IVec2::ZERO,
+        );
         map.areas.insert(IVec2::ZERO, origin_area);
 
         // Expand the entire map: keep generating neighbors until no new
@@ -298,7 +310,24 @@ impl WorldMap {
         let seed = self.area_seed(pos);
         let area_count = self.areas.len();
         let alignment = self.alignment_at(pos);
-        let mut area = Area::generate(required, forbidden, seed, area_count, alignment);
+
+        // City-aligned coastal areas must keep a grass buffer to the beach.
+        // Forbid road exits toward any missing-neighbour direction (which
+        // becomes ocean) so the road never abuts the sand band directly.
+        if alignment <= CITY_ALIGNMENT_MAX && self.has_ocean {
+            for dir in [
+                Direction::North,
+                Direction::East,
+                Direction::South,
+                Direction::West,
+            ] {
+                if self.areas.get(&(pos + dir.grid_offset())).is_none() {
+                    forbidden.insert(dir);
+                }
+            }
+        }
+
+        let mut area = Area::generate(required, forbidden, seed, area_count, alignment, pos);
 
         // Assign event: NPC encounters only beyond MIN_NPC_DISTANCE from origin,
         // and only if the NPC's alignment range matches this area.
