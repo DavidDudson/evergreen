@@ -5,6 +5,22 @@ use std::collections::HashMap;
 use crate::action::Action;
 use crate::serialize::{from_map, to_map};
 
+/// Canonical default key for each action. Used by [`Keybinds::default`] and
+/// [`Keybinds::default_key`]. Keep this in lockstep with the `Action` enum --
+/// every variant must appear here so [`Keybinds::default_key`] never panics.
+const DEFAULT_BINDINGS: &[(Action, KeyCode)] = &[
+    (Action::MoveUp, KeyCode::KeyW),
+    (Action::MoveDown, KeyCode::KeyS),
+    (Action::MoveLeft, KeyCode::KeyA),
+    (Action::MoveRight, KeyCode::KeyD),
+    (Action::Sprint, KeyCode::ShiftLeft),
+    (Action::Interact, KeyCode::KeyE),
+    (Action::Pause, KeyCode::Escape),
+    (Action::DialogAdvance, KeyCode::Space),
+    (Action::ToggleDiagnosticsOverlay, KeyCode::F3),
+    (Action::ToggleDebugPanel, KeyCode::F5),
+];
+
 /// The active keybind map. Query this resource in any system that needs
 /// to check what key is bound to a given action.
 ///
@@ -34,18 +50,9 @@ impl From<HashMap<String, String>> for Keybinds {
 
 impl Default for Keybinds {
     fn default() -> Self {
-        let mut map = HashMap::new();
-        map.insert(Action::MoveUp, KeyCode::KeyW);
-        map.insert(Action::MoveDown, KeyCode::KeyS);
-        map.insert(Action::MoveLeft, KeyCode::KeyA);
-        map.insert(Action::MoveRight, KeyCode::KeyD);
-        map.insert(Action::Sprint, KeyCode::ShiftLeft);
-        map.insert(Action::Interact, KeyCode::KeyE);
-        map.insert(Action::Pause, KeyCode::Escape);
-        map.insert(Action::DialogAdvance, KeyCode::Space);
-        map.insert(Action::ToggleDiagnosticsOverlay, KeyCode::F3);
-        map.insert(Action::ToggleDebugPanel, KeyCode::F5);
-        Self { map }
+        Self {
+            map: DEFAULT_BINDINGS.iter().copied().collect(),
+        }
     }
 }
 
@@ -60,7 +67,10 @@ impl Keybinds {
 
     /// Returns the canonical default key for an action (not affected by user config).
     pub fn default_key(action: Action) -> KeyCode {
-        Self::default().map[&action]
+        DEFAULT_BINDINGS
+            .iter()
+            .find_map(|(a, k)| (*a == action).then_some(*k))
+            .expect("Action missing default binding")
     }
 
     /// Rebinds an action to a new key.

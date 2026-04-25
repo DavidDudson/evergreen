@@ -1,55 +1,48 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumIter, EnumString, IntoStaticStr};
 
 /// Every player-controllable action in the game.
 ///
 /// Add new variants here when adding new gameplay actions.
-/// Each variant maps to a default key and a display label.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+/// Each variant maps to a default key (in `Keybinds::default`) and a
+/// human-readable label (via `Display` -- see `#[strum(to_string = ...)]`).
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    Display,
+    EnumIter,
+    EnumString,
+    IntoStaticStr,
+)]
 pub enum Action {
     // Movement
+    #[strum(to_string = "Move Up")]
     MoveUp,
+    #[strum(to_string = "Move Down")]
     MoveDown,
+    #[strum(to_string = "Move Left")]
     MoveLeft,
+    #[strum(to_string = "Move Right")]
     MoveRight,
+    #[strum(to_string = "Sprint")]
     Sprint,
     // Interaction
+    #[strum(to_string = "Interact")]
     Interact,
     // UI
+    #[strum(to_string = "Pause")]
     Pause,
+    #[strum(to_string = "Advance Dialog")]
     DialogAdvance,
     // Diagnostics
+    #[strum(to_string = "Toggle Diagnostics Overlay")]
     ToggleDiagnosticsOverlay,
+    #[strum(to_string = "Toggle Debug Panel")]
     ToggleDebugPanel,
-}
-
-impl Action {
-    /// All actions in display order for the config screen.
-    pub const ALL: &'static [Action] = &[
-        Action::MoveUp,
-        Action::MoveDown,
-        Action::MoveLeft,
-        Action::MoveRight,
-        Action::Sprint,
-        Action::Interact,
-        Action::Pause,
-        Action::DialogAdvance,
-        Action::ToggleDiagnosticsOverlay,
-        Action::ToggleDebugPanel,
-    ];
-
-    /// Human-readable label shown in the keybind config UI.
-    pub fn label(self) -> &'static str {
-        match self {
-            Action::MoveUp => "Move Up",
-            Action::MoveDown => "Move Down",
-            Action::MoveLeft => "Move Left",
-            Action::MoveRight => "Move Right",
-            Action::Sprint => "Sprint",
-            Action::Interact => "Interact",
-            Action::Pause => "Pause",
-            Action::DialogAdvance => "Advance Dialog",
-            Action::ToggleDiagnosticsOverlay => "Toggle Diagnostics Overlay",
-            Action::ToggleDebugPanel => "Toggle Debug Panel",
-        }
-    }
 }
