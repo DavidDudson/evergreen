@@ -4,7 +4,7 @@ use bevy::math::IVec2;
 use bevy::prelude::*;
 
 use crate::area::{
-    Area, AreaAlignment, AreaEvent, Direction, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
+    Area, AreaAlignment, AreaEvent, Direction, EnemyKind, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
 };
 use crate::portal::{pick_portal_kind, PortalPlacement};
 use crate::terrain::Terrain;
@@ -35,6 +35,41 @@ const MAP_SIZE_PEAK_ALIGNMENT: u8 = 30;
 const MAP_AREAS_HARD_CAP: usize = 60;
 /// Maximum number of regeneration attempts before accepting a small map.
 const GENERATE_RETRY_CAP: usize = 10;
+
+/// Alignment range in which Enemy events spawn. Greenwood maps host the
+/// purple-disease ecology; city and darkwood maps stay quiet for now.
+const ENEMY_ALIGNMENT_MIN: AreaAlignment = 11;
+const ENEMY_ALIGNMENT_MAX: AreaAlignment = 50;
+/// Enemy count clamps -- 1-2 enemies on the first map, ramping to 5-6 by
+/// the time the player has crossed ~10 portals.
+const ENEMY_COUNT_MIN: u8 = 1;
+const ENEMY_COUNT_MAX: u8 = 6;
+
+/// Compute how many enemies fill an enemy-event area given the global
+/// `maps_traversed` counter. `maps=0 -> 1`, `maps=10 -> 6`, clamped.
+fn enemy_count_for_traversal(maps_traversed: u32) -> u8 {
+    let bumps = maps_traversed / 2;
+    let raw = u32::from(ENEMY_COUNT_MIN) + bumps;
+    u8::try_from(raw.min(u32::from(ENEMY_COUNT_MAX))).unwrap_or(ENEMY_COUNT_MIN)
+}
+
+/// Deterministic enemy-kind picker for a given map seed and area position.
+fn pick_enemy_kind(seed: u64, pos: IVec2) -> EnemyKind {
+    let kinds = [
+        EnemyKind::PurpleSlime,
+        EnemyKind::DiseasedFox,
+        EnemyKind::DiseasedDeer,
+        EnemyKind::DiseasedBear,
+    ];
+    let px = u64::from(u32::from_ne_bytes(pos.x.to_ne_bytes()));
+    let py = u64::from(u32::from_ne_bytes(pos.y.to_ne_bytes()));
+    let h = seed
+        .wrapping_mul(2_654_435_761)
+        .wrapping_add(px.wrapping_mul(73_856_093))
+        .wrapping_add(py.wrapping_mul(19_349_663));
+    let idx = usize::try_from(h % u64::try_from(kinds.len()).unwrap_or(1)).unwrap_or(0);
+    kinds[idx]
+}
 
 /// Default alignment for the bootstrap (root) map: light greenwood. The
 /// player can portal to other biomes but the entry point sits in greenwood.
@@ -116,29 +151,41 @@ pub struct WorldMap {
 impl WorldMap {
     /// Create the root map for a fresh game. Greenwood-aligned by default.
     pub fn new(seed: u64, _dominant_alignment: AreaAlignment) -> Self {
-        Self::generate(MapId::ROOT, seed, ROOT_MAP_ALIGNMENT)
+        Self::generate(MapId::ROOT, seed, ROOT_MAP_ALIGNMENT, 0)
     }
 
     /// Generate a map with the specified id, seed and alignment. Used by
-    /// phase 2 portal-target generation as well.
+    /// phase 2 portal-target generation as well. `maps_traversed` is the
+    /// global "how many maps has the player been through" counter, used to
+    /// scale enemy counts in greenwood maps.
     ///
     /// Retries with a re-derived seed when the resulting graph has fewer
     /// than [`MAP_AREAS_AT_MIN`] areas (a degenerate single-room layout).
     /// Caps at [`GENERATE_RETRY_CAP`] attempts; after that the smallest
     /// map is accepted to avoid infinite loops.
-    pub fn generate(id: MapId, seed: u64, alignment: AreaAlignment) -> Self {
+    pub fn generate(
+        id: MapId,
+        seed: u64,
+        alignment: AreaAlignment,
+        maps_traversed: u32,
+    ) -> Self {
         let mut attempt_seed = seed;
         for _ in 0..GENERATE_RETRY_CAP {
-            let candidate = Self::try_generate(id, attempt_seed, alignment);
+            let candidate = Self::try_generate(id, attempt_seed, alignment, maps_traversed);
             if candidate.areas.len() >= MAP_AREAS_AT_MIN {
                 return candidate;
             }
             attempt_seed = lcg(attempt_seed.wrapping_add(0x_F00D_BABE));
         }
-        Self::try_generate(id, attempt_seed, alignment)
+        Self::try_generate(id, attempt_seed, alignment, maps_traversed)
     }
 
-    fn try_generate(id: MapId, seed: u64, alignment: AreaAlignment) -> Self {
+    fn try_generate(
+        id: MapId,
+        seed: u64,
+        alignment: AreaAlignment,
+        maps_traversed: u32,
+    ) -> Self {
         let target = map_area_count_target(alignment);
 
         // Shuffle NPC pool deterministically from seed.
@@ -260,6 +307,23 @@ impl WorldMap {
         // signature NPC -- Cadwallader / Bloody Mary / Mother Gothel.
         if let Some(area) = map.areas.get_mut(&portal_area) {
             area.event = AreaEvent::NpcEncounter(kind.signature_npc());
+        }
+
+        // Greenwood-aligned maps fill every empty area (no NPC, not start,
+        // not portal area) with an Enemy event. Count scales with how many
+        // maps the player has traversed.
+        if (ENEMY_ALIGNMENT_MIN..=ENEMY_ALIGNMENT_MAX).contains(&alignment) {
+            let count = enemy_count_for_traversal(maps_traversed);
+            for (pos, area) in map.areas.iter_mut() {
+                if !matches!(area.event, AreaEvent::None) {
+                    continue;
+                }
+                if *pos == start {
+                    continue;
+                }
+                let kind = pick_enemy_kind(seed, *pos);
+                area.event = AreaEvent::Enemy { kind, count };
+            }
         }
 
         // Water bodies generated last so flood-fill can use final terrain.

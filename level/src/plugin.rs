@@ -54,6 +54,7 @@ impl Plugin for LevelPlugin {
             .add_message::<AreaChanged>()
             .add_message::<PortalCrossed>()
             .init_resource::<portal::PendingPortal>()
+            .init_resource::<portal::MapsTraversed>()
             .insert_resource(WorldMap::new(rand::random(), DEFAULT_PLAYER_ALIGNMENT))
             .add_systems(
                 OnEnter(GameState::Playing),

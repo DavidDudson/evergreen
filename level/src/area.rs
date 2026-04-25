@@ -45,12 +45,29 @@ pub const ALL_NPCS: [NpcKind; 7] = [
     NpcKind::BloodyMary,
 ];
 
+/// Diseased creature / slime kinds that spawn in greenwood maps as the
+/// `AreaEvent::Enemy` content. Per-tile entity spawning lives in
+/// `crate::enemies`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum EnemyKind {
+    PurpleSlime,
+    DiseasedFox,
+    DiseasedDeer,
+    DiseasedBear,
+}
+
 /// What happens when the player enters an area.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum AreaEvent {
     #[default]
     None,
     NpcEncounter(NpcKind),
+    /// Hostile encounter. `count` enemies of `kind` are spawned across the
+    /// area; the count is scaled by total maps the player has traversed.
+    Enemy {
+        kind: EnemyKind,
+        count: u8,
+    },
 }
 
 pub const MAP_WIDTH: u16 = 32;

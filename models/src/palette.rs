@@ -15,6 +15,8 @@ pub const MINIMAP_BG: Color = Color::srgba(0.04, 0.08, 0.04, 0.80);
 pub const MINIMAP_ROOM: Color = Color::srgb(0.38, 0.58, 0.40);
 pub const MINIMAP_CURRENT: Color = Color::srgb(0.90, 0.92, 0.72);
 pub const MINIMAP_NPC: Color = Color::srgb(0.95, 0.65, 0.20);
+pub const MINIMAP_ENEMY: Color = Color::srgb(0.85, 0.20, 0.30);
+pub const MINIMAP_PORTAL: Color = Color::srgb(0.65, 0.30, 0.95);
 
 // Dialog / lore colours
 pub const DIALOG_BG: Color = Color::srgba(0.04, 0.10, 0.06, 0.95);

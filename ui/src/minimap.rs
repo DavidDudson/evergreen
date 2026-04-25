@@ -37,6 +37,12 @@ const MINIMAP_RIGHT_PX: u16 = 5;
 
 /// Size of the event icon dot inside a cell.
 const EVENT_DOT_SIZE_PX: u16 = 5;
+/// Size of the icon-sprite events (enemy, portal). Slightly larger so the
+/// pixel-art icon is legible.
+const EVENT_ICON_SIZE_PX: u16 = 9;
+/// Asset paths for sprite-based event icons.
+const PORTAL_ICON_PATH: &str = "sprites/icons/portal.webp";
+const ENEMY_ICON_PATH: &str = "sprites/icons/enemy.webp";
 
 // ---------------------------------------------------------------------------
 // Components
@@ -54,7 +60,7 @@ pub struct MinimapCell;
 // ---------------------------------------------------------------------------
 
 /// Spawn the minimap container and the initial cells for the starting area.
-pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, world: Res<WorldMap>) {
     let root = commands
         .spawn((
             MinimapRoot,
@@ -71,7 +77,7 @@ pub fn setup(mut commands: Commands, world: Res<WorldMap>) {
         ))
         .id();
 
-    build_cells(root, &world, &mut commands);
+    build_cells(root, &asset_server, &world, &mut commands);
 }
 
 /// Despawn all minimap elements when leaving the Playing state.
@@ -85,6 +91,7 @@ pub fn despawn(mut commands: Commands, root_q: Query<Entity, With<MinimapRoot>>)
 /// re-entering Playing from Dialogue/Pause).
 pub fn refresh(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     world: Res<WorldMap>,
     root_q: Query<Entity, With<MinimapRoot>>,
     cell_q: Query<Entity, With<MinimapCell>>,
@@ -99,14 +106,19 @@ pub fn refresh(
         commands.entity(entity).despawn();
     }
 
-    build_cells(root, &world, &mut commands);
+    build_cells(root, &asset_server, &world, &mut commands);
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
+fn build_cells(
+    root: Entity,
+    asset_server: &AssetServer,
+    world: &WorldMap,
+    commands: &mut Commands,
+) {
     let current = world.current;
 
     for dy in -VIEW_RADIUS..=VIEW_RADIUS {
@@ -151,8 +163,36 @@ fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
                 ))
                 .id();
 
-            // Event icon: show a colored dot based on the area's event type.
-            if let Some(dot_color) = event_dot_color(&area.event, area_pos) {
+            // Portal area trumps any other event marker -- spawn the
+            // portal icon sprite. Otherwise fall back to enemy icon or
+            // colored dot for NPC encounters.
+            let is_portal_area = world
+                .portal
+                .as_ref()
+                .is_some_and(|p| p.area_pos == area_pos);
+            if is_portal_area {
+                commands.spawn((
+                    MinimapCell,
+                    Node {
+                        width: Val::Px(f32::from(EVENT_ICON_SIZE_PX)),
+                        height: Val::Px(f32::from(EVENT_ICON_SIZE_PX)),
+                        ..Node::default()
+                    },
+                    ImageNode::new(asset_server.load(PORTAL_ICON_PATH)),
+                    ChildOf(cell_entity),
+                ));
+            } else if matches!(area.event, AreaEvent::Enemy { .. }) {
+                commands.spawn((
+                    MinimapCell,
+                    Node {
+                        width: Val::Px(f32::from(EVENT_ICON_SIZE_PX)),
+                        height: Val::Px(f32::from(EVENT_ICON_SIZE_PX)),
+                        ..Node::default()
+                    },
+                    ImageNode::new(asset_server.load(ENEMY_ICON_PATH)),
+                    ChildOf(cell_entity),
+                ));
+            } else if let Some(dot_color) = event_dot_color(&area.event, area_pos) {
                 commands.spawn((
                     MinimapCell,
                     Node {
@@ -196,6 +236,7 @@ fn build_cells(root: Entity, world: &WorldMap, commands: &mut Commands) {
 fn event_dot_color(event: &AreaEvent, area_pos: IVec2) -> Option<Color> {
     match event {
         AreaEvent::NpcEncounter(_) => Some(palette::MINIMAP_NPC),
+        AreaEvent::Enemy { .. } => Some(palette::MINIMAP_ENEMY),
         AreaEvent::None if area_pos == IVec2::ZERO => Some(palette::MINIMAP_NPC),
         AreaEvent::None => Option::None,
     }

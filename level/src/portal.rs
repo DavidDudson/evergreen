@@ -176,6 +176,11 @@ pub fn despawn_portals(
     }
 }
 
+/// Counts how many distinct maps the player has set foot in. Increments on
+/// every portal crossing. Used to scale enemy counts in greenwood maps.
+#[derive(Resource, Default, Debug, Clone, Copy)]
+pub struct MapsTraversed(pub u32);
+
 /// Resource holding the alignment of the next map the player is heading to.
 /// Set when [`PortalCrossed`] fires; consumed by the `MapTransition`-state
 /// regen system so the new map is generated at the portal's target.
@@ -211,12 +216,14 @@ pub fn apply_map_transition(
     mut pending: ResMut<PendingPortal>,
     mut world: ResMut<crate::world::WorldMap>,
     mut spawned: ResMut<crate::spawning::SpawnedAreas>,
+    mut traversed: ResMut<MapsTraversed>,
     mut next: ResMut<NextState<models::game_states::GameState>>,
 ) {
     let alignment = pending.alignment.take().unwrap_or(world.alignment);
     let new_seed: u64 = rand::random();
     let next_id = crate::world::MapId(world.id.0.wrapping_add(1));
-    *world = crate::world::WorldMap::generate(next_id, new_seed, alignment);
+    traversed.0 = traversed.0.saturating_add(1);
+    *world = crate::world::WorldMap::generate(next_id, new_seed, alignment, traversed.0);
     spawned.0.clear();
     pending.just_transitioned = true;
     next.set(models::game_states::GameState::Playing);
