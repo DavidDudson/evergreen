@@ -6,8 +6,21 @@
 //! us the `(corners → bounding_box)` mapping; we parse it once at startup
 //! and build a `[u8; 16]` lookup table per tileset.
 
+use std::collections::HashMap;
+
 use bevy::prelude::*;
 use serde::Deserialize;
+
+// ---------------------------------------------------------------------------
+// Tileset registry keys
+// ---------------------------------------------------------------------------
+
+pub const OCEAN_SAND: &str = "ocean_sand";
+pub const SAND_GRASS: &str = "sand_grass";
+pub const POND_GRASS: &str = "pond_grass";
+pub const HOTSPRING_GRASS: &str = "hotspring_grass";
+pub const RIVER_GRASS: &str = "river_grass";
+pub const WATERFALL_GRASS: &str = "waterfall_grass";
 
 // ---------------------------------------------------------------------------
 // Metadata JSON shape
@@ -59,15 +72,17 @@ pub struct WangTileset {
     pub lut: [usize; 16],
 }
 
-/// Shared resource exposing every loaded tileset.
-#[derive(Resource)]
-pub struct WangTilesets {
-    pub ocean_sand: WangTileset,
-    pub sand_grass: WangTileset,
-    pub pond_grass: WangTileset,
-    pub hotspring_grass: WangTileset,
-    pub river_grass: WangTileset,
-    pub waterfall_grass: WangTileset,
+/// Shared resource exposing every loaded tileset, keyed by string key
+/// (see the `OCEAN_SAND` / `POND_GRASS` / ... constants above).
+#[derive(Resource, Default)]
+pub struct WangTilesets(HashMap<&'static str, WangTileset>);
+
+impl WangTilesets {
+    pub fn get(&self, key: &'static str) -> &WangTileset {
+        self.0
+            .get(key)
+            .unwrap_or_else(|| panic!("wang tileset '{key}' not registered"))
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -115,6 +130,23 @@ const HOTSPRING_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/hotspr
 const RIVER_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/river_grass.json");
 const WATERFALL_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/waterfall_grass.json");
 
+const TILESET_DEFS: &[(&str, &str, &[u8])] = &[
+    (OCEAN_SAND, "tilesets/ocean_sand.webp", OCEAN_SAND_JSON),
+    (SAND_GRASS, "tilesets/sand_grass.webp", SAND_GRASS_JSON),
+    (POND_GRASS, "tilesets/pond_grass.webp", POND_GRASS_JSON),
+    (
+        HOTSPRING_GRASS,
+        "tilesets/hotspring_grass.webp",
+        HOTSPRING_GRASS_JSON,
+    ),
+    (RIVER_GRASS, "tilesets/river_grass.webp", RIVER_GRASS_JSON),
+    (
+        WATERFALL_GRASS,
+        "tilesets/waterfall_grass.webp",
+        WATERFALL_GRASS_JSON,
+    ),
+];
+
 pub fn init_wang_tilesets(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -128,20 +160,19 @@ pub fn init_wang_tilesets(
         None,
     ));
 
-    let mk = |path: &'static str, json: &[u8]| WangTileset {
-        texture: asset_server.load(path),
-        layout: layout.clone(),
-        lut: parse_lut(json),
-    };
+    let mut map: HashMap<&'static str, WangTileset> = HashMap::with_capacity(TILESET_DEFS.len());
+    for &(key, path, json) in TILESET_DEFS {
+        map.insert(
+            key,
+            WangTileset {
+                texture: asset_server.load(path),
+                layout: layout.clone(),
+                lut: parse_lut(json),
+            },
+        );
+    }
 
-    commands.insert_resource(WangTilesets {
-        ocean_sand: mk("tilesets/ocean_sand.webp", OCEAN_SAND_JSON),
-        sand_grass: mk("tilesets/sand_grass.webp", SAND_GRASS_JSON),
-        pond_grass: mk("tilesets/pond_grass.webp", POND_GRASS_JSON),
-        hotspring_grass: mk("tilesets/hotspring_grass.webp", HOTSPRING_GRASS_JSON),
-        river_grass: mk("tilesets/river_grass.webp", RIVER_GRASS_JSON),
-        waterfall_grass: mk("tilesets/waterfall_grass.webp", WATERFALL_GRASS_JSON),
-    });
+    commands.insert_resource(WangTilesets(map));
 }
 
 #[cfg(test)]

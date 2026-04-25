@@ -87,7 +87,7 @@ pub fn spawn_area_water_flora(
     let area_seed = ax
         .wrapping_mul(2_654_435_761)
         .wrapping_add(ay.wrapping_mul(1_013_904_223))
-        .wrapping_add(0xF10_7A);
+        .wrapping_add(0x000F_107A);
 
     for (local, kind) in water.tiles_in_area(area_pos) {
         spawn_surface_flora(

@@ -17,6 +17,9 @@ pub enum Action {
     // UI
     Pause,
     DialogAdvance,
+    // Diagnostics
+    ToggleDiagnosticsOverlay,
+    ToggleDebugPanel,
 }
 
 impl Action {
@@ -30,6 +33,8 @@ impl Action {
         Action::Interact,
         Action::Pause,
         Action::DialogAdvance,
+        Action::ToggleDiagnosticsOverlay,
+        Action::ToggleDebugPanel,
     ];
 
     /// Human-readable label shown in the keybind config UI.
@@ -43,6 +48,8 @@ impl Action {
             Action::Interact => "Interact",
             Action::Pause => "Pause",
             Action::DialogAdvance => "Advance Dialog",
+            Action::ToggleDiagnosticsOverlay => "Toggle Diagnostics Overlay",
+            Action::ToggleDebugPanel => "Toggle Debug Panel",
         }
     }
 }

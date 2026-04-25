@@ -5,7 +5,7 @@
 
 use bevy::prelude::*;
 use level::plugin::TILE_SIZE_PX;
-use level::water::SteppingStone;
+use models::player::HopTrigger;
 
 use crate::spawning::Player;
 
@@ -28,7 +28,7 @@ pub struct HopBob {
 pub fn apply_hop_bob(
     time: Res<Time>,
     mut player: Query<(&mut Transform, &mut HopBob), With<Player>>,
-    stones: Query<&Transform, (With<SteppingStone>, Without<Player>)>,
+    stones: Query<&Transform, (With<HopTrigger>, Without<Player>)>,
 ) {
     let Ok((mut tf, mut bob)) = player.single_mut() else {
         return;

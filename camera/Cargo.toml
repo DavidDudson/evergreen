@@ -12,5 +12,4 @@ bevy_light_2d = "0.9"
 dialog = { path = "../dialog" }
 level = { path = "../level" }
 models = { path = "../models" }
-player = { path = "../player" }
 post_processing = { path = "../post_processing" }

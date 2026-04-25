@@ -1,13 +1,13 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use models::decoration::Biome;
 use models::layer::Layer;
 use models::reveal::{RevealState, Revealable};
 use models::scenery::{Rustling, Scenery, SceneryCollider};
 use models::shadow::{TREE_SHADOW_HALF_PX, TREE_SHADOW_OFFSET_Y_PX};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::biome_registry::BiomeRegistry;
 use crate::blending;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
@@ -33,75 +33,11 @@ const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
 #[allow(clippy::as_conversions)]
 const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
-// ---------------------------------------------------------------------------
-// Tree definitions
-// ---------------------------------------------------------------------------
-
-const CITY_TREES: &[&str] = &[
-    "sprites/scenery/trees/city/tree_city_ornamental.webp",
-    "sprites/scenery/trees/city/tree_city_fruit.webp",
-];
-
-const GREENWOOD_TREES: &[&str] = &[
-    "sprites/scenery/trees/greenwood/tree_green_oak.webp",
-    "sprites/scenery/trees/greenwood/tree_green_birch.webp",
-    "sprites/scenery/trees/greenwood/tree_green_maple.webp",
-];
-
-const DARKWOOD_TREES: &[&str] = &[
-    "sprites/scenery/trees/darkwood/tree_dark_gnarled.webp",
-    "sprites/scenery/trees/darkwood/tree_dark_dead.webp",
-    "sprites/scenery/trees/darkwood/tree_dark_willow.webp",
-];
-
-fn tree_pool(alignment: u8) -> &'static [&'static str] {
-    match Biome::from_alignment(alignment) {
-        Biome::City => CITY_TREES,
-        Biome::Greenwood => GREENWOOD_TREES,
-        Biome::Darkwood => DARKWOOD_TREES,
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Density
-// ---------------------------------------------------------------------------
-
-/// Tree spawn probability (0-100 hash threshold) by biome.
-fn tree_threshold(alignment: u8, ed: u32) -> usize {
-    let biome = Biome::from_alignment(alignment);
-
-    // Dead zone: no trees deep in the middle of an area. Darkwood's dead zone
-    // is tighter so its centre opens up for navigation even more than the
-    // other biomes.
-    let dead_zone = match biome {
-        Biome::Darkwood => 4,
-        _ => 6,
-    };
-    if ed > dead_zone {
-        return 0;
-    }
-
-    let base: usize = match biome {
-        Biome::City => 3,
-        Biome::Greenwood => 35,
-        Biome::Darkwood => 65,
-    };
-
-    // Thick at the border tiles, thinning toward the centre. The final tier
-    // (ed > 4) is the "middle band" -- kept deliberately sparse so the play
-    // area stays readable.
-    if ed <= 2 {
-        base + 12
-    } else if ed <= 4 {
-        base + 4
-    } else {
-        base / 3
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+/// Salt offset added to the per-area seed so blend-pool picks don't collide
+/// with the variant pick.
+const POOL_PICK_SALT: u32 = 20;
+/// Salt offset added to the per-area seed for the variant pick.
+const VARIANT_PICK_SALT: u32 = 10;
 
 /// Despawn all scenery on game exit.
 pub fn despawn_scenery(mut commands: Commands, query: Query<Entity, With<Scenery>>) {
@@ -116,16 +52,21 @@ pub fn spawn_area_scenery_at(
     commands: &mut Commands,
     asset_server: &AssetServer,
     shadow_assets: &DropShadowAssets,
+    registry: &BiomeRegistry,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
 ) {
-    spawn_area_scenery(commands, asset_server, shadow_assets, area, area_pos, world);
+    spawn_area_scenery(
+        commands,
+        asset_server,
+        shadow_assets,
+        registry,
+        area,
+        area_pos,
+        world,
+    );
 }
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
 
 /// Simplified clear check -- 1x1 trunk footprint. Trees refuse to grow on
 /// water tiles (ponds, rivers, ocean, waterfall) or sand.
@@ -144,6 +85,7 @@ fn spawn_area_scenery(
     commands: &mut Commands,
     asset_server: &AssetServer,
     shadow_assets: &DropShadowAssets,
+    registry: &BiomeRegistry,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -168,12 +110,12 @@ fn spawn_area_scenery(
             let ed = edge_dist(x, y);
 
             let blend = blending::blend_at(area.alignment, xu, yu, area_pos, world);
-            let threshold = tree_threshold(blend.alignment, ed);
+            let threshold = registry.tree_config(blend.alignment).threshold_at(ed);
 
             if hash < threshold && clear_for_tree(area, world, area_pos, xu, yu) {
                 // In the blend zone, probabilistically pick from the neighbor's
                 // tree pool based on blend factor (Minecraft-style mixing).
-                let mix_hash = tile_hash(xu, yu, area_seed.wrapping_add(20)) % 100;
+                let mix_hash = tile_hash(xu, yu, area_seed.wrapping_add(POOL_PICK_SALT)) % 100;
                 #[allow(clippy::as_conversions)]
                 let mix_threshold = (blend.factor * 100.0) as usize;
                 let pool_alignment = if mix_hash < mix_threshold {
@@ -181,9 +123,10 @@ fn spawn_area_scenery(
                 } else {
                     area.alignment
                 };
-                let pool = tree_pool(pool_alignment);
-                let variant = tile_hash(xu, yu, area_seed.wrapping_add(10)) % pool.len();
-                let def = &pool[variant];
+                let pool = registry.trees(pool_alignment);
+                let variant =
+                    tile_hash(xu, yu, area_seed.wrapping_add(VARIANT_PICK_SALT)) % pool.len();
+                let def = pool[variant];
                 let world_x = base_offset_x + f32::from(x) * tile_px + tile_px / 2.0;
                 let world_y = base_offset_y + f32::from(y) * tile_px + tile_px / 2.0;
                 spawn_tree(commands, asset_server, shadow_assets, def, world_x, world_y);
@@ -191,10 +134,6 @@ fn spawn_area_scenery(
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// Spawner
-// ---------------------------------------------------------------------------
 
 fn spawn_tree(
     commands: &mut Commands,
@@ -236,10 +175,6 @@ fn spawn_tree(
         TREE_SHADOW_OFFSET_Y_PX,
     );
 }
-
-// ---------------------------------------------------------------------------
-// Geometry helpers
-// ---------------------------------------------------------------------------
 
 pub fn animate_rustle(
     mut commands: Commands,

@@ -90,7 +90,7 @@ pub fn spawn_area_beach(
         .wrapping_add(ay.wrapping_mul(1_013_904_223))
         .wrapping_add(0xBE_AC_30);
 
-    let sand_tileset = &wang.sand_grass;
+    let sand_tileset = wang.get(crate::wang::SAND_GRASS);
     for y in 0..u32::from(crate::area::MAP_HEIGHT) {
         for x in 0..u32::from(crate::area::MAP_WIDTH) {
             let mask = crate::water::sand_mask(&world.water, area_pos, x, y);
@@ -98,12 +98,10 @@ pub fn spawn_area_beach(
                 continue;
             }
             let local = bevy::math::UVec2::new(x, y);
-            let world_x = base_offset_x
-                + f32::from(u16::try_from(x).unwrap_or(0)) * tile_px
-                + tile_px / 2.0;
-            let world_y = base_offset_y
-                + f32::from(u16::try_from(y).unwrap_or(0)) * tile_px
-                + tile_px / 2.0;
+            let world_x =
+                base_offset_x + f32::from(u16::try_from(x).unwrap_or(0)) * tile_px + tile_px / 2.0;
+            let world_y =
+                base_offset_y + f32::from(u16::try_from(y).unwrap_or(0)) * tile_px + tile_px / 2.0;
             commands.spawn((
                 SandTile,
                 Scenery,
@@ -238,8 +236,8 @@ fn spawn_pier(
 pub fn animate_crabs(time: Res<Time>, mut crabs: Query<(&Crab, &mut Transform)>) {
     let t = time.elapsed_secs();
     for (crab, mut tf) in &mut crabs {
-        tf.translation.x = crab.base_x
-            + (t * CRAB_SCUTTLE_FREQ_HZ + crab.phase).sin() * CRAB_SCUTTLE_AMPLITUDE_PX;
+        tf.translation.x =
+            crab.base_x + (t * CRAB_SCUTTLE_FREQ_HZ + crab.phase).sin() * CRAB_SCUTTLE_AMPLITUDE_PX;
     }
 }
 

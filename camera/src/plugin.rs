@@ -1,63 +1,37 @@
-use bevy::camera::ScalingMode;
-use bevy::core_pipeline::tonemapping::{DebandDither, Tonemapping};
 use bevy::prelude::*;
-use bevy::render::view::{ColorGrading, Hdr};
-use bevy_light_2d::prelude::{AmbientLight2d, Light2d};
-use level::plugin::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE_PX};
 use models::game_states::GameState;
 
-use post_processing::atmosphere::BiomeAtmosphere;
-use post_processing::bloom_setup::pixel_art_bloom;
-
+use crate::config::CameraConfig;
 use crate::dialogue_focus;
+use crate::mode::{enter_dialogue_focus, exit_dialogue_focus, in_camera_mode, CameraMode};
+use crate::setup::spawn_camera;
 use crate::smooth;
 
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<smooth::CameraOffset>();
+        app.init_resource::<smooth::CameraOffset>()
+            .init_resource::<CameraConfig>()
+            .init_resource::<CameraMode>();
 
-        app.add_systems(Startup, setup);
+        app.add_systems(Startup, spawn_camera);
+
+        app.add_systems(OnEnter(GameState::Dialogue), enter_dialogue_focus);
+        app.add_systems(OnExit(GameState::Dialogue), exit_dialogue_focus);
 
         app.add_systems(
             Update,
-            dialogue_focus::focus_on_dialogue.run_if(in_state(GameState::Dialogue)),
+            dialogue_focus::focus_on_dialogue
+                .run_if(in_state(GameState::Dialogue))
+                .run_if(in_camera_mode(CameraMode::DialogueFocus)),
         );
-
-        app.add_systems(OnExit(GameState::Dialogue), dialogue_focus::reset_camera);
 
         app.add_systems(
             PostUpdate,
-            smooth::follow_player.run_if(in_state(GameState::Playing)),
+            smooth::follow_player
+                .run_if(in_state(GameState::Playing))
+                .run_if(in_camera_mode(CameraMode::Follow)),
         );
     }
-}
-
-fn setup(mut commands: Commands) {
-    commands.spawn((
-        Camera2d,
-        Hdr,
-        // HDR + MSAA is unsupported on WebGL2 and crashes at runtime.
-        // Pixel art also gains nothing from MSAA.
-        Msaa::Off,
-        Tonemapping::TonyMcMapface,
-        DebandDither::Enabled,
-        pixel_art_bloom(),
-        BiomeAtmosphere::default(),
-        ColorGrading::default(),
-        Light2d {
-            ambient_light: AmbientLight2d {
-                color: Color::WHITE,
-                brightness: 1.0,
-            },
-        },
-        Projection::Orthographic(OrthographicProjection {
-            scaling_mode: ScalingMode::AutoMin {
-                min_width: f32::from(MAP_WIDTH) * f32::from(TILE_SIZE_PX),
-                min_height: f32::from(MAP_HEIGHT) * f32::from(TILE_SIZE_PX),
-            },
-            ..OrthographicProjection::default_2d()
-        }),
-    ));
 }

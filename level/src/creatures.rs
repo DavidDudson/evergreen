@@ -1,12 +1,12 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use models::creature::{Creature, CreatureAi, CreatureState, MovementType};
-use models::decoration::Biome;
 use models::layer::Layer;
 use models::player::Player;
 use models::shadow::{CREATURE_SHADOW_HALF_PX, CREATURE_SHADOW_OFFSET_Y_PX};
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::biome_registry::BiomeRegistry;
 use crate::blending;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
@@ -52,106 +52,8 @@ const FLY_BOB_FREQUENCY_HZ: f32 = 3.0;
 /// Sprite size for all creatures (pixels).
 const CREATURE_SPRITE_SIZE_PX: f32 = 8.0;
 
-// ---------------------------------------------------------------------------
-// Speeds (pixels per second)
-// ---------------------------------------------------------------------------
-
-/// Mouse wander speed.
-const SPEED_MOUSE_PX: f32 = 32.0;
-/// Pigeon wander speed.
-const SPEED_PIGEON_PX: f32 = 48.0;
-/// Cat wander speed.
-const SPEED_CAT_PX: f32 = 40.0;
-/// Butterfly wander speed.
-const SPEED_BUTTERFLY_PX: f32 = 24.0;
-/// Frog wander speed.
-const SPEED_FROG_PX: f32 = 48.0;
-/// Rabbit wander speed.
-const SPEED_RABBIT_PX: f32 = 56.0;
-/// Songbird wander speed.
-const SPEED_SONGBIRD_PX: f32 = 40.0;
-/// Cockroach wander speed.
-const SPEED_COCKROACH_PX: f32 = 40.0;
-/// Crow wander speed.
-const SPEED_CROW_PX: f32 = 48.0;
-/// Bat wander speed.
-const SPEED_BAT_PX: f32 = 56.0;
-/// Spider wander speed.
-const SPEED_SPIDER_PX: f32 = 32.0;
-
-// ---------------------------------------------------------------------------
-// Creature definitions
-// ---------------------------------------------------------------------------
-
-struct CreatureDef {
-    path: &'static str,
-    movement: MovementType,
-    speed: f32,
-}
-
-const CITY_CREATURES: &[CreatureDef] = &[
-    CreatureDef {
-        path: "sprites/creatures/city/mouse.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_MOUSE_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/city/pigeon.webp",
-        movement: MovementType::Flying,
-        speed: SPEED_PIGEON_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/city/cat.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_CAT_PX,
-    },
-];
-
-const GREENWOOD_CREATURES: &[CreatureDef] = &[
-    CreatureDef {
-        path: "sprites/creatures/greenwood/butterfly.webp",
-        movement: MovementType::Flying,
-        speed: SPEED_BUTTERFLY_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/greenwood/frog.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_FROG_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/greenwood/rabbit.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_RABBIT_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/greenwood/songbird.webp",
-        movement: MovementType::Flying,
-        speed: SPEED_SONGBIRD_PX,
-    },
-];
-
-const DARKWOOD_CREATURES: &[CreatureDef] = &[
-    CreatureDef {
-        path: "sprites/creatures/darkwood/cockroach.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_COCKROACH_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/darkwood/crow.webp",
-        movement: MovementType::Flying,
-        speed: SPEED_CROW_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/darkwood/bat.webp",
-        movement: MovementType::Flying,
-        speed: SPEED_BAT_PX,
-    },
-    CreatureDef {
-        path: "sprites/creatures/darkwood/spider.webp",
-        movement: MovementType::Ground,
-        speed: SPEED_SPIDER_PX,
-    },
-];
+/// City alignment threshold (matches `Biome::City` upper bound).
+const CITY_ALIGNMENT_MAX: u8 = 25;
 
 // ---------------------------------------------------------------------------
 // Spawning
@@ -162,6 +64,7 @@ pub fn spawn_area_creatures(
     commands: &mut Commands,
     asset_server: &AssetServer,
     shadow_assets: &DropShadowAssets,
+    registry: &BiomeRegistry,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -187,10 +90,10 @@ pub fn spawn_area_creatures(
     for x in inset..x_max {
         for y in inset..y_max {
             let terrain = area.terrain_at(x, y);
-            let biome = Biome::from_alignment(area.alignment);
-            let valid = match biome {
-                Biome::City => terrain == Some(Terrain::Grass) || terrain == Some(Terrain::Dirt),
-                _ => terrain == Some(Terrain::Grass),
+            let valid = if area.alignment <= CITY_ALIGNMENT_MAX {
+                terrain == Some(Terrain::Grass) || terrain == Some(Terrain::Dirt)
+            } else {
+                terrain == Some(Terrain::Grass)
             };
             if valid {
                 candidates.push((x, y));
@@ -223,12 +126,7 @@ pub fn spawn_area_creatures(
     for (i, &(xu, yu)) in candidates.iter().take(count).enumerate() {
         let effective_alignment =
             blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
-        let biome = Biome::from_alignment(effective_alignment);
-        let pool = match biome {
-            Biome::City => CITY_CREATURES,
-            Biome::Greenwood => GREENWOOD_CREATURES,
-            Biome::Darkwood => DARKWOOD_CREATURES,
-        };
+        let pool = registry.creatures(effective_alignment);
 
         let variant = tile_hash(
             xu,

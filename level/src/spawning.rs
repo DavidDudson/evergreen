@@ -9,6 +9,7 @@ use models::palette;
 use models::tile::Tile;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::biome_registry::BiomeRegistry;
 use crate::blending;
 use crate::creatures;
 use crate::decorations;
@@ -78,6 +79,7 @@ pub fn spawn_initial_areas(
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     shadow_assets: Res<DropShadowAssets>,
     wang: Res<crate::wang::WangTilesets>,
+    registry: Res<BiomeRegistry>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
 ) {
@@ -88,6 +90,7 @@ pub fn spawn_initial_areas(
         &mut atlas_layouts,
         &shadow_assets,
         &wang,
+        &registry,
         &world,
         current,
         &mut spawned,
@@ -100,6 +103,7 @@ pub fn spawn_initial_areas(
             &mut atlas_layouts,
             &shadow_assets,
             &wang,
+            &registry,
             &world,
             pos,
             &mut spawned,
@@ -115,6 +119,7 @@ pub fn ensure_neighbors_on_area_change(
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     shadow_assets: Res<DropShadowAssets>,
     wang: Res<crate::wang::WangTilesets>,
+    registry: Res<BiomeRegistry>,
     world: Res<WorldMap>,
     mut spawned: ResMut<SpawnedAreas>,
     mut events: MessageReader<AreaChanged>,
@@ -129,6 +134,7 @@ pub fn ensure_neighbors_on_area_change(
         &mut atlas_layouts,
         &shadow_assets,
         &wang,
+        &registry,
         &world,
         current,
         &mut spawned,
@@ -141,6 +147,7 @@ pub fn ensure_neighbors_on_area_change(
             &mut atlas_layouts,
             &shadow_assets,
             &wang,
+            &registry,
             &world,
             pos,
             &mut spawned,
@@ -175,6 +182,7 @@ fn ensure_area_spawned(
     atlas_layouts: &mut Assets<TextureAtlasLayout>,
     shadow_assets: &DropShadowAssets,
     wang: &crate::wang::WangTilesets,
+    registry: &BiomeRegistry,
     world: &WorldMap,
     area_pos: IVec2,
     spawned: &mut SpawnedAreas,
@@ -184,15 +192,39 @@ fn ensure_area_spawned(
     }
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
-    spawn_area_tilemap(commands, asset_server, world, area, area_pos);
+    spawn_area_tilemap(commands, asset_server, registry, world, area, area_pos);
     crate::water::spawn_area_water(commands, asset_server, wang, world, area_pos);
     crate::beach::spawn_area_beach(commands, asset_server, wang, world, area_pos);
     crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
     crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
-    scenery::spawn_area_scenery_at(commands, asset_server, shadow_assets, area, area_pos, world);
-    decorations::spawn_area_decorations(commands, asset_server, area, area_pos, world);
-    grass::spawn_area_grass(commands, asset_server, shadow_assets, area, area_pos, world);
-    creatures::spawn_area_creatures(commands, asset_server, shadow_assets, area, area_pos, world);
+    scenery::spawn_area_scenery_at(
+        commands,
+        asset_server,
+        shadow_assets,
+        registry,
+        area,
+        area_pos,
+        world,
+    );
+    decorations::spawn_area_decorations(commands, asset_server, registry, area, area_pos, world);
+    grass::spawn_area_grass(
+        commands,
+        asset_server,
+        shadow_assets,
+        registry,
+        area,
+        area_pos,
+        world,
+    );
+    creatures::spawn_area_creatures(
+        commands,
+        asset_server,
+        shadow_assets,
+        registry,
+        area,
+        area_pos,
+        world,
+    );
     npcs::spawn_npc_for_area(
         commands,
         asset_server,
@@ -207,6 +239,7 @@ fn ensure_area_spawned(
 fn spawn_area_tilemap(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    registry: &BiomeRegistry,
     world: &WorldMap,
     area: &Area,
     area_pos: IVec2,
@@ -215,7 +248,7 @@ fn spawn_area_tilemap(
     let center_y = u32::from(MAP_HEIGHT) / 2;
     let effective_alignment =
         blending::blended_alignment(area.alignment, center_x, center_y, area_pos, world);
-    let texture: Handle<Image> = asset_server.load(terrain_tileset_path(effective_alignment));
+    let texture: Handle<Image> = asset_server.load(registry.terrain_tileset(effective_alignment));
     let base = area_world_offset(area_pos);
 
     let map_size = TilemapSize {
@@ -339,15 +372,6 @@ fn wang_tile_index_local(x: u32, y: u32, area: &Area, area_pos: IVec2, world: &W
     let wang = terrain::wang_index(nw, ne, sw, se);
     #[allow(clippy::as_conversions)]
     terrain::WANG_TO_ATLAS[wang as usize]
-}
-
-/// Returns the Wang tileset asset path for the given area alignment.
-fn terrain_tileset_path(alignment: u8) -> &'static str {
-    match Biome::from_alignment(alignment) {
-        Biome::City => "sprites/terrain/terrain_wang_city.webp",
-        Biome::Greenwood => "sprites/terrain/terrain_wang.webp",
-        Biome::Darkwood => "sprites/terrain/terrain_wang_darkwood.webp",
-    }
 }
 
 /// Base tile tint color for a biome.

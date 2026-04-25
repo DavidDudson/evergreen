@@ -5,7 +5,7 @@ use bevy::prelude::Component;
 pub struct Decoration;
 
 /// Biome classification derived from area alignment.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Biome {
     City,
     Greenwood,

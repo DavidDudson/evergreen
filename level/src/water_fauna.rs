@@ -203,7 +203,7 @@ fn spawn_frog(commands: &mut Commands, asset_server: &AssetServer, x: f32, y: f3
 fn spawn_fish(commands: &mut Commands, asset_server: &AssetServer, x: f32, y: f32, hash: usize) {
     #[allow(clippy::as_conversions)]
     let phase = (hash.wrapping_mul(41) % 628) as f32 / 100.0;
-    let dir_x = if hash % 2 == 0 { 1.0 } else { -1.0 };
+    let dir_x = if hash.is_multiple_of(2) { 1.0 } else { -1.0 };
     commands.spawn((
         WaterCreature,
         FishShadow {
@@ -246,7 +246,6 @@ fn spawn_dragonfly(
     ));
 }
 
-
 // ---------------------------------------------------------------------------
 // Animation
 // ---------------------------------------------------------------------------
@@ -255,7 +254,11 @@ type FrogQuery<'w, 's> = Query<
     'w,
     's,
     (&'static Frog, &'static mut Transform),
-    (Without<WaterStrider>, Without<Dragonfly>, Without<FishShadow>),
+    (
+        Without<WaterStrider>,
+        Without<Dragonfly>,
+        Without<FishShadow>,
+    ),
 >;
 type StriderQuery<'w, 's> = Query<
     'w,
@@ -298,14 +301,13 @@ pub fn animate_water_fauna(
         tf.translation.x = fly.base_x
             + (t * DRAGONFLY_DRIFT_FREQ_X_HZ + fly.phase).sin() * DRAGONFLY_DRIFT_RADIUS_X_PX;
         tf.translation.y = fly.base_y
-            + (t * DRAGONFLY_DRIFT_FREQ_Y_HZ + fly.phase * 1.3).cos()
-                * DRAGONFLY_DRIFT_RADIUS_Y_PX;
+            + (t * DRAGONFLY_DRIFT_FREQ_Y_HZ + fly.phase * 1.3).cos() * DRAGONFLY_DRIFT_RADIUS_Y_PX;
     }
     let dt = time.delta_secs();
     for (fish, mut tf) in &mut fish {
         tf.translation.x += fish.dir_x * FISH_SPEED_PX * dt;
-        tf.translation.y = fish.base_y
-            + (t * FISH_MEANDER_FREQ_HZ + fish.phase).sin() * FISH_MEANDER_AMPLITUDE_PX;
+        tf.translation.y =
+            fish.base_y + (t * FISH_MEANDER_FREQ_HZ + fish.phase).sin() * FISH_MEANDER_AMPLITUDE_PX;
     }
 }
 

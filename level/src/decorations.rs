@@ -1,11 +1,12 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
-use models::decoration::{Biome, Decoration};
+use models::decoration::Decoration;
 use models::layer::Layer;
 use models::reveal::{RevealState, Revealable};
 use models::scenery::Rustleable;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::biome_registry::{BiomeRegistry, DecorationSpec};
 use crate::blending;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::{tile_hash, Terrain};
@@ -24,174 +25,14 @@ const MAX_DECORATIONS: usize = 15;
 /// Inset from area edges where decorations can spawn (avoids tree-dense borders).
 const EDGE_INSET: u16 = 2;
 
-struct DecorationDef {
-    path: &'static str,
-    width_px: f32,
-    height_px: f32,
-    rustleable: bool,
-    revealable: bool,
-}
-
-const DARKWOOD_DECORATIONS: &[DecorationDef] = &[
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/poison_mushroom.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/thorn_bush.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: true,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/spider_web.webp",
-        width_px: 32.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/dead_branch.webp",
-        width_px: 24.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/glowing_fungus.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/skull_bones.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/darkwood/dark_flower.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: true,
-        revealable: false,
-    },
-];
-
-const GREENWOOD_DECORATIONS: &[DecorationDef] = &[
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/wildflower.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: true,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/herb_cluster.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: true,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/twig_pile.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/berry_bush.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: true,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/fern.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: true,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/mossy_rock.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: false,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/greenwood/fallen_log.webp",
-        width_px: 24.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-];
-
-const CITY_DECORATIONS: &[DecorationDef] = &[
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/wooden_crate.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: false,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/barrel.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: false,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/hay_bale.webp",
-        width_px: 24.0,
-        height_px: 24.0,
-        rustleable: false,
-        revealable: true,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/sack.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/flower_pot.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/wooden_sign.webp",
-        width_px: 16.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-    DecorationDef {
-        path: "sprites/scenery/decorations/city/cart.webp",
-        width_px: 32.0,
-        height_px: 16.0,
-        rustleable: false,
-        revealable: false,
-    },
-];
+/// Decoration-specific salt added to the per-area seed.
+const DECORATION_SEED_SALT: u32 = 999;
 
 /// Spawn 10-15 decorations for a single area.
 pub fn spawn_area_decorations(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    registry: &BiomeRegistry,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -208,7 +49,7 @@ pub fn spawn_area_decorations(
         .wrapping_add(ay.wrapping_mul(1_013_904_223));
 
     // Decoration-specific salt to avoid overlapping tree positions.
-    let deco_seed = area_seed.wrapping_add(999);
+    let deco_seed = area_seed.wrapping_add(DECORATION_SEED_SALT);
 
     // Collect candidate grass tiles (inset from edges where trees dominate).
     let mut candidates: Vec<(u32, u32)> = Vec::new();
@@ -248,12 +89,7 @@ pub fn spawn_area_decorations(
         // Per-tile blended alignment for biome-appropriate decoration pool.
         let effective_alignment =
             blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
-        let biome = Biome::from_alignment(effective_alignment);
-        let pool = match biome {
-            Biome::City => CITY_DECORATIONS,
-            Biome::Greenwood => GREENWOOD_DECORATIONS,
-            Biome::Darkwood => DARKWOOD_DECORATIONS,
-        };
+        let pool = registry.decorations(effective_alignment);
 
         let variant = tile_hash(
             xu,
@@ -283,7 +119,7 @@ pub fn despawn_decorations(mut commands: Commands, query: Query<Entity, With<Dec
 fn spawn_decoration(
     commands: &mut Commands,
     asset_server: &AssetServer,
-    def: &DecorationDef,
+    def: &DecorationSpec,
     world_x: f32,
     world_y: f32,
 ) {

@@ -1770,7 +1770,6 @@ dependencies = [
  "dialog",
  "level",
  "models",
- "player",
  "post_processing",
 ]
 
@@ -2187,6 +2186,7 @@ name = "diagnostics"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "keybinds",
  "level",
  "models",
 ]
@@ -3909,6 +3909,7 @@ name = "player"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "keybinds",
  "level",
  "models",
 ]

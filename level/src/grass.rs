@@ -2,12 +2,12 @@
 
 use bevy::math::IVec2;
 use bevy::prelude::*;
-use models::decoration::Biome;
 use models::grass::{GrassTuft, WindSway};
 use models::layer::Layer;
 use models::wind::WindStrength;
 
 use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
+use crate::biome_registry::BiomeRegistry;
 use crate::blending;
 use crate::shadows::{spawn_drop_shadow, DropShadowAssets};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
@@ -43,49 +43,10 @@ const SWAY_FREQUENCY_HZ: f32 = 3.0;
 /// Maximum sway angle in radians.
 const SWAY_MAX_ANGLE_RAD: f32 = 0.1;
 
-// ---------------------------------------------------------------------------
-// Grass sprite definitions
-// ---------------------------------------------------------------------------
-
-struct GrassDef {
-    path: &'static str,
-}
-
-const CITY_GRASS: &[GrassDef] = &[
-    GrassDef {
-        path: "sprites/scenery/grass/city/grass_small.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/city/grass_medium.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/city/grass_large.webp",
-    },
-];
-
-const GREENWOOD_GRASS: &[GrassDef] = &[
-    GrassDef {
-        path: "sprites/scenery/grass/greenwood/grass_small.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/greenwood/grass_medium.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/greenwood/grass_large.webp",
-    },
-];
-
-const DARKWOOD_GRASS: &[GrassDef] = &[
-    GrassDef {
-        path: "sprites/scenery/grass/darkwood/grass_small.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/darkwood/grass_medium.webp",
-    },
-    GrassDef {
-        path: "sprites/scenery/grass/darkwood/grass_large.webp",
-    },
-];
+/// Hash divisor used to derive a per-tuft sway phase (~ 2 PI * 1000).
+const PHASE_HASH_DIVISOR: usize = 6283;
+/// Phase divisor (matching the divisor above) so phases land in 0..2 PI.
+const PHASE_HASH_SCALE: f32 = 1000.0;
 
 // ---------------------------------------------------------------------------
 // Spawning
@@ -96,6 +57,7 @@ pub fn spawn_area_grass(
     commands: &mut Commands,
     asset_server: &AssetServer,
     shadow_assets: &DropShadowAssets,
+    registry: &BiomeRegistry,
     area: &Area,
     area_pos: IVec2,
     world: &WorldMap,
@@ -150,19 +112,14 @@ pub fn spawn_area_grass(
     for (i, &(xu, yu)) in candidates.iter().take(count).enumerate() {
         let effective_alignment =
             blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
-        let biome = Biome::from_alignment(effective_alignment);
-        let pool = match biome {
-            Biome::City => CITY_GRASS,
-            Biome::Greenwood => GREENWOOD_GRASS,
-            Biome::Darkwood => DARKWOOD_GRASS,
-        };
+        let pool = registry.grass(effective_alignment);
 
         let variant = tile_hash(
             xu,
             yu,
             grass_seed.wrapping_add(u32::try_from(i).expect("i fits u32")),
         ) % pool.len();
-        let def = &pool[variant];
+        let path = pool[variant];
 
         let world_x = base_offset_x
             + f32::from(u16::try_from(xu).expect("xu fits u16")) * tile_px
@@ -175,14 +132,14 @@ pub fn spawn_area_grass(
 
         // Derive phase from tile hash so each tuft sways independently.
         #[allow(clippy::as_conversions)]
-        let phase = (tile_hash(xu, yu, grass_seed) % 6283) as f32 / 1000.0;
+        let phase = (tile_hash(xu, yu, grass_seed) % PHASE_HASH_DIVISOR) as f32 / PHASE_HASH_SCALE;
 
         let parent = commands
             .spawn((
                 GrassTuft,
                 WindSway { phase },
                 Sprite {
-                    image: asset_server.load(def.path),
+                    image: asset_server.load(path),
                     ..default()
                 },
                 Transform::from_xyz(world_x, world_y, z),

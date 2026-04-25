@@ -3,6 +3,7 @@ use level::plugin::tile_size;
 use level::shadows::{spawn_drop_shadow, DropShadowAssets};
 use level::spawning::area_world_offset;
 use level::world::WorldMap;
+use models::camera_follow::CameraFollow;
 use models::health::Health;
 use models::layer::Layer;
 use models::shadow::{PLAYER_SHADOW_HALF_PX, PLAYER_SHADOW_OFFSET_Y_PX};
@@ -10,8 +11,8 @@ use models::speed::Speed;
 use models::tile::Tile;
 
 use crate::animation::{
-    AnimationFrame, AnimationKind, AnimationTimer, FacingDirection, FRAME_H_PX, FRAME_W_PX,
-    SHEET_COLS, SHEET_ROWS,
+    AnimationFrame, AnimationKind, AnimationTimer, FacingDirection, MovementState, FRAME_H_PX,
+    FRAME_W_PX, SHEET_COLS, SHEET_ROWS,
 };
 use crate::hop::HopBob;
 
@@ -47,10 +48,12 @@ pub fn spawn(
     let parent = commands
         .spawn((
             Player,
+            CameraFollow,
             PLAYER_SPEED,
             PLAYER_MAX_HEALTH,
             FacingDirection::default(),
             AnimationKind::default(),
+            MovementState::default(),
             AnimationFrame::default(),
             AnimationTimer::default(),
             HopBob::default(),

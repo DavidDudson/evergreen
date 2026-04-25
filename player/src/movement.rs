@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use keybinds::Keybinds;
 use level::area::{Direction, MAP_HEIGHT, MAP_WIDTH};
 use level::plugin::TILE_SIZE_PX;
 use level::spawning::area_world_offset;
@@ -6,7 +7,8 @@ use level::terrain::Terrain;
 use level::world::{AreaChanged, WorldMap};
 use models::speed::Speed;
 
-use crate::animation::AnimationKind;
+use crate::animation::MovementState;
+use crate::input::read_movement_input;
 use crate::spawning::Player;
 
 const RUN_SPEED: Speed = Speed(6); // 6 tiles/s
@@ -28,44 +30,31 @@ const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
 pub fn move_player(
     keyboard: Res<ButtonInput<KeyCode>>,
+    bindings: Res<Keybinds>,
     time: Res<Time>,
     world: Res<WorldMap>,
-    mut query: Query<(&AnimationKind, &mut Transform), With<Player>>,
+    mut query: Query<(&MovementState, &mut Transform), With<Player>>,
 ) {
-    let Ok((kind, mut transform)) = query.single_mut() else {
+    let Ok((movement_state, mut transform)) = query.single_mut() else {
         return;
     };
 
-    let direction = [
-        (KeyCode::KeyW, Vec2::Y),
-        (KeyCode::ArrowUp, Vec2::Y),
-        (KeyCode::KeyS, Vec2::NEG_Y),
-        (KeyCode::ArrowDown, Vec2::NEG_Y),
-        (KeyCode::KeyA, Vec2::NEG_X),
-        (KeyCode::ArrowLeft, Vec2::NEG_X),
-        (KeyCode::KeyD, Vec2::X),
-        (KeyCode::ArrowRight, Vec2::X),
-    ]
-    .iter()
-    .filter(|(key, _)| keyboard.pressed(*key))
-    .map(|(_, dir)| *dir)
-    .sum::<Vec2>();
-
-    let direction = if direction != Vec2::ZERO {
-        direction.normalize()
+    let raw = read_movement_input(&keyboard, &bindings);
+    let direction = if raw != Vec2::ZERO {
+        raw.normalize()
     } else {
         return;
     };
 
-    let speed = match kind {
-        AnimationKind::Run => RUN_SPEED,
+    let speed = match movement_state {
+        MovementState::Run => RUN_SPEED,
         _ => WALK_SPEED,
     };
 
     let terrain_mult = terrain_speed_mult(transform.translation.truncate(), &world);
-    let movement =
+    let delta =
         direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * terrain_mult * time.delta_secs();
-    transform.translation += movement.extend(0.0);
+    transform.translation += delta.extend(0.0);
 }
 
 /// Detect when the player has moved into a different area grid cell.

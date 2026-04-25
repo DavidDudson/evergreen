@@ -8,6 +8,8 @@ use models::weather::WeatherState;
 use models::wind::{WindDirection, WindStrength};
 
 use crate::bark_bubbles;
+use crate::beach;
+use crate::biome_registry::BiomeRegistry;
 use crate::creatures;
 use crate::decorations;
 use crate::exit;
@@ -17,12 +19,11 @@ use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
 use crate::npcs;
+use crate::puddles;
 use crate::reveal;
 use crate::scenery;
 use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
-use crate::beach;
-use crate::puddles;
 use crate::wang;
 use crate::water;
 use crate::water_fauna;
@@ -44,10 +45,14 @@ impl Plugin for LevelPlugin {
             .init_resource::<WeatherState>()
             .init_resource::<puddles::PuddleSpawnTimer>()
             .init_resource::<puddles::SteamAccumulator>()
+            .insert_resource(BiomeRegistry::build())
             .add_plugins(TilemapPlugin)
-            .add_systems(Startup, (shadows::init_shadow_assets, wang::init_wang_tilesets))
+            .add_systems(
+                Startup,
+                (shadows::init_shadow_assets, wang::init_wang_tilesets),
+            )
             .add_message::<AreaChanged>()
-            .insert_resource(WorldMap::new(rand::random(), 50))
+            .insert_resource(WorldMap::new(rand::random(), DEFAULT_PLAYER_ALIGNMENT))
             .add_systems(
                 OnEnter(GameState::Playing),
                 (
@@ -141,6 +146,9 @@ impl Plugin for LevelPlugin {
 
 /// Maximum hour value (exclusive) when randomising a new game's start time.
 const HOURS_PER_DAY: f32 = 24.0;
+
+/// Default alignment used when a player has no faction lean yet.
+const DEFAULT_PLAYER_ALIGNMENT: u8 = 50;
 
 /// Regenerate the world with a fresh seed, biased toward the player's
 /// dominant faction alignment.  Skips if a world is already loaded

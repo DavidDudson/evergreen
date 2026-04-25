@@ -8,5 +8,6 @@ workspace = true
 
 [dependencies]
 bevy = "0.18.1"
+keybinds = { path = "../keybinds" }
 level = { path = "../level" }
 models = { path = "../models" }

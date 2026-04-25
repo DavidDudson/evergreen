@@ -48,6 +48,8 @@ fn action_name(action: Action) -> &'static str {
         Action::Interact => "Interact",
         Action::Pause => "Pause",
         Action::DialogAdvance => "DialogAdvance",
+        Action::ToggleDiagnosticsOverlay => "ToggleDiagnosticsOverlay",
+        Action::ToggleDebugPanel => "ToggleDebugPanel",
     }
 }
 
@@ -61,6 +63,8 @@ fn action_from_name(s: &str) -> Option<Action> {
         "Interact" => Some(Action::Interact),
         "Pause" => Some(Action::Pause),
         "DialogAdvance" => Some(Action::DialogAdvance),
+        "ToggleDiagnosticsOverlay" => Some(Action::ToggleDiagnosticsOverlay),
+        "ToggleDebugPanel" => Some(Action::ToggleDebugPanel),
         _ => None,
     }
 }

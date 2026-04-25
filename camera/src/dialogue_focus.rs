@@ -1,22 +1,23 @@
 use bevy::prelude::*;
 use dialog::runner::DialogueTarget;
-use player::Player;
+use models::camera_follow::CameraFollow;
 
-/// Lerp speed for camera movement toward the dialogue midpoint.
-const CAMERA_LERP_SPEED: f32 = 5.0;
+use crate::config::CameraConfig;
+use crate::smooth::CameraOffset;
 
-/// Centers the camera between the player and the NPC they are talking to.
+/// Centres the camera between the follow target and the NPC they are talking to.
 pub fn focus_on_dialogue(
     target: Res<DialogueTarget>,
-    player_q: Query<&GlobalTransform, With<Player>>,
-    npc_q: Query<&GlobalTransform, Without<Player>>,
+    follow_q: Query<&GlobalTransform, With<CameraFollow>>,
+    npc_q: Query<&GlobalTransform, Without<CameraFollow>>,
     mut camera_q: Query<&mut Transform, With<Camera2d>>,
     time: Res<Time>,
+    config: Res<CameraConfig>,
 ) {
     let Some(npc_entity) = target.0 else {
         return;
     };
-    let Ok(player_tf) = player_q.single() else {
+    let Ok(follow_tf) = follow_q.single() else {
         return;
     };
     let Ok(npc_tf) = npc_q.get(npc_entity) else {
@@ -26,27 +27,27 @@ pub fn focus_on_dialogue(
         return;
     };
 
-    let player_pos = player_tf.translation().truncate();
+    let follow_pos = follow_tf.translation().truncate();
     let npc_pos = npc_tf.translation().truncate();
-    let midpoint = (player_pos + npc_pos) / 2.0;
+    let midpoint = (follow_pos + npc_pos) / 2.0;
 
-    let alpha = (CAMERA_LERP_SPEED * time.delta_secs()).min(1.0);
+    let alpha = (config.lerp_speed_per_sec * time.delta_secs()).min(1.0);
     cam_tf.translation.x += (midpoint.x - cam_tf.translation.x) * alpha;
     cam_tf.translation.y += (midpoint.y - cam_tf.translation.y) * alpha;
 }
 
-/// Stores the camera's offset from the player so the smooth-return system
-/// can lerp it back to zero over time.
+/// Stores the camera's offset from the follow target so the smooth-return
+/// system can lerp it back to zero over time.
 pub fn reset_camera(
     camera_q: Query<&Transform, With<Camera2d>>,
-    player_q: Query<&Transform, (With<Player>, Without<Camera2d>)>,
-    mut offset: ResMut<crate::smooth::CameraOffset>,
+    follow_q: Query<&Transform, (With<CameraFollow>, Without<Camera2d>)>,
+    mut offset: ResMut<CameraOffset>,
 ) {
     let Ok(cam_tf) = camera_q.single() else {
         return;
     };
-    let Ok(player_tf) = player_q.single() else {
+    let Ok(follow_tf) = follow_q.single() else {
         return;
     };
-    offset.dialogue_return = cam_tf.translation.truncate() - player_tf.translation.truncate();
+    offset.dialogue_return = cam_tf.translation.truncate() - follow_tf.translation.truncate();
 }

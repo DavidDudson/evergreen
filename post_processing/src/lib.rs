@@ -1,7 +1,11 @@
 pub mod atmosphere;
+pub mod bloom_config;
 pub mod bloom_setup;
 mod clock;
 pub mod grading;
+pub mod lerp_config;
 mod math;
 pub mod plugin;
+pub mod presets;
 mod sync;
+pub mod toggles;

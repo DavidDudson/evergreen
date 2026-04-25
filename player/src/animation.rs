@@ -1,5 +1,8 @@
 use bevy::prelude::*;
+use keybinds::Keybinds;
 use std::time::Duration;
+
+use crate::input::{is_sprinting, read_movement_input};
 
 pub const SHEET_COLS: usize = 12; // 4 idle + 4 walk + 4 run
 pub const SHEET_ROWS: usize = 8; // S, SW, W, NW, N, NE, E, SE
@@ -13,53 +16,89 @@ const IDLE_FPS: f32 = 3.0;
 const WALK_FPS: f32 = 8.0;
 const RUN_FPS: f32 = 12.0;
 
-#[derive(Component, Default, Clone, Copy, PartialEq)]
+const DIRECTION_COUNT: u8 = 8;
+
+/// Eight-way facing for the player sprite. The discriminants are the row
+/// index into the sprite atlas, so `From<FacingDirection> for u8` and
+/// `TryFrom<u8>` provide direct row math without `match` ladders.
+#[derive(Component, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
 pub enum FacingDirection {
     #[default]
-    South,
-    SouthWest,
-    West,
-    NorthWest,
-    North,
-    NorthEast,
-    East,
-    SouthEast,
+    South = 0,
+    SouthWest = 1,
+    West = 2,
+    NorthWest = 3,
+    North = 4,
+    NorthEast = 5,
+    East = 6,
+    SouthEast = 7,
+}
+
+impl From<FacingDirection> for u8 {
+    fn from(dir: FacingDirection) -> Self {
+        match dir {
+            FacingDirection::South => 0,
+            FacingDirection::SouthWest => 1,
+            FacingDirection::West => 2,
+            FacingDirection::NorthWest => 3,
+            FacingDirection::North => 4,
+            FacingDirection::NorthEast => 5,
+            FacingDirection::East => 6,
+            FacingDirection::SouthEast => 7,
+        }
+    }
+}
+
+impl TryFrom<u8> for FacingDirection {
+    type Error = u8;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Self::South),
+            1 => Ok(Self::SouthWest),
+            2 => Ok(Self::West),
+            3 => Ok(Self::NorthWest),
+            4 => Ok(Self::North),
+            5 => Ok(Self::NorthEast),
+            6 => Ok(Self::East),
+            7 => Ok(Self::SouthEast),
+            other => Err(other),
+        }
+    }
 }
 
 impl FacingDirection {
+    /// Sprite-atlas row index for this direction.
     pub fn row(self) -> usize {
-        match self {
-            Self::South => 0,
-            Self::SouthWest => 1,
-            Self::West => 2,
-            Self::NorthWest => 3,
-            Self::North => 4,
-            Self::NorthEast => 5,
-            Self::East => 6,
-            Self::SouthEast => 7,
-        }
+        usize::from(u8::from(self))
     }
 
+    /// Map a (non-zero) velocity vector to the nearest of the eight facings.
+    ///
+    /// East is octant 0 in atan2 space, then we walk counter-clockwise. The
+    /// table below (indexed by octant) gives the `FacingDirection` ordinal so
+    /// we can build the result via `TryFrom<u8>` without a second match arm.
     pub fn from_velocity(v: Vec2) -> Self {
-        let angle = v.y.atan2(v.x);
-        #[allow(clippy::as_conversions)] // f32→i32: no From impl; value is a small rounded int
-        let octant = (angle / std::f32::consts::FRAC_PI_4).round() as i32;
-        let octant = usize::try_from(octant.rem_euclid(8)).expect("rem_euclid(8) is always 0..=7");
-        match octant {
-            0 => Self::East,
-            1 => Self::NorthEast,
-            2 => Self::North,
-            3 => Self::NorthWest,
-            4 => Self::West,
-            5 => Self::SouthWest,
-            6 => Self::South,
-            7 => Self::SouthEast,
-            _ => unreachable!(),
-        }
+        // octant index 0..=7, where 0 is +X (East) and increments rotate CCW.
+        // f32 -> i32 has no `From` impl; the `.round()` value is bounded to
+        // a small integer range by `rem_euclid(8)` immediately afterward.
+        #[allow(clippy::as_conversions)] // f32->i32 rounded; bounded by rem_euclid(8) below
+        let octant_signed = (v.y.atan2(v.x) / std::f32::consts::FRAC_PI_4).round() as i32;
+        let octant = u8::try_from(octant_signed.rem_euclid(i32::from(DIRECTION_COUNT)))
+            .expect("rem_euclid(8) is always 0..=7");
+
+        // Octant -> FacingDirection ordinal. East = 6 in the row order, then
+        // CCW: NE=5, N=4, NW=3, W=2, SW=1, S=0, SE=7.
+        const OCTANT_TO_ORDINAL: [u8; 8] = [6, 5, 4, 3, 2, 1, 0, 7];
+        let ordinal = OCTANT_TO_ORDINAL[usize::from(octant)];
+        Self::try_from(ordinal).expect("OCTANT_TO_ORDINAL values are 0..=7")
     }
 }
 
-#[derive(Component, Default, Clone, Copy, PartialEq)]
+/// Which animation strip is currently playing on the sprite. Drives FPS,
+/// frame count, and column offset into the atlas.
+#[derive(Component, Default, Clone, Copy, PartialEq, Eq)]
 pub enum AnimationKind {
     #[default]
     Idle,
@@ -93,6 +132,17 @@ impl AnimationKind {
     }
 }
 
+/// Logical movement state of the player, separated from the render-side
+/// `AnimationKind` so movement systems don't need to know about sprite
+/// strips. `update_animation_state` writes both in lock-step.
+#[derive(Component, Default, Clone, Copy, PartialEq, Eq)]
+pub enum MovementState {
+    #[default]
+    Idle,
+    Walk,
+    Run,
+}
+
 #[derive(Component, Default)]
 pub struct AnimationFrame(pub usize);
 
@@ -105,44 +155,31 @@ impl Default for AnimationTimer {
     }
 }
 
-/// Updates facing direction and animation kind from keyboard input.
+/// Updates facing direction, animation kind, and movement state from input.
 pub fn update_animation_state(
     keyboard: Res<ButtonInput<KeyCode>>,
+    bindings: Res<Keybinds>,
     mut query: Query<(
         &mut FacingDirection,
         &mut AnimationKind,
+        &mut MovementState,
         &mut AnimationFrame,
         &mut AnimationTimer,
     )>,
 ) {
-    let Ok((mut facing, mut kind, mut frame, mut timer)) = query.single_mut() else {
+    let Ok((mut facing, mut kind, mut movement, mut frame, mut timer)) = query.single_mut() else {
         return;
     };
 
-    let velocity: Vec2 = [
-        (KeyCode::KeyW, Vec2::Y),
-        (KeyCode::ArrowUp, Vec2::Y),
-        (KeyCode::KeyS, Vec2::NEG_Y),
-        (KeyCode::ArrowDown, Vec2::NEG_Y),
-        (KeyCode::KeyA, Vec2::NEG_X),
-        (KeyCode::ArrowLeft, Vec2::NEG_X),
-        (KeyCode::KeyD, Vec2::X),
-        (KeyCode::ArrowRight, Vec2::X),
-    ]
-    .iter()
-    .filter(|(key, _)| keyboard.pressed(*key))
-    .map(|(_, dir)| *dir)
-    .sum();
+    let velocity = read_movement_input(&keyboard, &bindings);
+    let sprinting = is_sprinting(&keyboard, &bindings);
 
-    let is_sprinting =
-        keyboard.pressed(KeyCode::ShiftLeft) || keyboard.pressed(KeyCode::ShiftRight);
-
-    let new_kind = if velocity == Vec2::ZERO {
-        AnimationKind::Idle
-    } else if is_sprinting {
-        AnimationKind::Run
+    let (new_kind, new_movement) = if velocity == Vec2::ZERO {
+        (AnimationKind::Idle, MovementState::Idle)
+    } else if sprinting {
+        (AnimationKind::Run, MovementState::Run)
     } else {
-        AnimationKind::Walk
+        (AnimationKind::Walk, MovementState::Walk)
     };
 
     if new_kind != *kind {
@@ -152,6 +189,10 @@ pub fn update_animation_state(
             .set_duration(Duration::from_secs_f32(1.0 / new_kind.fps()));
         timer.0.reset();
         frame.0 = 0;
+    }
+
+    if new_movement != *movement {
+        *movement = new_movement;
     }
 
     if velocity != Vec2::ZERO {

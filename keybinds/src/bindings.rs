@@ -28,6 +28,8 @@ impl Default for Keybinds {
         map.insert(Action::Interact, KeyCode::KeyE);
         map.insert(Action::Pause, KeyCode::Escape);
         map.insert(Action::DialogAdvance, KeyCode::Space);
+        map.insert(Action::ToggleDiagnosticsOverlay, KeyCode::F3);
+        map.insert(Action::ToggleDebugPanel, KeyCode::F5);
         Self { map }
     }
 }

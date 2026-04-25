@@ -4,8 +4,11 @@ use models::game_states::{should_despawn_world, GameState};
 use models::time::GameClock;
 
 use crate::atmosphere::BiomeAtmosphere;
+use crate::bloom_config::BloomConfig;
 use crate::clock::tick_game_clock;
 use crate::grading::{reset_color_grading, sync_color_grading};
+use crate::lerp_config::PostProcessLerpConfig;
+use crate::presets::BiomePresets;
 use crate::sync;
 
 pub struct PostProcessingPlugin;
@@ -15,6 +18,9 @@ impl Plugin for PostProcessingPlugin {
         app.add_plugins(FullscreenMaterialPlugin::<BiomeAtmosphere>::default());
 
         app.init_resource::<GameClock>();
+        app.init_resource::<BiomePresets>();
+        app.init_resource::<BloomConfig>();
+        app.init_resource::<PostProcessLerpConfig>();
 
         app.add_systems(
             Update,
