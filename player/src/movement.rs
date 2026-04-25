@@ -10,6 +10,7 @@ use models::speed::Speed;
 use crate::animation::MovementState;
 use crate::input::read_movement_input;
 use crate::spawning::Player;
+use crate::water_state::{PlayerWaterState, SHALLOW_SPEED_MULT};
 
 const RUN_SPEED: Speed = Speed(6); // 6 tiles/s
 const WALK_SPEED: Speed = Speed(2); // 2 tiles/s (run / 3)
@@ -33,6 +34,7 @@ pub fn move_player(
     bindings: Res<Keybinds>,
     time: Res<Time>,
     world: Res<WorldMap>,
+    water_state: Res<PlayerWaterState>,
     mut query: Query<(&MovementState, &mut Transform), With<Player>>,
 ) {
     let Ok((movement_state, mut transform)) = query.single_mut() else {
@@ -51,9 +53,12 @@ pub fn move_player(
         _ => WALK_SPEED,
     };
 
-    let terrain_mult = terrain_speed_mult(transform.translation.truncate(), &world);
+    let mut mult = terrain_speed_mult(transform.translation.truncate(), &world);
+    if water_state.on_shallow {
+        mult *= SHALLOW_SPEED_MULT;
+    }
     let delta =
-        direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * terrain_mult * time.delta_secs();
+        direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * mult * time.delta_secs();
     transform.translation += delta.extend(0.0);
 }
 

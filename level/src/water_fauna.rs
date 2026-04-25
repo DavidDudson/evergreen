@@ -11,6 +11,7 @@ use models::layer::Layer;
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
 use crate::terrain::tile_hash;
+use crate::water::{WaterDepth, WaterKind};
 use crate::world::WorldMap;
 
 // ---------------------------------------------------------------------------
@@ -21,6 +22,7 @@ const FROG_SPRITE: &str = "sprites/creatures/greenwood/frog.webp";
 const STRIDER_SPRITE: &str = "sprites/creatures/water/water_strider.webp";
 const DRAGONFLY_SPRITE: &str = "sprites/creatures/water/dragonfly.webp";
 const FISH_SHADOW_SPRITE: &str = "sprites/creatures/water/fish_shadow.webp";
+const CRAB_SPRITE: &str = "sprites/creatures/water/crab.webp";
 
 // ---------------------------------------------------------------------------
 // Tuning
@@ -35,12 +37,17 @@ const STRIDER_CHANCE: u32 = 40;
 const DRAGONFLY_CHANCE_PER_1000: u32 = 70;
 /// Per ocean tile chance (out of 1000) to spawn a fish shadow drifter.
 const FISH_CHANCE_PER_1000: u32 = 4;
+/// Per shallow-water tile chance (out of 100) to spawn a crab in the water.
+const WATER_CRAB_CHANCE: u32 = 8;
 
 /// Visual sizes (square sprites, scaled to this pixel size).
 const FROG_SIZE_PX: f32 = 8.0;
 const STRIDER_SIZE_PX: f32 = 6.0;
 const DRAGONFLY_SIZE_PX: f32 = 10.0;
 const FISH_SIZE_PX: f32 = 14.0;
+const WATER_CRAB_SIZE_PX: f32 = 10.0;
+const WATER_CRAB_SCUTTLE_AMPLITUDE_PX: f32 = 2.0;
+const WATER_CRAB_SCUTTLE_FREQ_HZ: f32 = 0.9;
 
 /// Fish drift speed + meander params.
 const FISH_SPEED_PX: f32 = 8.0;
@@ -97,6 +104,12 @@ pub struct FishShadow {
     pub base_y: f32,
 }
 
+#[derive(Component)]
+pub struct WaterCrab {
+    pub phase: f32,
+    pub base_x: f32,
+}
+
 /// Generic marker so teardown can despawn all water creatures in one query.
 #[derive(Component)]
 pub struct WaterCreature;
@@ -124,6 +137,11 @@ pub fn spawn_area_water_fauna(
         .wrapping_add(0xFA_AA);
 
     for (local, kind) in water.tiles_in_area(area_pos) {
+        // Pier tiles override all fauna spawning -- the pier covers the water.
+        if water.has_pier(area_pos, local) {
+            continue;
+        }
+        let depth = water.depth_at(area_pos, local).unwrap_or(WaterDepth::Shallow);
         let world_x = base_offset_x
             + f32::from(u16::try_from(local.x).unwrap_or(0)) * tile_px
             + tile_px / 2.0;
@@ -133,7 +151,7 @@ pub fn spawn_area_water_fauna(
         let hash = tile_hash(local.x, local.y, area_seed);
 
         for rule in FAUNA_RULES {
-            if !(rule.applies_to)(kind) {
+            if !(rule.applies_to)(kind, depth) {
                 continue;
             }
             if rule.edge_only && !water.is_edge_tile(area_pos, local) {
@@ -153,7 +171,7 @@ pub fn spawn_area_water_fauna(
 /// Declarative rule set for water fauna spawning. To add a new fauna type,
 /// implement a `spawn_*` function and add a `FaunaRule` entry.
 struct FaunaRule {
-    applies_to: fn(crate::water::WaterKind) -> bool,
+    applies_to: fn(WaterKind, WaterDepth) -> bool,
     edge_only: bool,
     chance_numerator: u32,
     chance_denominator: u32,
@@ -161,19 +179,48 @@ struct FaunaRule {
     spawn: fn(&mut Commands, &AssetServer, f32, f32, usize),
 }
 
+fn is_deep_ocean(kind: WaterKind, depth: WaterDepth) -> bool {
+    matches!(kind, WaterKind::Ocean) && matches!(depth, WaterDepth::Deep)
+}
+
+fn is_shallow_water_in_kind(kind: WaterKind, depth: WaterDepth) -> bool {
+    matches!(depth, WaterDepth::Shallow) && !matches!(kind, WaterKind::Waterfall)
+}
+
+fn is_still_shallow(kind: WaterKind, depth: WaterDepth) -> bool {
+    kind.is_still() && matches!(depth, WaterDepth::Shallow)
+}
+
+fn spawns_frogs_shallow(kind: WaterKind, depth: WaterDepth) -> bool {
+    kind.spawns_frogs() && matches!(depth, WaterDepth::Shallow)
+}
+
+fn spawns_dragonflies(kind: WaterKind, depth: WaterDepth) -> bool {
+    kind.spawns_lily_pads() && matches!(depth, WaterDepth::Shallow)
+}
+
 const FAUNA_RULES: &[FaunaRule] = &[
-    // Fish shadows drift under ocean tiles (very sparse -- per-mille roll).
+    // Fish shadows drift under DEEP ocean tiles only.
     FaunaRule {
-        applies_to: crate::water::WaterKind::is_ocean,
+        applies_to: is_deep_ocean,
         edge_only: false,
         chance_numerator: FISH_CHANCE_PER_1000,
         chance_denominator: 1000,
         hash_mult: 19,
         spawn: spawn_fish,
     },
-    // Water striders skate only on still water (not rivers).
+    // Crabs scuttle in any shallow water (ocean shallow + river/pond shallow).
     FaunaRule {
-        applies_to: crate::water::WaterKind::is_still,
+        applies_to: is_shallow_water_in_kind,
+        edge_only: false,
+        chance_numerator: WATER_CRAB_CHANCE,
+        chance_denominator: 100,
+        hash_mult: 23,
+        spawn: spawn_water_crab,
+    },
+    // Water striders skate only on still SHALLOW water (not rivers).
+    FaunaRule {
+        applies_to: is_still_shallow,
         edge_only: false,
         chance_numerator: STRIDER_CHANCE,
         chance_denominator: 100,
@@ -182,7 +229,7 @@ const FAUNA_RULES: &[FaunaRule] = &[
     },
     // Frogs on plain + lake tiles only, edge preferred (visually on lily pads).
     FaunaRule {
-        applies_to: crate::water::WaterKind::spawns_frogs,
+        applies_to: spawns_frogs_shallow,
         edge_only: true,
         chance_numerator: FROG_CHANCE,
         chance_denominator: 100,
@@ -191,7 +238,7 @@ const FAUNA_RULES: &[FaunaRule] = &[
     },
     // Dragonflies: ponds + lakes only, shoreline, very rare.
     FaunaRule {
-        applies_to: crate::water::WaterKind::spawns_lily_pads,
+        applies_to: spawns_dragonflies,
         edge_only: true,
         chance_numerator: DRAGONFLY_CHANCE_PER_1000,
         chance_denominator: 1000,
@@ -255,6 +302,27 @@ fn spawn_fish(commands: &mut Commands, asset_server: &AssetServer, x: f32, y: f3
     ));
 }
 
+fn spawn_water_crab(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    x: f32,
+    y: f32,
+    hash: usize,
+) {
+    #[allow(clippy::as_conversions)]
+    let phase = (hash.wrapping_mul(53) % 628) as f32 / 100.0;
+    commands.spawn((
+        WaterCreature,
+        WaterCrab { phase, base_x: x },
+        Sprite {
+            image: asset_server.load(CRAB_SPRITE),
+            custom_size: Some(Vec2::splat(WATER_CRAB_SIZE_PX)),
+            ..default()
+        },
+        Transform::from_xyz(x, y, Layer::Tilemap.z_f32() + 0.85),
+    ));
+}
+
 fn spawn_dragonfly(
     commands: &mut Commands,
     asset_server: &AssetServer,
@@ -292,25 +360,52 @@ type FrogQuery<'w, 's> = Query<
         Without<WaterStrider>,
         Without<Dragonfly>,
         Without<FishShadow>,
+        Without<WaterCrab>,
     ),
 >;
 type StriderQuery<'w, 's> = Query<
     'w,
     's,
     (&'static WaterStrider, &'static mut Transform),
-    (Without<Frog>, Without<Dragonfly>, Without<FishShadow>),
+    (
+        Without<Frog>,
+        Without<Dragonfly>,
+        Without<FishShadow>,
+        Without<WaterCrab>,
+    ),
 >;
 type DragonflyQuery<'w, 's> = Query<
     'w,
     's,
     (&'static Dragonfly, &'static mut Transform),
-    (Without<Frog>, Without<WaterStrider>, Without<FishShadow>),
+    (
+        Without<Frog>,
+        Without<WaterStrider>,
+        Without<FishShadow>,
+        Without<WaterCrab>,
+    ),
 >;
 type FishQuery<'w, 's> = Query<
     'w,
     's,
     (&'static FishShadow, &'static mut Transform),
-    (Without<Frog>, Without<WaterStrider>, Without<Dragonfly>),
+    (
+        Without<Frog>,
+        Without<WaterStrider>,
+        Without<Dragonfly>,
+        Without<WaterCrab>,
+    ),
+>;
+type WaterCrabQuery<'w, 's> = Query<
+    'w,
+    's,
+    (&'static WaterCrab, &'static mut Transform),
+    (
+        Without<Frog>,
+        Without<WaterStrider>,
+        Without<Dragonfly>,
+        Without<FishShadow>,
+    ),
 >;
 
 pub fn animate_water_fauna(
@@ -319,6 +414,7 @@ pub fn animate_water_fauna(
     mut striders: StriderQuery,
     mut dragonflies: DragonflyQuery,
     mut fish: FishQuery,
+    mut crabs: WaterCrabQuery,
 ) {
     let t = time.elapsed_secs();
     for (frog, mut tf) in &mut frogs {
@@ -342,6 +438,10 @@ pub fn animate_water_fauna(
         tf.translation.x += fish.dir_x * FISH_SPEED_PX * dt;
         tf.translation.y =
             fish.base_y + (t * FISH_MEANDER_FREQ_HZ + fish.phase).sin() * FISH_MEANDER_AMPLITUDE_PX;
+    }
+    for (crab, mut tf) in &mut crabs {
+        tf.translation.x = crab.base_x
+            + (t * WATER_CRAB_SCUTTLE_FREQ_HZ + crab.phase).sin() * WATER_CRAB_SCUTTLE_AMPLITUDE_PX;
     }
 }
 

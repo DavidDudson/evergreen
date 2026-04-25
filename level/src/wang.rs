@@ -16,6 +16,9 @@ use serde::Deserialize;
 // ---------------------------------------------------------------------------
 
 pub const OCEAN_SAND: &str = "ocean_sand";
+pub const OCEAN_DEEP_SHALLOW: &str = "ocean_deep_shallow";
+pub const RIVER_DEEP_SHALLOW: &str = "river_deep_shallow";
+pub const PIER_OCEAN: &str = "pier_ocean";
 pub const SAND_GRASS: &str = "sand_grass";
 pub const POND_GRASS: &str = "pond_grass";
 pub const HOTSPRING_GRASS: &str = "hotspring_grass";
@@ -124,6 +127,11 @@ fn is_lower(s: &str) -> bool {
 // ---------------------------------------------------------------------------
 
 const OCEAN_SAND_JSON: &[u8] = include_bytes!("../../assets/tilesets/ocean_sand.json");
+const OCEAN_DEEP_SHALLOW_JSON: &[u8] =
+    include_bytes!("../../assets/tilesets/ocean_deep_shallow.json");
+const RIVER_DEEP_SHALLOW_JSON: &[u8] =
+    include_bytes!("../../assets/tilesets/river_deep_shallow.json");
+const PIER_OCEAN_JSON: &[u8] = include_bytes!("../../assets/tilesets/pier_ocean.json");
 const SAND_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/sand_grass.json");
 const POND_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/pond_grass.json");
 const HOTSPRING_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/hotspring_grass.json");
@@ -132,6 +140,17 @@ const WATERFALL_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/waterf
 
 const TILESET_DEFS: &[(&str, &str, &[u8])] = &[
     (OCEAN_SAND, "tilesets/ocean_sand.webp", OCEAN_SAND_JSON),
+    (
+        OCEAN_DEEP_SHALLOW,
+        "tilesets/ocean_deep_shallow.webp",
+        OCEAN_DEEP_SHALLOW_JSON,
+    ),
+    (
+        RIVER_DEEP_SHALLOW,
+        "tilesets/river_deep_shallow.webp",
+        RIVER_DEEP_SHALLOW_JSON,
+    ),
+    (PIER_OCEAN, "tilesets/pier_ocean.webp", PIER_OCEAN_JSON),
     (SAND_GRASS, "tilesets/sand_grass.webp", SAND_GRASS_JSON),
     (POND_GRASS, "tilesets/pond_grass.webp", POND_GRASS_JSON),
     (

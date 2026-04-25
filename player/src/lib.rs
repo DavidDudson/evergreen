@@ -7,6 +7,7 @@ mod movement;
 pub mod plugin;
 mod rustle;
 mod spawning;
+mod water_state;
 mod y_sort;
 
 pub use spawning::Player;

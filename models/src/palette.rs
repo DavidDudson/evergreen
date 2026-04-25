@@ -84,6 +84,11 @@ pub const DROP_SHADOW_TINT: Color = Color::srgba(0.0, 0.0, 0.0, 0.45);
 /// ocean tiles.
 pub const FISH_SHADOW_TINT: Color = Color::srgba(0.05, 0.08, 0.15, 0.45);
 
+/// Soft-white tint for splash ripple sprites kicked up while the player
+/// wades through shallow water. Initial alpha; fades over the splash
+/// lifetime via `Sprite::with_alpha`.
+pub const SPLASH_TINT: Color = Color::srgba(1.0, 1.0, 1.0, 0.55);
+
 /// Linearly interpolate between two colors in linear (non-gamma) color space.
 pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {
     let a = a.to_linear();

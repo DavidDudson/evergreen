@@ -1,5 +1,10 @@
 //! Ocean + sand band generation. Edges of areas that face missing world
-//! neighbours become ocean (and the strip just inland becomes sand).
+//! neighbours become ocean (and the strip just inland becomes sand). Areas
+//! beyond the world edge -- the off-map neighbours of any ocean-facing area
+//! -- are filled completely with ocean tiles so the world melts into open
+//! water rather than reverting to dense forest.
+
+use std::collections::HashSet;
 
 use bevy::math::{IVec2, UVec2};
 
@@ -16,10 +21,14 @@ const SAND_DEPTH: u32 = 2;
 pub(super) fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
     let width = u32::from(MAP_WIDTH);
     let height = u32::from(MAP_HEIGHT);
+    let mut off_map_ocean: HashSet<IVec2> = HashSet::new();
     for pos in world.area_positions() {
         let missing = missing_neighbours(world, pos);
         if missing.is_empty() {
             continue;
+        }
+        for &dir in &missing {
+            off_map_ocean.insert(pos + dir.grid_offset());
         }
         for y in 0..height {
             for x in 0..width {
@@ -37,6 +46,19 @@ pub(super) fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
                 } else if dist < OCEAN_DEPTH + SAND_DEPTH && !map.tiles.contains_key(&key) {
                     map.sand.insert(key);
                 }
+            }
+        }
+    }
+
+    // Off-map ocean areas: fill every tile with ocean (forced Deep) so the
+    // world melts into open water rather than dense-forest placeholder.
+    for off_pos in off_map_ocean {
+        for y in 0..height {
+            for x in 0..width {
+                let key = (off_pos, UVec2::new(x, y));
+                map.tiles.entry(key).or_insert(WaterKind::Ocean);
+                map.depths
+                    .insert(key, super::depth::WaterDepth::Deep);
             }
         }
     }

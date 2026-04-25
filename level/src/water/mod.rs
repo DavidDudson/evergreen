@@ -6,13 +6,16 @@
 //! stepping stones; `animation` runs the per-frame surface alpha pulse.
 
 mod animation;
+mod depth;
 mod generate;
 mod ocean;
+mod pier;
 mod rivers;
 mod shore;
 mod tiles;
 
 pub use animation::{animate_water_surface, AnimatedWater};
+pub use depth::WaterDepth;
 pub use generate::generate_water_bodies;
 pub use shore::{despawn_stones, despawn_water, sand_mask, spawn_area_water, SteppingStone};
 pub use tiles::{WaterKey, WaterKind, WaterMap, WaterTile};

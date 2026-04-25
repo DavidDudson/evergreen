@@ -10,7 +10,9 @@ use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 use crate::terrain::Terrain;
 use crate::world::WorldMap;
 
+use super::depth::classify_depths;
 use super::ocean::generate_ocean_and_sand;
+use super::pier::generate_piers;
 use super::rivers::generate_rivers;
 use super::tiles::{neighbour_key, WaterKey, WaterKind, WaterMap, TILE_NEIGHBOURS_4};
 
@@ -122,13 +124,17 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
 
     let mut map = WaterMap {
         tiles,
+        depths: HashMap::new(),
         stones: HashSet::new(),
         sand: HashSet::new(),
+        piers: HashSet::new(),
     };
     generate_rivers(&mut map, world, &mut rng);
     if world.has_ocean {
         generate_ocean_and_sand(&mut map, world);
     }
+    classify_depths(&mut map);
+    generate_piers(&mut map, world, &mut rng);
     map
 }
 

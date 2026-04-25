@@ -43,6 +43,8 @@ pub mod tag {
     pub const FLOWING: Tag = "flowing";
     pub const SALT: Tag = "salt";
     pub const HOT: Tag = "hot";
+    pub const SHALLOW: Tag = "shallow";
+    pub const DEEP: Tag = "deep";
 
     // Ground properties
     pub const FERTILE: Tag = "fertile";

@@ -8,9 +8,11 @@ use std::collections::{HashMap, HashSet};
 
 use bevy::math::{IVec2, UVec2};
 use bevy::prelude::Component;
-use models::tags::{tag, TerrainTags};
+use models::tags::{tag, Tag, TerrainTags};
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
+
+use super::depth::WaterDepth;
 
 // ---------------------------------------------------------------------------
 // Data
@@ -68,6 +70,9 @@ impl WaterKind {
     /// Tag-based terrain descriptor used by the placement system.
     /// Add new tags here when introducing new water flavours; placeables can
     /// then opt-in via `PlacementRequirement::requires/forbids/tolerates`.
+    ///
+    /// Note: depth tags (`shallow`/`deep`) are NOT applied here -- query
+    /// [`WaterMap::terrain_tags_at`] for the per-tile combined view.
     pub fn terrain_tags(self) -> TerrainTags {
         match self {
             Self::Plain => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
@@ -88,6 +93,32 @@ impl WaterKind {
     }
 }
 
+/// Concrete `[Tag; 8]` whose populated prefix is referenced as a `&'static`-
+/// shaped slice for [`TerrainTags::tags`]. We can't return a true `'static`
+/// slice when depth is dynamic, so callers must use the returned value
+/// inline (don't store the inner slice past the [`TileTags`] drop).
+pub struct TileTags {
+    storage: [Tag; 8],
+    len: usize,
+    taints_storage: [Tag; 4],
+    taints_len: usize,
+}
+
+impl TileTags {
+    pub fn tags(&self) -> &[Tag] {
+        &self.storage[..self.len]
+    }
+
+    pub fn taints(&self) -> &[Tag] {
+        &self.taints_storage[..self.taints_len]
+    }
+
+    /// Convenience: does this tile have the given tag?
+    pub fn has(&self, t: Tag) -> bool {
+        self.tags().contains(&t)
+    }
+}
+
 /// `(area grid position, local tile within area)` key for a single water tile.
 pub type WaterKey = (IVec2, UVec2);
 
@@ -101,16 +132,33 @@ pub struct WaterTile {
 #[derive(Default, Debug)]
 pub struct WaterMap {
     pub(super) tiles: HashMap<WaterKey, WaterKind>,
+    /// Per-tile depth (`Shallow` or `Deep`). Computed by
+    /// [`super::depth::classify_depths`] after all tiles are placed.
+    pub(super) depths: HashMap<WaterKey, WaterDepth>,
     /// Tiles where a stepping stone sits on top of the water (walkable).
     pub(super) stones: HashSet<WaterKey>,
     /// Sand tiles inland of ocean tiles. Not water -- but stored here so
     /// spawn systems only need a single map to query.
     pub(super) sand: HashSet<WaterKey>,
+    /// Pier tiles overlaying ocean / sand. Walkable, no collider.
+    pub(super) piers: HashSet<WaterKey>,
 }
 
 impl WaterMap {
     pub fn get(&self, area_pos: IVec2, local: UVec2) -> Option<WaterKind> {
         self.tiles.get(&(area_pos, local)).copied()
+    }
+
+    pub fn depth_at(&self, area_pos: IVec2, local: UVec2) -> Option<WaterDepth> {
+        self.depths.get(&(area_pos, local)).copied()
+    }
+
+    pub fn is_shallow(&self, area_pos: IVec2, local: UVec2) -> bool {
+        matches!(self.depth_at(area_pos, local), Some(WaterDepth::Shallow))
+    }
+
+    pub fn is_deep(&self, area_pos: IVec2, local: UVec2) -> bool {
+        matches!(self.depth_at(area_pos, local), Some(WaterDepth::Deep))
     }
 
     pub fn tiles_in_area(&self, area_pos: IVec2) -> Vec<(UVec2, WaterKind)> {
@@ -153,6 +201,56 @@ impl WaterMap {
             .filter(|(a, _)| *a == area_pos)
             .map(|(_, local)| *local)
             .collect()
+    }
+
+    pub fn has_pier(&self, area_pos: IVec2, local: UVec2) -> bool {
+        self.piers.contains(&(area_pos, local))
+    }
+
+    pub fn piers_in_area(&self, area_pos: IVec2) -> Vec<UVec2> {
+        self.piers
+            .iter()
+            .filter(|(a, _)| *a == area_pos)
+            .map(|(_, local)| *local)
+            .collect()
+    }
+
+    /// Per-tile terrain tags including depth. Returns [`TileTags`] (a small
+    /// stack-allocated buffer) so callers don't depend on a single static
+    /// slice -- the tag list varies per (kind, depth).
+    pub fn terrain_tags_at(&self, area_pos: IVec2, local: UVec2) -> Option<TileTags> {
+        let kind = self.get(area_pos, local)?;
+        let base = kind.terrain_tags();
+        let depth_tag = match self.depth_at(area_pos, local)? {
+            WaterDepth::Shallow => tag::SHALLOW,
+            WaterDepth::Deep => tag::DEEP,
+        };
+        let mut storage = [""; 8];
+        let mut len = 0usize;
+        for &t in base.tags {
+            if len < storage.len() {
+                storage[len] = t;
+                len += 1;
+            }
+        }
+        if len < storage.len() {
+            storage[len] = depth_tag;
+            len += 1;
+        }
+        let mut taints_storage = [""; 4];
+        let mut taints_len = 0usize;
+        for &t in base.taints {
+            if taints_len < taints_storage.len() {
+                taints_storage[taints_len] = t;
+                taints_len += 1;
+            }
+        }
+        Some(TileTags {
+            storage,
+            len,
+            taints_storage,
+            taints_len,
+        })
     }
 }
 

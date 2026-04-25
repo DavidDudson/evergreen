@@ -190,10 +190,19 @@ fn ensure_area_spawned(
     if spawned.0.contains(&area_pos) {
         return;
     }
+    let in_world = world.get_area(area_pos).is_some();
+    let is_off_map_ocean = !in_world && world.has_ocean;
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
     spawn_area_tilemap(commands, asset_server, registry, world, area, area_pos);
     crate::water::spawn_area_water(commands, asset_server, wang, world, area_pos);
+    if is_off_map_ocean {
+        // Off-map ocean placeholder -- skip beaches, flora, fauna, scenery,
+        // grass, decorations, creatures, NPCs. The full-area ocean tiles
+        // already cover the placeholder grass tilemap underneath.
+        spawned.0.insert(area_pos);
+        return;
+    }
     crate::beach::spawn_area_beach(commands, asset_server, wang, world, area_pos);
     crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
     crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
