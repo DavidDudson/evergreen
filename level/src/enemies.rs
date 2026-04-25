@@ -1,7 +1,12 @@
-//! Enemy entities placed by `AreaEvent::Enemy`. First pass uses static
-//! south-facing sprites without animation or AI -- a placeholder for combat
-//! work. Future passes will add NpcSheet animation and a wander/aggro
-//! behaviour.
+//! Enemy entities placed by `AreaEvent::Enemy`. Animated via the existing
+//! NPC sprite-sheet pipeline (`models::npc_anim`): each enemy carries an
+//! `NpcSheet`, `NpcAnimKind::Walk`, `NpcAnimFrame`, `NpcAnimTimer`, and
+//! `NpcFacing`, so the shared `npc_anim::advance_npc_frame` system animates
+//! them automatically.
+//!
+//! Sheets are 4-row x 8-col (rows = facing south/east/north/west, cols 0-3
+//! and 4-7 = walk frames repeated, so idle and walk look identical for the
+//! placeholder enemies). 32x32 pixel frames.
 //!
 //! Spawned per area when the area's event is `AreaEvent::Enemy { kind,
 //! count }`. Position is sampled deterministically from the area seed so
@@ -10,6 +15,7 @@
 use bevy::math::IVec2;
 use bevy::prelude::*;
 use models::layer::Layer;
+use models::npc_anim::{NpcAnimFrame, NpcAnimKind, NpcAnimTimer, NpcFacing, NpcSheet};
 
 use crate::area::{AreaEvent, EnemyKind, MAP_HEIGHT, MAP_WIDTH};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
@@ -25,7 +31,14 @@ const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 const ENEMY_INSET_TILES: u32 = 4;
 
 /// Render size for enemy sprites (square, in pixels).
-const ENEMY_SPRITE_SIZE_PX: f32 = 24.0;
+const ENEMY_SPRITE_SIZE_PX: f32 = 28.0;
+
+const ENEMY_SHEET_FRAME_PX: u32 = 32;
+const ENEMY_SHEET_COLS: u32 = 8;
+const ENEMY_SHEET_ROWS: u32 = 4;
+const ENEMY_IDLE_FRAMES: usize = 4;
+const ENEMY_WALK_FRAMES: usize = 4;
+const Y_SORT_SCALE: f32 = 0.001;
 
 #[derive(Component, Debug, Clone, Copy)]
 pub struct Enemy {
@@ -36,6 +49,7 @@ pub struct Enemy {
 pub fn spawn_area_enemies(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    atlas_layouts: &mut Assets<TextureAtlasLayout>,
     area: &crate::area::Area,
     area_pos: IVec2,
 ) {
@@ -58,6 +72,15 @@ pub fn spawn_area_enemies(
     if inner_w == 0 || inner_h == 0 {
         return;
     }
+
+    let layout = atlas_layouts.add(TextureAtlasLayout::from_grid(
+        UVec2::splat(ENEMY_SHEET_FRAME_PX),
+        ENEMY_SHEET_COLS,
+        ENEMY_SHEET_ROWS,
+        None,
+        None,
+    ));
+
     for i in 0..count {
         let salt = area_seed.wrapping_add(u32::from(i).wrapping_mul(2_166_136_261));
         let h = tile_hash(u32::from(i), 0, salt);
@@ -73,20 +96,33 @@ pub fn spawn_area_enemies(
             Enemy { kind },
             Sprite {
                 image: asset_server.load(sprite_path(kind)),
+                texture_atlas: Some(TextureAtlas {
+                    layout: layout.clone(),
+                    index: 0,
+                }),
                 custom_size: Some(Vec2::splat(ENEMY_SPRITE_SIZE_PX)),
                 ..default()
             },
-            Transform::from_xyz(world_x, world_y, Layer::World.z_f32() - world_y * 0.001),
+            Transform::from_xyz(world_x, world_y, Layer::World.z_f32() - world_y * Y_SORT_SCALE),
+            NpcFacing::default(),
+            NpcAnimKind::Walk,
+            NpcAnimFrame::default(),
+            NpcAnimTimer(Timer::from_seconds(1.0 / NpcAnimKind::Walk.fps(), TimerMode::Repeating)),
+            NpcSheet {
+                idle_frames: ENEMY_IDLE_FRAMES,
+                walk_frames: ENEMY_WALK_FRAMES,
+                cols: usize::try_from(ENEMY_SHEET_COLS).unwrap_or(8),
+            },
         ));
     }
 }
 
 fn sprite_path(kind: EnemyKind) -> &'static str {
     match kind {
-        EnemyKind::PurpleSlime => "sprites/enemies/slime.webp",
-        EnemyKind::DiseasedFox => "sprites/enemies/fox.webp",
-        EnemyKind::DiseasedDeer => "sprites/enemies/deer.webp",
-        EnemyKind::DiseasedBear => "sprites/enemies/bear.webp",
+        EnemyKind::PurpleSlime => "sprites/enemies/slime_sheet.webp",
+        EnemyKind::DiseasedFox => "sprites/enemies/fox_sheet.webp",
+        EnemyKind::DiseasedDeer => "sprites/enemies/deer_sheet.webp",
+        EnemyKind::DiseasedBear => "sprites/enemies/bear_sheet.webp",
     }
 }
 
