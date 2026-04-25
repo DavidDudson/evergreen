@@ -177,6 +177,18 @@ fn npc_data(
                 "dialogue/barks/cadwallader_barks3.dialog.ron",
             ],
         ),
+        // BloodyMary uses Morgana's sheet + dialogue as a placeholder until
+        // dedicated art and scripts ship.
+        NpcKind::BloodyMary => (
+            "Bloody Mary",
+            "sprites/npc/npc_morgana_sheet.webp",
+            "dialogue/scripts/morgana.dialog.ron",
+            &[
+                "dialogue/barks/morgana_barks.dialog.ron",
+                "dialogue/barks/morgana_barks2.dialog.ron",
+                "dialogue/barks/morgana_barks3.dialog.ron",
+            ],
+        ),
     }
 }
 

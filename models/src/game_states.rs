@@ -19,6 +19,12 @@ pub enum GameState {
     Credits,
     /// Player reached the exit -- level complete.
     LevelComplete,
+    /// One-frame transition state used when a portal crossing tears down the
+    /// current map. OnExit(Playing) fires the despawn chain;
+    /// OnEnter(MapTransition) regenerates `WorldMap` at the portal's target
+    /// alignment; an Update system then immediately switches back to
+    /// `Playing`, where `OnEnter(Playing)` respawns the new map.
+    MapTransition,
 }
 
 /// Run condition: true when leaving `Playing` for a state that should

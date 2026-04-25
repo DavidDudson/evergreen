@@ -6,6 +6,7 @@ use crate::collision;
 use crate::exit_check;
 use crate::hop;
 use crate::movement;
+use crate::portal_trigger;
 use crate::rustle;
 use crate::spawning;
 use crate::water_state::{
@@ -37,6 +38,7 @@ impl Plugin for PlayerPlugin {
                     hop::apply_hop_bob,
                     spawn_splashes,
                     tick_splashes,
+                    portal_trigger::detect_portal_overlap,
                 )
                     .chain()
                     .run_if(in_state(GameState::Playing)),

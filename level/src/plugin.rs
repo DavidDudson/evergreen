@@ -19,6 +19,7 @@ use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
 use crate::npcs;
+use crate::portal::{self, PortalCrossed};
 use crate::puddles;
 use crate::reveal;
 use crate::scenery;
@@ -52,6 +53,8 @@ impl Plugin for LevelPlugin {
                 (shadows::init_shadow_assets, wang::init_wang_tilesets),
             )
             .add_message::<AreaChanged>()
+            .add_message::<PortalCrossed>()
+            .init_resource::<portal::PendingPortal>()
             .insert_resource(WorldMap::new(rand::random(), DEFAULT_PLAYER_ALIGNMENT))
             .add_systems(
                 OnEnter(GameState::Playing),
@@ -88,6 +91,14 @@ impl Plugin for LevelPlugin {
                     grass::animate_grass_sway,
                 )
                     .run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                Update,
+                portal::enter_map_transition.run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                OnEnter(GameState::MapTransition),
+                portal::apply_map_transition,
             )
             .add_systems(
                 Update,
@@ -138,6 +149,7 @@ impl Plugin for LevelPlugin {
                     puddles::despawn_steam,
                     beach::despawn_sand,
                     beach::despawn_piers,
+                    portal::despawn_portals,
                 )
                     .run_if(should_despawn_world),
             );
@@ -158,8 +170,15 @@ fn regenerate_world(
     mut clock: ResMut<GameClock>,
     alignment: Res<PlayerAlignment>,
     spawned: Res<SpawnedAreas>,
+    mut pending: ResMut<portal::PendingPortal>,
 ) {
     if !spawned.0.is_empty() {
+        return;
+    }
+    // If we just arrived here from a portal crossing, leave the
+    // portal-generated `WorldMap` intact and consume the flag.
+    if pending.just_transitioned {
+        pending.just_transitioned = false;
         return;
     }
     let dominant = alignment.dominant_area_alignment();

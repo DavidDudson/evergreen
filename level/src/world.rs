@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use crate::area::{
     Area, AreaAlignment, AreaEvent, Direction, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
 };
+use crate::portal::{pick_portal_kind, PortalPlacement};
 use crate::terrain::Terrain;
 use crate::water::{generate_water_bodies, WaterMap};
 
@@ -48,7 +49,7 @@ pub fn map_area_count_target(alignment: AreaAlignment) -> usize {
     if a <= peak {
         let span = hi.saturating_sub(lo);
         let scaled = lo + (span * (a - 1)) / (peak - 1);
-        usize::try_from(scaled).unwrap_or(lo as usize)
+        usize::try_from(scaled).unwrap_or(MAP_AREAS_AT_MIN)
     } else {
         cap
     }
@@ -102,6 +103,10 @@ pub struct WorldMap {
     pub water: WaterMap,
     /// Whether this map has an ocean surrounding its boundary.
     pub has_ocean: bool,
+    /// At most one portal per map; placed in a dead-end area so the player
+    /// has to seek it out. `None` for maps whose alignment doesn't match
+    /// any portal kind's bridge range.
+    pub portal: Option<PortalPlacement>,
 }
 
 impl WorldMap {
@@ -148,6 +153,7 @@ impl WorldMap {
             exit_area: IVec2::ZERO,
             water: WaterMap::default(),
             has_ocean,
+            portal: None,
         };
 
         // Seed the origin as a 4-way cross to bootstrap generation.
@@ -211,6 +217,31 @@ impl WorldMap {
             .copied()
             .unwrap_or(IVec2::ZERO);
         map.exit_area = exit;
+
+        // Pick portal kind eligible for this map's alignment, then place it
+        // in a dead-end area that isn't the start or exit. If only the
+        // start+exit are available, fall back to the exit area; if no
+        // dead-end at all, no portal this map.
+        if let Some(kind) = pick_portal_kind(alignment, seed.wrapping_add(0xC0FE_5A75)) {
+            let portal_area = dead_ends
+                .iter()
+                .copied()
+                .find(|&p| p != start && p != exit)
+                .or(Some(exit))
+                .unwrap_or(IVec2::ZERO);
+            // Place portal centred in the area for now (mid-tile).
+            map.portal = Some(PortalPlacement {
+                kind,
+                area_pos: portal_area,
+                tile_x: u32::from(MAP_WIDTH) / 2,
+                tile_y: u32::from(MAP_HEIGHT) / 2,
+            });
+            // Override the portal area's NPC encounter to the portal kind's
+            // signature NPC -- Cadwallader / Bloody Mary / Mother Gothel.
+            if let Some(area) = map.areas.get_mut(&portal_area) {
+                area.event = AreaEvent::NpcEncounter(kind.signature_npc());
+            }
+        }
 
         // Water bodies generated last so flood-fill can use final terrain.
         map.water = generate_water_bodies(&map, seed);

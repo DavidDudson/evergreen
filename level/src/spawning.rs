@@ -242,7 +242,42 @@ fn ensure_area_spawned(
         area,
         area_pos,
     );
+    spawn_portal_for_area(commands, asset_server, world, area_pos);
     spawned.0.insert(area_pos);
+}
+
+const PORTAL_SPRITE_SIZE_PX: f32 = 32.0;
+const PORTAL_Z_BIAS: f32 = 0.5;
+
+fn spawn_portal_for_area(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    world: &WorldMap,
+    area_pos: IVec2,
+) {
+    let Some(portal) = world.portal else {
+        return;
+    };
+    if portal.area_pos != area_pos {
+        return;
+    }
+    let base = area_world_offset(area_pos);
+    let tile_px = f32::from(TILE_SIZE_PX);
+    let world_x = base.x - MAP_W_PX / 2.0
+        + f32::from(u16::try_from(portal.tile_x).unwrap_or(0)) * tile_px
+        + tile_px / 2.0;
+    let world_y = base.y - MAP_H_PX / 2.0
+        + f32::from(u16::try_from(portal.tile_y).unwrap_or(0)) * tile_px
+        + tile_px / 2.0;
+    commands.spawn((
+        crate::portal::PortalEntity { kind: portal.kind },
+        Sprite {
+            image: asset_server.load(portal.kind.sprite_path()),
+            custom_size: Some(Vec2::splat(PORTAL_SPRITE_SIZE_PX)),
+            ..default()
+        },
+        Transform::from_xyz(world_x, world_y, Layer::World.z_f32() + PORTAL_Z_BIAS),
+    ));
 }
 
 fn spawn_area_tilemap(

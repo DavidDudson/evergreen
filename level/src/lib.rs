@@ -13,6 +13,7 @@ pub mod npc_labels;
 pub mod npc_wander;
 pub mod npcs;
 pub mod plugin;
+pub mod portal;
 pub mod puddles;
 pub mod reveal;
 pub mod scenery;

@@ -5,6 +5,7 @@ mod hop;
 mod input;
 mod movement;
 pub mod plugin;
+mod portal_trigger;
 mod rustle;
 mod spawning;
 mod water_state;

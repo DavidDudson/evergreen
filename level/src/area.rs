@@ -13,6 +13,7 @@ pub enum NpcKind {
     Gothel,
     Morgana,
     Cadwallader,
+    BloodyMary,
 }
 
 impl NpcKind {
@@ -28,18 +29,20 @@ impl NpcKind {
             // Darkwood-aligned
             Self::Mordred => (60, 100),
             Self::Morgana => (60, 100),
+            Self::BloodyMary => (60, 100),
         }
     }
 }
 
 /// All available NPC kinds, used for random selection.
-pub const ALL_NPCS: [NpcKind; 6] = [
+pub const ALL_NPCS: [NpcKind; 7] = [
     NpcKind::Mordred,
     NpcKind::Drizella,
     NpcKind::Bigby,
     NpcKind::Gothel,
     NpcKind::Morgana,
     NpcKind::Cadwallader,
+    NpcKind::BloodyMary,
 ];
 
 /// What happens when the player enters an area.
