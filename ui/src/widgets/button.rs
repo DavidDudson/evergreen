@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use dialog::locale::LocaleKey;
 
 use crate::design_tokens::{spacing, typography};
 use crate::theme;
@@ -14,6 +15,7 @@ use crate::theme;
 pub struct ButtonBuilder<M: Component> {
     marker: M,
     label: String,
+    locale_key: Option<String>,
     font: Handle<Font>,
     padding_h_px: f32,
     padding_v_px: f32,
@@ -34,6 +36,7 @@ impl<M: Component> ButtonBuilder<M> {
         Self {
             marker,
             label: label.into(),
+            locale_key: None,
             font,
             padding_h_px: spacing::BUTTON_PADDING_H_PX,
             padding_v_px: spacing::BUTTON_PADDING_V_PX,
@@ -48,6 +51,16 @@ impl<M: Component> ButtonBuilder<M> {
             background_color: theme::BUTTON_BG,
             text_color: theme::BUTTON_TEXT,
         }
+    }
+
+    /// Drives the button text from a locale key. The text child gets a
+    /// [`LocaleKey`] component; `apply_locale_keys` (in `dialog`) refreshes
+    /// the `Text` whenever the active locale loads or changes. Use this
+    /// instead of a literal label so screens spawned before the locale asset
+    /// finishes loading still get translated text once it arrives.
+    pub fn locale_key(mut self, key: impl Into<String>) -> Self {
+        self.locale_key = Some(key.into());
+        self
     }
 
     pub fn padding(mut self, h_px: f32, v_px: f32) -> Self {
@@ -81,38 +94,43 @@ impl<M: Component> ButtonBuilder<M> {
     }
 
     pub fn spawn(self, commands: &mut Commands, parent: Entity) -> Entity {
-        let id = commands
-            .spawn((
-                self.marker,
-                Button,
-                Node {
-                    padding: UiRect::axes(Val::Px(self.padding_h_px), Val::Px(self.padding_v_px)),
-                    margin: UiRect {
-                        top: Val::Px(self.margin_top_px),
-                        bottom: Val::Px(self.margin_bottom_px),
-                        left: Val::Px(self.margin_left_px),
-                        right: Val::Px(self.margin_right_px),
-                    },
-                    border: UiRect::all(Val::Px(self.border_px)),
-                    border_radius: BorderRadius::all(Val::Px(self.radius_px)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..Node::default()
+        let mut button = commands.spawn((
+            self.marker,
+            Button,
+            Node {
+                padding: UiRect::axes(Val::Px(self.padding_h_px), Val::Px(self.padding_v_px)),
+                margin: UiRect {
+                    top: Val::Px(self.margin_top_px),
+                    bottom: Val::Px(self.margin_bottom_px),
+                    left: Val::Px(self.margin_left_px),
+                    right: Val::Px(self.margin_right_px),
                 },
-                BorderColor::all(self.border_color),
-                BackgroundColor(self.background_color),
-                ChildOf(parent),
-            ))
-            .with_child((
-                Text::new(self.label),
-                TextColor(self.text_color),
-                TextFont {
-                    font: self.font,
-                    font_size: self.font_size_px,
-                    ..default()
-                },
-            ))
-            .id();
-        id
+                border: UiRect::all(Val::Px(self.border_px)),
+                border_radius: BorderRadius::all(Val::Px(self.radius_px)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..Node::default()
+            },
+            BorderColor::all(self.border_color),
+            BackgroundColor(self.background_color),
+            ChildOf(parent),
+        ));
+
+        let text_bundle = (
+            Text::new(self.label),
+            TextColor(self.text_color),
+            TextFont {
+                font: self.font,
+                font_size: self.font_size_px,
+                ..default()
+            },
+        );
+
+        match self.locale_key {
+            Some(key) => button.with_child((text_bundle, LocaleKey::new(key))),
+            None => button.with_child(text_bundle),
+        };
+
+        button.id()
     }
 }

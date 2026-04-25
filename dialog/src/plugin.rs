@@ -11,8 +11,8 @@ use crate::events::{
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
 use crate::locale::{
-    sync_fallback_locale, sync_language, sync_locale, ActiveLocale, FallbackLocale, LocaleAsset,
-    LocaleAssetLoader, LocaleMap, DEFAULT_LOCALE_CODE,
+    apply_locale_keys, sync_fallback_locale, sync_language, sync_locale, ActiveLocale,
+    FallbackLocale, LocaleAsset, LocaleAssetLoader, LocaleMap, DEFAULT_LOCALE_CODE,
 };
 use crate::runner::{
     advance_runner, detect_interact_input, detect_interact_range, handle_choice, on_dialogue_ended,
@@ -49,8 +49,19 @@ impl Plugin for DialogPlugin {
         // Startup: load the locale specified in GameSettings (set by SavePlugin).
         app.add_systems(Startup, load_initial_locale);
 
-        // Locale sync and language switching (runs always)
-        app.add_systems(Update, (sync_locale, sync_fallback_locale, sync_language));
+        // Locale sync and language switching (runs always). `apply_locale_keys`
+        // must run after `sync_locale`/`sync_fallback_locale` so freshly-loaded
+        // strings reach `LocaleKey`-tagged Text nodes the same frame.
+        app.add_systems(
+            Update,
+            (
+                sync_locale,
+                sync_fallback_locale,
+                sync_language,
+                apply_locale_keys,
+            )
+                .chain(),
+        );
 
         // Playing: range detection, interact input, barks, start_dialogue
         app.add_systems(

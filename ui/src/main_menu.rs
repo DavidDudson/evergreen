@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use dialog::locale::LocaleMap;
 use models::game_states::GameState;
 
 use crate::fonts::UiFont;
@@ -34,12 +33,7 @@ pub(crate) struct CreditsButton;
 #[derive(Component)]
 pub(crate) struct MainMenuSettingsButton;
 
-pub fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    fonts: Res<UiFont>,
-    locale: Res<LocaleMap>,
-) {
+pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>, fonts: Res<UiFont>) {
     let root = commands
         .spawn((
             MainMenu,
@@ -96,30 +90,21 @@ pub fn setup(
         ChildOf(root),
     ));
 
-    ButtonBuilder::new(
-        locale.get("ui.main_menu.start").to_string(),
-        StartButton,
-        fonts.0.clone(),
-    )
-    .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
-    .font_size(MENU_BUTTON_FONT_SIZE_PX)
-    .spawn(&mut commands, root);
-    ButtonBuilder::new(
-        locale.get("ui.main_menu.lore").to_string(),
-        LoreButton,
-        fonts.0.clone(),
-    )
-    .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
-    .font_size(MENU_BUTTON_FONT_SIZE_PX)
-    .spawn(&mut commands, root);
-    ButtonBuilder::new(
-        locale.get("ui.main_menu.credits").to_string(),
-        CreditsButton,
-        fonts.0.clone(),
-    )
-    .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
-    .font_size(MENU_BUTTON_FONT_SIZE_PX)
-    .spawn(&mut commands, root);
+    ButtonBuilder::new("", StartButton, fonts.0.clone())
+        .locale_key("ui.main_menu.start")
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
+    ButtonBuilder::new("", LoreButton, fonts.0.clone())
+        .locale_key("ui.main_menu.lore")
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
+    ButtonBuilder::new("", CreditsButton, fonts.0.clone())
+        .locale_key("ui.main_menu.credits")
+        .padding(MENU_BUTTON_PADDING_H_PX, MENU_BUTTON_PADDING_V_PX)
+        .font_size(MENU_BUTTON_FONT_SIZE_PX)
+        .spawn(&mut commands, root);
 }
 
 pub fn button_system(

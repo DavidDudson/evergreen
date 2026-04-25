@@ -143,6 +143,50 @@ pub fn sync_fallback_locale(
     }
 }
 
+// ---------------------------------------------------------------------------
+// LocaleKey component + auto-apply system
+// ---------------------------------------------------------------------------
+
+/// Marks a `Text` entity whose content is driven by a locale key. Decouples
+/// spawn timing from asset-load timing: a screen can spawn its UI before the
+/// locale asset finishes loading and the text will fill in once available.
+///
+/// Pair with `Text::new("")` (or a placeholder); [`apply_locale_keys`] rewrites
+/// the `Text` whenever [`LocaleMap`] changes (asset load, language switch).
+#[derive(Component, Debug, Clone)]
+pub struct LocaleKey(pub String);
+
+impl LocaleKey {
+    pub fn new(key: impl Into<String>) -> Self {
+        Self(key.into())
+    }
+}
+
+/// System: refreshes every `Text` tagged with [`LocaleKey`] whenever the
+/// active locale changes (asset arrives, language switch). Also runs when a
+/// [`LocaleKey`] is freshly added so newly-spawned entities get text on the
+/// next frame even if `LocaleMap` itself didn't change.
+///
+/// Both filtered (`Added`) and unfiltered queries access `&mut Text`, so they
+/// must live behind a [`ParamSet`] to avoid B0001.
+pub fn apply_locale_keys(
+    locale_map: Res<LocaleMap>,
+    mut queries: ParamSet<(
+        Query<(&LocaleKey, &mut Text)>,
+        Query<(&LocaleKey, &mut Text), Added<LocaleKey>>,
+    )>,
+) {
+    if locale_map.is_changed() {
+        for (key, mut text) in &mut queries.p0() {
+            **text = locale_map.get(&key.0).to_owned();
+        }
+        return;
+    }
+    for (key, mut text) in &mut queries.p1() {
+        **text = locale_map.get(&key.0).to_owned();
+    }
+}
+
 /// System: when [`GameSettings::language`] changes, reload the locale asset.
 pub fn sync_language(
     settings: Res<GameSettings>,
