@@ -8,6 +8,7 @@ use keybinds::KeybindsPlugin;
 use level::plugin::LevelPlugin;
 use lighting::plugin::LightingPlugin;
 use models::game_states::GameState;
+use models::palette::PaletteTheme;
 use player::plugin::PlayerPlugin;
 use post_processing::plugin::PostProcessingPlugin;
 use save::SavePlugin;
@@ -39,5 +40,6 @@ fn main() {
             LightingPlugin,
         ))
         .init_state::<GameState>()
+        .init_resource::<PaletteTheme>()
         .run();
 }

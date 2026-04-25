@@ -1,6 +1,6 @@
 #![allow(clippy::disallowed_methods)]
 
-use bevy::prelude::Color;
+use bevy::prelude::{Color, Resource};
 
 pub const DARK_BG: Color = Color::srgb(0.06, 0.14, 0.08);
 pub const TITLE: Color = Color::srgb(0.58, 0.82, 0.52);
@@ -94,4 +94,110 @@ pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {
         a.blue + (b.blue - a.blue) * t,
         a.alpha + (b.alpha - a.alpha) * t,
     )
+}
+
+/// Runtime-overridable copy of the palette. Plugins (themes, color-blind
+/// presets, mods) can replace this resource to retint the UI without
+/// touching individual screens. The `pub const` defaults above remain
+/// the source of truth -- this resource is initialised from them and
+/// systems can opt-in to read from `Res<PaletteTheme>` for live theming.
+#[derive(Resource, Clone, Debug)]
+pub struct PaletteTheme {
+    pub dark_bg: Color,
+    pub title: Color,
+    pub accent: Color,
+    pub button_bg: Color,
+    pub button_text: Color,
+    pub overlay: Color,
+    pub player: Color,
+    pub minimap_bg: Color,
+    pub minimap_room: Color,
+    pub minimap_current: Color,
+    pub minimap_npc: Color,
+    pub dialog_bg: Color,
+    pub dialog_border: Color,
+    pub dialog_text: Color,
+    pub dialog_speaker: Color,
+    pub dialog_choice_bg: Color,
+    pub dialog_choice_hover: Color,
+    pub bark_text: Color,
+    pub align_greenwoods: Color,
+    pub align_darkwoods: Color,
+    pub align_cities: Color,
+    pub align_track: Color,
+    pub align_label: Color,
+    pub scrollbar_track: Color,
+    pub scrollbar_thumb: Color,
+    pub interact_prompt: Color,
+    pub biome_city_tint: Color,
+    pub biome_greenwood_tint: Color,
+    pub biome_darkwood_tint: Color,
+    pub level_exit: Color,
+    pub perf_bg: Color,
+    pub perf_good: Color,
+    pub perf_warn: Color,
+    pub perf_bad: Color,
+    pub light_exit: Color,
+    pub light_torch: Color,
+    pub ambient_day: Color,
+    pub ambient_dawn: Color,
+    pub ambient_dusk: Color,
+    pub ambient_night: Color,
+    pub firefly: Color,
+    pub dust_mote: Color,
+    pub fog: Color,
+    pub drop_shadow_tint: Color,
+    pub fish_shadow_tint: Color,
+}
+
+impl Default for PaletteTheme {
+    fn default() -> Self {
+        Self {
+            dark_bg: DARK_BG,
+            title: TITLE,
+            accent: ACCENT,
+            button_bg: BUTTON_BG,
+            button_text: BUTTON_TEXT,
+            overlay: OVERLAY,
+            player: PLAYER,
+            minimap_bg: MINIMAP_BG,
+            minimap_room: MINIMAP_ROOM,
+            minimap_current: MINIMAP_CURRENT,
+            minimap_npc: MINIMAP_NPC,
+            dialog_bg: DIALOG_BG,
+            dialog_border: DIALOG_BORDER,
+            dialog_text: DIALOG_TEXT,
+            dialog_speaker: DIALOG_SPEAKER,
+            dialog_choice_bg: DIALOG_CHOICE_BG,
+            dialog_choice_hover: DIALOG_CHOICE_HOVER,
+            bark_text: BARK_TEXT,
+            align_greenwoods: ALIGN_GREENWOODS,
+            align_darkwoods: ALIGN_DARKWOODS,
+            align_cities: ALIGN_CITIES,
+            align_track: ALIGN_TRACK,
+            align_label: ALIGN_LABEL,
+            scrollbar_track: SCROLLBAR_TRACK,
+            scrollbar_thumb: SCROLLBAR_THUMB,
+            interact_prompt: INTERACT_PROMPT,
+            biome_city_tint: BIOME_CITY_TINT,
+            biome_greenwood_tint: BIOME_GREENWOOD_TINT,
+            biome_darkwood_tint: BIOME_DARKWOOD_TINT,
+            level_exit: LEVEL_EXIT,
+            perf_bg: PERF_BG,
+            perf_good: PERF_GOOD,
+            perf_warn: PERF_WARN,
+            perf_bad: PERF_BAD,
+            light_exit: LIGHT_EXIT,
+            light_torch: LIGHT_TORCH,
+            ambient_day: AMBIENT_DAY,
+            ambient_dawn: AMBIENT_DAWN,
+            ambient_dusk: AMBIENT_DUSK,
+            ambient_night: AMBIENT_NIGHT,
+            firefly: FIREFLY,
+            dust_mote: DUST_MOTE,
+            fog: FOG,
+            drop_shadow_tint: DROP_SHADOW_TINT,
+            fish_shadow_tint: FISH_SHADOW_TINT,
+        }
+    }
 }
