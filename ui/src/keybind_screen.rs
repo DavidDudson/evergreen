@@ -2,6 +2,8 @@ use bevy::prelude::*;
 use keybinds::action::Action;
 use keybinds::bindings::Keybinds;
 use keybinds::remap::{AwaitingRemap, CancelRemap, RemapCompleted, RequestRemap};
+use keybinds::serialize::keycode_name;
+use keybinds::IntoEnumIterator;
 use models::game_states::GameState;
 
 use crate::fonts::UiFont;
@@ -115,7 +117,7 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
     ));
 
     // Action rows
-    for &action in Action::ALL {
+    for action in Action::iter() {
         let key = keybinds.key(action);
         spawn_action_row(&mut commands, root, action, key, font.clone());
     }
@@ -288,7 +290,9 @@ pub fn refresh_key_labels(
     for event in events.read() {
         for (mut text, label) in &mut label_q {
             if label.0 == event.action {
-                **text = keycode_label(keybinds.key(label.0)).to_string();
+                **text = keycode_name(keybinds.key(label.0))
+                    .unwrap_or("?")
+                    .to_string();
             }
         }
     }
@@ -300,7 +304,9 @@ pub fn sync_all_labels(keybinds: Res<Keybinds>, mut label_q: Query<(&mut Text, &
         return;
     }
     for (mut text, label) in &mut label_q {
-        **text = keycode_label(keybinds.key(label.0)).to_string();
+        **text = keycode_name(keybinds.key(label.0))
+            .unwrap_or("?")
+            .to_string();
     }
 }
 
@@ -335,8 +341,8 @@ pub fn sync_remap_overlay(
                 ))
                 .with_child((
                     Text::new(format!(
-                        "Press a key for \"{}\" — Escape to cancel",
-                        a.action.label()
+                        "Press a key for \"{}\" -- Escape to cancel",
+                        a.action
                     )),
                     TextColor(theme::DIALOG_TEXT),
                     TextFont {
@@ -386,7 +392,7 @@ fn spawn_action_row(
 
     // Action label
     commands.spawn((
-        Text::new(action.label()),
+        Text::new(action.to_string()),
         TextColor(theme::DIALOG_TEXT),
         TextFont {
             font: font.clone(),
@@ -418,7 +424,7 @@ fn spawn_action_row(
         ))
         .with_child((
             KeyButtonLabel(action),
-            Text::new(keycode_label(key).to_string()),
+            Text::new(keycode_name(key).unwrap_or("?").to_string()),
             TextColor(theme::DIALOG_SPEAKER),
             TextFont {
                 font: font.clone(),
@@ -450,74 +456,4 @@ fn spawn_action_row(
                 ..default()
             },
         ));
-}
-
-/// Short human-readable label for a [`KeyCode`].
-pub fn keycode_label(key: KeyCode) -> &'static str {
-    match key {
-        KeyCode::KeyA => "A",
-        KeyCode::KeyB => "B",
-        KeyCode::KeyC => "C",
-        KeyCode::KeyD => "D",
-        KeyCode::KeyE => "E",
-        KeyCode::KeyF => "F",
-        KeyCode::KeyG => "G",
-        KeyCode::KeyH => "H",
-        KeyCode::KeyI => "I",
-        KeyCode::KeyJ => "J",
-        KeyCode::KeyK => "K",
-        KeyCode::KeyL => "L",
-        KeyCode::KeyM => "M",
-        KeyCode::KeyN => "N",
-        KeyCode::KeyO => "O",
-        KeyCode::KeyP => "P",
-        KeyCode::KeyQ => "Q",
-        KeyCode::KeyR => "R",
-        KeyCode::KeyS => "S",
-        KeyCode::KeyT => "T",
-        KeyCode::KeyU => "U",
-        KeyCode::KeyV => "V",
-        KeyCode::KeyW => "W",
-        KeyCode::KeyX => "X",
-        KeyCode::KeyY => "Y",
-        KeyCode::KeyZ => "Z",
-        KeyCode::Digit0 => "0",
-        KeyCode::Digit1 => "1",
-        KeyCode::Digit2 => "2",
-        KeyCode::Digit3 => "3",
-        KeyCode::Digit4 => "4",
-        KeyCode::Digit5 => "5",
-        KeyCode::Digit6 => "6",
-        KeyCode::Digit7 => "7",
-        KeyCode::Digit8 => "8",
-        KeyCode::Digit9 => "9",
-        KeyCode::Space => "Space",
-        KeyCode::Enter => "Enter",
-        KeyCode::Escape => "Escape",
-        KeyCode::Backspace => "Backspace",
-        KeyCode::Tab => "Tab",
-        KeyCode::ShiftLeft => "L-Shift",
-        KeyCode::ShiftRight => "R-Shift",
-        KeyCode::ControlLeft => "L-Ctrl",
-        KeyCode::ControlRight => "R-Ctrl",
-        KeyCode::AltLeft => "L-Alt",
-        KeyCode::AltRight => "R-Alt",
-        KeyCode::ArrowUp => "Up",
-        KeyCode::ArrowDown => "Down",
-        KeyCode::ArrowLeft => "Left",
-        KeyCode::ArrowRight => "Right",
-        KeyCode::F1 => "F1",
-        KeyCode::F2 => "F2",
-        KeyCode::F3 => "F3",
-        KeyCode::F4 => "F4",
-        KeyCode::F5 => "F5",
-        KeyCode::F6 => "F6",
-        KeyCode::F7 => "F7",
-        KeyCode::F8 => "F8",
-        KeyCode::F9 => "F9",
-        KeyCode::F10 => "F10",
-        KeyCode::F11 => "F11",
-        KeyCode::F12 => "F12",
-        _ => "?",
-    }
 }
