@@ -9,7 +9,7 @@ use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::biome_registry::{BiomeRegistry, DecorationSpec};
 use crate::blending;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
-use crate::terrain::{tile_hash, Terrain};
+use crate::terrain::tile_hash;
 use crate::world::WorldMap;
 
 #[allow(clippy::as_conversions)]
@@ -51,13 +51,17 @@ pub fn spawn_area_decorations(
     // Decoration-specific salt to avoid overlapping tree positions.
     let deco_seed = area_seed.wrapping_add(DECORATION_SEED_SALT);
 
-    // Collect candidate grass tiles (inset from edges where trees dominate).
+    // Collect candidate ground tiles (inset from edges where trees dominate).
+    // Use the tag system to broaden eligibility beyond just `Grass`.
     let mut candidates: Vec<(u32, u32)> = Vec::new();
     for x in EDGE_INSET..(MAP_WIDTH - EDGE_INSET) {
         for y in EDGE_INSET..(MAP_HEIGHT - EDGE_INSET) {
             let xu = u32::from(x);
             let yu = u32::from(y);
-            if area.terrain_at(xu, yu) == Some(Terrain::Grass) {
+            if area
+                .terrain_at(xu, yu)
+                .is_some_and(|t| t.terrain_tags().has(models::tags::tag::GROUND))
+            {
                 candidates.push((xu, yu));
             }
         }
@@ -90,6 +94,10 @@ pub fn spawn_area_decorations(
         let effective_alignment =
             blending::blended_alignment(area.alignment, xu, yu, area_pos, world);
         let pool = registry.decorations(effective_alignment);
+        let Some(terrain) = area.terrain_at(xu, yu) else {
+            continue;
+        };
+        let terrain_tags = terrain.terrain_tags();
 
         let variant = tile_hash(
             xu,
@@ -97,6 +105,13 @@ pub fn spawn_area_decorations(
             deco_seed.wrapping_add(u32::try_from(i).expect("i fits u32")),
         ) % pool.len();
         let def = &pool[variant];
+
+        // Skip silently if the chosen decoration's placement rule isn't
+        // satisfied by this terrain (avoids retrying / re-rolling -- decoration
+        // density just drops by however many incompatible picks land here).
+        if !def.placement.allows(&terrain_tags) {
+            continue;
+        }
 
         let world_x = base_offset_x
             + f32::from(u16::try_from(xu).expect("xu fits u16")) * tile_px

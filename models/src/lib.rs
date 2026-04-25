@@ -22,6 +22,7 @@ pub mod seconds;
 pub mod settings;
 pub mod shadow;
 pub mod speed;
+pub mod tags;
 pub mod textured;
 pub mod tile;
 pub mod time;

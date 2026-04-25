@@ -1,3 +1,5 @@
+use models::tags::{tag, TerrainTags};
+
 /// Terrain types that can appear in the tile map.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Terrain {
@@ -13,6 +15,16 @@ impl TryFrom<u8> for Terrain {
             b'G' => Ok(Terrain::Grass),
             b'D' => Ok(Terrain::Dirt),
             _ => Err(c),
+        }
+    }
+}
+
+impl Terrain {
+    /// Tag-based terrain descriptor used by the placement system.
+    pub fn terrain_tags(self) -> TerrainTags {
+        match self {
+            Self::Grass => TerrainTags::new(&[tag::GROUND, tag::FERTILE], &[]),
+            Self::Dirt => TerrainTags::new(&[tag::GROUND, tag::PATH, tag::DRY], &[]),
         }
     }
 }

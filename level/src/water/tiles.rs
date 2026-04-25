@@ -8,6 +8,7 @@ use std::collections::{HashMap, HashSet};
 
 use bevy::math::{IVec2, UVec2};
 use bevy::prelude::Component;
+use models::tags::{tag, TerrainTags};
 
 use crate::area::{MAP_HEIGHT, MAP_WIDTH};
 
@@ -62,6 +63,28 @@ impl WaterKind {
     /// True for ocean tiles. Used by fauna rules.
     pub fn is_ocean(self) -> bool {
         matches!(self, Self::Ocean)
+    }
+
+    /// Tag-based terrain descriptor used by the placement system.
+    /// Add new tags here when introducing new water flavours; placeables can
+    /// then opt-in via `PlacementRequirement::requires/forbids/tolerates`.
+    pub fn terrain_tags(self) -> TerrainTags {
+        match self {
+            Self::Plain => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
+            Self::Lake => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
+            Self::HotSpring => {
+                TerrainTags::new(&[tag::WATER, tag::STILL, tag::HOT], &[tag::HOT])
+            }
+            Self::RiverNS | Self::RiverEW => {
+                TerrainTags::new(&[tag::WATER, tag::FLOWING], &[tag::FLOWING])
+            }
+            Self::Waterfall => {
+                TerrainTags::new(&[tag::WATER, tag::FLOWING], &[tag::FLOWING])
+            }
+            Self::Ocean => {
+                TerrainTags::new(&[tag::WATER, tag::STILL, tag::SALT], &[tag::SALT])
+            }
+        }
     }
 }
 
