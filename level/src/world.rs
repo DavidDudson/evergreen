@@ -18,30 +18,49 @@ const MIN_NPC_DISTANCE: i32 = 3;
 /// Probability (out of 100) that an eligible area gets an NPC encounter.
 const NPC_ENCOUNTER_CHANCE: u64 = 30;
 
-/// Number of biome zone seeds placed in the world.
-const ZONE_SEED_COUNT: usize = 4;
-
-/// Minimum grid-distance between any two zone seeds.
-const MIN_ZONE_SPACING: i32 = 2;
-
-/// Maximum placement radius from origin for zone seeds.
-const ZONE_RADIUS: i32 = 5;
-
 /// Alignment ceiling for the city biome -- areas with alignment <= this are
 /// treated as urban and reject road exits toward missing neighbours so a
 /// grass buffer sits between the road and the beach.
 const CITY_ALIGNMENT_MAX: u8 = 25;
 
-/// Alignment anchors for the biome types (spread to avoid averaging to 50).
-const ANCHOR_CITY: u8 = 10;
-const ANCHOR_LIGHT_GREEN: u8 = 35;
-const ANCHOR_DEEP_GREEN: u8 = 65;
-const ANCHOR_DARKWOOD: u8 = 90;
+/// Map sizing formula bounds. `MAP_AREAS_AT_MIN` areas at alignment 1,
+/// `MAP_AREAS_AT_HI_ALIGN` areas at alignment `MAP_SIZE_PEAK_ALIGNMENT`,
+/// clamped at `MAP_AREAS_HARD_CAP` for higher alignments.
+const MAP_AREAS_AT_MIN: usize = 5;
+const MAP_AREAS_AT_HI_ALIGN: usize = 50;
+const MAP_SIZE_PEAK_ALIGNMENT: u8 = 30;
+const MAP_AREAS_HARD_CAP: usize = 60;
 
-/// A biome influence point in the world grid.
-struct ZoneSeed {
-    pos: IVec2,
-    alignment: AreaAlignment,
+/// Default alignment for the bootstrap (root) map: light greenwood. The
+/// player can portal to other biomes but the entry point sits in greenwood.
+pub const ROOT_MAP_ALIGNMENT: AreaAlignment = 15;
+
+/// Compute the target area count for a map of the given alignment.
+/// Linear lerp between [`MAP_AREAS_AT_MIN`] @ alignment 1 and
+/// [`MAP_AREAS_AT_HI_ALIGN`] @ alignment [`MAP_SIZE_PEAK_ALIGNMENT`], clamped
+/// at [`MAP_AREAS_HARD_CAP`] for higher alignments.
+pub fn map_area_count_target(alignment: AreaAlignment) -> usize {
+    let a = u32::from(alignment.max(1));
+    let lo = u32::try_from(MAP_AREAS_AT_MIN).unwrap_or(5);
+    let hi = u32::try_from(MAP_AREAS_AT_HI_ALIGN).unwrap_or(50);
+    let peak = u32::from(MAP_SIZE_PEAK_ALIGNMENT.max(2));
+    let cap = MAP_AREAS_HARD_CAP;
+    if a <= peak {
+        let span = hi.saturating_sub(lo);
+        let scaled = lo + (span * (a - 1)) / (peak - 1);
+        usize::try_from(scaled).unwrap_or(lo as usize)
+    } else {
+        cap
+    }
+}
+
+/// Identifier for a map within the multiverse. Phase 1 keeps a single root
+/// map; phase 2 uses this to address portal targets.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct MapId(pub u32);
+
+impl MapId {
+    pub const ROOT: Self = Self(0);
 }
 
 /// Fired when the player crosses an area boundary and the current area changes.
@@ -50,14 +69,25 @@ pub struct AreaChanged {
     pub direction: Direction,
 }
 
-/// All generated areas in the world, keyed by grid position.
+/// One generated map's state. A map has a uniform biome alignment and is
+/// reached either as the root world or by stepping through a portal.
 ///
-/// The origin (0, 0) is the starting area.  Positive Y is north; positive X is east.
+/// Phase 1: only the root map is exposed via [`WorldMap`]; phase 2 adds a
+/// `Multiverse` resource holding many `Map`s keyed by [`MapId`].
 #[derive(Resource)]
 pub struct WorldMap {
+    /// This map's identity within the multiverse.
+    pub id: MapId,
+    /// Areas generated for this map keyed by grid position.
     areas: HashMap<IVec2, Area>,
+    /// Player's current area within this map.
     pub current: IVec2,
+    /// RNG seed for this map.
     seed: u64,
+    /// Uniform biome alignment -- every area in this map shares it.
+    pub alignment: AreaAlignment,
+    /// Target number of areas to grow this map to.
+    pub area_count_target: usize,
     /// NPCs available for encounters, shuffled at creation.
     npc_pool: Vec<NpcKind>,
     /// How many NPC encounters have been placed so far.
@@ -66,24 +96,25 @@ pub struct WorldMap {
     visited: HashSet<IVec2>,
     /// Areas visible on the minimap (visited + their exit neighbors).
     revealed: HashSet<IVec2>,
-    /// Biome zone influence points for alignment interpolation.
-    zone_seeds: Vec<ZoneSeed>,
     /// The dead-end area containing the level exit.
     pub exit_area: IVec2,
     /// Water tiles (ponds, hot springs, lakes, rivers, ocean) generated after terrain.
     pub water: WaterMap,
-    /// Whether this world has an ocean surrounding its boundary.
+    /// Whether this map has an ocean surrounding its boundary.
     pub has_ocean: bool,
 }
 
 impl WorldMap {
-    /// Create the world and seed the starting 4-way cross area plus two rings
-    /// of neighbours (enough to populate the initial minimap).
-    ///
-    /// `dominant_alignment` is the player's dominant faction expressed on the
-    /// 1-100 scale (1 = city, 50 = greenwood, 100 = darkwood).  The start
-    /// position is chosen near the best-matching zone seed.
-    pub fn new(seed: u64, dominant_alignment: AreaAlignment) -> Self {
+    /// Create the root map for a fresh game. Greenwood-aligned by default.
+    pub fn new(seed: u64, _dominant_alignment: AreaAlignment) -> Self {
+        Self::generate(MapId::ROOT, seed, ROOT_MAP_ALIGNMENT)
+    }
+
+    /// Generate a map with the specified id, seed and alignment. Used by
+    /// phase 2 portal-target generation as well.
+    pub fn generate(id: MapId, seed: u64, alignment: AreaAlignment) -> Self {
+        let target = map_area_count_target(alignment);
+
         // Shuffle NPC pool deterministically from seed.
         let mut npc_pool: Vec<NpcKind> = ALL_NPCS.to_vec();
         let mut rng = seed.wrapping_mul(7_046_029_254_386_353_131);
@@ -94,20 +125,26 @@ impl WorldMap {
             npc_pool.swap(i, j);
         }
 
-        let zone_seeds = generate_zone_seeds(seed);
-
-        // Seeded coin flip: ~60% of worlds have an ocean border.
-        let has_ocean = (seed.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> 32) % 100 < 60;
+        // Seeded coin flip: ~60% of maps have an ocean border. City maps
+        // (very small) almost always have one to feel coastal; deep
+        // greenwood / darkwood usually don't.
+        let has_ocean = match alignment {
+            0..=15 => true,
+            16..=40 => (seed.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> 32) % 100 < 60,
+            _ => (seed.wrapping_mul(0x9E37_79B9_7F4A_7C15) >> 32) % 100 < 25,
+        };
 
         let mut map = Self {
+            id,
             areas: HashMap::new(),
             current: IVec2::ZERO,
             seed,
+            alignment,
+            area_count_target: target,
             npc_pool,
             npc_count: 0,
             visited: HashSet::new(),
             revealed: HashSet::new(),
-            zone_seeds,
             exit_area: IVec2::ZERO,
             water: WaterMap::default(),
             has_ocean,
@@ -121,23 +158,28 @@ impl WorldMap {
             Direction::West,
         ]);
         let origin_seed = map.area_seed(IVec2::ZERO);
-        let origin_align = map.alignment_at(IVec2::ZERO);
         let origin_area = Area::generate(
             all_exits,
             BTreeSet::new(),
             origin_seed,
             0,
-            origin_align,
+            alignment,
             IVec2::ZERO,
         );
         map.areas.insert(IVec2::ZERO, origin_area);
 
-        // Expand the entire map: keep generating neighbors until no new
-        // areas appear. This produces the full 15-20 area world.
+        // Expand: keep generating neighbours until we either run out of new
+        // exits to follow or hit the per-map area-count target.
         loop {
+            if map.areas.len() >= map.area_count_target {
+                break;
+            }
             let positions: Vec<IVec2> = map.areas.keys().copied().collect();
             let before = map.areas.len();
             for pos in positions {
+                if map.areas.len() >= map.area_count_target {
+                    break;
+                }
                 map.ensure_neighbors(pos);
             }
             if map.areas.len() == before {
@@ -153,9 +195,9 @@ impl WorldMap {
             .map(|(pos, _)| *pos)
             .collect();
 
-        // Pick start: dead end closest to player's alignment-preferred zone.
-        let start =
-            pick_dead_end_for_alignment(&dead_ends, &map.zone_seeds, dominant_alignment, seed);
+        // Pick start: the dead end closest to the origin so the player
+        // begins on the map's edge and explores inward.
+        let start = pick_start_dead_end(&dead_ends, seed);
         map.current = start;
         map.visited.insert(start);
         map.revealed.insert(start);
@@ -252,10 +294,10 @@ impl WorldMap {
         self.reveal_exits(new_pos);
     }
 
-    /// Compute the biome alignment for a grid position via inverse-distance
-    /// weighting from zone seeds.  Falls back to greenwood (50) if no seeds.
-    pub fn alignment_at(&self, pos: IVec2) -> AreaAlignment {
-        alignment_from_zones(&self.zone_seeds, pos)
+    /// Returns the uniform biome alignment for any position in this map.
+    /// Areas no longer vary their alignment within a map.
+    pub fn alignment_at(&self, _pos: IVec2) -> AreaAlignment {
+        self.alignment
     }
 
     // -----------------------------------------------------------------------
@@ -287,6 +329,14 @@ impl WorldMap {
         if self.areas.contains_key(&pos) {
             return;
         }
+        // Hard cap: stop generating once the map has reached its target.
+        // The bootstrap loop already enforces this, but `transition()` can
+        // also call us, so re-check here.
+        if self.areas.len() >= self.area_count_target {
+            // Still allow generation if this position is required by
+            // existing exits -- otherwise the player would walk into a
+            // missing area.
+        }
 
         let mut required: BTreeSet<Direction> = BTreeSet::new();
         let mut forbidden: BTreeSet<Direction> = BTreeSet::new();
@@ -309,7 +359,7 @@ impl WorldMap {
 
         let seed = self.area_seed(pos);
         let area_count = self.areas.len();
-        let alignment = self.alignment_at(pos);
+        let alignment = self.alignment;
 
         // City-aligned coastal areas must keep a grass buffer to the beach.
         // Forbid road exits toward any missing-neighbour direction (which
@@ -322,6 +372,21 @@ impl WorldMap {
                 Direction::West,
             ] {
                 if self.areas.get(&(pos + dir.grid_offset())).is_none() {
+                    forbidden.insert(dir);
+                }
+            }
+        }
+
+        // Cap-aware exit picking: when the map is at-or-past its area target,
+        // forbid all optional (missing-neighbour) exits so we don't overgrow.
+        if self.areas.len() >= self.area_count_target {
+            for dir in [
+                Direction::North,
+                Direction::East,
+                Direction::South,
+                Direction::West,
+            ] {
+                if !required.contains(&dir) {
                     forbidden.insert(dir);
                 }
             }
@@ -376,121 +441,23 @@ fn lcg(state: u64) -> u64 {
         .wrapping_add(1_442_695_040_888_963_407)
 }
 
-// ---------------------------------------------------------------------------
-// Zone seed generation
-// ---------------------------------------------------------------------------
-
-/// Place biome zone seeds at random positions with random alignment anchors.
-fn generate_zone_seeds(seed: u64) -> Vec<ZoneSeed> {
-    let anchors = [
-        ANCHOR_CITY,
-        ANCHOR_LIGHT_GREEN,
-        ANCHOR_DEEP_GREEN,
-        ANCHOR_DARKWOOD,
-    ];
-    let mut seeds = Vec::with_capacity(ZONE_SEED_COUNT);
-    let mut rng = lcg(seed.wrapping_add(0xB10E));
-
-    for i in 0..ZONE_SEED_COUNT {
-        // Try up to 20 times to find a position far enough from existing seeds.
-        let mut pos = IVec2::ZERO;
-        for _ in 0..20 {
-            rng = lcg(rng);
-            #[allow(clippy::as_conversions)]
-            let x =
-                (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32 - ZONE_RADIUS;
-            rng = lcg(rng);
-            #[allow(clippy::as_conversions)]
-            let y =
-                (rng % u64::try_from(ZONE_RADIUS * 2 + 1).expect("fits u64")) as i32 - ZONE_RADIUS;
-            pos = IVec2::new(x, y);
-
-            let far_enough = seeds
-                .iter()
-                .all(|s: &ZoneSeed| manhattan(pos, s.pos) >= MIN_ZONE_SPACING);
-            if far_enough {
-                break;
-            }
-        }
-
-        let alignment = anchors[i % anchors.len()];
-        seeds.push(ZoneSeed { pos, alignment });
-    }
-
-    seeds
-}
-
-/// Compute alignment at a grid position from the nearest zone seed.
-///
-/// Uses straight nearest-zone assignment with deterministic jitter
-/// (up to +/-15) for noticeable variation between adjacent areas.
-fn alignment_from_zones(zones: &[ZoneSeed], pos: IVec2) -> AreaAlignment {
-    if zones.is_empty() {
-        return ANCHOR_LIGHT_GREEN;
-    }
-
-    let nearest = zones
-        .iter()
-        .min_by_key(|z| manhattan(pos, z.pos))
-        .expect("zones is non-empty");
-
-    // Deterministic jitter based on position -- large enough for visible
-    // biome variation between neighbors.
-    let px = u64::from(u32::from_ne_bytes(pos.x.to_ne_bytes()));
-    let py = u64::from(u32::from_ne_bytes(pos.y.to_ne_bytes()));
-    let hash = px
-        .wrapping_mul(2_654_435_761)
-        .wrapping_add(py.wrapping_mul(1_013_904_223));
-    #[allow(clippy::as_conversions)]
-    let jitter = (hash % 31) as i16 - 15; // -15..+15
-
-    // Clamp to within 15 of the anchor so adjacent areas can differ by at
-    // most ~30 (each jittering in opposite directions from the same anchor).
-    let anchor = i16::from(nearest.alignment);
-    #[allow(clippy::as_conversions)]
-    let raw = (anchor + jitter)
-        .clamp(anchor - 15, anchor + 15)
-        .clamp(1, 100) as u8;
-    raw
-}
-
 fn manhattan(a: IVec2, b: IVec2) -> i32 {
     (a.x - b.x).abs() + (a.y - b.y).abs()
 }
 
-/// Pick a dead-end area near the zone seed closest to the player's alignment.
-fn pick_dead_end_for_alignment(
-    dead_ends: &[IVec2],
-    zones: &[ZoneSeed],
-    dominant: AreaAlignment,
-    seed: u64,
-) -> IVec2 {
+/// Pick the starting dead-end -- the one closest to the origin so the player
+/// begins on the map's edge. Falls back to origin if there are no dead ends.
+fn pick_start_dead_end(dead_ends: &[IVec2], seed: u64) -> IVec2 {
     if dead_ends.is_empty() {
         return IVec2::ZERO;
     }
-    if zones.is_empty() {
-        return dead_ends[0];
-    }
-
-    // Find the zone seed closest to the player's alignment.
-    let best_zone = zones
-        .iter()
-        .min_by_key(|z| z.alignment.abs_diff(dominant))
-        .expect("zones is non-empty");
-
-    // Pick the dead end closest to that zone seed, with a small random offset.
+    let mut sorted: Vec<IVec2> = dead_ends.to_vec();
+    sorted.sort_by_key(|p| manhattan(*p, IVec2::ZERO));
     let rng = lcg(seed.wrapping_add(0xDE_AD));
-    let mut scored: Vec<(IVec2, i32)> = dead_ends
-        .iter()
-        .map(|&p| (p, manhattan(p, best_zone.pos)))
-        .collect();
-    scored.sort_by_key(|&(_, d)| d);
-
-    // 80% closest, 20% second closest.
     let roll = rng % 100;
-    if roll < 80 || scored.len() < 2 {
-        scored[0].0
+    if roll < 80 || sorted.len() < 2 {
+        sorted[0]
     } else {
-        scored[1].0
+        sorted[1]
     }
 }
