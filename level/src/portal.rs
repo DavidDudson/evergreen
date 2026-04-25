@@ -211,12 +211,14 @@ pub fn enter_map_transition(
 
 /// `OnEnter(MapTransition)` system: regenerate [`crate::world::WorldMap`] at
 /// the pending alignment and immediately switch back to `Playing`, which
-/// fires the respawn chain.
+/// fires the respawn chain. Updates [`models::multiverse::MultiverseSave`]
+/// so a reload after this point lands the player in the same destination.
 pub fn apply_map_transition(
     mut pending: ResMut<PendingPortal>,
     mut world: ResMut<crate::world::WorldMap>,
     mut spawned: ResMut<crate::spawning::SpawnedAreas>,
     mut traversed: ResMut<MapsTraversed>,
+    mut save: ResMut<models::multiverse::MultiverseSave>,
     mut next: ResMut<NextState<models::game_states::GameState>>,
 ) {
     let alignment = pending.alignment.take().unwrap_or(world.alignment);
@@ -226,5 +228,10 @@ pub fn apply_map_transition(
     *world = crate::world::WorldMap::generate(next_id, new_seed, alignment, traversed.0);
     spawned.0.clear();
     pending.just_transitioned = true;
+    save.valid = true;
+    save.current_id = next_id.0;
+    save.current_seed = new_seed;
+    save.current_alignment = alignment;
+    save.maps_traversed = traversed.0;
     next.set(models::game_states::GameState::Playing);
 }

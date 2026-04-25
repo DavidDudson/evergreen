@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_tilemap::prelude::TilemapPlugin;
 use models::alignment::PlayerAlignment;
 use models::game_states::{should_despawn_world, GameState};
+use models::multiverse::MultiverseSave;
 use models::time::GameClock;
 
 use models::weather::WeatherState;
@@ -172,6 +173,8 @@ fn regenerate_world(
     alignment: Res<PlayerAlignment>,
     spawned: Res<SpawnedAreas>,
     mut pending: ResMut<portal::PendingPortal>,
+    mut save: ResMut<MultiverseSave>,
+    mut traversed: ResMut<portal::MapsTraversed>,
 ) {
     if !spawned.0.is_empty() {
         return;
@@ -182,7 +185,29 @@ fn regenerate_world(
         pending.just_transitioned = false;
         return;
     }
+    if save.valid {
+        // Resume from persisted multiverse state -- regen at the saved
+        // (id, seed, alignment, traversal) so the player drops back into
+        // the same map graph.
+        traversed.0 = save.maps_traversed;
+        *world = WorldMap::generate(
+            crate::world::MapId(save.current_id),
+            save.current_seed,
+            save.current_alignment,
+            save.maps_traversed,
+        );
+        clock.hour = rand::random::<f32>() * HOURS_PER_DAY;
+        return;
+    }
     let dominant = alignment.dominant_area_alignment();
-    *world = WorldMap::new(rand::random(), dominant);
+    let new_seed: u64 = rand::random();
+    *world = WorldMap::new(new_seed, dominant);
     clock.hour = rand::random::<f32>() * HOURS_PER_DAY;
+    // Stamp the freshly-generated root map into the save resource so we
+    // can resume on next launch.
+    save.valid = true;
+    save.current_id = world.id.0;
+    save.current_seed = new_seed;
+    save.current_alignment = world.alignment;
+    save.maps_traversed = 0;
 }

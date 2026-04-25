@@ -7,6 +7,7 @@
 use bevy::prelude::*;
 use dialog::history::LoreBook;
 use keybinds::Keybinds;
+use models::multiverse::MultiverseSave;
 use models::settings::GameSettings;
 
 use crate::file::SaveFile;
@@ -34,7 +35,8 @@ impl Plugin for SavePlugin {
         // Per-resource slots.
         app.register_persistable::<Keybinds>()
             .register_persistable::<LoreBook>()
-            .register_persistable::<GameSettings>();
+            .register_persistable::<GameSettings>()
+            .register_persistable::<MultiverseSave>();
     }
 }
 
@@ -52,4 +54,8 @@ impl Persistable for LoreBook {
 
 impl Persistable for GameSettings {
     const KEY: &'static str = "settings";
+}
+
+impl Persistable for MultiverseSave {
+    const KEY: &'static str = "multiverse";
 }

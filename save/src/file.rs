@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 /// Current on-disk schema version. Bump when the envelope format itself
 /// changes (slot ownership, key conventions, etc.). Slot-internal migrations
 /// are the responsibility of each `Persistable`'s [`Migrator`](crate::Migrator).
-pub const SAVE_VERSION: u32 = 1;
+pub const SAVE_VERSION: u32 = 2;
 
 /// Top-level save envelope. Stored as a single JSON document.
 #[derive(Resource, Debug, Default, Serialize, Deserialize)]
