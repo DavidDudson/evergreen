@@ -1,12 +1,13 @@
 use bevy::prelude::*;
+use dialog::locale::LocaleMap;
 
 #[derive(Component)]
 pub struct GameOverMenu;
 
-pub fn setup(mut commands: Commands) {
+pub fn setup(mut commands: Commands, locale: Res<LocaleMap>) {
     commands.spawn((
         GameOverMenu,
-        Text::new("Game Over".to_string()),
+        Text::new(locale.get("ui.game_over.title").to_string()),
         Node {
             position_type: PositionType::Absolute,
             display: Display::Flex,

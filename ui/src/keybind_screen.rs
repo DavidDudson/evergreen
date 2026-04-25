@@ -6,6 +6,8 @@ use keybinds::serialize::keycode_name;
 use keybinds::IntoEnumIterator;
 use models::game_states::GameState;
 
+use dialog::locale::LocaleMap;
+
 use crate::fonts::UiFont;
 use crate::theme;
 
@@ -79,7 +81,12 @@ pub(crate) struct RemapOverlay;
 // Setup / teardown
 // ---------------------------------------------------------------------------
 
-pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>) {
+pub fn setup(
+    mut commands: Commands,
+    keybinds: Res<Keybinds>,
+    fonts: Res<UiFont>,
+    locale: Res<LocaleMap>,
+) {
     let root = commands
         .spawn((
             KeybindScreen,
@@ -100,7 +107,7 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
 
     // Title
     commands.spawn((
-        Text::new("Key Bindings"),
+        Text::new(locale.get("ui.keybind.title").to_string()),
         TextColor(theme::TITLE),
         TextFont {
             font: font.clone(),
@@ -150,11 +157,15 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
         .id();
 
     // Back button
-    crate::widgets::ButtonBuilder::new("Back", BackButton, font.clone())
-        .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
-        .font_size(BACK_FONT_SIZE_PX)
-        .margin(0.0, 0.0)
-        .spawn(&mut commands, bottom_row);
+    crate::widgets::ButtonBuilder::new(
+        locale.get("ui.keybind.back").to_string(),
+        BackButton,
+        font.clone(),
+    )
+    .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
+    .font_size(BACK_FONT_SIZE_PX)
+    .margin(0.0, 0.0)
+    .spawn(&mut commands, bottom_row);
 
     // Reset All button
     commands
@@ -171,7 +182,7 @@ pub fn setup(mut commands: Commands, keybinds: Res<Keybinds>, fonts: Res<UiFont>
             ChildOf(bottom_row),
         ))
         .with_child((
-            Text::new("Reset All"),
+            Text::new(locale.get("ui.keybind.reset_all").to_string()),
             TextColor(theme::DIALOG_TEXT),
             TextFont {
                 font,

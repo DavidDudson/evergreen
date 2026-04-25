@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use dialog::locale::LocaleMap;
 use models::game_states::GameState;
 
 use crate::fonts::UiFont;
@@ -27,7 +28,7 @@ pub(crate) struct QuitToMenuButton;
 #[derive(Resource, Default)]
 pub struct QuitToMenuRequested(pub bool);
 
-pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
+pub fn setup(mut commands: Commands, fonts: Res<UiFont>, locale: Res<LocaleMap>) {
     let root = commands
         .spawn((
             PauseMenu,
@@ -47,7 +48,7 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
 
     // Title
     commands.spawn((
-        Text::new("Paused"),
+        Text::new(locale.get("ui.pause.title").to_string()),
         TextColor(theme::TITLE),
         TextFont {
             font: fonts.0.clone(),
@@ -61,10 +62,24 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
         ChildOf(root),
     ));
 
-    ButtonBuilder::new("Resume", ResumeButton, fonts.0.clone()).spawn(&mut commands, root);
-    ButtonBuilder::new("Settings", SettingsButton, fonts.0.clone()).spawn(&mut commands, root);
-    ButtonBuilder::new("Quit to Main Menu", QuitToMenuButton, fonts.0.clone())
-        .spawn(&mut commands, root);
+    ButtonBuilder::new(
+        locale.get("ui.pause.resume").to_string(),
+        ResumeButton,
+        fonts.0.clone(),
+    )
+    .spawn(&mut commands, root);
+    ButtonBuilder::new(
+        locale.get("ui.pause.settings").to_string(),
+        SettingsButton,
+        fonts.0.clone(),
+    )
+    .spawn(&mut commands, root);
+    ButtonBuilder::new(
+        locale.get("ui.pause.quit_to_menu").to_string(),
+        QuitToMenuButton,
+        fonts.0.clone(),
+    )
+    .spawn(&mut commands, root);
 }
 
 #[allow(clippy::type_complexity)]

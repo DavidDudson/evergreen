@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::ui::ComputedNode;
+use dialog::locale::LocaleMap;
 use models::game_states::GameState;
 use models::palette;
 
@@ -62,7 +63,7 @@ pub(crate) struct CreditsScrollThumb;
 // Setup
 // ---------------------------------------------------------------------------
 
-pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
+pub fn setup(mut commands: Commands, fonts: Res<UiFont>, locale: Res<LocaleMap>) {
     let font = fonts.0.clone();
 
     // Outer wrapper: flex-row so the scrollbar sits beside the content.
@@ -240,11 +241,15 @@ pub fn setup(mut commands: Commands, fonts: Res<UiFont>) {
     ));
 
     // ── Back button ───────────────────────────────────────────────────────
-    crate::widgets::ButtonBuilder::new("Back", CreditsBackButton, font)
-        .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
-        .font_size(BACK_FONT_SIZE_PX)
-        .margin(BACK_MARGIN_TOP_PX, BACK_MARGIN_BOTTOM_PX)
-        .spawn(&mut commands, column);
+    crate::widgets::ButtonBuilder::new(
+        locale.get("ui.credits.back").to_string(),
+        CreditsBackButton,
+        font,
+    )
+    .padding(BACK_PADDING_H_PX, BACK_PADDING_V_PX)
+    .font_size(BACK_FONT_SIZE_PX)
+    .margin(BACK_MARGIN_TOP_PX, BACK_MARGIN_BOTTOM_PX)
+    .spawn(&mut commands, column);
 }
 
 // ---------------------------------------------------------------------------
