@@ -1,7 +1,9 @@
 use bevy::prelude::{KeyCode, Resource};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::action::Action;
+use crate::serialize::{from_map, to_map};
 
 /// The active keybind map. Query this resource in any system that needs
 /// to check what key is bound to a given action.
@@ -12,9 +14,22 @@ use crate::action::Action;
 ///     if keyboard.just_pressed(bindings.key(Action::Interact)) { ... }
 /// }
 /// ```
-#[derive(Resource, Debug, Clone)]
+#[derive(Resource, Debug, Clone, Serialize, Deserialize)]
+#[serde(into = "HashMap<String, String>", from = "HashMap<String, String>")]
 pub struct Keybinds {
     map: HashMap<Action, KeyCode>,
+}
+
+impl From<Keybinds> for HashMap<String, String> {
+    fn from(value: Keybinds) -> Self {
+        to_map(&value)
+    }
+}
+
+impl From<HashMap<String, String>> for Keybinds {
+    fn from(value: HashMap<String, String>) -> Self {
+        from_map(&value)
+    }
 }
 
 impl Default for Keybinds {

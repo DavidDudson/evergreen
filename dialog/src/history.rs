@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::asset::LoreCategory;
 
@@ -6,7 +7,7 @@ use crate::asset::LoreCategory;
 ///
 /// Only scripts with `lore` metadata are recorded here. Casual conversation
 /// without lore metadata is not stored.
-#[derive(Resource, Debug, Default)]
+#[derive(Resource, Debug, Default, Serialize, Deserialize)]
 pub struct LoreBook {
     pub entries: Vec<LoreEntry>,
 }
@@ -71,7 +72,7 @@ impl LoreBook {
 }
 
 /// A single lore entry representing a script the player has witnessed.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoreEntry {
     /// Stable script identifier from the asset.
     pub script_id: String,

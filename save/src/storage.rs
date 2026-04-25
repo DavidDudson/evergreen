@@ -1,54 +1,109 @@
-const SAVE_KEY: &str = "evergreen.save";
+//! Platform-specific storage backends for the unified save file.
+//!
+//! Implementations:
+//! - [`WasmBackend`] reads/writes `localStorage["evergreen.save"]`
+//! - [`NativeBackend`] reads/writes `./evergreen_saves/evergreen.save.json`
+//!
+//! [`SavePlugin`](crate::SavePlugin) selects the appropriate backend at insert
+//! time based on `cfg(target_arch = "wasm32")`. Systems use the
+//! [`StorageBackend`] trait so they remain platform-agnostic.
 
-pub(crate) fn read() -> Option<String> {
-    read_storage(SAVE_KEY)
+use bevy::prelude::Resource;
+
+pub(crate) const SAVE_KEY: &str = "evergreen.save";
+
+/// Trait abstracting persistent storage so save systems can be platform-agnostic.
+pub trait StorageBackend: Resource {
+    /// Reads the current save blob, or `None` if no save exists or read failed.
+    fn read(&self) -> Option<String>;
+    /// Writes the save blob, logging any failure (does not return an error).
+    fn write(&self, content: &str);
 }
 
-pub(crate) fn write(value: &str) -> Result<(), String> {
-    write_storage(SAVE_KEY, value)
-}
+// ---------------------------------------------------------------------------
+// WASM (browser localStorage)
+// ---------------------------------------------------------------------------
 
-// --- WASM -------------------------------------------------------------------
+/// Stores the save blob in browser `localStorage`.
+#[derive(Resource, Default)]
+pub struct WasmBackend;
 
 #[cfg(target_arch = "wasm32")]
-fn write_storage(key: &str, value: &str) -> Result<(), String> {
-    use wasm_bindgen::JsValue;
-    use web_sys::window;
+impl StorageBackend for WasmBackend {
+    fn read(&self) -> Option<String> {
+        use web_sys::window;
+        window()?.local_storage().ok()??.get_item(SAVE_KEY).ok()?
+    }
 
-    let storage = window()
-        .ok_or("no window")?
-        .local_storage()
-        .map_err(|e| format!("{e:?}"))?
-        .ok_or("no localStorage")?;
+    fn write(&self, content: &str) {
+        use bevy::prelude::warn;
+        use wasm_bindgen::JsValue;
+        use web_sys::window;
 
-    storage
-        .set_item(key, value)
-        .map_err(|e: JsValue| format!("{e:?}"))
+        let result = window()
+            .ok_or_else(|| "no window".to_owned())
+            .and_then(|w| {
+                w.local_storage()
+                    .map_err(|e| format!("{e:?}"))?
+                    .ok_or_else(|| "no localStorage".to_owned())
+            })
+            .and_then(|storage| {
+                storage
+                    .set_item(SAVE_KEY, content)
+                    .map_err(|e: JsValue| format!("{e:?}"))
+            });
+
+        if let Err(e) = result {
+            warn!("Failed to write save to localStorage: {e}");
+        }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl StorageBackend for WasmBackend {
+    fn read(&self) -> Option<String> {
+        None
+    }
+    fn write(&self, _content: &str) {}
+}
+
+// ---------------------------------------------------------------------------
+// Native (filesystem)
+// ---------------------------------------------------------------------------
+
+/// Stores the save blob at `./evergreen_saves/evergreen.save.json`.
+#[derive(Resource, Default)]
+pub struct NativeBackend;
+
+#[cfg(not(target_arch = "wasm32"))]
+const NATIVE_SAVE_PATH: &str = "./evergreen_saves/evergreen.save.json";
+
+#[cfg(not(target_arch = "wasm32"))]
+impl StorageBackend for NativeBackend {
+    fn read(&self) -> Option<String> {
+        std::fs::read_to_string(NATIVE_SAVE_PATH).ok()
+    }
+
+    fn write(&self, content: &str) {
+        use bevy::prelude::warn;
+        use std::path::Path;
+        let path = Path::new(NATIVE_SAVE_PATH);
+        let result = path
+            .parent()
+            .ok_or_else(|| "save path has no parent".to_owned())
+            .and_then(|parent| std::fs::create_dir_all(parent).map_err(|e| e.to_string()))
+            .and_then(|()| std::fs::write(path, content).map_err(|e| e.to_string()));
+
+        if let Err(e) = result {
+            warn!("Failed to write save file: {e}");
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
-fn read_storage(key: &str) -> Option<String> {
-    use web_sys::window;
-
-    window()?.local_storage().ok()??.get_item(key).ok()?
-}
-
-// --- Native (dev / test) ----------------------------------------------------
-
-#[cfg(not(target_arch = "wasm32"))]
-fn write_storage(_key: &str, value: &str) -> Result<(), String> {
-    use std::fs;
-    let path = native_path();
-    fs::create_dir_all(path.parent().expect("path has parent")).map_err(|e| e.to_string())?;
-    fs::write(&path, value).map_err(|e| e.to_string())
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn read_storage(_key: &str) -> Option<String> {
-    std::fs::read_to_string(native_path()).ok()
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-fn native_path() -> std::path::PathBuf {
-    std::path::PathBuf::from("./evergreen_saves/evergreen.save.json")
+impl StorageBackend for NativeBackend {
+    fn read(&self) -> Option<String> {
+        None
+    }
+    fn write(&self, _content: &str) {}
 }

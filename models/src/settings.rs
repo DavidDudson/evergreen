@@ -1,16 +1,18 @@
 use bevy::prelude::Resource;
+use serde::{Deserialize, Serialize};
 
 /// Persistent user preferences: audio volumes and display options.
 ///
 /// Stored by the `save` crate; apply side-effects (window mode, audio bus
 /// gain) via the sync systems in `ui`.
-#[derive(Resource, Debug, Clone)]
+#[derive(Resource, Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct GameSettings {
-    /// Master volume 0–10.
+    /// Master volume 0-10.
     pub master_volume: u8,
-    /// Background music volume 0–10.
+    /// Background music volume 0-10.
     pub bgm_volume: u8,
-    /// Sound effects volume 0–10.
+    /// Sound effects volume 0-10.
     pub sfx_volume: u8,
     /// Whether the window is in borderless-fullscreen mode.
     pub fullscreen: bool,
