@@ -52,12 +52,21 @@ pub fn spawn_area_decorations(
     let deco_seed = area_seed.wrapping_add(DECORATION_SEED_SALT);
 
     // Collect candidate ground tiles (inset from edges where trees dominate).
-    // Use the tag system to broaden eligibility beyond just `Grass`.
+    // Use the tag system to broaden eligibility beyond just `Grass`. Skip any
+    // tile overlaid with a water tile, sand, or pier so decorations don't
+    // sprout out of the ocean / off the end of a pier.
     let mut candidates: Vec<(u32, u32)> = Vec::new();
     for x in EDGE_INSET..(MAP_WIDTH - EDGE_INSET) {
         for y in EDGE_INSET..(MAP_HEIGHT - EDGE_INSET) {
             let xu = u32::from(x);
             let yu = u32::from(y);
+            let local = bevy::math::UVec2::new(xu, yu);
+            if world.water.get(area_pos, local).is_some()
+                || world.water.has_sand(area_pos, local)
+                || world.water.has_pier(area_pos, local)
+            {
+                continue;
+            }
             if area
                 .terrain_at(xu, yu)
                 .is_some_and(|t| t.terrain_tags().has(models::tags::tag::GROUND))

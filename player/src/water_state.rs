@@ -25,8 +25,8 @@ pub const SHALLOW_SPEED_MULT: f32 = 0.5;
 const SPLASH_INTERVAL_S: f32 = 0.18;
 /// How long a splash sprite lives before despawning.
 const SPLASH_LIFETIME_S: f32 = 0.4;
-const SPLASH_SIZE_PX: f32 = 10.0;
-const SPLASH_SPRITE: &str = "sprites/scenery/water_flora/lily_pad.webp";
+const SPLASH_SIZE_PX: f32 = 14.0;
+const SPLASH_SPRITE: &str = "sprites/effects/splash.webp";
 
 /// Whether the player's center tile is shallow water.
 #[derive(Resource, Default, Debug, Clone, Copy)]
@@ -87,20 +87,10 @@ fn locate_player_tile(pos: Vec2, world: &WorldMap) -> Option<(IVec2, UVec2)> {
     Some((area, UVec2::new(ux, uy)))
 }
 
-/// Tints the player sprite dark while wading -- a "fish-shadow" silhouette.
-pub fn apply_submerged_tint(
-    state: Res<PlayerWaterState>,
-    mut player: Query<&mut Sprite, With<Player>>,
-) {
-    let Ok(mut sprite) = player.single_mut() else {
-        return;
-    };
-    sprite.color = if state.on_shallow {
-        palette::FISH_SHADOW_TINT
-    } else {
-        Color::WHITE
-    };
-}
+// Player remains visible above the water surface while wading -- only
+// creatures (fish shadows, etc.) render submerged. The previous
+// `apply_submerged_tint` system was removed; speed and splash effects
+// still convey "in water" without obscuring the player.
 
 /// Splash spawn cadence -- fires while the player moves through shallow water.
 #[derive(Resource, Default)]

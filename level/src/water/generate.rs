@@ -6,7 +6,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use bevy::math::{IVec2, UVec2};
 
-use crate::area::{MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{Direction, MAP_HEIGHT, MAP_WIDTH};
 use crate::terrain::Terrain;
 use crate::world::WorldMap;
 
@@ -57,7 +57,8 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
     let mut rng = seed.wrapping_mul(0xA5A5_5A5A_A5A5_5A5A) ^ 0xDEAD_BEEF_CAFE_BABE;
 
     // Lakes first (they grab the biggest area budgets; per-area bodies fill
-    // remaining grass). Seed in greenwood or neutral areas.
+    // remaining grass). Seed in greenwood or neutral areas, never in coastal
+    // areas (those become ocean).
     for _ in 0..LAKE_SEED_COUNT {
         rng = lcg(rng);
         if let Some(seed_key) = pick_seed_tile(
@@ -76,11 +77,15 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
         }
     }
 
-    // Per-area ponds + hot springs.
+    // Per-area ponds + hot springs. Skip coastal areas so freshwater bodies
+    // don't bleed into the ocean band.
     for pos in world.area_positions() {
         let Some(area) = world.get_area(pos) else {
             continue;
         };
+        if is_coastal_area(world, pos) {
+            continue;
+        }
         let align = area.alignment;
 
         rng = lcg(rng);
@@ -214,6 +219,7 @@ fn pick_seed_tile(
     let candidates: Vec<IVec2> = world
         .area_positions()
         .into_iter()
+        .filter(|p| !is_coastal_area(world, *p))
         .filter(|p| {
             world
                 .get_area(*p)
@@ -231,6 +237,23 @@ fn pick_seed_tile(
 // ---------------------------------------------------------------------------
 // RNG (also used by sibling river / ocean modules)
 // ---------------------------------------------------------------------------
+
+/// True when `pos` (or any cardinal neighbour) lies on the world edge of an
+/// ocean-having world. Coastal areas are reserved for the ocean band; ponds,
+/// hot springs, and lakes are excluded so freshwater never abuts ocean.
+fn is_coastal_area(world: &WorldMap, pos: IVec2) -> bool {
+    if !world.has_ocean {
+        return false;
+    }
+    [
+        Direction::North,
+        Direction::South,
+        Direction::East,
+        Direction::West,
+    ]
+    .iter()
+    .any(|d| world.get_area(pos + d.grid_offset()).is_none())
+}
 
 pub(super) fn lcg(state: u64) -> u64 {
     state

@@ -75,12 +75,20 @@ pub fn spawn_area_grass(
 
     let grass_seed = area_seed.wrapping_add(GRASS_SEED_SALT);
 
-    // Collect candidate grass tiles (inset from edges).
+    // Collect candidate grass tiles (inset from edges). Skip any tile that
+    // sits under water / sand / pier so tufts don't sprout from the ocean.
     let mut candidates: Vec<(u32, u32)> = Vec::new();
     for x in EDGE_INSET..(MAP_WIDTH - EDGE_INSET) {
         for y in EDGE_INSET..(MAP_HEIGHT - EDGE_INSET) {
             let xu = u32::from(x);
             let yu = u32::from(y);
+            let local = bevy::math::UVec2::new(xu, yu);
+            if world.water.get(area_pos, local).is_some()
+                || world.water.has_sand(area_pos, local)
+                || world.water.has_pier(area_pos, local)
+            {
+                continue;
+            }
             if area.terrain_at(xu, yu) == Some(Terrain::Grass) {
                 candidates.push((xu, yu));
             }

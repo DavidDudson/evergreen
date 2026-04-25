@@ -166,13 +166,23 @@ fn spawn_pier_tiles(
     base_offset_y: f32,
     tile_px: f32,
 ) {
-    let pier_set = wang.get(crate::wang::PIER_OCEAN);
+    let pier_ocean = wang.get(crate::wang::PIER_OCEAN);
+    let pier_sand = wang.get(crate::wang::PIER_SAND);
     for y in 0..u32::from(MAP_HEIGHT) {
         for x in 0..u32::from(MAP_WIDTH) {
             let mask = pier_mask(world, area_pos, x, y);
             if mask == 0 {
                 continue;
             }
+            // Pick PIER_SAND over land/sand cells, PIER_OCEAN over ocean.
+            // Decision per-tile by what sits under the pier here.
+            let local = UVec2::new(x, y);
+            let over_sand = world.water.has_sand(area_pos, local)
+                || !matches!(
+                    world.water.get(area_pos, local),
+                    Some(crate::water::WaterKind::Ocean)
+                );
+            let pier_set = if over_sand { pier_sand } else { pier_ocean };
             let world_x =
                 base_offset_x + f32::from(u16::try_from(x).unwrap_or(0)) * tile_px + tile_px / 2.0;
             let world_y =

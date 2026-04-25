@@ -9,8 +9,7 @@ use crate::movement;
 use crate::rustle;
 use crate::spawning;
 use crate::water_state::{
-    apply_submerged_tint, spawn_splashes, tick_splashes, update_player_water_state,
-    PlayerWaterState, SplashTimer,
+    spawn_splashes, tick_splashes, update_player_water_state, PlayerWaterState, SplashTimer,
 };
 use crate::y_sort;
 
@@ -36,7 +35,6 @@ impl Plugin for PlayerPlugin {
                     exit_check::check_exit_overlap,
                     y_sort::update_player_z,
                     hop::apply_hop_bob,
-                    apply_submerged_tint,
                     spawn_splashes,
                     tick_splashes,
                 )

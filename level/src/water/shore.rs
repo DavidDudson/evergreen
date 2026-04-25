@@ -38,6 +38,8 @@ const WATER_Z_OFFSET: f32 = 0.4;
 const WATER_Z_PER_MASK: f32 = 0.001;
 /// Z-offset for stepping stones above the water.
 const STONE_Z_OFFSET: f32 = 0.7;
+/// Alignment threshold above which ponds use the darkwood tileset.
+const POND_DARKWOOD_ALIGNMENT_MIN: u8 = 70;
 
 /// Marker for stepping-stone sprites. Player systems use this to trigger the
 /// hop-bob animation while a player is standing on a stone.
@@ -59,11 +61,20 @@ pub fn spawn_area_water(
     let base_offset_y = base.y - MAP_H_PX / 2.0;
     let tile_px = f32::from(TILE_SIZE_PX);
 
+    // Pick pond tileset by host area alignment so darkwood ponds get a dark
+    // mossy edge instead of the bright greenwood grass border.
+    let area_alignment = world.get_area(area_pos).map_or(50, |a| a.alignment);
+    let pond_tileset = if area_alignment >= POND_DARKWOOD_ALIGNMENT_MIN {
+        wang_sets.get(wang::POND_DARKWOOD)
+    } else {
+        wang_sets.get(wang::POND_GRASS)
+    };
+
     // Each kind family uses one wang tileset and one same-kind predicate.
     type Family<'a> = (&'a wang::WangTileset, fn(WaterKind) -> bool, WaterKind);
     let families: [Family; 5] = [
         (
-            wang_sets.get(wang::POND_GRASS),
+            pond_tileset,
             |k| matches!(k, WaterKind::Plain | WaterKind::Lake),
             WaterKind::Plain,
         ),
@@ -157,7 +168,13 @@ pub fn spawn_area_water(
                 let world_y = base_offset_y
                     + f32::from(u16::try_from(y).unwrap_or(0)) * tile_px
                     + tile_px / 2.0;
-                commands.spawn((
+                let local = UVec2::new(x, y);
+                let has_stone = world.water.has_stone(area_pos, local);
+                let has_pier = world.water.has_pier(area_pos, local);
+                let is_deep_center = world.water.is_deep(area_pos, local)
+                    && matches!(world.water.get(area_pos, local), Some(WaterKind::Ocean))
+                    && depth_mask == 0b1111;
+                let mut entity = commands.spawn((
                     WaterTile {
                         kind: WaterKind::Ocean,
                     },
@@ -178,6 +195,12 @@ pub fn spawn_area_water(
                         Layer::Tilemap.z_f32() + WATER_Z_OFFSET - 0.05,
                     ),
                 ));
+                if is_deep_center && !has_stone && !has_pier {
+                    entity.insert(SceneryCollider {
+                        half_extents: Vec2::splat(WATER_COLLIDER_HALF_PX),
+                        center_offset: Vec2::ZERO,
+                    });
+                }
             }
 
             // River depth layer: same idea for river kinds.

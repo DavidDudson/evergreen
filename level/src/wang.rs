@@ -19,8 +19,10 @@ pub const OCEAN_SAND: &str = "ocean_sand";
 pub const OCEAN_DEEP_SHALLOW: &str = "ocean_deep_shallow";
 pub const RIVER_DEEP_SHALLOW: &str = "river_deep_shallow";
 pub const PIER_OCEAN: &str = "pier_ocean";
+pub const PIER_SAND: &str = "pier_sand";
 pub const SAND_GRASS: &str = "sand_grass";
 pub const POND_GRASS: &str = "pond_grass";
+pub const POND_DARKWOOD: &str = "pond_darkwood";
 pub const HOTSPRING_GRASS: &str = "hotspring_grass";
 pub const RIVER_GRASS: &str = "river_grass";
 pub const WATERFALL_GRASS: &str = "waterfall_grass";
@@ -132,8 +134,10 @@ const OCEAN_DEEP_SHALLOW_JSON: &[u8] =
 const RIVER_DEEP_SHALLOW_JSON: &[u8] =
     include_bytes!("../../assets/tilesets/river_deep_shallow.json");
 const PIER_OCEAN_JSON: &[u8] = include_bytes!("../../assets/tilesets/pier_ocean.json");
+const PIER_SAND_JSON: &[u8] = include_bytes!("../../assets/tilesets/pier_sand.json");
 const SAND_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/sand_grass.json");
 const POND_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/pond_grass.json");
+const POND_DARKWOOD_JSON: &[u8] = include_bytes!("../../assets/tilesets/pond_darkwood.json");
 const HOTSPRING_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/hotspring_grass.json");
 const RIVER_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/river_grass.json");
 const WATERFALL_GRASS_JSON: &[u8] = include_bytes!("../../assets/tilesets/waterfall_grass.json");
@@ -151,8 +155,14 @@ const TILESET_DEFS: &[(&str, &str, &[u8])] = &[
         RIVER_DEEP_SHALLOW_JSON,
     ),
     (PIER_OCEAN, "tilesets/pier_ocean.webp", PIER_OCEAN_JSON),
+    (PIER_SAND, "tilesets/pier_sand.webp", PIER_SAND_JSON),
     (SAND_GRASS, "tilesets/sand_grass.webp", SAND_GRASS_JSON),
     (POND_GRASS, "tilesets/pond_grass.webp", POND_GRASS_JSON),
+    (
+        POND_DARKWOOD,
+        "tilesets/pond_darkwood.webp",
+        POND_DARKWOOD_JSON,
+    ),
     (
         HOTSPRING_GRASS,
         "tilesets/hotspring_grass.webp",
