@@ -14,9 +14,14 @@ use crate::world::WorldMap;
 use super::tiles::{WaterKind, WaterMap};
 
 /// Ocean band depth (tiles) along the outermost edge of an edge-facing area.
-const OCEAN_DEPTH: u32 = 4;
+const OCEAN_DEPTH: i32 = 4;
 /// Sand band depth (tiles) inland of the ocean band.
-const SAND_DEPTH: u32 = 2;
+const SAND_DEPTH: i32 = 2;
+/// How far the ocean / sand band thresholds may jitter from their nominal
+/// value (in tiles) to give an organic, wavy shoreline. Sampled per
+/// shoreline-tangent coordinate so the boundary varies along the shore but
+/// remains continuous across area seams.
+const SHORE_JITTER_TILES: i32 = 2;
 
 pub(super) fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
     let width = u32::from(MAP_WIDTH);
@@ -32,18 +37,23 @@ pub(super) fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
         }
         for y in 0..height {
             for x in 0..width {
-                let dist = edge_distance_to_missing(x, y, width, height, &missing);
-                let Some(dist) = dist else {
+                let Some((dist, dir)) = closest_missing(x, y, width, height, &missing) else {
                     continue;
                 };
+                // Jitter ocean and sand thresholds along the shoreline tangent
+                // (so neighbouring tiles share noise) using world-absolute
+                // coords, keeping the boundary continuous across area seams.
+                let tangent = shoreline_tangent(pos, x, y, dir);
+                let ocean_thresh = OCEAN_DEPTH + jitter(tangent, 0xA1);
+                let sand_thresh = ocean_thresh + SAND_DEPTH + jitter(tangent, 0xB7);
+                let dist_i = i32::try_from(dist).unwrap_or(i32::MAX);
                 let local = UVec2::new(x, y);
                 let key = (pos, local);
-                if dist < OCEAN_DEPTH {
-                    // Ocean tiles overwrite anything except stepping stones.
+                if dist_i < ocean_thresh {
                     if !map.stones.contains(&key) {
                         map.tiles.insert(key, WaterKind::Ocean);
                     }
-                } else if dist < OCEAN_DEPTH + SAND_DEPTH && !map.tiles.contains_key(&key) {
+                } else if dist_i < sand_thresh && !map.tiles.contains_key(&key) {
                     map.sand.insert(key);
                 }
             }
@@ -78,22 +88,56 @@ fn missing_neighbours(world: &WorldMap, pos: IVec2) -> Vec<Direction> {
     .collect()
 }
 
-/// Shortest distance (tiles) from `(x,y)` to the nearest edge that faces a
-/// missing neighbour. Returns `None` when there's no such edge.
-fn edge_distance_to_missing(
+/// Shortest distance (tiles) from `(x,y)` to any missing-neighbour edge,
+/// along with the direction of that closest edge. The direction lets the
+/// caller compute a shoreline-tangent coordinate for noise sampling.
+fn closest_missing(
     x: u32,
     y: u32,
     width: u32,
     height: u32,
     missing: &[Direction],
-) -> Option<u32> {
+) -> Option<(u32, Direction)> {
     missing
         .iter()
-        .map(|dir| match dir {
-            Direction::North => height.saturating_sub(1).saturating_sub(y),
-            Direction::South => y,
-            Direction::East => width.saturating_sub(1).saturating_sub(x),
-            Direction::West => x,
+        .map(|dir| {
+            let d = match dir {
+                Direction::North => height.saturating_sub(1).saturating_sub(y),
+                Direction::South => y,
+                Direction::East => width.saturating_sub(1).saturating_sub(x),
+                Direction::West => x,
+            };
+            (d, *dir)
         })
-        .min()
+        .min_by_key(|(d, _)| *d)
+}
+
+/// World-absolute coordinate along the shoreline tangent. For a north-facing
+/// missing edge the tangent runs east-west, so the tangent is the absolute
+/// world-x. East/west missing edges use absolute world-y. This makes the
+/// noise pattern continuous across area seams and yields a wavy shoreline
+/// rather than an aligned-per-area one.
+fn shoreline_tangent(area_pos: IVec2, x: u32, y: u32, dir: Direction) -> i32 {
+    let map_w = i32::from(MAP_WIDTH);
+    let map_h = i32::from(MAP_HEIGHT);
+    let lx = i32::try_from(x).unwrap_or(0);
+    let ly = i32::try_from(y).unwrap_or(0);
+    match dir {
+        Direction::North | Direction::South => area_pos.x * map_w + lx,
+        Direction::East | Direction::West => area_pos.y * map_h + ly,
+    }
+}
+
+/// Deterministic noise in `[-SHORE_JITTER_TILES, +SHORE_JITTER_TILES]`.
+/// `salt` lets independent boundaries (ocean vs sand) jitter on
+/// uncorrelated patterns.
+fn jitter(tangent: i32, salt: u32) -> i32 {
+    #[allow(clippy::as_conversions)] // i32 bit-pattern reuse for hashing
+    let t = tangent as u32;
+    let mut h = t.wrapping_mul(2_654_435_761).wrapping_add(salt);
+    h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
+    h ^= h >> 16;
+    let modulo = u32::try_from(SHORE_JITTER_TILES * 2 + 1).unwrap_or(1);
+    let r = h % modulo;
+    i32::try_from(r).unwrap_or(0) - SHORE_JITTER_TILES
 }
