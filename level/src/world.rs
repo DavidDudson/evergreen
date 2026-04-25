@@ -27,10 +27,12 @@ const CITY_ALIGNMENT_MAX: u8 = 25;
 /// Map sizing formula bounds. `MAP_AREAS_AT_MIN` areas at alignment 1,
 /// `MAP_AREAS_AT_HI_ALIGN` areas at alignment `MAP_SIZE_PEAK_ALIGNMENT`,
 /// clamped at `MAP_AREAS_HARD_CAP` for higher alignments.
-const MAP_AREAS_AT_MIN: usize = 5;
+pub const MAP_AREAS_AT_MIN: usize = 5;
 const MAP_AREAS_AT_HI_ALIGN: usize = 50;
 const MAP_SIZE_PEAK_ALIGNMENT: u8 = 30;
 const MAP_AREAS_HARD_CAP: usize = 60;
+/// Maximum number of regeneration attempts before accepting a small map.
+const GENERATE_RETRY_CAP: usize = 10;
 
 /// Default alignment for the bootstrap (root) map: light greenwood. The
 /// player can portal to other biomes but the entry point sits in greenwood.
@@ -117,7 +119,24 @@ impl WorldMap {
 
     /// Generate a map with the specified id, seed and alignment. Used by
     /// phase 2 portal-target generation as well.
+    ///
+    /// Retries with a re-derived seed when the resulting graph has fewer
+    /// than [`MAP_AREAS_AT_MIN`] areas (a degenerate single-room layout).
+    /// Caps at [`GENERATE_RETRY_CAP`] attempts; after that the smallest
+    /// map is accepted to avoid infinite loops.
     pub fn generate(id: MapId, seed: u64, alignment: AreaAlignment) -> Self {
+        let mut attempt_seed = seed;
+        for _ in 0..GENERATE_RETRY_CAP {
+            let candidate = Self::try_generate(id, attempt_seed, alignment);
+            if candidate.areas.len() >= MAP_AREAS_AT_MIN {
+                return candidate;
+            }
+            attempt_seed = lcg(attempt_seed.wrapping_add(0x_F00D_BABE));
+        }
+        Self::try_generate(id, attempt_seed, alignment)
+    }
+
+    fn try_generate(id: MapId, seed: u64, alignment: AreaAlignment) -> Self {
         let target = map_area_count_target(alignment);
 
         // Shuffle NPC pool deterministically from seed.

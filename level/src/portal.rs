@@ -113,6 +113,43 @@ pub struct PortalEntity {
 #[derive(Component, Debug, Clone, Copy)]
 pub struct PortalNpc;
 
+/// Bloody Mary visible inside the mirror portal -- a small animated sprite
+/// child of the mirror entity. Cycles 4 frames of `breathing-idle`.
+#[derive(Component, Debug)]
+pub struct MirrorMary {
+    pub timer: Timer,
+    pub frame: usize,
+}
+
+impl Default for MirrorMary {
+    fn default() -> Self {
+        Self {
+            timer: Timer::from_seconds(MIRROR_MARY_FRAME_SECS, TimerMode::Repeating),
+            frame: 0,
+        }
+    }
+}
+
+/// Frame count for the breathing-idle south animation.
+pub const MIRROR_MARY_FRAME_COUNT: usize = 4;
+/// Time per frame at the chosen idle pace.
+const MIRROR_MARY_FRAME_SECS: f32 = 0.18;
+
+/// Tick the mirror Mary animation -- advance the frame index every
+/// [`MIRROR_MARY_FRAME_SECS`] seconds.
+pub fn animate_mirror_mary(time: Res<Time>, mut q: Query<(&mut Sprite, &mut MirrorMary)>) {
+    for (mut sprite, mut mary) in &mut q {
+        mary.timer.tick(time.delta());
+        if !mary.timer.just_finished() {
+            continue;
+        }
+        mary.frame = (mary.frame + 1) % MIRROR_MARY_FRAME_COUNT;
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            atlas.index = mary.frame;
+        }
+    }
+}
+
 /// Message fired when the player overlaps a portal. The transition system
 /// regenerates the world map at the portal's target alignment.
 #[derive(Message, Clone, Copy)]

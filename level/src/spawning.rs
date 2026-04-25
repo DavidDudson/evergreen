@@ -242,7 +242,7 @@ fn ensure_area_spawned(
         area,
         area_pos,
     );
-    spawn_portal_for_area(commands, asset_server, world, area_pos);
+    spawn_portal_for_area(commands, asset_server, atlas_layouts, world, area_pos);
     spawned.0.insert(area_pos);
 }
 
@@ -252,6 +252,7 @@ const PORTAL_Z_BIAS: f32 = 0.5;
 fn spawn_portal_for_area(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    atlas_layouts: &mut Assets<TextureAtlasLayout>,
     world: &WorldMap,
     area_pos: IVec2,
 ) {
@@ -269,16 +270,51 @@ fn spawn_portal_for_area(
     let world_y = base.y - MAP_H_PX / 2.0
         + f32::from(u16::try_from(portal.tile_y).unwrap_or(0)) * tile_px
         + tile_px / 2.0;
-    commands.spawn((
-        crate::portal::PortalEntity { kind: portal.kind },
-        Sprite {
-            image: asset_server.load(portal.kind.sprite_path()),
-            custom_size: Some(Vec2::splat(PORTAL_SPRITE_SIZE_PX)),
-            ..default()
-        },
-        Transform::from_xyz(world_x, world_y, Layer::World.z_f32() + PORTAL_Z_BIAS),
-    ));
+    let parent = commands
+        .spawn((
+            crate::portal::PortalEntity { kind: portal.kind },
+            Sprite {
+                image: asset_server.load(portal.kind.sprite_path()),
+                custom_size: Some(Vec2::splat(PORTAL_SPRITE_SIZE_PX)),
+                ..default()
+            },
+            Transform::from_xyz(world_x, world_y, Layer::World.z_f32() + PORTAL_Z_BIAS),
+        ))
+        .id();
+
+    // Mirror portal: spawn Bloody Mary breathing-idle inside the glass as a
+    // child of the mirror sprite. Slightly recessed in z so the silver
+    // frame paints on top.
+    if matches!(portal.kind, crate::portal::PortalKind::Mirror) {
+        let layout = atlas_layouts.add(TextureAtlasLayout::from_grid(
+            UVec2::splat(MIRROR_MARY_FRAME_PX),
+            u32::try_from(crate::portal::MIRROR_MARY_FRAME_COUNT).unwrap_or(4),
+            1,
+            None,
+            None,
+        ));
+        commands.spawn((
+            crate::portal::MirrorMary::default(),
+            Sprite {
+                image: asset_server.load("sprites/portals/mirror_mary_breathing.webp"),
+                texture_atlas: Some(TextureAtlas { layout, index: 0 }),
+                custom_size: Some(Vec2::splat(MIRROR_MARY_DISPLAY_PX)),
+                ..default()
+            },
+            Transform::from_xyz(0.0, MIRROR_MARY_OFFSET_Y_PX, 0.01),
+            ChildOf(parent),
+        ));
+    }
 }
+
+/// Mirror's Mary animation frame size (square pixels). Each frame is 68x68.
+const MIRROR_MARY_FRAME_PX: u32 = 68;
+/// Rendered display size for Mary inside the mirror -- slightly smaller than
+/// the mirror itself so the silver frame still shows.
+const MIRROR_MARY_DISPLAY_PX: f32 = 22.0;
+/// Vertical offset within the mirror frame so Mary sits in the glass area
+/// (mirror center is the geometric centre, glass is slightly above).
+const MIRROR_MARY_OFFSET_Y_PX: f32 = 2.0;
 
 fn spawn_area_tilemap(
     commands: &mut Commands,

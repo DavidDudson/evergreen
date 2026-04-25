@@ -94,7 +94,8 @@ impl Plugin for LevelPlugin {
             )
             .add_systems(
                 Update,
-                portal::enter_map_transition.run_if(in_state(GameState::Playing)),
+                (portal::enter_map_transition, portal::animate_mirror_mary)
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
                 OnEnter(GameState::MapTransition),
