@@ -484,3 +484,19 @@ pub fn handle_topic_buttons(
         }
     }
 }
+
+pub struct LoreScreen;
+
+impl crate::screen::ScreenSetup for LoreScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::LorePage), setup)
+            .add_systems(OnExit(GameState::LorePage), teardown)
+            .add_systems(
+                Update,
+                (handle_back_button, handle_category_buttons, handle_topic_buttons)
+                    .run_if(in_state(GameState::LorePage)),
+            );
+    }
+}

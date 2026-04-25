@@ -416,3 +416,21 @@ fn spawn_divider(commands: &mut Commands, parent: Entity) {
         ChildOf(parent),
     ));
 }
+
+pub struct CreditsScreenSetup;
+
+impl crate::screen::ScreenSetup for CreditsScreenSetup {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::Credits), setup)
+            .add_systems(
+                OnExit(GameState::Credits),
+                crate::despawn::despawn_all::<CreditsScreen>,
+            )
+            .add_systems(
+                Update,
+                (handle_back, sync_scrollbar).run_if(in_state(GameState::Credits)),
+            );
+    }
+}

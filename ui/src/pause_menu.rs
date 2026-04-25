@@ -153,3 +153,26 @@ pub fn handle_quit_pending(
     }
 }
 
+
+pub struct PauseScreen;
+
+impl crate::screen::ScreenSetup for PauseScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::Paused), setup)
+            .add_systems(
+                OnExit(GameState::Paused),
+                crate::despawn::despawn_all::<PauseMenu>,
+            )
+            .add_systems(
+                Update,
+                (handle_resume, handle_settings_button, handle_quit_to_menu_button)
+                    .run_if(in_state(GameState::Paused)),
+            )
+            .add_systems(
+                Update,
+                handle_quit_pending.run_if(in_state(GameState::Playing)),
+            );
+    }
+}

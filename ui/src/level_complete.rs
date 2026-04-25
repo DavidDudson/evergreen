@@ -72,3 +72,21 @@ pub fn handle_play_again(
         }
     }
 }
+
+pub struct LevelCompleteSetup;
+
+impl crate::screen::ScreenSetup for LevelCompleteSetup {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::LevelComplete), setup)
+            .add_systems(
+                OnExit(GameState::LevelComplete),
+                crate::despawn::despawn_all::<LevelCompleteScreen>,
+            )
+            .add_systems(
+                Update,
+                handle_play_again.run_if(in_state(GameState::LevelComplete)),
+            );
+    }
+}

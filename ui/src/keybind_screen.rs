@@ -448,3 +448,30 @@ fn spawn_action_row(
             },
         ));
 }
+
+pub struct KeybindScreenSetup;
+
+impl crate::screen::ScreenSetup for KeybindScreenSetup {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::KeybindConfig), setup)
+            .add_systems(
+                OnExit(GameState::KeybindConfig),
+                crate::despawn::despawn_all::<KeybindScreen>,
+            )
+            .add_systems(
+                Update,
+                (
+                    handle_key_buttons,
+                    handle_reset_buttons,
+                    handle_reset_all,
+                    handle_back,
+                    refresh_key_labels,
+                    sync_all_labels,
+                    sync_remap_overlay,
+                )
+                    .run_if(in_state(GameState::KeybindConfig)),
+            );
+    }
+}

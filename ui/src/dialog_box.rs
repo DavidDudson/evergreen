@@ -388,3 +388,27 @@ pub fn handle_choice_keyboard(
         }
     }
 }
+
+pub struct DialogBoxScreen;
+
+impl crate::screen::ScreenSetup for DialogBoxScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::Dialogue), setup)
+            .add_systems(
+                OnExit(GameState::Dialogue),
+                crate::despawn::despawn_all::<DialogBox>,
+            )
+            .add_systems(
+                Update,
+                (
+                    on_line_ready,
+                    on_choices_ready,
+                    handle_choice_interaction,
+                    handle_choice_keyboard,
+                )
+                    .run_if(in_state(GameState::Dialogue)),
+            );
+    }
+}

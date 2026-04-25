@@ -229,3 +229,30 @@ fn faction_display(faction: AlignmentFaction) -> (&'static str, Color) {
         AlignmentFaction::Cities => ("Cities", palette::ALIGN_CITIES),
     }
 }
+
+pub struct HudScreen;
+
+impl crate::screen::ScreenSetup for HudScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::{should_despawn_world, GameState};
+        app.add_systems(
+            OnEnter(GameState::Playing),
+            (setup, setup_alignment_bars, crate::minimap::setup),
+        )
+        .add_systems(
+            OnExit(GameState::Playing),
+            (
+                crate::despawn::despawn_all::<Hud>,
+                crate::despawn::despawn_all::<AlignmentBars>,
+                crate::minimap::despawn,
+            )
+                .run_if(should_despawn_world),
+        )
+        .add_systems(
+            Update,
+            (sync_petals, sync_alignment_bars, crate::minimap::refresh)
+                .run_if(in_state(GameState::Playing)),
+        );
+    }
+}

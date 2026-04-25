@@ -153,3 +153,18 @@ pub fn button_system(
             next_state.set(GameState::Settings);
         });
 }
+
+pub struct MainMenuScreen;
+
+impl crate::screen::ScreenSetup for MainMenuScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::MainMenu), setup)
+            .add_systems(
+                OnExit(GameState::MainMenu),
+                crate::despawn::despawn_all::<MainMenu>,
+            )
+            .add_systems(Update, button_system);
+    }
+}

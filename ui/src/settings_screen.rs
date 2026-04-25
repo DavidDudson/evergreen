@@ -626,3 +626,32 @@ fn spawn_nav_btn(
         .colors(bg, theme::BUTTON_TEXT, theme::ACCENT)
         .spawn(commands, parent);
 }
+
+pub struct SettingsScreenSetup;
+
+impl crate::screen::ScreenSetup for SettingsScreenSetup {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.init_resource::<SettingsOrigin>();
+        app.add_systems(OnEnter(GameState::Settings), setup)
+            .add_systems(
+                OnExit(GameState::Settings),
+                crate::despawn::despawn_all::<SettingsScreen>,
+            )
+            .add_systems(
+                Update,
+                (
+                    handle_volume_buttons,
+                    handle_fullscreen_button,
+                    handle_lang_buttons,
+                    handle_keybinds_nav,
+                    handle_reset,
+                    handle_back,
+                    sync_displays,
+                )
+                    .run_if(in_state(GameState::Settings)),
+            );
+        app.add_systems(Update, apply_fullscreen);
+    }
+}

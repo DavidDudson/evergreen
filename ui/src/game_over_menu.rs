@@ -17,3 +17,17 @@ pub fn setup(mut commands: Commands, locale: Res<LocaleMap>) {
         },
     ));
 }
+
+pub struct GameOverScreen;
+
+impl crate::screen::ScreenSetup for GameOverScreen {
+    fn register(app: &mut bevy::prelude::App) {
+        use bevy::prelude::*;
+        use models::game_states::GameState;
+        app.add_systems(OnEnter(GameState::GameOver), setup)
+            .add_systems(
+                OnExit(GameState::GameOver),
+                crate::despawn::despawn_all::<GameOverMenu>,
+            );
+    }
+}

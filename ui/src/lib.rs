@@ -13,6 +13,7 @@ mod main_menu;
 mod minimap;
 mod pause_menu;
 pub mod plugin;
+pub mod screen;
 mod settings_screen;
 pub mod theme;
 pub mod widgets;
