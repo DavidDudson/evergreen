@@ -4,14 +4,15 @@ use models::game_states::GameState;
 use models::settings::GameSettings;
 
 use crate::asset::{DialogueScript, DialogueScriptLoader};
-use crate::barks::tick_barks;
+use crate::barks::{tick_barks, BarkSelector};
 use crate::events::{
     BarkFired, ChoiceMade, ChoicesReady, DialogueEnded, DialogueLineReady, StartDialogue,
 };
 use crate::flags::DialogueFlags;
 use crate::history::LoreBook;
 use crate::locale::{
-    sync_language, sync_locale, ActiveLocale, LocaleAsset, LocaleAssetLoader, LocaleMap,
+    sync_fallback_locale, sync_language, sync_locale, ActiveLocale, FallbackLocale, LocaleAsset,
+    LocaleAssetLoader, LocaleMap, DEFAULT_LOCALE_CODE,
 };
 use crate::runner::{
     advance_runner, detect_interact_input, detect_interact_range, handle_choice, on_dialogue_ended,
@@ -34,7 +35,8 @@ impl Plugin for DialogPlugin {
             .init_resource::<LocaleMap>()
             .init_resource::<DialogueRunner>()
             .init_resource::<DialogueTarget>()
-            .init_resource::<PlayerAlignment>();
+            .init_resource::<PlayerAlignment>()
+            .init_resource::<BarkSelector>();
 
         // Messages
         app.add_message::<StartDialogue>()
@@ -48,7 +50,7 @@ impl Plugin for DialogPlugin {
         app.add_systems(Startup, load_initial_locale);
 
         // Locale sync and language switching (runs always)
-        app.add_systems(Update, (sync_locale, sync_language));
+        app.add_systems(Update, (sync_locale, sync_fallback_locale, sync_language));
 
         // Playing: range detection, interact input, barks, start_dialogue
         app.add_systems(
@@ -74,9 +76,15 @@ impl Plugin for DialogPlugin {
 
 fn load_initial_locale(
     mut commands: Commands,
+    mut locale_map: ResMut<LocaleMap>,
     asset_server: Res<AssetServer>,
     settings: Res<GameSettings>,
 ) {
-    let path = format!("locale/{}.locale.ron", settings.language);
-    commands.insert_resource(ActiveLocale(asset_server.load(path)));
+    let active_path = format!("locale/{}.locale.ron", settings.language);
+    commands.insert_resource(ActiveLocale(asset_server.load(active_path)));
+
+    let fallback_path = format!("locale/{DEFAULT_LOCALE_CODE}.locale.ron");
+    commands.insert_resource(FallbackLocale(asset_server.load(fallback_path)));
+
+    locale_map.set_active_code(&settings.language);
 }

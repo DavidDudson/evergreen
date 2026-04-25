@@ -3,6 +3,8 @@ use bevy::reflect::TypePath;
 use models::alignment::AlignmentFaction;
 use serde::Deserialize;
 
+use crate::flags::Condition;
+
 /// Broad category for lore entries displayed in the lore page sidebar.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Deserialize, serde::Serialize,
@@ -76,9 +78,15 @@ pub enum DialogueLine {
 pub struct ChoiceOption {
     /// Locale key for the option label shown to the player.
     pub text_key: String,
-    /// Flags that must all be `true` for this option to be shown.
-    /// Empty means always visible.
+    /// Legacy AND-list of flags that must all be `true` for the option to
+    /// be shown. Prefer `condition` for new content; both are checked and
+    /// must be satisfied for the option to appear. Empty means no constraint.
+    #[serde(default)]
     pub flags_required: Vec<String>,
+    /// Composable predicate (`AllSet`/`AnySet`/`NoneSet`/`All`/`Any`/`Not`/`Always`)
+    /// over [`crate::flags::DialogueFlags`]. Defaults to `Always`.
+    #[serde(default = "Condition::always")]
+    pub condition: Condition,
     /// Flags to set to `true` when this option is selected.
     pub flags_set: Vec<String>,
     /// If set, grant +1 to this alignment faction when the choice is made.

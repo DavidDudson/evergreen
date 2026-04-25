@@ -12,21 +12,51 @@ pub const AVAILABLE_LOCALES: &[(&str, &str)] = &[("en-US", "English"), ("es-ES",
 #[derive(Asset, TypePath, Debug, Default, Clone)]
 pub struct LocaleAsset(pub HashMap<String, String>);
 
-/// Runtime resource holding the currently active locale data.
+/// Default fallback locale for missing keys (English).
+pub const DEFAULT_LOCALE_CODE: &str = "en-US";
+
+/// Runtime resource holding the currently active locale data + a fallback
+/// chain. Lookup order:
+///   1. exact-key in active locale
+///   2. exact-key in default locale (e.g. en-US) -- if different
+///   3. the key itself (debug fallthrough)
 #[derive(Resource, Debug, Default)]
 pub struct LocaleMap {
     data: HashMap<String, String>,
+    fallback: HashMap<String, String>,
+    active_code: String,
 }
 
 impl LocaleMap {
-    /// Look up a locale key. Returns the key itself if no translation exists.
+    /// Look up a locale key. Falls through active → default → key.
     pub fn get<'a>(&'a self, key: &'a str) -> &'a str {
-        self.data.get(key).map(String::as_str).unwrap_or(key)
+        if let Some(value) = self.data.get(key) {
+            return value.as_str();
+        }
+        if let Some(value) = self.fallback.get(key) {
+            return value.as_str();
+        }
+        key
     }
 
     /// Replace the active locale data.
     pub fn load_from(&mut self, asset: &LocaleAsset) {
         self.data = asset.0.clone();
+    }
+
+    /// Replace the default-locale fallback table.
+    pub fn load_fallback(&mut self, asset: &LocaleAsset) {
+        self.fallback = asset.0.clone();
+    }
+
+    /// Track the currently active locale code.
+    pub fn set_active_code(&mut self, code: impl Into<String>) {
+        self.active_code = code.into();
+    }
+
+    /// Currently active locale code (e.g. `"es-ES"`).
+    pub fn active_code(&self) -> &str {
+        &self.active_code
     }
 }
 
@@ -69,6 +99,11 @@ impl AssetLoader for LocaleAssetLoader {
 #[derive(Resource)]
 pub struct ActiveLocale(pub Handle<LocaleAsset>);
 
+/// Holds the default-locale asset handle (e.g. `en-US`) used as fallback
+/// when the active locale is missing keys.
+#[derive(Resource)]
+pub struct FallbackLocale(pub Handle<LocaleAsset>);
+
 /// System: copies the active locale asset into [`LocaleMap`] once loaded,
 /// and re-copies whenever the active locale changes (language switching).
 ///
@@ -90,10 +125,29 @@ pub fn sync_locale(
     }
 }
 
+/// System: copies the fallback locale asset into [`LocaleMap::fallback`].
+/// Runs once per fallback-handle change.
+pub fn sync_fallback_locale(
+    fallback: Res<FallbackLocale>,
+    assets: Res<Assets<LocaleAsset>>,
+    mut locale_map: ResMut<LocaleMap>,
+    mut loaded_id: Local<Option<AssetId<LocaleAsset>>>,
+) {
+    let current_id = fallback.0.id();
+    if *loaded_id == Some(current_id) {
+        return;
+    }
+    if let Some(asset) = assets.get(current_id) {
+        locale_map.load_fallback(asset);
+        *loaded_id = Some(current_id);
+    }
+}
+
 /// System: when [`GameSettings::language`] changes, reload the locale asset.
 pub fn sync_language(
     settings: Res<GameSettings>,
     mut active: ResMut<ActiveLocale>,
+    mut locale_map: ResMut<LocaleMap>,
     asset_server: Res<AssetServer>,
 ) {
     if !settings.is_changed() {
@@ -101,4 +155,5 @@ pub fn sync_language(
     }
     let path = format!("locale/{}.locale.ron", settings.language);
     *active = ActiveLocale(asset_server.load(path));
+    locale_map.set_active_code(&settings.language);
 }

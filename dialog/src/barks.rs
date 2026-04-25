@@ -6,12 +6,38 @@ use crate::asset::DialogueScript;
 use crate::components::BarkPool;
 use crate::events::BarkFired;
 
-/// System: fires a random bark from nearby NPCs with a [`BarkPool`].
+/// Strategy for picking which bark to fire from a pool. Default is uniform
+/// random; replace via `app.insert_resource(BarkSelector::Custom(...))` for
+/// weighted, mood-based, or scripted selection.
+#[derive(Resource, Clone, Default)]
+pub enum BarkSelector {
+    #[default]
+    Uniform,
+    Custom(fn(&[Handle<DialogueScript>]) -> Option<Handle<DialogueScript>>),
+}
+
+impl BarkSelector {
+    pub fn select(
+        &self,
+        barks: &[Handle<DialogueScript>],
+    ) -> Option<Handle<DialogueScript>> {
+        match self {
+            Self::Uniform => {
+                let mut rng = rand::rng();
+                barks.choose(&mut rng).cloned()
+            }
+            Self::Custom(f) => f(barks),
+        }
+    }
+}
+
+/// System: fires a bark from nearby NPCs with a [`BarkPool`].
 ///
 /// Only runs in `GameState::Playing`. The bark is emitted as a [`BarkFired`]
 /// message; the UI crate decides how to display it (floating text above the NPC).
 pub fn tick_barks(
     time: Res<Time>,
+    selector: Res<BarkSelector>,
     player_q: Query<&GlobalTransform, Without<BarkPool>>,
     mut bark_q: Query<(Entity, &mut BarkPool, &GlobalTransform)>,
     scripts: Res<Assets<DialogueScript>>,
@@ -21,8 +47,6 @@ pub fn tick_barks(
         return;
     };
     let player_pos = player_tf.translation().truncate();
-
-    let mut rng = rand::rng();
 
     for (entity, mut pool, tf) in &mut bark_q {
         pool.cooldown.tick(time.delta());
@@ -35,14 +59,13 @@ pub fn tick_barks(
             continue;
         }
 
-        let Some(handle) = pool.barks.choose(&mut rng) else {
+        let Some(handle) = selector.select(&pool.barks) else {
             continue;
         };
         let Some(script) = scripts.get(handle.id()) else {
             continue;
         };
 
-        // Use the first Speech line in the bark script as the text.
         let text_key = script.lines.iter().find_map(|line| {
             if let DialogueLine::Speech { text_key } = line {
                 Some(text_key.clone())
