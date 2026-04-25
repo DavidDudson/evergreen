@@ -62,8 +62,23 @@
     <body>
         <main class="game-area" id="game-area">
             <div class="game-frame" id="game">
-                <canvas id="game-canvas"></canvas>
+                <canvas id="game-canvas" tabindex="0"></canvas>
             </div>
         </main>
+        <script>
+            // Canvas must be focused on the web for winit to deliver keyboard
+            // events. Focus once Trunk reports the wasm bundle has started,
+            // and re-focus on any pointer interaction so clicking outside the
+            // canvas (e.g. the dev overlay) doesn't permanently steal focus.
+            (function () {
+                const focusCanvas = () => {
+                    const c = document.getElementById('game-canvas');
+                    if (c) c.focus({ preventScroll: true });
+                };
+                window.addEventListener('TrunkApplicationStarted', focusCanvas);
+                window.addEventListener('load', focusCanvas);
+                document.addEventListener('pointerdown', focusCanvas);
+            })();
+        </script>
     </body>
 </html>

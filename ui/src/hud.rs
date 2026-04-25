@@ -1,4 +1,6 @@
+use bevy::math::Rot2;
 use bevy::prelude::*;
+use bevy::ui::UiTransform;
 use models::alignment::{AlignmentFaction, PlayerAlignment};
 use models::health::Health;
 use models::palette;
@@ -83,7 +85,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         height: Val::Px(PETAL_SIZE_PX),
                         ..Node::default()
                     },
-                    Transform::from_rotation(Quat::from_rotation_z(-angle)),
+                    UiTransform::from_rotation(Rot2::radians(-angle)),
                 ));
             }
         });
