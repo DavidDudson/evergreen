@@ -22,4 +22,4 @@ save     = { path = "../save" }
 bevy = { version = "0.18.1", features = ["webp", "debug", "track_location"] }
 
 [dev-dependencies]
-husky-rs = "0.3.2"
+husky-rs = "0.3.3"
