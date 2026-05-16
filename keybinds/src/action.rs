@@ -40,6 +40,8 @@ pub enum Action {
     Pause,
     #[strum(to_string = "Advance Dialog")]
     DialogAdvance,
+    #[strum(to_string = "Open Quest Log")]
+    OpenQuestLog,
     // Diagnostics
     #[strum(to_string = "Toggle Diagnostics Overlay")]
     ToggleDiagnosticsOverlay,

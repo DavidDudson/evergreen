@@ -12,6 +12,7 @@ use crate::level_complete::LevelCompleteSetup;
 use crate::lore_page::LoreScreen;
 use crate::main_menu::MainMenuScreen;
 use crate::pause_menu::{PauseScreen, QuitToMenuRequested};
+use crate::quest_log_page::QuestLogScreenSetup;
 use crate::screen::ScreenSetup;
 use crate::settings_screen::SettingsScreenSetup;
 
@@ -23,7 +24,10 @@ impl Plugin for UiPlugin {
         app.init_resource::<QuitToMenuRequested>();
 
         // Cross-cutting input handler.
-        app.add_systems(Update, focus::handle_pause_input);
+        app.add_systems(
+            Update,
+            (focus::handle_pause_input, focus::handle_quest_log_input),
+        );
 
         // Each screen owns its own state-transition wiring via ScreenSetup.
         // To add a new screen, implement ScreenSetup in its module and add a
@@ -35,6 +39,7 @@ impl Plugin for UiPlugin {
         DialogBoxScreen::register(app);
         InvestigatePopupScreen::register(app);
         LoreScreen::register(app);
+        QuestLogScreenSetup::register(app);
         SettingsScreenSetup::register(app);
         CreditsScreenSetup::register(app);
         KeybindScreenSetup::register(app);

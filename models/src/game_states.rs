@@ -11,6 +11,8 @@ pub enum GameState {
     Dialogue,
     /// Lore browser accessed from the main menu.
     LorePage,
+    /// Quest log accessed from gameplay; world frozen behind it.
+    QuestLog,
     /// Key remapping UI, accessible from the settings screen.
     KeybindConfig,
     /// Settings hub: audio, video, and keybind navigation.
@@ -29,10 +31,14 @@ pub enum GameState {
 
 /// Run condition: true when leaving `Playing` for a state that should
 /// tear down the world (i.e. NOT `Paused`, `Dialogue`, `KeybindConfig`,
-/// or `Settings`).
+/// `Settings`, or `QuestLog`).
 pub fn should_despawn_world(state: Res<State<GameState>>) -> bool {
     !matches!(
         state.get(),
-        GameState::Paused | GameState::Dialogue | GameState::KeybindConfig | GameState::Settings
+        GameState::Paused
+            | GameState::Dialogue
+            | GameState::KeybindConfig
+            | GameState::Settings
+            | GameState::QuestLog
     )
 }

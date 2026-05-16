@@ -17,6 +17,7 @@ const DEFAULT_BINDINGS: &[(Action, KeyCode)] = &[
     (Action::Interact, KeyCode::KeyE),
     (Action::Pause, KeyCode::Escape),
     (Action::DialogAdvance, KeyCode::Space),
+    (Action::OpenQuestLog, KeyCode::KeyJ),
     (Action::ToggleDiagnosticsOverlay, KeyCode::F3),
     (Action::ToggleDebugPanel, KeyCode::F5),
 ];

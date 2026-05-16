@@ -14,6 +14,7 @@ mod main_menu;
 mod minimap;
 mod pause_menu;
 pub mod plugin;
+mod quest_log_page;
 pub mod screen;
 mod settings_screen;
 pub mod theme;
