@@ -56,6 +56,19 @@ pub enum EnemyKind {
     DiseasedBear,
 }
 
+/// One-off, hand-authored quest landmark placed by the world generator as
+/// part of a [`MainQuestKind`] roll. Per-prop spawning lives in
+/// `crate::quest_props`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum QuestPropKind {
+    /// Sick deer the player examines for milestone 0 of the sick-animals
+    /// quest.
+    SickDeer,
+    /// Purple pond the player investigates for milestone 1 of the
+    /// sick-animals quest. Triggers the mirror-shard choice.
+    PurplePond,
+}
+
 /// What happens when the player enters an area.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum AreaEvent {
@@ -68,6 +81,8 @@ pub enum AreaEvent {
         kind: EnemyKind,
         count: u8,
     },
+    /// Main-quest landmark placed by world-gen.
+    QuestProp(QuestPropKind),
 }
 
 pub const MAP_WIDTH: u16 = 32;

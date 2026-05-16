@@ -16,6 +16,7 @@ pub mod npcs;
 pub mod plugin;
 pub mod portal;
 pub mod puddles;
+pub mod quest_props;
 pub mod reveal;
 pub mod scenery;
 pub mod shadows;

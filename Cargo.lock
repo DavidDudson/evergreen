@@ -3215,6 +3215,7 @@ dependencies = [
  "dialog",
  "getrandom 0.4.2",
  "models",
+ "quest",
  "rand 0.10.1",
  "serde",
  "serde_json",

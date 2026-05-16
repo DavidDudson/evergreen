@@ -9,8 +9,8 @@ use models::alignment::PlayerAlignment;
 use crate::asset::{QuestAsset, QuestAssetLoader};
 use crate::events::{MilestoneAdvanced, QuestAccepted, QuestCompleted, QuestOffered};
 use crate::interact::{
-    detect_investigate_input, detect_investigate_range, sync_investigate_prompt,
-    InvestigateIconAsset, InvestigationFired,
+    apply_investigate_choice, detect_investigate_input, detect_investigate_range,
+    sync_investigate_prompt, InvestigateChoiceMade, InvestigateIconAsset, InvestigationFired,
 };
 use crate::inventory::Inventory;
 use crate::model::Unlock;
@@ -18,7 +18,6 @@ use crate::progress::{QuestProgress, QuestStatus};
 use crate::registry::{
     drain_quest_assets, load_quest_manifest, QuestHandles, QuestRegistry,
 };
-use crate::world::spawn_quest_props;
 
 const MAGNIFYING_GLASS_ICON: &str = "sprites/ui/magnifying_glass.webp";
 
@@ -38,9 +37,10 @@ impl Plugin for QuestPlugin {
             .add_message::<QuestAccepted>()
             .add_message::<MilestoneAdvanced>()
             .add_message::<QuestCompleted>()
-            .add_message::<InvestigationFired>();
+            .add_message::<InvestigationFired>()
+            .add_message::<InvestigateChoiceMade>();
 
-        app.add_systems(Startup, (load_quest_manifest, load_investigate_icon, spawn_quest_props));
+        app.add_systems(Startup, (load_quest_manifest, load_investigate_icon));
         app.add_systems(
             Update,
             (
@@ -48,6 +48,7 @@ impl Plugin for QuestPlugin {
                 watch_quest_flags,
                 detect_investigate_range,
                 detect_investigate_input,
+                apply_investigate_choice,
                 sync_investigate_prompt,
             ),
         );

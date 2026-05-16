@@ -10,12 +10,32 @@ use bevy::prelude::*;
 use dialog::flags::DialogueFlags;
 use keybinds::action::Action;
 use keybinds::bindings::Keybinds;
+use models::alignment::{AlignmentFaction, PlayerAlignment};
 use models::speed::Speed;
 
 use crate::inventory::Inventory;
 
 /// Range (pixels) at which the magnifying-glass prompt appears.
 pub const INVESTIGATE_RADIUS_PX: f32 = 40.0;
+
+/// One follow-up choice surfaced after investigation. Selecting it grants
+/// any configured rewards and sets any configured flag, then closes the
+/// popup.
+#[derive(Debug, Clone)]
+pub struct InvestigateChoice {
+    /// Locale key for the button label.
+    pub text_key: String,
+    /// Optional alignment grant (+1) when this choice is picked.
+    pub alignment_grant: Option<AlignmentFaction>,
+    /// Optional inventory item granted on this choice. `(item_id, count)`.
+    pub item_grant: Option<(String, u32)>,
+    /// Optional dialogue flag set on this choice (post-pick state, distinct
+    /// from the investigatable's own `flag_to_set` which fires immediately).
+    pub flag_to_set: Option<String>,
+    /// Optional locale key for a brief response shown in place of the
+    /// description after the choice is picked.
+    pub response_key: Option<String>,
+}
 
 /// World object the player can examine. Carries the localised description,
 /// the flag to set on examination, and an optional item grant.
@@ -26,7 +46,13 @@ pub struct Investigatable {
     /// Dialogue flag set when investigated. Quest milestones key off this.
     pub flag_to_set: String,
     /// Optional inventory item granted on investigation. `(item_id, count)`.
+    /// Ignored when `choices` is non-empty -- in that case the item lives
+    /// on the picked [`InvestigateChoice`].
     pub item_grant: Option<(String, u32)>,
+    /// Optional follow-up choices. Empty = no choice, fire-and-close.
+    /// Non-empty = popup shows each as a button; nothing is granted by
+    /// the investigation itself except `flag_to_set`.
+    pub choices: Vec<InvestigateChoice>,
     /// Whether examining this object multiple times re-fires the popup.
     /// Default `false` -- one investigation per object.
     pub repeat: bool,
@@ -40,6 +66,7 @@ impl Investigatable {
             description_key: description_key.into(),
             flag_to_set: flag_to_set.into(),
             item_grant: None,
+            choices: Vec::new(),
             repeat: false,
             investigated: false,
         }
@@ -47,6 +74,11 @@ impl Investigatable {
 
     pub fn with_item(mut self, item_id: impl Into<String>, count: u32) -> Self {
         self.item_grant = Some((item_id.into(), count));
+        self
+    }
+
+    pub fn with_choices(mut self, choices: Vec<InvestigateChoice>) -> Self {
+        self.choices = choices;
         self
     }
 }
@@ -63,8 +95,18 @@ pub struct InvestigateTrigger {
 #[derive(Message, Debug, Clone)]
 pub struct InvestigationFired {
     pub description_key: String,
-    /// `Some(item_id)` if an item was granted, for toast UI.
+    /// `Some(item_id)` if an item was granted directly by the investigation,
+    /// for toast UI. Always `None` when `choices` is non-empty.
     pub item_granted: Option<String>,
+    /// Follow-up choices the UI should present. Empty = no choice prompt.
+    pub choices: Vec<InvestigateChoice>,
+}
+
+/// Sent by the popup UI when the player picks one of the choices presented
+/// for an [`InvestigationFired`] event. Quest plugin applies effects.
+#[derive(Message, Debug, Clone)]
+pub struct InvestigateChoiceMade {
+    pub choice: InvestigateChoice,
 }
 
 /// Each frame: find the nearest [`Investigatable`] within range and attach a
@@ -112,8 +154,10 @@ pub fn detect_investigate_range(
     }
 }
 
-/// Press Interact while in range to fire the investigation. Sets the target's
-/// flag, grants any configured item, and emits [`InvestigationFired`].
+/// Press Interact while in range to fire the investigation. Always sets the
+/// investigatable's `flag_to_set` (so milestones fire on observation). When
+/// the investigatable carries choices, they ride along on the event for the
+/// popup UI; otherwise the configured `item_grant` is applied immediately.
 #[allow(clippy::too_many_arguments)]
 pub fn detect_investigate_input(
     keyboard: Res<ButtonInput<KeyCode>>,
@@ -138,14 +182,44 @@ pub fn detect_investigate_input(
     }
     investigatable.investigated = true;
     flags.set(investigatable.flag_to_set.clone());
-    let item_granted = investigatable.item_grant.as_ref().map(|(id, count)| {
-        inventory.grant(id.clone(), *count);
-        id.clone()
-    });
+
+    // Auto-grant only when no follow-up choice is offered. With choices,
+    // grants live on the picked `InvestigateChoice` and apply later.
+    let item_granted = if investigatable.choices.is_empty() {
+        investigatable.item_grant.as_ref().map(|(id, count)| {
+            inventory.grant(id.clone(), *count);
+            id.clone()
+        })
+    } else {
+        None
+    };
+
     writer.write(InvestigationFired {
         description_key: investigatable.description_key.clone(),
         item_granted,
+        choices: investigatable.choices.clone(),
     });
+}
+
+/// Apply the side effects of an [`InvestigateChoiceMade`] event: alignment
+/// grant, inventory grant, follow-up flag.
+pub fn apply_investigate_choice(
+    mut events: MessageReader<InvestigateChoiceMade>,
+    mut alignment: ResMut<PlayerAlignment>,
+    mut inventory: ResMut<Inventory>,
+    mut flags: ResMut<DialogueFlags>,
+) {
+    for event in events.read() {
+        if let Some(faction) = event.choice.alignment_grant {
+            alignment.grant(faction);
+        }
+        if let Some((id, count)) = &event.choice.item_grant {
+            inventory.grant(id.clone(), *count);
+        }
+        if let Some(flag) = &event.choice.flag_to_set {
+            flags.set(flag.clone());
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------

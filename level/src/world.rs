@@ -4,7 +4,8 @@ use bevy::math::IVec2;
 use bevy::prelude::*;
 
 use crate::area::{
-    Area, AreaAlignment, AreaEvent, Direction, EnemyKind, NpcKind, ALL_NPCS, MAP_HEIGHT, MAP_WIDTH,
+    Area, AreaAlignment, AreaEvent, Direction, EnemyKind, NpcKind, QuestPropKind, ALL_NPCS,
+    MAP_HEIGHT, MAP_WIDTH,
 };
 use crate::portal::{pick_portal_kind, PortalPlacement};
 use crate::terrain::Terrain;
@@ -74,6 +75,41 @@ fn pick_enemy_kind(seed: u64, pos: IVec2) -> EnemyKind {
 /// Default alignment for the bootstrap (root) map: light greenwood. The
 /// player can portal to other biomes but the entry point sits in greenwood.
 pub const ROOT_MAP_ALIGNMENT: AreaAlignment = 15;
+
+/// Identifies the main quest line assigned to a generated map. Each map
+/// rolls one [`MainQuestKind`] during world-gen based on its alignment;
+/// the corresponding `AreaEvent::QuestProp` landmarks are then placed
+/// procedurally before enemy / portal events.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum MainQuestKind {
+    /// Bigby asks the player to find what is killing the deer. Lives on
+    /// greenwood-aligned maps; props are `SickDeer` + `PurplePond`.
+    BigbySickAnimals,
+}
+
+impl MainQuestKind {
+    /// The ordered set of `QuestPropKind`s this quest needs placed. Element
+    /// order is the order props are dropped into the chosen areas.
+    pub fn props(self) -> &'static [QuestPropKind] {
+        match self {
+            Self::BigbySickAnimals => &[QuestPropKind::SickDeer, QuestPropKind::PurplePond],
+        }
+    }
+}
+
+/// Greenwood alignment band that hosts the sick-animals quest.
+const SICK_ANIMALS_ALIGN_MIN: AreaAlignment = 11;
+const SICK_ANIMALS_ALIGN_MAX: AreaAlignment = 50;
+
+/// Choose the main quest for a map by alignment. Returns `None` for maps
+/// whose biome has no main quest yet (city / darkwood today).
+fn pick_main_quest(alignment: AreaAlignment) -> Option<MainQuestKind> {
+    if (SICK_ANIMALS_ALIGN_MIN..=SICK_ANIMALS_ALIGN_MAX).contains(&alignment) {
+        Some(MainQuestKind::BigbySickAnimals)
+    } else {
+        None
+    }
+}
 
 /// Compute the target area count for a map of the given alignment.
 /// Linear lerp between [`MAP_AREAS_AT_MIN`] @ alignment 1 and
@@ -146,6 +182,9 @@ pub struct WorldMap {
     /// has to seek it out. `None` for maps whose alignment doesn't match
     /// any portal kind's bridge range.
     pub portal: Option<PortalPlacement>,
+    /// Main quest assigned to this map by world-gen, if any. Drives the
+    /// `AreaEvent::QuestProp` placements baked into the area graph.
+    pub main_quest: Option<MainQuestKind>,
 }
 
 impl WorldMap {
@@ -222,6 +261,7 @@ impl WorldMap {
             water: WaterMap::default(),
             has_ocean,
             portal: None,
+            main_quest: pick_main_quest(alignment),
         };
 
         // Seed the origin as a 4-way cross to bootstrap generation.
@@ -307,6 +347,12 @@ impl WorldMap {
         // signature NPC -- Cadwallader / Bloody Mary / Mother Gothel.
         if let Some(area) = map.areas.get_mut(&portal_area) {
             area.event = AreaEvent::NpcEncounter(kind.signature_npc());
+        }
+
+        // Place this map's main-quest props (if any) before the enemy
+        // sweep, so quest areas don't get overwritten with enemies.
+        if let Some(quest) = map.main_quest {
+            place_quest_props(&mut map, quest, start, exit, portal_area, seed);
         }
 
         // Greenwood-aligned maps fill every empty area (no NPC, not start,
@@ -557,6 +603,50 @@ fn lcg(state: u64) -> u64 {
 
 fn manhattan(a: IVec2, b: IVec2) -> i32 {
     (a.x - b.x).abs() + (a.y - b.y).abs()
+}
+
+/// Drop each prop required by `quest` into a deterministically-chosen area
+/// that is not the start, exit, or portal area, and that has no other event
+/// already assigned. Picks areas farthest from `start` first so the props
+/// appear deeper in the map. Silently skips props that can't be placed
+/// (degenerate maps); the quest still loads but a milestone may be
+/// unreachable -- that's fine, regenerate the world.
+fn place_quest_props(
+    map: &mut WorldMap,
+    quest: MainQuestKind,
+    start: IVec2,
+    exit: IVec2,
+    portal_area: IVec2,
+    seed: u64,
+) {
+    let mut candidates: Vec<IVec2> = map
+        .areas
+        .iter()
+        .filter(|(pos, area)| {
+            **pos != start
+                && **pos != exit
+                && **pos != portal_area
+                && matches!(area.event, AreaEvent::None)
+        })
+        .map(|(pos, _)| *pos)
+        .collect();
+    // Stable order: farthest from start first, deterministic on ties.
+    candidates.sort_by(|a, b| {
+        manhattan(*b, start)
+            .cmp(&manhattan(*a, start))
+            .then_with(|| (a.x, a.y).cmp(&(b.x, b.y)))
+    });
+    let stride = (candidates.len() / quest.props().len().max(1)).max(1);
+    let _ = seed; // placement is deterministic via the area ordering already
+    for (i, &kind) in quest.props().iter().enumerate() {
+        let idx = i.saturating_mul(stride);
+        let Some(&pos) = candidates.get(idx) else {
+            continue;
+        };
+        if let Some(area) = map.areas.get_mut(&pos) {
+            area.event = AreaEvent::QuestProp(kind);
+        }
+    }
 }
 
 /// Pick the starting dead-end -- the one closest to the origin so the player

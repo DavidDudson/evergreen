@@ -7,6 +7,5 @@ pub mod model;
 pub mod plugin;
 pub mod progress;
 pub mod registry;
-pub mod world;
 
 pub use plugin::QuestPlugin;
