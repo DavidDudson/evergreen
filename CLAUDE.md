@@ -46,6 +46,43 @@ The pre-commit hook (`.husky/hooks/pre-commit`) automatically runs `cargo fix` a
 - OS-specific Bevy dependencies (see [Bevy setup guide](https://bevyengine.org/learn/quick-start/getting-started/setup/))
   - Linux: `libasound2-dev`, `libudev-dev`, `pkg-config`
 
+### Dependency Audits — Preferred Tools
+
+This workspace pulls Bevy (~600 transitive crates) across 15 members.
+Some cargo tools allocate the entire resolved dependency graph in RAM
+and can exhaust system memory.
+
+**Preferred:** `cargo upgrade --dry-run` (cargo-edit) — reads Cargo.toml
+constraints + queries crates.io; no resolver, fast, low memory.
+
+```bash
+cargo upgrade --dry-run               # compatible bumps
+cargo upgrade --dry-run --incompatible # plus major bumps
+cargo info <crate>                    # per-crate, builtin since 1.79
+```
+
+**Also wired:** `.github/dependabot.yml` opens grouped weekly PRs (Bevy
+plugins grouped together, serde/tokio families grouped, patch-level
+bumps batched). Review and merge those PRs as the primary upgrade path —
+local scans are only for ad-hoc questions.
+
+**Avoid:**
+
+- **`cargo outdated --workspace`** runs cargo's resolver twice and peaks
+  at 30–80 GB on this repo (kbknapp/cargo-outdated#383). **Never run two
+  in parallel** — past incident burned 120 GB RAM + 77 GB swap and froze
+  the system. Use `cargo upgrade --dry-run` instead. If you specifically
+  need cargo-outdated's `Compat` column, run **once** with
+  `--root-deps-only` and save output to a file; never pipe two separate
+  invocations to `head` and `tail`.
+- **`cargo metadata --all-features`** also resolves the full graph;
+  prefer `cargo metadata --no-deps` when you only need workspace members.
+- **`cargo tree` without filters** — fine for memory but output is
+  enormous; pipe through `head` or use `-p <crate> --depth N`.
+
+See `.claude/skills/upgrade-deps/SKILL.md` for the full upgrade
+procedure.
+
 ## Skills
 
 This project has custom skills to accelerate common tasks. Use them proactively:
