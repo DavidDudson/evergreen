@@ -1,0 +1,14 @@
+[package]
+name = "quest"
+version = "0.1.0"
+edition = "2021"
+
+[lints]
+workspace = true
+
+[dependencies]
+bevy = "0.18.1"
+models = { path = "../models" }
+dialog = { path = "../dialog" }
+serde = { version = "1.0.228", features = ["derive"] }
+ron = "0.12.1"

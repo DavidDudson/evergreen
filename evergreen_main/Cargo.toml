@@ -18,6 +18,7 @@ dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
 post_processing = { path = "../post_processing" }
 lighting = { path = "../lighting" }
+quest    = { path = "../quest" }
 save     = { path = "../save" }
 bevy = { version = "0.18.1", features = ["webp", "debug", "track_location"] }
 

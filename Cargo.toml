@@ -29,5 +29,6 @@ members = [
     "keybinds",
     "lighting",
     "post_processing",
+    "quest",
     "save",
 ]

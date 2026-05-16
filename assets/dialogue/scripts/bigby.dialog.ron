@@ -14,10 +14,30 @@ DialogueScript(
             ChoiceOption(
                 text_key: "npc.bigby.choice.ask_redeye",
                 flags_required: [],
-                flags_set: ["bigby_told_redeye"],
+                flags_set: ["bigby_told_redeye", "quest:bigby.sick_animals:offer"],
                 next: [
                     Speech(text_key: "npc.bigby.redeye.0"),
                     Speech(text_key: "npc.bigby.redeye.1"),
+                    Speech(text_key: "npc.bigby.sick_animals.pitch"),
+                    PlayerChoice(options: [
+                        ChoiceOption(
+                            text_key: "npc.bigby.choice.accept_sick_animals",
+                            flags_required: [],
+                            flags_set: ["quest:bigby.sick_animals:accept"],
+                            alignment_grant: Some(Greenwoods),
+                            next: [
+                                Speech(text_key: "npc.bigby.sick_animals.accept"),
+                            ],
+                        ),
+                        ChoiceOption(
+                            text_key: "npc.bigby.choice.decline_sick_animals",
+                            flags_required: [],
+                            flags_set: [],
+                            next: [
+                                Speech(text_key: "npc.bigby.sick_animals.decline"),
+                            ],
+                        ),
+                    ]),
                 ],
             ),
             ChoiceOption(
@@ -36,6 +56,19 @@ DialogueScript(
                 next: [
                     Speech(text_key: "npc.bigby.wolf.0"),
                     Speech(text_key: "npc.bigby.wolf.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "npc.bigby.choice.report_sick_animals",
+                condition: All([
+                    AllSet(["quest:bigby.sick_animals:accept", "quest:bigby.sick_animals:milestone:1"]),
+                    NoneSet(["quest:bigby.sick_animals:milestone:2"]),
+                ]),
+                flags_required: [],
+                flags_set: ["quest:bigby.sick_animals:milestone:2"],
+                next: [
+                    Speech(text_key: "npc.bigby.sick_animals.report"),
+                    Speech(text_key: "npc.bigby.sick_animals.thanks"),
                 ],
             ),
             ChoiceOption(

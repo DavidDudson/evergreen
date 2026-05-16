@@ -11,6 +11,7 @@ use models::game_states::GameState;
 use models::palette::PaletteTheme;
 use player::plugin::PlayerPlugin;
 use post_processing::plugin::PostProcessingPlugin;
+use quest::QuestPlugin;
 use save::SavePlugin;
 use ui::plugin::UiPlugin;
 use ui::window::window_plugin;
@@ -38,6 +39,7 @@ fn main() {
             PlayerPlugin,
             PostProcessingPlugin,
             LightingPlugin,
+            QuestPlugin,
         ))
         .init_state::<GameState>()
         .init_resource::<PaletteTheme>()

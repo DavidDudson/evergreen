@@ -79,6 +79,9 @@
     "npc.bigby.choice.ask_redeye": "What is the Redeye?",
     "npc.bigby.choice.ask_xyander": "Where is Xyander?",
     "npc.bigby.choice.ask_wolf": "Are you the Big Bad Wolf?",
+    "npc.bigby.choice.accept_sick_animals": "I will look into it.",
+    "npc.bigby.choice.decline_sick_animals": "Not my problem.",
+    "npc.bigby.choice.report_sick_animals": "I found what is poisoning the deer.",
     "npc.bigby.choice.farewell": "I have somewhere to be.",
     "npc.bigby.redeye.0": "Pandemic. Xyander first, then the Westfold. Infected turn aggressive, bite others, spread it. The eyes go red — hence.",
     "npc.bigby.redeye.1": "It moves faster than any plague should. Someone is helping it move. That is what I am here to find out.",
@@ -87,6 +90,11 @@
     "npc.bigby.wolf.0": "That name is more complicated than a yes or no. The Wolf is a role. Something people pin on whoever frightens them most in a given generation.",
     "npc.bigby.wolf.1": "What I will say is that I have certain instincts that are difficult to explain, and they have not been wrong yet.",
     "npc.bigby.farewell": "Keep your eyes open. And your nose.",
+    "npc.bigby.sick_animals.pitch": "Listen, before you go. The deer along the Greenwood ridge are turning up dead. No predator marks, no Redeye signs. Something else. I would look myself, but I cannot leave the trail I am on. Will you check it?",
+    "npc.bigby.sick_animals.accept": "Good. Start at the ridge. Bring back anything that explains what you find -- a leaf, a track, a smell on your sleeve. I will know what to do with it.",
+    "npc.bigby.sick_animals.decline": "Suit yourself. The deer will keep dying whether you walk over there or not.",
+    "npc.bigby.sick_animals.report": "Tainted moonshade. Someone planted it deliberately along the watering trails. That is not a forest accident.",
+    "npc.bigby.sick_animals.thanks": "You did the work. The Greenwood remembers that. So do I.",
     "npc.bigby.bark.0": "Something passed through here in the last hour. Moving fast. Not running — stalking.",
     "npc.bigby.bark.1": "This case keeps getting bigger. I am starting to think that is intentional.",
     "npc.bigby.bark.2": "The Redeye does not feel natural. Plagues spread. This one is being aimed.",
@@ -259,4 +267,14 @@
     "npc.galen.q5.response.greenwoods": "To give it back rather than keep it — that is a rare answer. The Greenwood has been waiting a long time for someone who would say that.",
     "npc.galen.q5.response.darkwoods": "The boldest answer, and the most honest. Power is a tool and a test. You chose to use it. That has weight.",
     "npc.galen.q5.response.cities": "To trust that the structures of civilisation can hold power without breaking — that is not naive. That is an act of faith in the city, and faith is a kind of love.",
+
+    // -------------------------------------------------------------------------
+    // Quests
+    // -------------------------------------------------------------------------
+    "quest.bigby.sick_animals.title": "The Quiet Dying",
+    "quest.bigby.sick_animals.description": "Bigby has heard rumours of deer dying along the Greenwood ridge with no predator marks. He cannot leave his Redeye trail to investigate. Find the cause and report back.",
+    "quest.bigby.sick_animals.milestone.0": "Reach the Greenwood ridge.",
+    "quest.bigby.sick_animals.milestone.1": "Identify what is killing the deer.",
+    "quest.bigby.sick_animals.milestone.2": "Report your findings to Bigby.",
+    "quest.bigby.sick_animals.lore": "The Greenwood ridge has always been a deer corridor -- generations of fawns learn the watering trails before they can run. When the bodies began appearing, none of them carried tooth, claw, or arrow. Bigby suspects the same hand that aims the Redeye is testing something quieter on the Greenwood first.",
 }
