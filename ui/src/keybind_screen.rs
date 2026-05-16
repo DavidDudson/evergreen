@@ -1,7 +1,12 @@
 use bevy::prelude::*;
 use keybinds::action::Action;
 use keybinds::bindings::Keybinds;
-use keybinds::remap::{AwaitingRemap, CancelRemap, RemapCompleted, RequestRemap};
+use keybinds::controller::ControllerBinds;
+use keybinds::controller_serialize::button_name;
+use keybinds::remap::{
+    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted,
+    RemapCompleted, RequestControllerRemap, RequestRemap,
+};
 use keybinds::serialize::keycode_name;
 use keybinds::IntoEnumIterator;
 use models::game_states::GameState;
@@ -61,6 +66,14 @@ pub(crate) struct KeyButton(Action);
 #[derive(Component)]
 pub(crate) struct KeyButtonLabel(Action);
 
+/// The controller-button for a specific action row.
+#[derive(Component)]
+pub(crate) struct ControllerButton(Action);
+
+/// The button label text inside a ControllerButton.
+#[derive(Component)]
+pub(crate) struct ControllerButtonLabel(Action);
+
 /// "Reset" button on an action row.
 #[derive(Component)]
 pub(crate) struct ResetButton(Action);
@@ -84,6 +97,7 @@ pub(crate) struct RemapOverlay;
 pub fn setup(
     mut commands: Commands,
     keybinds: Res<Keybinds>,
+    controller: Res<ControllerBinds>,
     fonts: Res<UiFont>,
     locale: Res<LocaleMap>,
 ) {
@@ -124,7 +138,8 @@ pub fn setup(
     // Action rows
     for action in Action::iter() {
         let key = keybinds.key(action);
-        spawn_action_row(&mut commands, root, action, key, font.clone());
+        let button = controller.button(action);
+        spawn_action_row(&mut commands, root, action, key, button, font.clone());
     }
 
     // Hint text
@@ -208,6 +223,25 @@ pub fn handle_key_buttons(
         match interaction {
             Interaction::Pressed => {
                 writer.write(RequestRemap { action: btn.0 });
+            }
+            Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
+            Interaction::None => *bg = BackgroundColor(theme::DIALOG_CHOICE_BG),
+        }
+    }
+}
+
+/// Handles controller-button clicks: sends `RequestControllerRemap`.
+pub fn handle_controller_buttons(
+    mut interaction_q: Query<
+        (&Interaction, &mut BackgroundColor, &ControllerButton),
+        Changed<Interaction>,
+    >,
+    mut writer: MessageWriter<RequestControllerRemap>,
+) {
+    for (interaction, mut bg, btn) in &mut interaction_q {
+        match interaction {
+            Interaction::Pressed => {
+                writer.write(RequestControllerRemap { action: btn.0 });
             }
             Interaction::Hovered => *bg = BackgroundColor(theme::DIALOG_CHOICE_HOVER),
             Interaction::None => *bg = BackgroundColor(theme::DIALOG_CHOICE_BG),
@@ -301,19 +335,59 @@ pub fn sync_all_labels(keybinds: Res<Keybinds>, mut label_q: Query<(&mut Text, &
     }
 }
 
-/// Show/hide the "awaiting remap" overlay.
+/// After a controller-remap completes, refresh the affected button label.
+pub fn refresh_controller_labels(
+    mut events: MessageReader<ControllerRemapCompleted>,
+    controller: Res<ControllerBinds>,
+    mut label_q: Query<(&mut Text, &ControllerButtonLabel)>,
+) {
+    for event in events.read() {
+        for (mut text, label) in &mut label_q {
+            if label.0 == event.action {
+                **text = controller_label(controller.button(label.0));
+            }
+        }
+    }
+}
+
+/// Refresh ALL controller labels when bindings change (covers reset).
+pub fn sync_all_controller_labels(
+    controller: Res<ControllerBinds>,
+    mut label_q: Query<(&mut Text, &ControllerButtonLabel)>,
+) {
+    if !controller.is_changed() {
+        return;
+    }
+    for (mut text, label) in &mut label_q {
+        **text = controller_label(controller.button(label.0));
+    }
+}
+
+/// Show/hide the "awaiting remap" overlay. Covers both keyboard and
+/// controller remap requests -- whichever resource is present wins.
 pub fn sync_remap_overlay(
-    awaiting: Option<Res<AwaitingRemap>>,
+    awaiting_key: Option<Res<AwaitingRemap>>,
+    awaiting_button: Option<Res<AwaitingControllerRemap>>,
     overlay_q: Query<Entity, With<RemapOverlay>>,
     screen_q: Query<Entity, With<KeybindScreen>>,
     fonts: Res<UiFont>,
     mut commands: Commands,
 ) {
     let overlay_exists = !overlay_q.is_empty();
+    let prompt = match (awaiting_key.as_deref(), awaiting_button.as_deref()) {
+        (Some(a), _) => Some(format!(
+            "Press a key for \"{}\" -- Escape to cancel",
+            a.action
+        )),
+        (_, Some(a)) => Some(format!(
+            "Press a controller button for \"{}\" -- Escape to cancel",
+            a.action
+        )),
+        _ => None,
+    };
 
-    match (awaiting.as_deref(), overlay_exists) {
-        (Some(a), false) => {
-            // Spawn overlay
+    match (prompt, overlay_exists) {
+        (Some(text), false) => {
             let Ok(root) = screen_q.single() else { return };
             commands
                 .spawn((
@@ -331,10 +405,7 @@ pub fn sync_remap_overlay(
                     ChildOf(root),
                 ))
                 .with_child((
-                    Text::new(format!(
-                        "Press a key for \"{}\" -- Escape to cancel",
-                        a.action
-                    )),
+                    Text::new(text),
                     TextColor(theme::DIALOG_TEXT),
                     TextFont {
                         font: fonts.0.clone(),
@@ -344,7 +415,6 @@ pub fn sync_remap_overlay(
                 ));
         }
         (None, true) => {
-            // Despawn overlay
             for entity in &overlay_q {
                 commands.entity(entity).despawn();
             }
@@ -362,6 +432,7 @@ fn spawn_action_row(
     parent: Entity,
     action: Action,
     key: KeyCode,
+    button: Option<GamepadButton>,
     font: Handle<Font>,
 ) {
     let row = commands
@@ -397,7 +468,7 @@ fn spawn_action_row(
         ChildOf(row),
     ));
 
-    // Key button
+    // Key button (keyboard)
     commands
         .spawn((
             KeyButton(action),
@@ -416,6 +487,34 @@ fn spawn_action_row(
         .with_child((
             KeyButtonLabel(action),
             Text::new(keycode_name(key).unwrap_or("?").to_string()),
+            TextColor(theme::DIALOG_SPEAKER),
+            TextFont {
+                font: font.clone(),
+                font_size: KEY_FONT_SIZE_PX,
+                ..default()
+            },
+        ));
+
+    // Controller button (gamepad)
+    commands
+        .spawn((
+            ControllerButton(action),
+            Button,
+            Node {
+                min_width: Val::Px(KEY_MIN_WIDTH_PX),
+                padding: UiRect::axes(Val::Px(KEY_PADDING_H_PX), Val::ZERO),
+                margin: UiRect::left(Val::Px(RESET_MARGIN_LEFT_PX)),
+                border_radius: BorderRadius::all(Val::Px(KEY_RADIUS_PX)),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..Node::default()
+            },
+            BackgroundColor(theme::DIALOG_CHOICE_BG),
+            ChildOf(row),
+        ))
+        .with_child((
+            ControllerButtonLabel(action),
+            Text::new(controller_label(button)),
             TextColor(theme::DIALOG_SPEAKER),
             TextFont {
                 font: font.clone(),
@@ -449,6 +548,12 @@ fn spawn_action_row(
         ));
 }
 
+fn controller_label(button: Option<GamepadButton>) -> String {
+    button
+        .and_then(button_name)
+        .map_or("-".to_string(), str::to_string)
+}
+
 pub struct KeybindScreenSetup;
 
 impl crate::screen::ScreenSetup for KeybindScreenSetup {
@@ -464,11 +569,14 @@ impl crate::screen::ScreenSetup for KeybindScreenSetup {
                 Update,
                 (
                     handle_key_buttons,
+                    handle_controller_buttons,
                     handle_reset_buttons,
                     handle_reset_all,
                     handle_back,
                     refresh_key_labels,
+                    refresh_controller_labels,
                     sync_all_labels,
+                    sync_all_controller_labels,
                     sync_remap_overlay,
                 )
                     .run_if(in_state(GameState::KeybindConfig)),

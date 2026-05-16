@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use keybinds::Keybinds;
 use level::area::{Direction, MAP_HEIGHT, MAP_WIDTH};
 use level::plugin::TILE_SIZE_PX;
 use level::spawning::area_world_offset;
@@ -30,8 +29,7 @@ const MAP_W_PX: f32 = MAP_WIDTH as f32 * TILE_SIZE_PX as f32;
 const MAP_H_PX: f32 = MAP_HEIGHT as f32 * TILE_SIZE_PX as f32;
 
 pub fn move_player(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: keybinds::ActionInput,
     time: Res<Time>,
     world: Res<WorldMap>,
     water_state: Res<PlayerWaterState>,
@@ -41,7 +39,7 @@ pub fn move_player(
         return;
     };
 
-    let raw = read_movement_input(&keyboard, &bindings);
+    let raw = read_movement_input(&input);
     let direction = if raw != Vec2::ZERO {
         raw.normalize()
     } else {

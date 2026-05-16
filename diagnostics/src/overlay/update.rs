@@ -4,7 +4,7 @@ use bevy::diagnostic::{
     DiagnosticsStore, EntityCountDiagnosticsPlugin, FrameTimeDiagnosticsPlugin,
 };
 use bevy::prelude::*;
-use keybinds::{Action, Keybinds};
+use keybinds::{Action, ActionInput};
 use level::world::WorldMap;
 use models::palette;
 use models::time::GameClock;
@@ -33,12 +33,11 @@ const SECONDS_PER_MINUTE: f32 = 60.0;
 const MS_PER_SECOND: f32 = 1000.0;
 
 pub(crate) fn toggle_overlay(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     mut state: ResMut<OverlayState>,
     mut overlay_q: Query<&mut Node, With<PerfOverlay>>,
 ) {
-    if !keyboard.just_pressed(bindings.key(Action::ToggleDiagnosticsOverlay)) {
+    if !input.just_pressed(Action::ToggleDiagnosticsOverlay) {
         return;
     }
     state.visible = !state.visible;

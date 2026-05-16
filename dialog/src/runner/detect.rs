@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use keybinds::action::Action;
-use keybinds::bindings::Keybinds;
+use keybinds::ActionInput;
 use models::speed::Speed;
 
 use crate::components::{DialogueTrigger, Talker};
@@ -53,12 +53,11 @@ pub fn detect_interact_range(
 
 /// When the player presses Interact near a Talker, emit [`StartDialogue`].
 pub fn detect_interact_input(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     player_q: Query<&DialogueTrigger>,
     mut writer: MessageWriter<StartDialogue>,
 ) {
-    if !keyboard.just_pressed(bindings.key(Action::Interact)) {
+    if !input.just_pressed(Action::Interact) {
         return;
     }
     let Ok(trigger) = player_q.single() else {

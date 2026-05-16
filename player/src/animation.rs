@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use keybinds::Keybinds;
 use std::time::Duration;
 
 use crate::input::{is_sprinting, read_movement_input};
@@ -157,8 +156,7 @@ impl Default for AnimationTimer {
 
 /// Updates facing direction, animation kind, and movement state from input.
 pub fn update_animation_state(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: keybinds::ActionInput,
     mut query: Query<(
         &mut FacingDirection,
         &mut AnimationKind,
@@ -171,8 +169,8 @@ pub fn update_animation_state(
         return;
     };
 
-    let velocity = read_movement_input(&keyboard, &bindings);
-    let sprinting = is_sprinting(&keyboard, &bindings);
+    let velocity = read_movement_input(&input);
+    let sprinting = is_sprinting(&input);
 
     let (new_kind, new_movement) = if velocity == Vec2::ZERO {
         (AnimationKind::Idle, MovementState::Idle)

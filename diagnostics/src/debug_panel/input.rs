@@ -1,7 +1,7 @@
 //! Toggle and live-edit inputs for the F5 debug panel.
 
 use bevy::prelude::*;
-use keybinds::{Action, Keybinds};
+use keybinds::{Action, ActionInput};
 use models::time::GameClock;
 use models::weather::{WeatherKind, WeatherState};
 use models::wind::WindStrength;
@@ -36,12 +36,11 @@ pub(crate) const PERIOD_HOURS: [(f32, &str); 8] = [
 ];
 
 pub(crate) fn toggle_debug_panel(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     mut state: ResMut<DebugPanelState>,
     mut panel_q: Query<&mut Node, With<DebugPanel>>,
 ) {
-    if !keyboard.just_pressed(bindings.key(Action::ToggleDebugPanel)) {
+    if !input.just_pressed(Action::ToggleDebugPanel) {
         return;
     }
     state.visible = !state.visible;

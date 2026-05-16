@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 use keybinds::action::Action;
-use keybinds::bindings::Keybinds;
+use keybinds::ActionInput;
 use models::game_states::GameState;
 
 pub fn handle_pause_input(
-    keyboard: Res<ButtonInput<KeyCode>>,
+    input: ActionInput,
     mut next_state: ResMut<NextState<GameState>>,
     current_state: Res<State<GameState>>,
 ) {
-    if !keyboard.just_pressed(KeyCode::Escape) {
+    if !input.just_pressed(Action::Pause) {
         return;
     }
     match *current_state.get() {
@@ -20,14 +20,13 @@ pub fn handle_pause_input(
 }
 
 /// Toggle the quest log on/off. Bound to [`Action::OpenQuestLog`] (default
-/// `J`). Active in `Playing` and `QuestLog` states only.
+/// `J`, gamepad `Select`/`Back`). Active in `Playing` and `QuestLog` only.
 pub fn handle_quest_log_input(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     mut next_state: ResMut<NextState<GameState>>,
     current_state: Res<State<GameState>>,
 ) {
-    if !keyboard.just_pressed(bindings.key(Action::OpenQuestLog)) {
+    if !input.just_pressed(Action::OpenQuestLog) {
         return;
     }
     match *current_state.get() {

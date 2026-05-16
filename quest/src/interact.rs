@@ -9,7 +9,7 @@
 use bevy::prelude::*;
 use dialog::flags::DialogueFlags;
 use keybinds::action::Action;
-use keybinds::bindings::Keybinds;
+use keybinds::ActionInput;
 use models::alignment::{AlignmentFaction, PlayerAlignment};
 use models::speed::Speed;
 
@@ -160,15 +160,14 @@ pub fn detect_investigate_range(
 /// popup UI; otherwise the configured `item_grant` is applied immediately.
 #[allow(clippy::too_many_arguments)]
 pub fn detect_investigate_input(
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     player_q: Query<&InvestigateTrigger>,
     mut targets: Query<&mut Investigatable>,
     mut flags: ResMut<DialogueFlags>,
     mut inventory: ResMut<Inventory>,
     mut writer: MessageWriter<InvestigationFired>,
 ) {
-    if !keyboard.just_pressed(bindings.key(Action::Interact)) {
+    if !input.just_pressed(Action::Interact) {
         return;
     }
     let Ok(trigger) = player_q.single() else {

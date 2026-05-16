@@ -6,7 +6,7 @@
 
 use bevy::prelude::*;
 use dialog::history::LoreBook;
-use keybinds::Keybinds;
+use keybinds::{ControllerBinds, Keybinds};
 use models::multiverse::MultiverseSave;
 use models::settings::GameSettings;
 use quest::inventory::Inventory;
@@ -36,6 +36,7 @@ impl Plugin for SavePlugin {
 
         // Per-resource slots.
         app.register_persistable::<Keybinds>()
+            .register_persistable::<ControllerBinds>()
             .register_persistable::<LoreBook>()
             .register_persistable::<GameSettings>()
             .register_persistable::<MultiverseSave>()
@@ -50,6 +51,10 @@ impl Plugin for SavePlugin {
 
 impl Persistable for Keybinds {
     const KEY: &'static str = "keybinds";
+}
+
+impl Persistable for ControllerBinds {
+    const KEY: &'static str = "controller_binds";
 }
 
 impl Persistable for LoreBook {

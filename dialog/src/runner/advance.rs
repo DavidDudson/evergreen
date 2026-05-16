@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use keybinds::action::Action;
-use keybinds::bindings::Keybinds;
+use keybinds::ActionInput;
 
 use crate::asset::DialogueLine;
 use crate::events::{ChoicesReady, DialogueEnded, DialogueLineReady};
@@ -11,8 +11,7 @@ use super::state::{DialogueRunner, RunnerState};
 /// Advances the runner by one step, emitting presentation events for the UI.
 pub fn advance_runner(
     mut runner: ResMut<DialogueRunner>,
-    keyboard: Res<ButtonInput<KeyCode>>,
-    bindings: Res<Keybinds>,
+    input: ActionInput,
     flags: Res<DialogueFlags>,
     mut line_writer: MessageWriter<DialogueLineReady>,
     mut choice_writer: MessageWriter<ChoicesReady>,
@@ -43,8 +42,8 @@ pub fn advance_runner(
     }
 
     if *awaiting_advance {
-        let advance = keyboard.just_pressed(bindings.key(Action::DialogAdvance))
-            || keyboard.just_pressed(bindings.key(Action::Interact));
+        let advance =
+            input.just_pressed(Action::DialogAdvance) || input.just_pressed(Action::Interact);
         if !advance {
             return;
         }
