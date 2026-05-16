@@ -1,0 +1,33 @@
+// Sick deer encounter. Setting `quest:bigby.sick_animals:milestone:0` here
+// advances Bigby's investigation to milestone 1 (find the source).
+//
+// The deer is mute -- only the player narrates. No LoreMeta: this is quest
+// flavour, not lore-page content.
+DialogueScript(
+    id: "creature.sick_deer.encounter",
+    speaker_key: "ui.narrator.name",
+    keyword_tags: ["quest", "greenwood", "sick_animals"],
+    lines: [
+        Speech(text_key: "creature.sick_deer.line.0"),
+        Speech(text_key: "creature.sick_deer.line.1"),
+        PlayerChoice(options: [
+            ChoiceOption(
+                text_key: "creature.sick_deer.choice.examine",
+                flags_required: [],
+                flags_set: ["quest:bigby.sick_animals:milestone:0"],
+                next: [
+                    Speech(text_key: "creature.sick_deer.examine.0"),
+                    Speech(text_key: "creature.sick_deer.examine.1"),
+                ],
+            ),
+            ChoiceOption(
+                text_key: "creature.sick_deer.choice.leave",
+                flags_required: [],
+                flags_set: [],
+                next: [
+                    Speech(text_key: "creature.sick_deer.leave"),
+                ],
+            ),
+        ]),
+    ],
+)

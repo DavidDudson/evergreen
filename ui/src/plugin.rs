@@ -6,6 +6,7 @@ use crate::focus;
 use crate::fonts;
 use crate::game_over_menu::GameOverScreen;
 use crate::hud::HudScreen;
+use crate::investigate_popup::InvestigatePopupScreen;
 use crate::keybind_screen::KeybindScreenSetup;
 use crate::level_complete::LevelCompleteSetup;
 use crate::lore_page::LoreScreen;
@@ -32,6 +33,7 @@ impl Plugin for UiPlugin {
         GameOverScreen::register(app);
         PauseScreen::register(app);
         DialogBoxScreen::register(app);
+        InvestigatePopupScreen::register(app);
         LoreScreen::register(app);
         SettingsScreenSetup::register(app);
         CreditsScreenSetup::register(app);

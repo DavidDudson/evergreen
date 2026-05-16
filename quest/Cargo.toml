@@ -10,5 +10,6 @@ workspace = true
 bevy = "0.18.1"
 models = { path = "../models" }
 dialog = { path = "../dialog" }
+keybinds = { path = "../keybinds" }
 serde = { version = "1.0.228", features = ["derive"] }
 ron = "0.12.1"

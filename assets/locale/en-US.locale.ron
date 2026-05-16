@@ -273,8 +273,19 @@
     // -------------------------------------------------------------------------
     "quest.bigby.sick_animals.title": "The Quiet Dying",
     "quest.bigby.sick_animals.description": "Bigby has heard rumours of deer dying along the Greenwood ridge with no predator marks. He cannot leave his Redeye trail to investigate. Find the cause and report back.",
-    "quest.bigby.sick_animals.milestone.0": "Reach the Greenwood ridge.",
-    "quest.bigby.sick_animals.milestone.1": "Identify what is killing the deer.",
+    "quest.bigby.sick_animals.milestone.0": "Examine a sick deer.",
+    "quest.bigby.sick_animals.milestone.1": "Find the source of the sickness.",
     "quest.bigby.sick_animals.milestone.2": "Report your findings to Bigby.",
     "quest.bigby.sick_animals.lore": "The Greenwood ridge has always been a deer corridor -- generations of fawns learn the watering trails before they can run. When the bodies began appearing, none of them carried tooth, claw, or arrow. Bigby suspects the same hand that aims the Redeye is testing something quieter on the Greenwood first.",
+    "quest.bigby.sick_animals.pond.description": "The water runs an unnatural violet, and a jagged shard of mirror lies half-submerged on the bank. The shard hums faintly when you lift it. This is no forest poison -- someone planted it.",
+
+    // Sick deer encounter
+    "ui.narrator.name": "",
+    "creature.sick_deer.line.0": "A young doe lies in the grass, sides shuddering with each breath. Her eyes are clouded with a faint violet sheen.",
+    "creature.sick_deer.line.1": "She does not flee as you approach. Whatever has hold of her, it is past running.",
+    "creature.sick_deer.choice.examine": "Examine her closely.",
+    "creature.sick_deer.choice.leave": "Leave her in peace.",
+    "creature.sick_deer.examine.0": "No bite. No arrow. The fur around her muzzle is wet -- she drank from something not long ago. The dampness smells faintly metallic, faintly sweet.",
+    "creature.sick_deer.examine.1": "Whatever water she found nearby, it is the cause. Follow her trail back to its source.",
+    "creature.sick_deer.leave": "You step back. The doe's gaze does not follow you. The forest is silent around her.",
 }

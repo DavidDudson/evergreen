@@ -6,6 +6,7 @@ mod focus;
 pub mod fonts;
 mod game_over_menu;
 mod hud;
+mod investigate_popup;
 mod keybind_screen;
 mod level_complete;
 mod lore_page;

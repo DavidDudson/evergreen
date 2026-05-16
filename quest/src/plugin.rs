@@ -8,11 +8,19 @@ use models::alignment::PlayerAlignment;
 
 use crate::asset::{QuestAsset, QuestAssetLoader};
 use crate::events::{MilestoneAdvanced, QuestAccepted, QuestCompleted, QuestOffered};
+use crate::interact::{
+    detect_investigate_input, detect_investigate_range, sync_investigate_prompt,
+    InvestigateIconAsset, InvestigationFired,
+};
+use crate::inventory::Inventory;
 use crate::model::Unlock;
 use crate::progress::{QuestProgress, QuestStatus};
 use crate::registry::{
     drain_quest_assets, load_quest_manifest, QuestHandles, QuestRegistry,
 };
+use crate::world::spawn_quest_props;
+
+const MAGNIFYING_GLASS_ICON: &str = "sprites/ui/magnifying_glass.webp";
 
 pub struct QuestPlugin;
 
@@ -23,16 +31,31 @@ impl Plugin for QuestPlugin {
 
         app.init_resource::<QuestRegistry>()
             .init_resource::<QuestHandles>()
-            .init_resource::<QuestProgress>();
+            .init_resource::<QuestProgress>()
+            .init_resource::<Inventory>();
 
         app.add_message::<QuestOffered>()
             .add_message::<QuestAccepted>()
             .add_message::<MilestoneAdvanced>()
-            .add_message::<QuestCompleted>();
+            .add_message::<QuestCompleted>()
+            .add_message::<InvestigationFired>();
 
-        app.add_systems(Startup, load_quest_manifest);
-        app.add_systems(Update, (drain_quest_assets, watch_quest_flags).chain());
+        app.add_systems(Startup, (load_quest_manifest, load_investigate_icon, spawn_quest_props));
+        app.add_systems(
+            Update,
+            (
+                drain_quest_assets,
+                watch_quest_flags,
+                detect_investigate_range,
+                detect_investigate_input,
+                sync_investigate_prompt,
+            ),
+        );
     }
+}
+
+fn load_investigate_icon(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.insert_resource(InvestigateIconAsset(asset_server.load(MAGNIFYING_GLASS_ICON)));
 }
 
 /// All four lifecycle writers grouped so [`watch_quest_flags`] stays under

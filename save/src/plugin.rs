@@ -9,6 +9,8 @@ use dialog::history::LoreBook;
 use keybinds::Keybinds;
 use models::multiverse::MultiverseSave;
 use models::settings::GameSettings;
+use quest::inventory::Inventory;
+use quest::progress::QuestProgress;
 
 use crate::file::SaveFile;
 use crate::persistable::{load_save_file, PersistableAppExt};
@@ -36,7 +38,9 @@ impl Plugin for SavePlugin {
         app.register_persistable::<Keybinds>()
             .register_persistable::<LoreBook>()
             .register_persistable::<GameSettings>()
-            .register_persistable::<MultiverseSave>();
+            .register_persistable::<MultiverseSave>()
+            .register_persistable::<QuestProgress>()
+            .register_persistable::<Inventory>();
     }
 }
 
@@ -58,4 +62,12 @@ impl Persistable for GameSettings {
 
 impl Persistable for MultiverseSave {
     const KEY: &'static str = "multiverse";
+}
+
+impl Persistable for QuestProgress {
+    const KEY: &'static str = quest::progress::QUEST_SLOT;
+}
+
+impl Persistable for Inventory {
+    const KEY: &'static str = quest::inventory::INVENTORY_SLOT;
 }

@@ -4165,6 +4165,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "dialog",
+ "keybinds",
  "models",
  "ron",
  "serde",
@@ -4484,6 +4485,7 @@ dependencies = [
  "dialog",
  "keybinds",
  "models",
+ "quest",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -5083,6 +5085,7 @@ dependencies = [
  "keybinds",
  "level",
  "models",
+ "quest",
 ]
 
 [[package]]

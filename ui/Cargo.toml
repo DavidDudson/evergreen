@@ -12,3 +12,4 @@ level = { path = "../level" }
 models = { path = "../models" }
 dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
+quest = { path = "../quest" }
