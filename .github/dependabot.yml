@@ -1,0 +1,52 @@
+version: 2
+updates:
+  # Rust workspace deps. Cargo workspaces share a single Cargo.lock at root,
+  # so one ecosystem entry covers every member crate.
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    # Group related crates into single PRs to avoid PR storms and to keep
+    # ecosystems that must bump together aligned.
+    groups:
+      # Bevy plugins are pinned to Bevy's minor version. If Bevy bumps,
+      # every bevy_* / bevy-* crate must bump together or compile breaks.
+      # Grouping them prevents Dependabot opening N separate PRs that each
+      # can't merge alone.
+      bevy:
+        patterns:
+          - "bevy"
+          - "bevy_*"
+          - "bevy-*"
+      # Common derive + proc-macro pairs — version drift causes confusing
+      # compile errors. Keep them in lockstep.
+      serde:
+        patterns:
+          - "serde"
+          - "serde_*"
+      tokio:
+        patterns:
+          - "tokio"
+          - "tokio-*"
+      # Patch-level updates across the rest of the tree — keep as one PR
+      # to avoid a constant trickle of single-line bumps.
+      patch:
+        update-types:
+          - patch
+    # Skip rust-toolchain — MSRV / nightly version changes are intentional.
+    ignore:
+      - dependency-name: "rust-toolchain"
+
+  # GitHub Actions in .github/workflows/*.yml (currently ci.yml + deploy.yml).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
