@@ -4,6 +4,7 @@
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use dialog::flags::DialogueFlags;
+use keybinds::{HapticPulse, Haptics};
 use models::alignment::PlayerAlignment;
 
 use crate::asset::{QuestAsset, QuestAssetLoader};
@@ -50,8 +51,41 @@ impl Plugin for QuestPlugin {
                 detect_investigate_input,
                 apply_investigate_choice,
                 sync_investigate_prompt,
+                haptics_for_quest_events,
+                haptics_for_investigation,
             ),
         );
+    }
+}
+
+/// Map quest lifecycle messages to controller rumble. Order:
+/// QuestOffered -> LIGHT, MilestoneAdvanced -> MEDIUM, QuestCompleted -> STRONG.
+fn haptics_for_quest_events(
+    mut offered: MessageReader<QuestOffered>,
+    mut advanced: MessageReader<MilestoneAdvanced>,
+    mut completed: MessageReader<QuestCompleted>,
+    mut haptics: Haptics,
+) {
+    if completed.read().next().is_some() {
+        haptics.pulse(HapticPulse::STRONG);
+        return;
+    }
+    if advanced.read().next().is_some() {
+        haptics.pulse(HapticPulse::MEDIUM);
+        return;
+    }
+    if offered.read().next().is_some() {
+        haptics.pulse(HapticPulse::LIGHT);
+    }
+}
+
+/// Subtle tap when an investigation popup fires (the magnifying-glass UX).
+fn haptics_for_investigation(
+    mut events: MessageReader<InvestigationFired>,
+    mut haptics: Haptics,
+) {
+    if events.read().next().is_some() {
+        haptics.pulse(HapticPulse::TAP);
     }
 }
 
