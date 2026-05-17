@@ -282,6 +282,11 @@
     "quest.bigby.sick_animals.shard.destroy": "Destroy the shard.",
     "quest.bigby.sick_animals.shard.pocket": "Pocket the shard.",
     "quest.bigby.sick_animals.shard.consume_response": "You swallow the glass. It does not cut. Cold travels through your jaw, your shoulders, your spine. You feel watched from inside.",
+    "npc.bloody_mary.name": "Bloody Mary",
+    "npc.bloody_mary.encourage.consume.0": "Yes... swallow another. The cold knows your name now.",
+    "npc.bloody_mary.encourage.consume.1": "Sweet girl. There are more shards. Find them. Eat them.",
+    "npc.bloody_mary.encourage.consume.2": "Good. Good. Once is a taste -- twice is a promise.",
+    "npc.bloody_mary.encourage.consume.3": "Don't stop, Briar. The mirror remembers every piece you take.",
     "quest.bigby.sick_animals.shard.destroy_response": "You grind the shard against a stone until only powder remains. The pond surface seems to lighten a shade. The forest exhales.",
     "quest.bigby.sick_animals.shard.pocket_response": "You wrap the shard in cloth and tuck it away. It hums quietly through the fabric.",
 

@@ -71,6 +71,10 @@ pub const BIOME_CITY_TINT: Color = Color::srgb(0.95, 0.92, 0.80);
 pub const BIOME_GREENWOOD_TINT: Color = Color::srgb(0.85, 0.95, 0.82);
 pub const BIOME_DARKWOOD_TINT: Color = Color::srgb(0.65, 0.70, 0.62);
 
+// Purple-poison pond tint -- applied to the standard pond wang tileset so
+// the quest pond reads as obviously corrupted without needing a new asset.
+pub const POND_PURPLE_TINT: Color = Color::srgb(1.4, 0.5, 1.6);
+
 // General-purpose alpha constants
 pub const TRANSPARENT: Color = Color::srgba(1.0, 1.0, 1.0, 0.0);
 pub const OPAQUE_WHITE: Color = Color::srgba(1.0, 1.0, 1.0, 1.0);
@@ -115,6 +119,11 @@ pub const FISH_SHADOW_TINT: Color = Color::srgba(0.05, 0.08, 0.15, 0.45);
 /// wades through shallow water. Initial alpha; fades over the splash
 /// lifetime via `Sprite::with_alpha`.
 pub const SPLASH_TINT: Color = Color::srgba(1.0, 1.0, 1.0, 0.55);
+
+/// Pale, slightly-violet tint for the Bloody Mary apparition that
+/// materialises next to the player after they consume a mirror shard.
+/// Translucent so she reads as ghostly rather than solid.
+pub const APPARITION_TINT: Color = Color::srgba(0.85, 0.80, 1.0, 0.80);
 
 /// Linearly interpolate between two colors in linear (non-gamma) color space.
 pub fn lerp_linear_color(a: Color, b: Color, t: f32) -> Color {

@@ -16,6 +16,7 @@ use crate::decorations;
 use crate::enemies;
 use crate::galen;
 use crate::grass;
+use crate::mary_apparition;
 use crate::npc_anim;
 use crate::npc_labels::{self, InteractIconState};
 use crate::npc_wander;
@@ -99,6 +100,14 @@ impl Plugin for LevelPlugin {
                     .run_if(in_state(GameState::Playing)),
             )
             .add_systems(
+                Update,
+                (
+                    mary_apparition::spawn_mary_on_consume,
+                    mary_apparition::tick_mary_apparition,
+                )
+                    .run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
                 OnEnter(GameState::MapTransition),
                 portal::apply_map_transition,
             )
@@ -128,6 +137,7 @@ impl Plugin for LevelPlugin {
                     creatures::creature_movement,
                     creatures::creature_animation,
                     creatures::creature_flying_bob,
+                    enemies::wander_enemies,
                 )
                     .run_if(in_state(GameState::Playing)),
             )
@@ -152,6 +162,7 @@ impl Plugin for LevelPlugin {
                     beach::despawn_piers,
                     portal::despawn_portals,
                     enemies::despawn_enemies,
+                    mary_apparition::despawn_apparitions,
                 )
                     .run_if(should_despawn_world),
             );
@@ -190,6 +201,14 @@ fn regenerate_world(
         // (id, seed, alignment, traversal) so the player drops back into
         // the same map graph.
         traversed.0 = save.maps_traversed;
+        // Migrate legacy saves whose root map was generated at the old
+        // City-band alignment (<= 25): force them back into Greenwood so
+        // the entry point matches the current design.
+        if save.current_id == crate::world::MapId::ROOT.0
+            && save.current_alignment < 26
+        {
+            save.current_alignment = crate::world::ROOT_MAP_ALIGNMENT;
+        }
         *world = WorldMap::generate(
             crate::world::MapId(save.current_id),
             save.current_seed,

@@ -9,6 +9,7 @@ pub mod enemies;
 pub mod exit;
 pub mod galen;
 pub mod grass;
+pub mod mary_apparition;
 pub mod npc_anim;
 pub mod npc_labels;
 pub mod npc_wander;
