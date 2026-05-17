@@ -7,7 +7,7 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18.1"
+bevy.workspace = true
 keybinds = { path = "../keybinds" }
 level = { path = "../level" }
 models = { path = "../models" }

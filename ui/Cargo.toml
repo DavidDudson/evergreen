@@ -7,7 +7,7 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18.1"
+bevy.workspace = true
 level = { path = "../level" }
 models = { path = "../models" }
 dialog = { path = "../dialog" }

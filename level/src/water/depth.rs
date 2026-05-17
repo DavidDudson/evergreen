@@ -54,7 +54,7 @@ pub fn classify_depths(map: &mut WaterMap) {
             continue;
         }
         let depth = match kind {
-            WaterKind::Plain => WaterDepth::Shallow,
+            WaterKind::Plain | WaterKind::PurplePond => WaterDepth::Shallow,
             WaterKind::HotSpring | WaterKind::Waterfall => WaterDepth::Deep,
             WaterKind::Lake | WaterKind::Ocean => classify_by_distance(map, area, local, kind),
             // River variants handled by `is_river()` early-return above.

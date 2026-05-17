@@ -243,7 +243,13 @@ fn ensure_area_spawned(
         area_pos,
     );
     crate::enemies::spawn_area_enemies(commands, asset_server, atlas_layouts, area, area_pos);
-    crate::quest_props::spawn_quest_prop_for_area(commands, asset_server, area, area_pos);
+    crate::quest_props::spawn_quest_prop_for_area(
+        commands,
+        asset_server,
+        world,
+        area,
+        area_pos,
+    );
     spawn_portal_for_area(commands, asset_server, atlas_layouts, world, area_pos);
     spawned.0.insert(area_pos);
 }

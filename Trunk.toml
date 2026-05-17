@@ -1,9 +1,20 @@
 [build]
 target = "evergreen_main/index.html"
 
+# Pre-compress release artifacts so static hosts can serve .gz/.br directly.
+# Skips on dev builds (TRUNK_PROFILE=debug) for fast iteration.
+# Install brotli (add to nix-home pkgs) for ~15-20% better ratio than gzip.
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = [
+    "-c",
+    "set -e; [ \"$TRUNK_PROFILE\" = \"release\" ] || exit 0; D=\"${TRUNK_STAGING_DIR:-dist}\"; for f in \"$D\"/*.wasm \"$D\"/*.js \"$D\"/*.html \"$D\"/*.css; do [ -f \"$f\" ] || continue; gzip -f -k -9 \"$f\"; command -v brotli >/dev/null && brotli -f -k -q 11 \"$f\"; done; echo 'compressed:'; ls -lh \"$D\"/*.gz \"$D\"/*.br 2>/dev/null || true"
+]
+
 [serve]
 addresses = ["127.0.0.1"]
-port = 8080
+port = 8081
 
 [watch]
 watch = [

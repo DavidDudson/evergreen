@@ -68,15 +68,43 @@ pub fn spawn_area_scenery_at(
     );
 }
 
-/// Simplified clear check -- 1x1 trunk footprint. Trees refuse to grow on
-/// water tiles (ponds, rivers, ocean, waterfall) or sand.
-fn clear_for_tree(area: &Area, world: &WorldMap, area_pos: IVec2, xu: u32, yu: u32) -> bool {
-    if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
-        return false;
-    }
-    let local = bevy::math::UVec2::new(xu, yu);
-    if world.water.get(area_pos, local).is_some() || world.water.has_sand(area_pos, local) {
-        return false;
+/// Tree footprint covers the trunk tile plus the two horizontally adjacent
+/// tiles (sprite is 3 tiles wide with BOTTOM_CENTER anchor). All three must
+/// be grass with no water / sand so the canopy never overhangs paths or
+/// pond shores.
+fn clear_for_tree(_area: &Area, world: &WorldMap, area_pos: IVec2, xu: u32, yu: u32) -> bool {
+    for dx in [-1_i32, 0, 1] {
+        let lx = i32::try_from(xu).unwrap_or(0) + dx;
+        let ly = i32::try_from(yu).unwrap_or(0);
+        if !matches!(
+            world.terrain_at_extended(area_pos, lx, ly),
+            Some(Terrain::Grass)
+        ) {
+            return false;
+        }
+        let Ok(ux) = u32::try_from(lx) else {
+            return false;
+        };
+        let local = bevy::math::UVec2::new(ux, yu);
+        let key_pos = if (0..u32::from(MAP_WIDTH)).contains(&ux) {
+            area_pos
+        } else if lx < 0 {
+            area_pos + bevy::math::IVec2::new(-1, 0)
+        } else {
+            area_pos + bevy::math::IVec2::new(1, 0)
+        };
+        let key_local = if (0..u32::from(MAP_WIDTH)).contains(&ux) {
+            local
+        } else if lx < 0 {
+            bevy::math::UVec2::new(u32::from(MAP_WIDTH) - 1, yu)
+        } else {
+            bevy::math::UVec2::new(0, yu)
+        };
+        if world.water.get(key_pos, key_local).is_some()
+            || world.water.has_sand(key_pos, key_local)
+        {
+            return false;
+        }
     }
     true
 }

@@ -6,13 +6,95 @@ disallowed_methods = "deny"
 [profile.dev]
 opt-level = 1
 incremental = true
+debug = "line-tables-only"
 
 [profile.dev.package."*"]
 opt-level = 3
 incremental = true
+debug = false
+
+[profile.debug-full]
+inherits = "dev"
+debug = true
+
+[profile.debug-full.package."*"]
+debug = "line-tables-only"
 
 [profile.release]
-codegen-units = 1
+codegen-units = 1                   # better cross-crate optimization (slower compile)
+lto = "fat"                         # link-time optimization across all crates, max DCE
+opt-level = 3                       # full speed opts; wasm-opt handles size after
+strip = "symbols"                   # remove symbol names from binary
+panic = "abort"                     # no unwinding; smaller binary, faster, ok for game
+debug = false                       # no debug info in release wasm
+
+[workspace.dependencies]
+bevy = { version = "0.18.1", default-features = false, features = [
+    # core runtime
+    "std",                          # standard library (required on wasm32-unknown-unknown)
+    "multi_threaded",               # parallel scheduler feature gates
+    "bevy_log",                     # tracing/log macros, console output
+
+    # asset + scene
+    "bevy_asset",                   # AssetServer, Handle<T>, async asset loading
+    "bevy_scene",                   # Scene + SceneSpawner
+    "bevy_state",                   # GameState enum, run_if(in_state(...))
+    "serialize",                    # serde derives for Bevy types (used by save crate)
+
+    # rendering (2D umbrella pulls in camera, sprite, sprite_render, image, mesh, shader, etc)
+    "2d",                           # full 2D rendering stack
+    "bevy_color",                   # Color type, palette support
+    "bevy_core_pipeline",           # main camera pipeline, clear color, MSAA
+    "webgl2",                       # wasm GPU backend
+    "tonemapping_luts",             # tonemapping textures
+    "smaa_luts",                    # SMAA anti-aliasing textures
+    "bevy_anti_alias",              # AA pipeline support
+    "bevy_post_process",            # post processing graph (used by post_processing crate)
+
+    # text + UI
+    "bevy_text",                    # Text2d, font rendering
+    "default_font",                 # embedded fallback font
+    "ui",                           # full UI stack (menus, HUD, layout)
+    "bevy_gizmos",                  # immediate-mode debug shapes (dev tooling)
+
+    # input devices
+    "keyboard",                     # keyboard input events
+    "mouse",                        # mouse input events
+    "gamepad",                      # gamepad umbrella (pulls bevy_gilrs)
+    "bevy_input_focus",             # keyboard focus management for UI
+
+    # picking (interaction)
+    "picking",                      # picking framework core
+    "sprite_picking",               # raycast picking against 2D sprites
+    "ui_picking",                   # button clicks, UI hover
+
+    # windowing
+    "bevy_window",                  # Window resource, events
+    "bevy_winit",                   # OS window backend (winit -> canvas on wasm)
+    "custom_cursor",                # custom cursor image support
+
+    # audio (planned per CLAUDE.md)
+    "audio",                        # audio umbrella (pulls bevy_audio)
+    "vorbis",                       # .ogg decoder
+
+    # image formats
+    "webp",                         # .webp loader (project convention: all images webp)
+    "zstd_rust",                    # pure-rust zstd backend required by bevy_image
+] }
+# OMITTED (intentionally disabled, none of these are used):
+#   3d                           - full 3D rendering stack
+#   bevy_pbr                     - physically-based rendering
+#   bevy_gltf / gltf_animation   - 3D model loading
+#   bevy_animation / morph       - skeletal/clip animation
+#   mesh_picking                 - 3D mesh picking
+#   hdr                          - HDR rendering pipeline
+#   sysinfo_plugin               - CPU/RAM probes
+#   x11 / wayland                - Linux native window backends (wasm doesn't need)
+#   png / jpeg / bmp / gif / tga  - alt image formats (project convention: webp only)
+#   mp3 / flac / wav / symphonia-* - alt audio formats (vorbis only)
+#   meshlet / dlss / solari      - advanced 3D rendering
+#   bevy_remote / bevy_dev_tools - extra dev tooling
+#   bevy_ci_testing / trace_*    - CI + tracing infrastructure
 
 [workspace]
 resolver = "2"

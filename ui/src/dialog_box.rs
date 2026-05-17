@@ -29,6 +29,8 @@ const CHOICE_PADDING_H_PX: f32 = 16.0;
 const CHOICE_PADDING_V_PX: f32 = 8.0;
 const CHOICE_MARGIN_TOP_PX: f32 = 4.0;
 const CHOICE_RADIUS_PX: f32 = 4.0;
+/// Horizontal gap between the quest-offer `?` icon and the choice label.
+const CHOICE_ICON_GAP_PX: f32 = 6.0;
 
 // ---------------------------------------------------------------------------
 // Components
@@ -248,16 +250,16 @@ pub fn on_choices_ready(
     };
 
     let choice_count = event.options.len();
-    for (i, (index, text_key)) in event.options.iter().enumerate() {
-        let label = locale.get(text_key).to_string();
+    for (i, view) in event.options.iter().enumerate() {
+        let label = locale.get(&view.text_key).to_string();
         let bg = if i == 0 {
             theme::DIALOG_CHOICE_HOVER
         } else {
             theme::DIALOG_CHOICE_BG
         };
-        commands
+        let button = commands
             .spawn((
-                ChoiceButton(*index),
+                ChoiceButton(view.index),
                 Button,
                 Node {
                     padding: UiRect::axes(
@@ -267,20 +269,36 @@ pub fn on_choices_ready(
                     margin: UiRect::top(Val::Px(CHOICE_MARGIN_TOP_PX)),
                     border_radius: BorderRadius::all(Val::Px(CHOICE_RADIUS_PX)),
                     justify_content: JustifyContent::FlexStart,
+                    align_items: AlignItems::Center,
+                    column_gap: Val::Px(CHOICE_ICON_GAP_PX),
                     ..Node::default()
                 },
                 BackgroundColor(bg),
                 ChildOf(container),
             ))
-            .with_child((
-                Text::new(label),
-                TextColor(theme::DIALOG_TEXT),
+            .id();
+        if view.is_quest_offer {
+            commands.spawn((
+                Text::new("?"),
+                TextColor(theme::INTERACT_PROMPT),
                 TextFont {
                     font: fonts.0.clone(),
                     font_size: CHOICE_FONT_SIZE_PX,
                     ..default()
                 },
+                ChildOf(button),
             ));
+        }
+        commands.spawn((
+            Text::new(label),
+            TextColor(theme::DIALOG_TEXT),
+            TextFont {
+                font: fonts.0.clone(),
+                font_size: CHOICE_FONT_SIZE_PX,
+                ..default()
+            },
+            ChildOf(button),
+        ));
     }
 
     selected.index = 0;

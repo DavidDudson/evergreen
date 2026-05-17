@@ -96,6 +96,41 @@ pub struct ChoiceOption {
     pub next: Vec<DialogueLine>,
 }
 
+/// Convention from the quest crate: a `quest:<id>:offer` flag is set when a
+/// giver first reveals the quest. Identifies the choice as a quest pitch.
+const QUEST_OFFER_PREFIX: &str = "quest:";
+const QUEST_OFFER_SUFFIX: &str = ":offer";
+
+impl ChoiceOption {
+    /// Returns the `quest:<id>:offer` flag this choice would set if any.
+    /// Used by the UI to mark quest-pitch options with a question-mark icon.
+    pub fn quest_offer_flag(&self) -> Option<&str> {
+        self.flags_set
+            .iter()
+            .find(|f| f.starts_with(QUEST_OFFER_PREFIX) && f.ends_with(QUEST_OFFER_SUFFIX))
+            .map(String::as_str)
+    }
+}
+
+impl DialogueScript {
+    /// True when any `PlayerChoice` reachable from the script (including
+    /// nested branches) has a `quest:<id>:offer` flag that is not yet set
+    /// in the supplied flag store. Used to flip the overhead NPC indicator
+    /// from `!` to `?` when a quest is on offer.
+    pub fn has_pending_quest_offer(&self, is_flag_set: impl Fn(&str) -> bool) -> bool {
+        fn walk(lines: &[DialogueLine], is_flag_set: &impl Fn(&str) -> bool) -> bool {
+            lines.iter().any(|line| match line {
+                DialogueLine::Speech { .. } => false,
+                DialogueLine::PlayerChoice { options } => options.iter().any(|opt| {
+                    opt.quest_offer_flag().is_some_and(|f| !is_flag_set(f))
+                        || walk(&opt.next, is_flag_set)
+                }),
+            })
+        }
+        walk(&self.lines, &is_flag_set)
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Asset loader
 // ---------------------------------------------------------------------------

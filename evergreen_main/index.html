@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Evergreen</title>
-        <link data-trunk rel="rust" />
+        <link data-trunk rel="rust" data-wasm-opt="z" data-wasm-opt-params="--enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext --enable-reference-types --enable-mutable-globals --strip-debug --strip-producers" />
         <link data-trunk rel="copy-dir" href="../assets" />
         <style>
             *,

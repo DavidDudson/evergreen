@@ -268,6 +268,7 @@ fn npc_anim_bundle(
             idle_frames: IDLE_FRAMES,
             walk_frames: WALK_FRAMES,
             cols: SHEET_COLS.try_into().expect("SHEET_COLS fits usize"),
+            walk_col_start: IDLE_FRAMES,
         },
         NpcAnimFrame::default(),
         NpcAnimTimer::default(),

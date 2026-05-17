@@ -9,7 +9,7 @@ use crate::area::{Area, MAP_HEIGHT, MAP_WIDTH};
 use crate::biome_registry::{BiomeRegistry, DecorationSpec};
 use crate::blending;
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
-use crate::terrain::tile_hash;
+use crate::terrain::{tile_hash, Terrain};
 use crate::world::WorldMap;
 
 #[allow(clippy::as_conversions)]
@@ -67,12 +67,18 @@ pub fn spawn_area_decorations(
             {
                 continue;
             }
-            if area
-                .terrain_at(xu, yu)
-                .is_some_and(|t| t.terrain_tags().has(models::tags::tag::GROUND))
-            {
-                candidates.push((xu, yu));
+            // Decorations only spawn on pure grass tiles -- never on dirt
+            // paths, and never on a grass tile that shares a vertex with a
+            // dirt path. The Wang-corner tilemap renders any tile touching a
+            // dirt vertex as a half-dirt blend, which would put the
+            // decoration sprite half-over the path edge.
+            if area.terrain_at(xu, yu) != Some(Terrain::Grass) {
+                continue;
             }
+            if has_dirt_neighbour(area, world, area_pos, xu, yu) {
+                continue;
+            }
+            candidates.push((xu, yu));
         }
     }
 
@@ -119,6 +125,16 @@ pub fn spawn_area_decorations(
         // satisfied by this terrain (avoids retrying / re-rolling -- decoration
         // density just drops by however many incompatible picks land here).
         if !def.placement.allows(&terrain_tags) {
+            continue;
+        }
+
+        // Wider sprites (bushes, big rocks) overhang their host tile. The
+        // 1-tile buffer we applied to candidates only protects 16px-wide
+        // decorations -- enforce a per-sprite footprint check here so a
+        // 24/32/48 px bush can't sit at a tile that lets its canopy spill
+        // onto a path or a path-blended wang transition tile.
+        let radius = footprint_radius_tiles(def.width_px, def.height_px);
+        if radius > 1 && has_dirt_within_radius(world, area_pos, xu, yu, radius) {
             continue;
         }
 
@@ -172,6 +188,64 @@ fn spawn_decoration(
     if def.rustleable {
         entity.insert(Rustleable);
     }
+}
+
+/// True when any of the 8 tiles surrounding `(xu, yu)` (the tiles sharing a
+/// Wang-corner vertex with this one) is a dirt path.
+fn has_dirt_neighbour(
+    _area: &Area,
+    world: &WorldMap,
+    area_pos: IVec2,
+    xu: u32,
+    yu: u32,
+) -> bool {
+    has_dirt_within_radius(world, area_pos, xu, yu, 1)
+}
+
+/// True when any tile within Chebyshev distance `radius` of `(xu, yu)`
+/// (including diagonals) is a dirt path. Used to enforce a per-sprite
+/// footprint buffer for wider decorations.
+fn has_dirt_within_radius(
+    world: &WorldMap,
+    area_pos: IVec2,
+    xu: u32,
+    yu: u32,
+    radius: i32,
+) -> bool {
+    let lx = i32::try_from(xu).unwrap_or(0);
+    let ly = i32::try_from(yu).unwrap_or(0);
+    for dx in -radius..=radius {
+        for dy in -radius..=radius {
+            if dx == 0 && dy == 0 {
+                continue;
+            }
+            if matches!(
+                world.terrain_at_extended(area_pos, lx + dx, ly + dy),
+                Some(Terrain::Dirt)
+            ) {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// Chebyshev tile radius the decoration occupies + a 1-tile Wang-vertex
+/// safety margin. A 16x16 sprite stays within its host tile (radius 1 --
+/// covered by the candidate filter); 24+ wide sprites overhang into the
+/// next tile and need radius 2 so they don't spill onto a path-blended
+/// transition tile.
+fn footprint_radius_tiles(width_px: f32, height_px: f32) -> i32 {
+    let tile_px = f32::from(TILE_SIZE_PX);
+    let half = width_px.max(height_px) / 2.0;
+    // How many pixels the sprite extends past its own tile's edge.
+    let overhang = (half - tile_px / 2.0).max(0.0);
+    // Tiles of canopy past the host tile, rounded up.
+    let canopy_tiles = (overhang / tile_px).ceil();
+    #[allow(clippy::as_conversions)]
+    let canopy = canopy_tiles as i32;
+    // +1 for the Wang-vertex blend on the next tile beyond the canopy.
+    canopy + 1
 }
 
 fn lcg(state: u64) -> u64 {

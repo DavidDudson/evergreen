@@ -39,8 +39,8 @@ const GENERATE_RETRY_CAP: usize = 10;
 
 /// Alignment range in which Enemy events spawn. Greenwood maps host the
 /// purple-disease ecology; city and darkwood maps stay quiet for now.
-const ENEMY_ALIGNMENT_MIN: AreaAlignment = 11;
-const ENEMY_ALIGNMENT_MAX: AreaAlignment = 50;
+const ENEMY_ALIGNMENT_MIN: AreaAlignment = 26;
+const ENEMY_ALIGNMENT_MAX: AreaAlignment = 75;
 /// Enemy count clamps -- 1-2 enemies on the first map, ramping to 5-6 by
 /// the time the player has crossed ~10 portals.
 const ENEMY_COUNT_MIN: u8 = 1;
@@ -74,7 +74,7 @@ fn pick_enemy_kind(seed: u64, pos: IVec2) -> EnemyKind {
 
 /// Default alignment for the bootstrap (root) map: light greenwood. The
 /// player can portal to other biomes but the entry point sits in greenwood.
-pub const ROOT_MAP_ALIGNMENT: AreaAlignment = 15;
+pub const ROOT_MAP_ALIGNMENT: AreaAlignment = 35;
 
 /// Identifies the main quest line assigned to a generated map. Each map
 /// rolls one [`MainQuestKind`] during world-gen based on its alignment;
@@ -98,8 +98,8 @@ impl MainQuestKind {
 }
 
 /// Greenwood alignment band that hosts the sick-animals quest.
-const SICK_ANIMALS_ALIGN_MIN: AreaAlignment = 11;
-const SICK_ANIMALS_ALIGN_MAX: AreaAlignment = 50;
+const SICK_ANIMALS_ALIGN_MIN: AreaAlignment = 26;
+const SICK_ANIMALS_ALIGN_MAX: AreaAlignment = 75;
 
 /// Choose the main quest for a map by alignment. Returns `None` for maps
 /// whose biome has no main quest yet (city / darkwood today).

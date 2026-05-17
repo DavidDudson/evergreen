@@ -62,18 +62,28 @@ impl NpcAnimKind {
 }
 
 /// Describes the sprite sheet layout — frame counts may vary per character.
+///
+/// Standard NPC sheets pack idle frames at columns `0..idle_frames`, then
+/// walk frames at columns `idle_frames..idle_frames+walk_frames`. Some
+/// placeholder enemy sheets pack a single 8-frame cycle per facing row
+/// instead (idle on front/back rows, walk on side rows) -- those override
+/// [`walk_col_start`] to `0` so both anim kinds resolve to the same frames.
 #[derive(Component, Clone, Copy)]
 pub struct NpcSheet {
     pub idle_frames: usize,
     pub walk_frames: usize,
     pub cols: usize,
+    /// Column index where the walk cycle begins. Defaults to `idle_frames`
+    /// (idle and walk side by side). Set to `0` when the sheet has no
+    /// separate walk strip and both kinds should index the same frames.
+    pub walk_col_start: usize,
 }
 
 impl NpcSheet {
     pub fn col_start(self, kind: NpcAnimKind) -> usize {
         match kind {
             NpcAnimKind::Idle => 0,
-            NpcAnimKind::Walk => self.idle_frames,
+            NpcAnimKind::Walk => self.walk_col_start,
         }
     }
 
@@ -91,6 +101,7 @@ impl Default for NpcSheet {
             idle_frames: 8,
             walk_frames: 4,
             cols: 12,
+            walk_col_start: 8,
         }
     }
 }

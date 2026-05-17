@@ -6,7 +6,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use bevy::math::{IVec2, UVec2};
 
-use crate::area::{Direction, MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{AreaEvent, Direction, QuestPropKind, MAP_HEIGHT, MAP_WIDTH, PURPLE_POND_TILE};
 use crate::terrain::Terrain;
 use crate::world::WorldMap;
 
@@ -22,6 +22,9 @@ use super::tiles::{neighbour_key, WaterKey, WaterKind, WaterMap, TILE_NEIGHBOURS
 
 /// Max tiles in a per-area pond blob.
 const POND_MAX_TILES: usize = 7;
+/// Max tiles in a quest purple pond. Slightly bigger so the corrupted
+/// pond reads as the area's centrepiece.
+const PURPLE_POND_MAX_TILES: usize = 9;
 /// Max tiles in a hot-spring blob.
 const HOT_SPRING_MAX_TILES: usize = 5;
 /// Max tiles in a lake (can cross area boundaries).
@@ -127,6 +130,37 @@ pub fn generate_water_bodies(world: &WorldMap, seed: u64) -> WaterMap {
         }
     }
 
+    // Quest purple ponds: any area carrying `QuestProp(PurplePond)` gets a
+    // flood-fill of `PurplePond` tiles seeded at `PURPLE_POND_TILE` (or the
+    // nearest path-buffered grass tile if that exact spot is blocked).
+    for pos in world.area_positions() {
+        let Some(area) = world.get_area(pos) else {
+            continue;
+        };
+        if !matches!(area.event, AreaEvent::QuestProp(QuestPropKind::PurplePond)) {
+            continue;
+        }
+        let preferred = (
+            pos,
+            UVec2::new(u32::from(PURPLE_POND_TILE.0), u32::from(PURPLE_POND_TILE.1)),
+        );
+        let seed_key = if is_grass_with_path_buffer(world, preferred) {
+            Some(preferred)
+        } else {
+            pick_grass_tile_in_area(world, pos, &mut rng)
+        };
+        if let Some(seed_key) = seed_key {
+            flood_fill(
+                &mut tiles,
+                world,
+                seed_key,
+                WaterKind::PurplePond,
+                PURPLE_POND_MAX_TILES,
+                &mut rng,
+            );
+        }
+    }
+
     let mut map = WaterMap {
         tiles,
         depths: HashMap::new(),
@@ -165,7 +199,7 @@ fn flood_fill(
         if tiles.contains_key(&key) {
             continue;
         }
-        if !is_grass(world, key) {
+        if !is_grass_with_path_buffer(world, key) {
             continue;
         }
         tiles.insert(key, kind);
@@ -193,6 +227,29 @@ fn is_grass(world: &WorldMap, key: WaterKey) -> bool {
     )
 }
 
+/// Like [`is_grass`] but also rejects tiles whose 4-neighbour shares the
+/// edge with a dirt path tile. Wang-corner shore tiles render on any tile
+/// with a water-owning vertex, so a water tile adjacent to a dirt path
+/// would draw a shore sprite over the path. Enforcing a 1-tile buffer keeps
+/// paths visually intact.
+fn is_grass_with_path_buffer(world: &WorldMap, key: WaterKey) -> bool {
+    if !is_grass(world, key) {
+        return false;
+    }
+    let (area_pos, local) = key;
+    let lx = i32::try_from(local.x).unwrap_or(i32::MAX);
+    let ly = i32::try_from(local.y).unwrap_or(i32::MAX);
+    for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
+        if matches!(
+            world.terrain_at_extended(area_pos, lx + dx, ly + dy),
+            Some(Terrain::Dirt)
+        ) {
+            return false;
+        }
+    }
+    true
+}
+
 // ---------------------------------------------------------------------------
 // Seed picking
 // ---------------------------------------------------------------------------
@@ -205,7 +262,10 @@ fn pick_grass_tile_in_area(world: &WorldMap, pos: IVec2, rng: &mut u64) -> Optio
         *rng = lcg(*rng);
         let ly = u32::try_from(*rng % u64::from(MAP_HEIGHT)).ok()?;
         if area.terrain_at(lx, ly) == Some(Terrain::Grass) {
-            return Some((pos, UVec2::new(lx, ly)));
+            let key = (pos, UVec2::new(lx, ly));
+            if is_grass_with_path_buffer(world, key) {
+                return Some(key);
+            }
         }
     }
     None

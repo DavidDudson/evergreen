@@ -88,6 +88,11 @@ pub enum AreaEvent {
 pub const MAP_WIDTH: u16 = 32;
 pub const MAP_HEIGHT: u16 = 18;
 
+/// Tile coordinate where `QuestPropKind::PurplePond` seeds its wang-tile
+/// flood-fill (and where the `Investigatable` falls back to spawning if
+/// the seed has to slide to a path-buffered tile).
+pub const PURPLE_POND_TILE: (u16, u16) = (20, 10);
+
 // Exit-path geometry — must be consistent across all areas so neighbours align.
 // Vertical N/S path: columns 14–16.
 const PATH_COL_START: u32 = 14;

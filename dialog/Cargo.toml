@@ -7,7 +7,7 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18.1"
+bevy.workspace = true
 keybinds = { path = "../keybinds" }
 models = { path = "../models" }
 serde = { version = "1.0.228", features = ["derive"] }

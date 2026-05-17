@@ -7,7 +7,7 @@ edition = "2021"
 workspace = true
 
 [dependencies]
-bevy = "0.18.1"
+bevy.workspace = true
 bevy_light_2d = "0.9"
 dialog = { path = "../dialog" }
 level = { path = "../level" }

@@ -3,7 +3,7 @@ use keybinds::action::Action;
 use keybinds::ActionInput;
 
 use crate::asset::DialogueLine;
-use crate::events::{ChoicesReady, DialogueEnded, DialogueLineReady};
+use crate::events::{ChoiceOptionView, ChoicesReady, DialogueEnded, DialogueLineReady};
 use crate::flags::DialogueFlags;
 
 use super::state::{DialogueRunner, RunnerState};
@@ -65,13 +65,19 @@ pub fn advance_runner(
             *awaiting_advance = true;
         }
         DialogueLine::PlayerChoice { ref options } => {
-            let visible: Vec<(usize, String)> = options
+            let visible: Vec<ChoiceOptionView> = options
                 .iter()
                 .enumerate()
                 .filter(|(_, opt)| {
                     flags.all_set(&opt.flags_required) && opt.condition.is_satisfied(&flags)
                 })
-                .map(|(i, opt)| (i, opt.text_key.clone()))
+                .map(|(i, opt)| ChoiceOptionView {
+                    index: i,
+                    text_key: opt.text_key.clone(),
+                    is_quest_offer: opt
+                        .quest_offer_flag()
+                        .is_some_and(|f| !flags.is_set(f)),
+                })
                 .collect();
 
             if visible.is_empty() {

@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 trunk serve
 ```
 
-The project uses [Trunk](https://trunkrs.dev/) as its WASM build tool and dev server. Running `trunk serve` builds the project and starts a dev server at `http://127.0.0.1:8080` with automatic rebuilds on file changes.
+The project uses [Trunk](https://trunkrs.dev/) as its WASM build tool and dev server. Running `trunk serve` builds the project and starts a dev server at `http://127.0.0.1:8081` with automatic rebuilds on file changes.
 
 ### Building
 

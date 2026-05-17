@@ -24,6 +24,10 @@ use super::depth::WaterDepth;
 pub enum WaterKind {
     /// Plain freshwater pond. Spawns frogs + lily pads.
     Plain,
+    /// Corrupted purple pond from the sick-animals quest. Same wang
+    /// tileset as `Plain` but rendered with a purple tint and a tainted
+    /// terrain tag so fauna systems can opt out.
+    PurplePond,
     /// Geothermal pool. Teal tint, steam particles, no frogs.
     HotSpring,
     /// Large multi-area body of water. Frogs, lily pads, striders.
@@ -76,6 +80,9 @@ impl WaterKind {
     pub fn terrain_tags(self) -> TerrainTags {
         match self {
             Self::Plain => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
+            Self::PurplePond => {
+                TerrainTags::new(&[tag::WATER, tag::STILL], &[tag::FERTILE])
+            }
             Self::Lake => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
             Self::HotSpring => {
                 TerrainTags::new(&[tag::WATER, tag::STILL, tag::HOT], &[tag::HOT])

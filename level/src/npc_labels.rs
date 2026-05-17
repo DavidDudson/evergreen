@@ -6,7 +6,9 @@
 //!   is currently in range of, driven by the [`DialogueTrigger`] on the player.
 
 use bevy::prelude::*;
+use dialog::asset::DialogueScript;
 use dialog::components::{DialogueTrigger, Talker};
+use dialog::flags::DialogueFlags;
 use models::layer::Layer;
 use models::palette;
 use models::speed::Speed;
@@ -46,6 +48,10 @@ pub struct InteractIcon;
 pub struct InteractIconState {
     icon_entity: Option<Entity>,
     for_npc: Option<Entity>,
+    /// Whether the live icon is currently the `?` (quest-offer) glyph.
+    /// Used to force a respawn if the offer state flips without the
+    /// targeted NPC changing.
+    showing_offer: bool,
 }
 
 // ---------------------------------------------------------------------------
@@ -75,33 +81,40 @@ pub fn attach_labels(
     }
 }
 
-/// Syncs the interact "!" icon with the player's current [`DialogueTrigger`].
+/// Syncs the interact icon with the player's current [`DialogueTrigger`].
 ///
-/// Spawns the icon as a child of the targeted NPC; despawns it when the player
-/// moves out of range or the target changes.
+/// Spawns a `?` icon (yellow) when the targeted NPC has a quest offer the
+/// player has not seen yet, otherwise a `!` icon. Despawns it when the
+/// player moves out of range, the target changes, or the offer state
+/// flips so the glyph stays in sync.
 pub fn sync_interact_icon(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     player_q: Query<Option<&DialogueTrigger>, With<Speed>>,
+    talker_q: Query<&Talker>,
+    scripts: Res<Assets<DialogueScript>>,
+    flags: Res<DialogueFlags>,
     mut state: ResMut<InteractIconState>,
 ) {
     let target_npc = player_q.single().ok().and_then(|opt| opt.map(|t| t.npc));
+    let has_offer = target_npc
+        .and_then(|npc| talker_q.get(npc).ok())
+        .and_then(|t| scripts.get(&t.greeting))
+        .is_some_and(|script| script.has_pending_quest_offer(|f| flags.is_set(f)));
 
-    if target_npc == state.for_npc {
+    if target_npc == state.for_npc && has_offer == state.showing_offer {
         return;
     }
 
-    // Despawn the old icon (if any).
     if let Some(old) = state.icon_entity.take() {
         commands.entity(old).despawn();
     }
 
-    // Spawn a new icon if there is a target NPC.
     state.icon_entity = target_npc.map(|npc| {
         commands
             .spawn((
                 InteractIcon,
-                Text2d::new("!"),
+                Text2d::new(if has_offer { "?" } else { "!" }),
                 TextFont {
                     font: asset_server.load("fonts/NotoSans-Regular.ttf"),
                     font_size: ICON_FONT_SIZE_PX,
@@ -115,4 +128,5 @@ pub fn sync_interact_icon(
     });
 
     state.for_npc = target_npc;
+    state.showing_offer = has_offer;
 }

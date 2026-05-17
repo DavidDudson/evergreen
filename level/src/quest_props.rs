@@ -3,8 +3,10 @@
 //! turns the picked variant into a Bevy entity at a deterministic spot
 //! within the area.
 //!
-//! Sick deer carries a `Talker`; purple pond carries a quest-aware
-//! `Investigatable` whose investigation triggers the mirror-shard choice.
+//! Sick deer carries a `Talker`; purple pond is rendered as wang-tile
+//! `WaterKind::PurplePond` water by the water system -- this module only
+//! spawns the invisible `Investigatable` trigger entity that drives the
+//! mirror-shard choice.
 
 use bevy::prelude::*;
 use dialog::components::Talker;
@@ -12,8 +14,10 @@ use models::layer::Layer;
 use quest::interact::{InvestigateChoice, Investigatable};
 use quest::inventory::item;
 
-use crate::area::{AreaEvent, QuestPropKind, MAP_HEIGHT, MAP_WIDTH};
+use crate::area::{AreaEvent, QuestPropKind, MAP_HEIGHT, MAP_WIDTH, PURPLE_POND_TILE};
 use crate::spawning::{area_world_offset, TILE_SIZE_PX};
+use crate::water::WaterKind;
+use crate::world::WorldMap;
 
 const Y_SORT_SCALE: f32 = 0.001;
 
@@ -23,17 +27,13 @@ const SICK_DEER_SCRIPT: &str = "dialogue/scripts/sick_deer.dialog.ron";
 /// Tile coordinate (x, y) within the area where the sick deer sits.
 const SICK_DEER_TILE: (u16, u16) = (10, 6);
 
-const PURPLE_POND_SPRITE: &str = "sprites/scenery/quest/purple_pond.webp";
-const PURPLE_POND_SIZE_PX: f32 = 48.0;
-/// Tile coordinate (x, y) within the area where the purple pond sits.
-const PURPLE_POND_TILE: (u16, u16) = (20, 10);
-
 const POND_DESCRIPTION: &str = "quest.bigby.sick_animals.pond.description";
 const POND_FLAG: &str = "quest:bigby.sick_animals:milestone:1";
 
 pub fn spawn_quest_prop_for_area(
     commands: &mut Commands,
     asset_server: &AssetServer,
+    world: &WorldMap,
     area: &crate::area::Area,
     area_pos: IVec2,
 ) {
@@ -43,7 +43,7 @@ pub fn spawn_quest_prop_for_area(
     let base = area_world_offset(area_pos);
     match kind {
         QuestPropKind::SickDeer => spawn_sick_deer(commands, asset_server, base),
-        QuestPropKind::PurplePond => spawn_purple_pond(commands, asset_server, base),
+        QuestPropKind::PurplePond => spawn_purple_pond(commands, world, area_pos, base),
     }
 }
 
@@ -65,8 +65,24 @@ fn spawn_sick_deer(commands: &mut Commands, asset_server: &AssetServer, base: Ve
     ));
 }
 
-fn spawn_purple_pond(commands: &mut Commands, asset_server: &AssetServer, base: Vec2) {
-    let pos = tile_world_pos(PURPLE_POND_TILE.0, PURPLE_POND_TILE.1, base);
+fn spawn_purple_pond(commands: &mut Commands, world: &WorldMap, area_pos: IVec2, base: Vec2) {
+    // Anchor the Investigatable to an actual purple-water tile so the
+    // interaction radius matches what the player sees on screen. Fall back
+    // to the nominal `PURPLE_POND_TILE` if the area somehow has no purple
+    // water (e.g. flood-fill bailed in a degenerate layout).
+    let (tx, ty) = world
+        .water
+        .tiles_in_area(area_pos)
+        .into_iter()
+        .find(|(_, k)| *k == WaterKind::PurplePond)
+        .map(|(local, _)| {
+            (
+                u16::try_from(local.x).unwrap_or(PURPLE_POND_TILE.0),
+                u16::try_from(local.y).unwrap_or(PURPLE_POND_TILE.1),
+            )
+        })
+        .unwrap_or(PURPLE_POND_TILE);
+    let pos = tile_world_pos(tx, ty, base);
     let investigatable = Investigatable::new(POND_DESCRIPTION, POND_FLAG).with_choices(vec![
         InvestigateChoice {
             text_key: "quest.bigby.sick_animals.shard.consume".to_string(),
@@ -93,12 +109,9 @@ fn spawn_purple_pond(commands: &mut Commands, asset_server: &AssetServer, base: 
     commands.spawn((
         QuestProp,
         Name::new("Purple Pond"),
-        Sprite {
-            image: asset_server.load(PURPLE_POND_SPRITE),
-            custom_size: Some(Vec2::splat(PURPLE_POND_SIZE_PX)),
-            ..default()
-        },
         Transform::from_translation(pos),
+        GlobalTransform::default(),
+        Visibility::Hidden,
         investigatable,
     ));
 }

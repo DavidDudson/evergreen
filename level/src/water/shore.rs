@@ -46,6 +46,16 @@ const POND_DARKWOOD_ALIGNMENT_MIN: u8 = 70;
 #[derive(Component)]
 pub struct SteppingStone;
 
+/// Per-kind sprite color. Most water uses the tileset's native colors;
+/// `PurplePond` re-tints the standard pond_grass tileset to read as
+/// corrupted.
+fn tint_for(kind: WaterKind) -> Color {
+    match kind {
+        WaterKind::PurplePond => models::palette::POND_PURPLE_TINT,
+        _ => models::palette::OPAQUE_WHITE,
+    }
+}
+
 /// Spawn wang-tiled water sprites for every tile position in `area_pos`
 /// that has at least one water-owning vertex. Transition tiles on land
 /// adjacent to water render automatically.
@@ -72,11 +82,18 @@ pub fn spawn_area_water(
 
     // Each kind family uses one wang tileset and one same-kind predicate.
     type Family<'a> = (&'a wang::WangTileset, fn(WaterKind) -> bool, WaterKind);
-    let families: [Family; 5] = [
+    let families: [Family; 6] = [
         (
             pond_tileset,
             |k| matches!(k, WaterKind::Plain | WaterKind::Lake),
             WaterKind::Plain,
+        ),
+        (
+            // Purple pond reuses the standard pond_grass wang tileset; the
+            // spawn loop tints the resulting sprites via `tint_for`.
+            wang_sets.get(wang::POND_GRASS),
+            |k| k == WaterKind::PurplePond,
+            WaterKind::PurplePond,
         ),
         (
             wang_sets.get(wang::HOTSPRING_GRASS),
@@ -137,6 +154,7 @@ pub fn spawn_area_water(
                             index: atlas_idx,
                         }),
                         custom_size: Some(Vec2::splat(tile_px)),
+                        color: tint_for(marker_kind),
                         ..default()
                     },
                     Transform::from_xyz(world_x, world_y, z),
