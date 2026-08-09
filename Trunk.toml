@@ -3,7 +3,22 @@ target = "evergreen_main/index.html"
 
 # Pre-compress release artifacts so static hosts can serve .gz/.br directly.
 # Skips on dev builds (TRUNK_PROFILE=debug) for fast iteration.
-# Install brotli (add to nix-home pkgs) for ~15-20% better ratio than gzip.
+#
+# NOTE: inert on our current host. We deploy to GitHub Pages
+# (.github/workflows/deploy.yml), which compresses on the fly with gzip and
+# ignores brotli. Verified against the live site 2026-08-09: a request for the
+# wasm sending `Accept-Encoding: br, gzip` came back `content-encoding: gzip`,
+# and the .br sidecar is reachable but served as application/octet-stream with
+# no Content-Encoding -- i.e. unusable to a browser. The sidecars are deployed
+# and never read.
+#
+# Kept anyway because it costs nothing and starts paying the moment we move to
+# a host with brotli_static support (Cloudflare Pages, Netlify), which would
+# also let us set immutable cache headers -- Pages pins us to max-age=600
+# despite Trunk emitting content-hashed filenames.
+#
+# The lever that DOES work on Pages is [profile.release] opt-level in
+# Cargo.toml: it shrinks the bytes before GitHub's gzip ever runs.
 [[hooks]]
 stage = "post_build"
 command = "sh"

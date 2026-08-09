@@ -23,7 +23,17 @@ debug = "line-tables-only"
 [profile.release]
 codegen-units = 1                   # better cross-crate optimization (slower compile)
 lto = "fat"                         # link-time optimization across all crates, max DCE
-opt-level = 3                       # full speed opts; wasm-opt handles size after
+# Size over speed. Measured 2026-08-09 on this workspace, all post-wasm-opt:
+#   opt-level = 3    30.87 MB raw   9.22 MB gzip
+#   opt-level = "s"  22.13 MB raw   7.26 MB gzip
+#   opt-level = "z"  18.61 MB raw   6.19 MB gzip   <- chosen
+# "z" caps inlining and disables loop vectorization. It wins here because the
+# per-frame cost is Bevy's scheduler and renderer rather than tight numeric
+# loops -- the heaviest game-side work measured was 8 ms of world generation,
+# once, at level load. Startup is dominated by the browser compiling the
+# module, which scales with its size. If framerate ever regresses, "s" is the
+# conservative fallback and still buys 28% over 3.
+opt-level = "z"
 strip = "symbols"                   # remove symbol names from binary
 panic = "abort"                     # no unwinding; smaller binary, faster, ok for game
 debug = false                       # no debug info in release wasm
