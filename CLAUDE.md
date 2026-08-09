@@ -88,6 +88,8 @@ procedure.
 This project has custom skills to accelerate common tasks. Use them proactively:
 
 - **`/create-dialog`** — Add dialogue scripts, barks, or NPC `Talker` entities. Covers locale keys, RON asset format, flag-gated branching, and `BarkPool` setup.
+- **`/upgrade-deps`** -- Upgrade non-Bevy workspace dependencies. Scans with `cargo upgrade --dry-run`, refreshes the lockfile, runs `cargo audit`, writes `UPGRADE_NOTES.md`.
+- **`/upgrade-bevy`** -- Upgrade Bevy across a minor version. Gates on `bevy_*` plugin readiness first (this is usually the blocker), then scopes the migration guide to code this repo actually uses.
 - **`/bevy-18`** — Bevy 0.18 API reference. **Use this skill before writing any Bevy system, component, event, asset loader, or plugin.** Covers renamed APIs (`Message` instead of `Event`, `MessageReader`/`MessageWriter`, `ChildOf`, etc.), WASM patterns, and common pitfalls.
 
 ### Keybinds

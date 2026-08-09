@@ -30,9 +30,24 @@ open since 2024). On this repo a single invocation peaks at 30–80 GB.
 **Prefer `cargo upgrade --dry-run`** below; only fall back to cargo-outdated
 if you specifically need its `Compat` vs `Latest` split (rare).
 
-Workspace uses **per-crate dep versions** (no `[workspace.dependencies]` table). All `Cargo.toml` files under each member crate must be inspected. Workspace lints in root `Cargo.toml`.
+Workspace uses **per-crate dep versions** for everything except `bevy`, which
+lives in the root `[workspace.dependencies]` table (member crates use
+`bevy = { workspace = true }`). All `Cargo.toml` files under each member crate
+must be inspected, plus the root. Workspace lints in root `Cargo.toml`.
 
-Tests need `--target x86_64-unknown-linux-gnu` (default target is wasm). See [[cargo_test_target]].
+**Bevy itself is out of scope for this skill.** A Bevy minor bump is a
+migration, not a dependency bump, and it is gated on every `bevy_*` plugin
+publishing a compatible release. Use `/upgrade-bevy` for that; it owns the
+readiness check, the migration-guide scoping, and the per-crate gates.
+
+Tests need `--target x86_64-unknown-linux-gnu` (default target is wasm). See
+[[cargo_test_target]]. The native build also links wayland/alsa/udev, which
+`shell.nix` does not provide, so wrap it:
+
+```bash
+nix-shell -p pkg-config wayland libxkbcommon alsa-lib udev libGL vulkan-loader \
+  --run "cargo test --target x86_64-unknown-linux-gnu"
+```
 
 ## Phase 1 — Brainstorm (read-only)
 
@@ -69,6 +84,27 @@ Goal: enumerate every dep, current vs latest, and classify upgrade risk. **No wr
    cargo info bevy        # shows current pinned + latest published
    cargo info serde
    ```
+
+   ⚠️ `cargo info` reads a **cached** registry index and goes stale for months
+   at a time (it reported bevy's latest as `0.19.0-rc.1` three months after
+   `0.19.0` shipped). When the answer matters, query the sparse index directly:
+   ```bash
+   idx() { c=$1
+     case ${#c} in
+       1) p="1/$c";; 2) p="2/$c";;
+       3) p="3/$(printf %s "$c"|cut -c1)/$c";;
+       *) p="$(printf %s "$c"|cut -c1-2)/$(printf %s "$c"|cut -c3-4)/$c";;
+     esac
+     curl -sA "evergreen-dep-audit (davidjohndudson@gmail.com)" "https://index.crates.io/$p"; }
+
+   idx serde | jq -r 'select(.yanked==false)|.vers' | sort -V | tail -3
+   ```
+   Sort with `sort -V`, not "last line" -- index order is publish order, so a
+   backported `0.9.5` can appear after `0.10.1`. Versions containing `-` are
+   pre-releases; skip them.
+
+   The crates.io **JSON API** (`https://crates.io/api/v1/...`) rejects requests
+   from this environment under its data-access policy. Use the sparse index.
    - Flag any row where `Latest != Project` — split into:
      - **Compatible** (`Compat != Project`): patch/minor bumps, low risk.
      - **Breaking** (`Latest != Compat`): major bumps, needs migration plan.
@@ -137,6 +173,13 @@ Order matters. Do upgrades **one logical group at a time**, compiling after each
    cargo update -p <crate>
    cargo build --target x86_64-unknown-linux-gnu
    ```
+   Then, once the direct bumps are green, run a **bare `cargo update`** to move
+   transitives within their existing semver ranges, and re-run `cargo audit`.
+   This is usually where the advisories actually clear: most RUSTSEC hits on
+   this repo are transitive (through `wgpu`, `winit`, `bevy_asset`), and no
+   `Cargo.toml` edit reaches them. On 2026-08-09 this single step cleared two
+   7.5-high `quick-xml` advisories plus three unsound/yanked warnings.
+   Rebuild and re-test afterwards -- it moves ~90 crates.
    - Fix compile errors using the checklist from Phase 2.
    - Re-run `cargo build` until green.
    - Then: `cargo clippy --target x86_64-unknown-linux-gnu -- -D warnings`
