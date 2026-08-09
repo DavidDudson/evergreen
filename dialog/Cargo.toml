@@ -10,8 +10,8 @@ workspace = true
 bevy.workspace = true
 keybinds = { path = "../keybinds" }
 models = { path = "../models" }
-serde = { version = "1.0.228", features = ["derive"] }
-ron = "0.12.1"
-rand = "0.10.1"
-getrandom = { version = "0.4.2", features = ["wasm_js"] }
+serde = { version = "1.0.229", features = ["derive"] }
+ron = "0.12.2"
+rand = "0.10.2"
+getrandom = { version = "0.4.3", features = ["wasm_js"] }
 futures-lite = "2.6.1"
