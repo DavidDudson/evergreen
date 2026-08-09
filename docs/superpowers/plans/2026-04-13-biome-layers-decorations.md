@@ -6,7 +6,7 @@
 
 **Architecture:** The current 6-layer system (Tilemap, SceneryTree, Npc, Player, SceneryBush, SceneryFlower) collapses to 3 content layers (Tilemap, SceneryTree, Decoration) all below the player. Bushes and flowers become decorations. A new `Biome` enum drives tileset selection and decoration pool selection. Decorations are small ground-clutter sprites (10-15 per area) chosen from biome-specific asset pools.
 
-**Tech Stack:** Rust, Bevy 0.18, bevy_ecs_tilemap, PixelLab (asset generation)
+**Tech Stack:** Rust, Bevy 0.18, bevy_ecs_tilemap, the asset generator (asset generation)
 
 ---
 
@@ -70,9 +70,9 @@ Civilized clutter. Trade goods, infrastructure, domestic items.
 
 Asset paths: `sprites/scenery/decorations/city/`
 
-### PixelLab Generation Notes
+### Asset Generation Notes
 
-All decorations use the style guide at `research/art/pixellab_style_guide.md`. Key params:
+All decorations use the style guide at `research/art/the asset generator_style_guide.md`. Key params:
 - View: `low top-down`
 - Outline: `single color outline`
 - Shading: `basic shading`
@@ -688,12 +688,12 @@ git commit -m "chore: clean up scenery module after decoration extraction"
 
 ---
 
-## Task 7: Generate Decoration Assets with PixelLab
+## Task 7: Generate Decoration Assets
 
 **Files:**
 - Create: 21 decoration sprites in `assets/sprites/scenery/decorations/{city,greenwood,darkwood}/`
 
-This task generates all decoration sprites using PixelLab's `create_map_object` tool. Use the style guide at `research/art/pixellab_style_guide.md`.
+This task generates all decoration sprites using the asset generator's `create_map_object` tool. Use the style guide at `research/art/the asset generator_style_guide.md`.
 
 - [ ] **Step 1: Create asset directories**
 
@@ -703,13 +703,13 @@ mkdir -p assets/sprites/scenery/decorations/{city,greenwood,darkwood}
 
 - [ ] **Step 2: Generate darkwood decorations (7 sprites)**
 
-Use `mcp__pixellab__create_map_object` for each. All use:
+Use `the asset generator's map-object tool` for each. All use:
 - `view: "low top-down"`
 - `outline: "single color outline"`
 - `shading: "basic shading"`
 - `detail: "medium detail"`
 
-Generate each with the appropriate `width`/`height` (canvas = 2x sprite size for padding, but PixelLab minimum is 32):
+Generate each with the appropriate `width`/`height` (canvas = 2x sprite size for padding, but generator minimum is 32):
 
 | Sprite | Canvas | Description |
 |--------|--------|-------------|
@@ -747,7 +747,7 @@ Generate each with the appropriate `width`/`height` (canvas = 2x sprite size for
 
 - [ ] **Step 5: Convert all generated images to webp**
 
-Each PixelLab result comes as PNG. Convert:
+Each generated result comes as PNG. Convert:
 
 ```bash
 for f in assets/sprites/scenery/decorations/**/*.png; do
@@ -765,13 +765,13 @@ git commit -m "feat: add 21 biome-specific decoration sprites"
 
 ---
 
-## Task 8: Generate Biome Tilesets with PixelLab
+## Task 8: Generate Biome Tilesets
 
 **Files:**
 - Create: `assets/sprites/terrain/terrain_wang_city.webp`
 - Create: `assets/sprites/terrain/terrain_wang_darkwood.webp`
 
-Use `mcp__pixellab__create_topdown_tileset` to generate Wang tilesets that match the existing 16-tile layout.
+Use `the asset generator's tileset tool` to generate Wang tilesets that match the existing 16-tile layout.
 
 - [ ] **Step 1: Generate city tileset**
 

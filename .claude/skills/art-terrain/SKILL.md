@@ -1,60 +1,78 @@
 ---
 name: art-terrain
-description: Generate 16x16 terrain tiles for Evergreen — grass, dirt, stone, water, forest floor and their transitions. Explains the seam problem with locally generated tiles and when to use PixelLab tilesets instead. Use for anything destined for assets/sprites/terrain.
+description: Generate seamless 16x16 terrain base tiles for Evergreen -- grass, dirt, stone, water, forest floor. Fully local. For transitions between two terrains use art-tileset instead. Use for anything destined for assets/sprites/terrain.
 ---
 
-# Terrain Tile Generation
+# Terrain Base Tile Generation
 
-Read this fully before generating — terrain is the one asset type where the
-local rig has a real limitation.
+Produces one seamless base tile per terrain. Transitions are a separate step --
+see `art-tileset`, which composites them from two finished base tiles.
 
-**Style contract:** the terrain section of
-`research/art/pixellab_style_guide.md` (`tile_size: 16`, `view: "high top-down"`
-— flatter than props — `outline: "selective outline"`).
+**Read `research/art/local_workflow.md` for the pick loop** and take the
+`terrain` style fragment from `research/art/local_style_presets.md`. Sizes and
+camera come from the terrain section of `asset_style_guide.md`
+(`tile_size: 16`, `view: "high top-down"` -- flatter than props).
 
-## The seam problem
+## Steps
 
-Core ComfyUI has no circular-padding node, so **nothing in the local pipeline
-generates truly seamless tiles**. A locally made tile will show a visible seam
-when repeated unless it is hand-fixed or the texture is near-uniform.
-
-| Need | Use |
-|---|---|
-| Wang / auto-tile sets, transitions between terrains | **PixelLab** `create_topdown_tileset` (~100 s per set) |
-| One-off decorative tile, near-uniform texture (moss, gravel, still water) | **local**, verified with `tile_preview` |
-| Texture reference to trace or repaint in Aseprite | **local** |
-
-## Local path
-
-1. Generate the texture larger than the tile, so downsampling averages noise
-   into something that repeats acceptably:
+1. **Generate five candidate textures at 1024px.** Terrain is one of the few
+   types where you want the render much larger than the tile: downsampling
+   averages noise into something that repeats well.
 
    ```
    generate_image(
-     prompt="<terrain type>, <surface texture>, <1-2 accent details>, seamless repeating texture, high top-down view, soft natural palette, warm forest greens, rich earthy browns, gentle contrast, storybook forest RPG",
-     width=1024, height=1024, backend="zimage"
+     prompt="<terrain type>, <surface texture>, <1-2 accent details>, seamless repeating texture, <terrain style fragment>",
+     width=1024, height=1024, variants=5, backend="zimage"
    )
    ```
 
-2. ```
-   pixelize(image_path=..., target_px=16, palette="apollo_forest")
+2. **Contact sheet, user picks, refine the preset** -- the standard loop.
+
+3. **Make it actually seamless.** Diffusion output does not wrap:
+
+   ```
+   make_tileable(image_path=<winner>, seed=<seed>)
    ```
 
-3. **Always** check the seams before saving:
+   This rolls the texture 50% in both axes -- moving the four edges into a cross
+   through the middle -- and inpaints that cross away with SDXL. The result
+   wraps as-is.
+
+4. **Pixelize to the grid.**
+
+   ```
+   pixelize(image_path=<seamless>, target_px=16, palette="apollo_forest")
+   ```
+
+5. **Verify the wrap. Always.**
 
    ```
    tile_preview(image_path=<16px tile>, grid=3, upscale=8)
    ```
 
-   It returns `seam_diff_horizontal` / `seam_diff_vertical` and
-   `wraps_cleanly`. Under ~8 is usually invisible in play; above that, open the
-   3×3 preview and look. If it fails, either pick a more uniform texture, or
-   hand-fix the wrap in Aseprite (offset by half, repaint the cross seam).
+   `seam_diff_*` under ~8 and `wraps_cleanly: true` means it is fine; open the
+   3x3 preview anyway. If it fails, rerun `make_tileable` with a different seed
+   or pick a more uniform texture -- a busy texture with large features will
+   never wrap convincingly at 16px.
 
-4. Save to `assets/sprites/terrain/`, `snake_case.png`.
+6. **Save** to `assets/sprites/terrain/`, `snake_case.webp`.
 
-## Transitions
+## Saving (WebP, always)
 
-Transition tiles (grass overtaking bare earth, shoreline) need to match both
-neighbours exactly. Do these in PixelLab as a set, or hand-author them from two
-finished tiles — generating each independently will not line up.
+This repo bans PNG and JPEG in `assets/` -- see CLAUDE.md. Convert before
+saving, losslessly, because lossy WebP resamples across hard colour edges and
+puts colours back in the file that the palette conform removed:
+
+```
+to_webp(image_path=<final sprite>, lossless=true, keep_source=false,
+        output_path="assets/sprites/<dir>/<snake_case>.webp")
+```
+
+## Notes
+
+- Uniform textures (moss, gravel, grass, still water) survive the 16px
+  reduction; anything with large distinct features turns to mush. Describe
+  surface, not scenery.
+- Keep the base tiles around after saving -- `art-tileset` needs both members of
+  a pair as inputs, and regenerating a matching partner later is harder than
+  keeping the file.

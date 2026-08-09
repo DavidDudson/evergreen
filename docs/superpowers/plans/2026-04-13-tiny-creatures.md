@@ -6,7 +6,7 @@
 
 **Architecture:** A `CreatureAi` component drives a three-state machine (Idle/Wander/Flee) with timer-based transitions and player-distance-triggered flee. Each creature type has a `MovementType` (Ground or Flying) that determines sprite flipping and vertical bobbing behavior. Spawning follows the same deterministic-seed, biome-pool, blended-alignment pattern as decorations and grass. 4-8 creatures per area.
 
-**Tech Stack:** Rust, Bevy 0.18, PixelLab (creature sprite sheets)
+**Tech Stack:** Rust, Bevy 0.18, the asset generator (creature sprite sheets)
 
 ---
 
@@ -796,16 +796,16 @@ git commit -m "Wire creatures into area spawning and level plugin"
 
 ---
 
-## Task 4: Generate Creature Sprite Sheets via PixelLab
+## Task 4: Generate Creature Sprite Sheets via the asset generator
 
 **Files:**
 - Create: 11 sprite sheets in `assets/sprites/creatures/`
 
-All sprites use the `create_map_object` PixelLab tool. Each is a 16x8 sheet with two 8x8 frames side by side (idle left, move right). Style suffix for all: "Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
+All sprites use the `create_map_object` the asset generator tool. Each is a 16x8 sheet with two 8x8 frames side by side (idle left, move right). Style suffix for all: "Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
 
 - [ ] **Step 1: Generate city/mouse.webp**
 
-Use `mcp__pixellab__create_map_object` with:
+Use `the asset generator's map-object tool` with:
 - `description`: "A tiny gray mouse sprite sheet, two frames side by side: left frame idle sitting, right frame running with legs extended. Top-down view, small and cute. Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
 - `view`: "low top-down"
 - `outline`: "single color outline"

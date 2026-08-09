@@ -1,6 +1,6 @@
 ---
 name: art-background
-description: Generate scene and parallax backgrounds for Evergreen — glade vistas, forest depth layers, sky plates, menu art. Use for wide painted backdrops rather than tiles or sprites.
+description: Generate scene and parallax backgrounds for Evergreen -- glade vistas, forest depth layers, sky plates, menu art. Use for wide painted backdrops rather than tiles or sprites.
 ---
 
 # Background / Parallax Generation
@@ -9,26 +9,34 @@ The local rig's strongest asset type: no tiling, no rotation, no small-scale
 readability constraint. Z-Image renders these in seconds.
 
 **Style contract:** `research/art/adamcyounis_style.md` for palette;
-`research/world/` for what a Glade actually looks like — read the relevant lore
+`research/world/` for what a Glade actually looks like -- read the relevant lore
 file before inventing scenery.
+
+## Pick loop
+
+Follow `research/art/local_workflow.md`: five variants in one call →
+`contact_sheet` → user picks by number → `describe_style` on the winner →
+merge into this asset type's row in `research/art/local_style_presets.md`.
+Take the style fragment for this type from that presets file rather than
+writing style wording inline.
 
 ## Single backdrop
 
 ```
 generate_best(
   prompt="<scene>, atmospheric, painterly, depth, storybook fantasy, warm forest greens, rich earthy browns, hue-shifted shadows toward cool purple, highlights toward warm gold",
-  kind="background", n=4,
+  kind="background", n=5,
   criteria="<scene>, clear depth, no characters, no text, storybook mood"
 )
 ```
 
-Aspects: `"landscape"` 1536×1024, `"wide"` 1536×640 for parallax strips,
-`"portrait"` 1024×1536, `"square"`. Pass via `generate_background(aspect=...)`
+Aspects: `"landscape"` 1536x1024, `"wide"` 1536x640 for parallax strips,
+`"portrait"` 1024x1536, `"square"`. Pass via `generate_background(aspect=...)`
 when you need one specifically.
 
 ## Parallax layer sets
 
-Use `generate_layered` — Qwen-Image-Layered returns each element as its own
+Use `generate_layered` -- Qwen-Image-Layered returns each element as its own
 RGBA plate instead of one flat image, which is exactly what parallax needs:
 
 ```
@@ -38,16 +46,27 @@ generate_layered(
 )
 ```
 
-Returns paths back-to-front. Describe what belongs on each layer explicitly —
+Returns paths back-to-front. Describe what belongs on each layer explicitly --
 the model splits on what you name, not on depth it guesses.
 
 ## Finishing
 
 1. `refine(image_path=..., scale=2.0, denoise=0.3, prompt="<same scene>")` when
-   a background needs more resolution — cheaper and sharper than generating
+   a background needs more resolution -- cheaper and sharper than generating
    large directly.
 2. `conform_palette(..., palette="apollo_forest")` to sit in key with the
    sprites. Skip this on menu/promo art that is meant to be richer than
    in-engine assets.
 3. Do **not** `pixelize` backgrounds unless they are meant to read as pixel art
-   at the same density as the sprites — most parallax plates should stay smooth.
+   at the same density as the sprites -- most parallax plates should stay smooth.
+
+## Saving (WebP, always)
+
+This repo bans PNG and JPEG in `assets/` -- see CLAUDE.md. Convert before
+saving, losslessly, because lossy WebP resamples across hard colour edges and
+puts colours back in the file that the palette conform removed:
+
+```
+to_webp(image_path=<final sprite>, lossless=true, keep_source=false,
+        output_path="assets/sprites/<dir>/<snake_case>.webp")
+```

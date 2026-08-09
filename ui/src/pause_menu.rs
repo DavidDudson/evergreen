@@ -153,7 +153,6 @@ pub fn handle_quit_pending(
     }
 }
 
-
 pub struct PauseScreen;
 
 impl crate::screen::ScreenSetup for PauseScreen {
@@ -167,7 +166,11 @@ impl crate::screen::ScreenSetup for PauseScreen {
             )
             .add_systems(
                 Update,
-                (handle_resume, handle_settings_button, handle_quit_to_menu_button)
+                (
+                    handle_resume,
+                    handle_settings_button,
+                    handle_quit_to_menu_button,
+                )
                     .run_if(in_state(GameState::Paused)),
             )
             .add_systems(

@@ -143,8 +143,7 @@ mod tests {
     use super::*;
 
     const POND: TerrainTags = TerrainTags::new(&[tag::WATER, tag::STILL], &[]);
-    const OCEAN: TerrainTags =
-        TerrainTags::new(&[tag::WATER, tag::STILL, tag::SALT], &[tag::SALT]);
+    const OCEAN: TerrainTags = TerrainTags::new(&[tag::WATER, tag::STILL, tag::SALT], &[tag::SALT]);
     const HOTSPRING: TerrainTags =
         TerrainTags::new(&[tag::WATER, tag::STILL, tag::HOT], &[tag::HOT]);
     const GRASS: TerrainTags = TerrainTags::new(&[tag::GROUND, tag::FERTILE], &[]);
@@ -172,8 +171,7 @@ mod tests {
 
     #[test]
     fn salt_tolerant_seaweed_allowed_on_ocean() {
-        let seaweed = PlacementRequirement::requires(&[tag::WATER])
-            .with_tolerates(&[tag::SALT]);
+        let seaweed = PlacementRequirement::requires(&[tag::WATER]).with_tolerates(&[tag::SALT]);
         assert!(seaweed.allows(&OCEAN));
     }
 

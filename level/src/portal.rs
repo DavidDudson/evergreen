@@ -167,10 +167,7 @@ pub struct PortalCrossed {
 pub const PORTAL_OVERLAP_RADIUS_PX: f32 = 10.0;
 
 /// Despawn every portal sprite. Called on map teardown.
-pub fn despawn_portals(
-    mut commands: Commands,
-    portals: Query<Entity, With<PortalEntity>>,
-) {
+pub fn despawn_portals(mut commands: Commands, portals: Query<Entity, With<PortalEntity>>) {
     for entity in &portals {
         commands.entity(entity).despawn();
     }

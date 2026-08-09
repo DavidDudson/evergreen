@@ -46,7 +46,10 @@ pub fn apply_hop_bob(
 
     // 3. Compute new bob.
     let new_bob = if on_stone {
-        (time.elapsed_secs() * HOP_FREQ_HZ * std::f32::consts::TAU).sin().abs() * HOP_AMPLITUDE_PX
+        (time.elapsed_secs() * HOP_FREQ_HZ * std::f32::consts::TAU)
+            .sin()
+            .abs()
+            * HOP_AMPLITUDE_PX
     } else {
         0.0
     };

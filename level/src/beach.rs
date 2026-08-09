@@ -223,8 +223,10 @@ fn pier_vertex(world: &WorldMap, area_pos: IVec2, vx: u32, vy: u32) -> bool {
         if lx >= i32::from(MAP_WIDTH) || ly >= i32::from(MAP_HEIGHT) {
             continue;
         }
-        let local =
-            UVec2::new(u32::try_from(lx).unwrap_or(0), u32::try_from(ly).unwrap_or(0));
+        let local = UVec2::new(
+            u32::try_from(lx).unwrap_or(0),
+            u32::try_from(ly).unwrap_or(0),
+        );
         if world.water.has_pier(area_pos, local) {
             return true;
         }

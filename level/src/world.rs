@@ -202,12 +202,7 @@ impl WorldMap {
     /// than [`MAP_AREAS_AT_MIN`] areas (a degenerate single-room layout).
     /// Caps at [`GENERATE_RETRY_CAP`] attempts; after that the smallest
     /// map is accepted to avoid infinite loops.
-    pub fn generate(
-        id: MapId,
-        seed: u64,
-        alignment: AreaAlignment,
-        maps_traversed: u32,
-    ) -> Self {
+    pub fn generate(id: MapId, seed: u64, alignment: AreaAlignment, maps_traversed: u32) -> Self {
         let mut attempt_seed = seed;
         for _ in 0..GENERATE_RETRY_CAP {
             let candidate = Self::try_generate(id, attempt_seed, alignment, maps_traversed);
@@ -219,12 +214,7 @@ impl WorldMap {
         Self::try_generate(id, attempt_seed, alignment, maps_traversed)
     }
 
-    fn try_generate(
-        id: MapId,
-        seed: u64,
-        alignment: AreaAlignment,
-        maps_traversed: u32,
-    ) -> Self {
+    fn try_generate(id: MapId, seed: u64, alignment: AreaAlignment, maps_traversed: u32) -> Self {
         let target = map_area_count_target(alignment);
 
         // Shuffle NPC pool deterministically from seed.

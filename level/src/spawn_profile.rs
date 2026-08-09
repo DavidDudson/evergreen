@@ -85,8 +85,7 @@ mod debug_impl {
         let Ok(mut acc) = ACC.lock() else {
             return Vec::new();
         };
-        let mut rows: Vec<_> =
-            acc.iter().map(|(l, (n, ms))| (*l, *n, *ms)).collect();
+        let mut rows: Vec<_> = acc.iter().map(|(l, (n, ms))| (*l, *n, *ms)).collect();
         acc.clear();
         rows.sort_by(|a, b| b.2.total_cmp(&a.2));
         rows
@@ -135,10 +134,7 @@ mod debug_impl {
     }
 
     /// Emit the report once images stop arriving.
-    pub fn report_when_settled(
-        mut run: ResMut<SpawnProfileRun>,
-        entities: Query<()>,
-    ) {
+    pub fn report_when_settled(mut run: ResMut<SpawnProfileRun>, entities: Query<()>) {
         if run.reported {
             return;
         }
@@ -155,9 +151,7 @@ mod debug_impl {
         let cpu_ms: f64 = rows.iter().map(|(_, _, ms)| ms).sum();
 
         info!("--- level spawn profile ---");
-        info!(
-            "settle: {settle_ms:.0} ms from OnEnter(Playing) to last image load"
-        );
+        info!("settle: {settle_ms:.0} ms from OnEnter(Playing) to last image load");
         info!(
             "images loaded: {}   entities alive: {}",
             run.images_loaded,
@@ -165,10 +159,12 @@ mod debug_impl {
         );
         info!("cpu total across measured phases: {cpu_ms:.1} ms");
         for (label, calls, ms) in rows {
-            let share = if cpu_ms > 0.0 { ms / cpu_ms * 100.0 } else { 0.0 };
-            info!(
-                "  {label:<22} {ms:>8.1} ms  {calls:>3} calls  {share:>5.1}%"
-            );
+            let share = if cpu_ms > 0.0 {
+                ms / cpu_ms * 100.0
+            } else {
+                0.0
+            };
+            info!("  {label:<22} {ms:>8.1} ms  {calls:>3} calls  {share:>5.1}%");
         }
         info!("--- end level spawn profile ---");
     }

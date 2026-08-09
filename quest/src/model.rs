@@ -10,9 +10,7 @@ use serde::{Deserialize, Serialize};
 /// demands the newtype form -- `id: QuestId("bigby.sick_animals")` -- which
 /// clashes with every sibling key in a `.quest.ron` being a plain string, and
 /// which every new quest file would have to remember.
-#[derive(
-    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Deserialize, Serialize,
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Deserialize, Serialize)]
 #[serde(transparent)]
 pub struct QuestId(pub String);
 
@@ -87,8 +85,7 @@ mod tests {
 
     /// Directory holding the shipped `.quest.ron` assets.
     fn quests_dir() -> std::path::PathBuf {
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../assets/quests")
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../assets/quests")
     }
 
     /// Every shipped quest asset must parse. This is the only place the
@@ -97,8 +94,8 @@ mod tests {
     #[test]
     fn all_shipped_quest_assets_parse() {
         let dir = quests_dir();
-        let entries = std::fs::read_dir(&dir)
-            .unwrap_or_else(|e| panic!("read {}: {e}", dir.display()));
+        let entries =
+            std::fs::read_dir(&dir).unwrap_or_else(|e| panic!("read {}: {e}", dir.display()));
 
         let files: Vec<_> = entries
             .filter_map(Result::ok)
@@ -106,13 +103,17 @@ mod tests {
             .filter(|p| p.to_string_lossy().ends_with(".quest.ron"))
             .collect();
 
-        assert!(!files.is_empty(), "no .quest.ron files in {}", dir.display());
+        assert!(
+            !files.is_empty(),
+            "no .quest.ron files in {}",
+            dir.display()
+        );
 
         for path in files {
             let text = std::fs::read_to_string(&path)
                 .unwrap_or_else(|e| panic!("read {}: {e}", path.display()));
-            let quest: Quest = ron::from_str(&text)
-                .unwrap_or_else(|e| panic!("parse {}: {e}", path.display()));
+            let quest: Quest =
+                ron::from_str(&text).unwrap_or_else(|e| panic!("parse {}: {e}", path.display()));
             assert!(
                 !quest.id.as_str().is_empty(),
                 "{} has an empty id",
@@ -124,8 +125,7 @@ mod tests {
     /// `QuestId` is authored as a bare string, not RON's newtype form.
     #[test]
     fn quest_id_parses_from_bare_string() {
-        let id: QuestId =
-            ron::from_str("\"bigby.sick_animals\"").expect("bare string parses");
+        let id: QuestId = ron::from_str("\"bigby.sick_animals\"").expect("bare string parses");
         assert_eq!(id.as_str(), "bigby.sick_animals");
     }
 
@@ -133,8 +133,7 @@ mod tests {
     /// JSON map key in `QuestProgress`, so it has to stay a plain string.
     #[test]
     fn quest_id_serializes_as_plain_json_string() {
-        let json = serde_json::to_string(&QuestId::from("bigby.sick_animals"))
-            .expect("serializes");
+        let json = serde_json::to_string(&QuestId::from("bigby.sick_animals")).expect("serializes");
         assert_eq!(json, "\"bigby.sick_animals\"");
     }
 }

@@ -68,8 +68,7 @@ impl crate::screen::ScreenSetup for QuestLogScreenSetup {
             .add_systems(OnExit(GameState::QuestLog), teardown)
             .add_systems(
                 Update,
-                (handle_entry_buttons, handle_back_button)
-                    .run_if(in_state(GameState::QuestLog)),
+                (handle_entry_buttons, handle_back_button).run_if(in_state(GameState::QuestLog)),
             );
     }
 }
@@ -161,10 +160,7 @@ fn setup(
                 QuestLogEntryButton(entry.quest.id.as_str().to_string()),
                 Button,
                 Node {
-                    padding: UiRect::axes(
-                        Val::Px(ENTRY_PADDING_H_PX),
-                        Val::Px(ENTRY_PADDING_V_PX),
-                    ),
+                    padding: UiRect::axes(Val::Px(ENTRY_PADDING_H_PX), Val::Px(ENTRY_PADDING_V_PX)),
                     margin: UiRect::bottom(Val::Px(ENTRY_MARGIN_PX)),
                     border_radius: BorderRadius::all(Val::Px(ENTRY_RADIUS_PX)),
                     ..Node::default()

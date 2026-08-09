@@ -43,8 +43,8 @@ pub fn wang_index(nw: bool, ne: bool, sw: bool, se: bool) -> u32 {
 
 /// Maps Wang index (0–15) to the bevy_ecs_tilemap texture atlas index.
 ///
-/// Filled in from the PixelLab tileset metadata after generation.
-/// Placeholder: identity mapping (assumes 4-column sheet in Wang order).
+/// Filled in from the tileset metadata after generation. Sets built by
+/// `dual_grid_set` emit atlas index == wang index, i.e. an identity mapping.
 pub const WANG_TO_ATLAS: [u32; 16] = [6, 7, 10, 9, 2, 11, 4, 15, 5, 14, 1, 8, 3, 0, 13, 12];
 
 /// Deterministic tile hash for scenery placement.

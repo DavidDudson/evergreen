@@ -11,7 +11,7 @@
 use bevy::prelude::*;
 use dialog::components::Talker;
 use models::layer::Layer;
-use quest::interact::{InvestigateChoice, Investigatable};
+use quest::interact::{Investigatable, InvestigateChoice};
 use quest::inventory::item;
 
 use crate::area::{AreaEvent, QuestPropKind, MAP_HEIGHT, MAP_WIDTH, PURPLE_POND_TILE};

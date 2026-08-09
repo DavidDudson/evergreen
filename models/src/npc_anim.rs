@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 /// Cardinal facing direction for NPCs.
 ///
-/// Row indices match PixelLab's 4-direction output order.
+/// Row indices match the 4-direction sheet layout: down, left, right, up.
 #[derive(Component, Default, Clone, Copy, PartialEq, Eq, Debug)]
 pub enum NpcFacing {
     #[default]

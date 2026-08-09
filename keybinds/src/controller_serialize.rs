@@ -63,8 +63,7 @@ pub fn controller_to_map(binds: &ControllerBinds) -> HashMap<String, String> {
 pub fn controller_from_map(raw: &HashMap<String, String>) -> ControllerBinds {
     let mut binds = ControllerBinds::default();
     for (action_s, button_s) in raw {
-        if let (Ok(action), Some(button)) =
-            (Action::from_str(action_s), button_from_name(button_s))
+        if let (Ok(action), Some(button)) = (Action::from_str(action_s), button_from_name(button_s))
         {
             binds.set(action, button);
         }

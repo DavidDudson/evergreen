@@ -112,10 +112,10 @@ pub fn spawn_area_enemies(
         let h_hi = u32::try_from((h >> 8) & 0xFFFF_FFFF).unwrap_or(0);
         let tx = h_lo % inner_w + ENEMY_INSET_TILES;
         let ty = h_hi % inner_h + ENEMY_INSET_TILES;
-        let world_x = base_offset_x + f32::from(u16::try_from(tx).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
-        let world_y = base_offset_y + f32::from(u16::try_from(ty).unwrap_or(0)) * tile_px
-            + tile_px / 2.0;
+        let world_x =
+            base_offset_x + f32::from(u16::try_from(tx).unwrap_or(0)) * tile_px + tile_px / 2.0;
+        let world_y =
+            base_offset_y + f32::from(u16::try_from(ty).unwrap_or(0)) * tile_px + tile_px / 2.0;
         commands.spawn((
             Enemy { kind },
             EnemyWander::default(),
@@ -128,7 +128,11 @@ pub fn spawn_area_enemies(
                 custom_size: Some(Vec2::splat(ENEMY_SPRITE_SIZE_PX)),
                 ..default()
             },
-            Transform::from_xyz(world_x, world_y, Layer::World.z_f32() - world_y * Y_SORT_SCALE),
+            Transform::from_xyz(
+                world_x,
+                world_y,
+                Layer::World.z_f32() - world_y * Y_SORT_SCALE,
+            ),
             SceneryCollider {
                 half_extents: ENEMY_COLLIDER_HALF,
                 center_offset: Vec2::ZERO,
@@ -136,7 +140,10 @@ pub fn spawn_area_enemies(
             NpcFacing::default(),
             NpcAnimKind::Idle,
             NpcAnimFrame::default(),
-            NpcAnimTimer(Timer::from_seconds(1.0 / NpcAnimKind::Idle.fps(), TimerMode::Repeating)),
+            NpcAnimTimer(Timer::from_seconds(
+                1.0 / NpcAnimKind::Idle.fps(),
+                TimerMode::Repeating,
+            )),
             NpcSheet {
                 idle_frames: ENEMY_ANIM_FRAMES,
                 walk_frames: ENEMY_ANIM_FRAMES,

@@ -74,9 +74,7 @@ pub fn advance_runner(
                 .map(|(i, opt)| ChoiceOptionView {
                     index: i,
                     text_key: opt.text_key.clone(),
-                    is_quest_offer: opt
-                        .quest_offer_flag()
-                        .is_some_and(|f| !flags.is_set(f)),
+                    is_quest_offer: opt.quest_offer_flag().is_some_and(|f| !flags.is_set(f)),
                 })
                 .collect();
 

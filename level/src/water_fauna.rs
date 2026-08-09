@@ -141,7 +141,9 @@ pub fn spawn_area_water_fauna(
         if water.has_pier(area_pos, local) {
             continue;
         }
-        let depth = water.depth_at(area_pos, local).unwrap_or(WaterDepth::Shallow);
+        let depth = water
+            .depth_at(area_pos, local)
+            .unwrap_or(WaterDepth::Shallow);
         let world_x = base_offset_x
             + f32::from(u16::try_from(local.x).unwrap_or(0)) * tile_px
             + tile_px / 2.0;

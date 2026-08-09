@@ -120,7 +120,7 @@ assets/sprites/scenery/trees/
     tree_dark_willow_stump.webp
 ```
 
-### PixelLab Generation
+### Asset Generation
 
 All trees use `create_map_object` with:
 - Full tree: `width: 48, height: 64`
@@ -129,7 +129,7 @@ All trees use `create_map_object` with:
 - `outline: "single color outline"`
 - `shading: "basic shading"`
 - `detail: "medium detail"`
-- Style suffix from `research/art/pixellab_style_guide.md`
+- Style suffix from `research/art/the asset generator_style_guide.md`
 
 Stump prompts should reference the full tree: "Trunk and roots only of [tree description], no canopy, cut-off at waist height, matching the base of the full tree."
 
@@ -241,7 +241,7 @@ All sprites must be generated at their exact display resolution:
 - Player: 32x64 native, rendered at 32x64
 - Decorations: 16x16, 24x24, 32x16, etc. -- all at native resolution
 - No `custom_size` scaling that changes the pixel ratio
-- PixelLab canvas size should match or exceed the target sprite size
+- generator canvas size should match or exceed the target sprite size
 
 The 16px tile grid establishes the base pixel density. All sprites align to this: 48 = 3 tiles, 64 = 4 tiles, 24 = 1.5 tiles. No fractional pixel positions at render time.
 
@@ -249,7 +249,7 @@ The 16px tile grid establishes the base pixel density. All sprites align to this
 
 ### In Scope
 - Biome blend zone calculation and application to terrain/scenery/decorations
-- 16 new tree sprites (8 full + 8 stump) via PixelLab
+- 16 new tree sprites (8 full + 8 stump) via the asset generator
 - Delete old tree sprites (tree_oak.webp, tree_pine.webp)
 - Stump reveal system with crossfade for trees and large decorations
 - Unified y-sort z-ordering for all world entities

@@ -16,9 +16,7 @@ use crate::interact::{
 use crate::inventory::Inventory;
 use crate::model::Unlock;
 use crate::progress::{QuestProgress, QuestStatus};
-use crate::registry::{
-    drain_quest_assets, load_quest_manifest, QuestHandles, QuestRegistry,
-};
+use crate::registry::{drain_quest_assets, load_quest_manifest, QuestHandles, QuestRegistry};
 
 const MAGNIFYING_GLASS_ICON: &str = "sprites/ui/magnifying_glass.webp";
 
@@ -80,17 +78,16 @@ fn haptics_for_quest_events(
 }
 
 /// Subtle tap when an investigation popup fires (the magnifying-glass UX).
-fn haptics_for_investigation(
-    mut events: MessageReader<InvestigationFired>,
-    mut haptics: Haptics,
-) {
+fn haptics_for_investigation(mut events: MessageReader<InvestigationFired>, mut haptics: Haptics) {
     if events.read().next().is_some() {
         haptics.pulse(HapticPulse::TAP);
     }
 }
 
 fn load_investigate_icon(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.insert_resource(InvestigateIconAsset(asset_server.load(MAGNIFYING_GLASS_ICON)));
+    commands.insert_resource(InvestigateIconAsset(
+        asset_server.load(MAGNIFYING_GLASS_ICON),
+    ));
 }
 
 /// All four lifecycle writers grouped so [`watch_quest_flags`] stays under
@@ -127,7 +124,12 @@ pub fn watch_quest_flags(
             events.offered.write(QuestOffered { quest: id.clone() });
             progress.upsert(id.clone(), QuestStatus::Offered, None);
         }
-        if accept && !matches!(prev_status, Some(QuestStatus::Active | QuestStatus::Completed)) {
+        if accept
+            && !matches!(
+                prev_status,
+                Some(QuestStatus::Active | QuestStatus::Completed)
+            )
+        {
             events.accepted.write(QuestAccepted { quest: id.clone() });
             progress.upsert(id.clone(), QuestStatus::Active, None);
         }
@@ -136,10 +138,7 @@ pub fn watch_quest_flags(
         if !flags.is_set(&quest.accept_flag) {
             continue;
         }
-        let prev_milestone = progress
-            .records
-            .get(id)
-            .and_then(|r| r.completed_milestone);
+        let prev_milestone = progress.records.get(id).and_then(|r| r.completed_milestone);
         let highest_set = quest
             .milestones
             .iter()

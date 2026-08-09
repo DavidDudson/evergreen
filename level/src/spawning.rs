@@ -236,7 +236,14 @@ fn ensure_area_spawned(
     }
     {
         let _s = crate::spawn_profile::scope("decorations");
-        decorations::spawn_area_decorations(commands, asset_server, registry, area, area_pos, world);
+        decorations::spawn_area_decorations(
+            commands,
+            asset_server,
+            registry,
+            area,
+            area_pos,
+            world,
+        );
     }
     {
         let _s = crate::spawn_profile::scope("grass");
@@ -641,8 +648,10 @@ mod tests {
             "tile index + tint       {index_ms:>9.2} ms  ({tiles} tiles across \
              {INITIAL_AREAS} areas, {per_tile_us:.2} us/tile)"
         );
-        println!("tile entities spawned   {tiles:>9} (one per tile, plus \
-                  scenery/grass/creatures on top)");
+        println!(
+            "tile entities spawned   {tiles:>9} (one per tile, plus \
+                  scenery/grass/creatures on top)"
+        );
         println!("checksum {checksum}");
     }
 }

@@ -27,6 +27,7 @@ use crate::reveal;
 use crate::scenery;
 use crate::shadows;
 use crate::spawning::{self, SpawnedAreas};
+use crate::sprite_anim;
 use crate::wang;
 use crate::water;
 use crate::water_fauna;
@@ -85,105 +86,113 @@ impl Plugin for LevelPlugin {
                     .run_if(in_state(GameState::Playing)),
             );
 
-        app
-            .add_systems(
-                Update,
-                (
-                    spawning::ensure_neighbors_on_area_change,
-                    scenery::animate_rustle,
-                    npc_labels::attach_labels,
-                    npc_labels::sync_interact_icon,
-                    npc_anim::advance_npc_frame,
-                    npc_anim::reset_npc_anim_on_change,
-                    npc_wander::wander_npcs,
-                    npcs::update_npc_z,
-                    galen::update_galen_z,
-                    bark_bubbles::spawn_bark_bubble,
-                    bark_bubbles::tick_bark_bubbles,
-                    reveal::detect_reveals,
-                    reveal::animate_reveals,
-                    weather::weather_state_machine,
-                    weather::sync_wind_strength,
-                    weather::spawn_weather_particles,
-                    weather::spawn_fireflies,
-                    weather::animate_fireflies,
-                    weather::update_weather_particles,
-                    grass::animate_grass_sway,
-                )
-                    .run_if(in_state(GameState::Playing)),
+        app.add_systems(
+            Update,
+            (
+                spawning::ensure_neighbors_on_area_change,
+                scenery::animate_rustle,
+                npc_labels::attach_labels,
+                npc_labels::sync_interact_icon,
+                npc_anim::advance_npc_frame,
+                npc_anim::reset_npc_anim_on_change,
+                npc_wander::wander_npcs,
+                npcs::update_npc_z,
+                galen::update_galen_z,
+                bark_bubbles::spawn_bark_bubble,
+                bark_bubbles::tick_bark_bubbles,
+                reveal::detect_reveals,
+                reveal::animate_reveals,
+                weather::weather_state_machine,
+                weather::sync_wind_strength,
+                weather::spawn_weather_particles,
+                weather::spawn_fireflies,
+                weather::animate_fireflies,
+                weather::update_weather_particles,
+                grass::animate_grass_sway,
             )
-            .add_systems(
-                Update,
-                (portal::enter_map_transition, portal::animate_mirror_mary)
-                    .run_if(in_state(GameState::Playing)),
+                .run_if(in_state(GameState::Playing)),
+        )
+        // Own block: the tuple above is at Bevy's 20-system limit.
+        .add_systems(
+            Update,
+            (
+                sprite_anim::advance_sprite_anim,
+                sprite_anim::resync_sprite_anim_on_change,
             )
-            .add_systems(
-                Update,
-                (
-                    mary_apparition::spawn_mary_on_consume,
-                    mary_apparition::tick_mary_apparition,
-                )
-                    .run_if(in_state(GameState::Playing)),
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            Update,
+            (portal::enter_map_transition, portal::animate_mirror_mary)
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            Update,
+            (
+                mary_apparition::spawn_mary_on_consume,
+                mary_apparition::tick_mary_apparition,
             )
-            .add_systems(
-                OnEnter(GameState::MapTransition),
-                portal::apply_map_transition,
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            OnEnter(GameState::MapTransition),
+            portal::apply_map_transition,
+        )
+        .add_systems(
+            Update,
+            (
+                shadows::animate_shadow_sun,
+                water_fauna::animate_water_fauna,
+                puddles::spawn_puddles,
+                puddles::fade_puddles_when_clear,
+                puddles::spawn_hotspring_steam,
+                puddles::update_steam,
+                water::animate_water_surface,
+                beach::animate_crabs,
             )
-            .add_systems(
-                Update,
-                (
-                    shadows::animate_shadow_sun,
-                    water_fauna::animate_water_fauna,
-                    puddles::spawn_puddles,
-                    puddles::fade_puddles_when_clear,
-                    puddles::spawn_hotspring_steam,
-                    puddles::update_steam,
-                    water::animate_water_surface,
-                    beach::animate_crabs,
-                )
-                    .run_if(in_state(GameState::Playing)),
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            Update,
+            (weather::spawn_dust_motes, weather::spawn_fog_patches)
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            Update,
+            (
+                creatures::creature_state_transitions,
+                creatures::creature_movement,
+                creatures::creature_animation,
+                creatures::creature_flying_bob,
+                enemies::wander_enemies,
             )
-            .add_systems(
-                Update,
-                (weather::spawn_dust_motes, weather::spawn_fog_patches)
-                    .run_if(in_state(GameState::Playing)),
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            OnExit(GameState::Playing),
+            (
+                spawning::despawn_all_areas,
+                scenery::despawn_scenery,
+                decorations::despawn_decorations,
+                npcs::despawn_npcs,
+                galen::despawn_galen,
+                weather::despawn_weather_particles,
+                grass::despawn_grass,
+                creatures::despawn_creatures,
+                water::despawn_water,
+                water::despawn_stones,
+                water_flora::despawn_water_flora,
+                water_fauna::despawn_water_fauna,
+                puddles::despawn_puddles,
+                puddles::despawn_steam,
+                beach::despawn_sand,
+                beach::despawn_piers,
+                portal::despawn_portals,
+                enemies::despawn_enemies,
+                mary_apparition::despawn_apparitions,
             )
-            .add_systems(
-                Update,
-                (
-                    creatures::creature_state_transitions,
-                    creatures::creature_movement,
-                    creatures::creature_animation,
-                    creatures::creature_flying_bob,
-                    enemies::wander_enemies,
-                )
-                    .run_if(in_state(GameState::Playing)),
-            )
-            .add_systems(
-                OnExit(GameState::Playing),
-                (
-                    spawning::despawn_all_areas,
-                    scenery::despawn_scenery,
-                    decorations::despawn_decorations,
-                    npcs::despawn_npcs,
-                    galen::despawn_galen,
-                    weather::despawn_weather_particles,
-                    grass::despawn_grass,
-                    creatures::despawn_creatures,
-                    water::despawn_water,
-                    water::despawn_stones,
-                    water_flora::despawn_water_flora,
-                    water_fauna::despawn_water_fauna,
-                    puddles::despawn_puddles,
-                    puddles::despawn_steam,
-                    beach::despawn_sand,
-                    beach::despawn_piers,
-                    portal::despawn_portals,
-                    enemies::despawn_enemies,
-                    mary_apparition::despawn_apparitions,
-                )
-                    .run_if(should_despawn_world),
-            );
+                .run_if(should_despawn_world),
+        );
     }
 }
 
@@ -222,9 +231,7 @@ fn regenerate_world(
         // Migrate legacy saves whose root map was generated at the old
         // City-band alignment (<= 25): force them back into Greenwood so
         // the entry point matches the current design.
-        if save.current_id == crate::world::MapId::ROOT.0
-            && save.current_alignment < 26
-        {
+        if save.current_id == crate::world::MapId::ROOT.0 && save.current_alignment < 26 {
             save.current_alignment = crate::world::ROOT_MAP_ALIGNMENT;
         }
         let _s = crate::spawn_profile::scope("world generate (resume)");

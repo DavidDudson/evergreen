@@ -1,7 +1,7 @@
-# Evergreen -- PixelLab Style Guide
+# Evergreen -- Asset Style Guide
 
-Art direction inspired by AdamCYounis (Apollo palette, Insignia). All PixelLab
-generations for the Evergreen project should use the parameters and description
+Art direction inspired by AdamCYounis (Apollo palette, Insignia). Every
+generated asset should follow the sizes, camera angles and description
 conventions below to maintain visual consistency.
 
 ## World Context
@@ -12,7 +12,7 @@ warm, inviting, slightly whimsical -- with an undertone of ancient danger.
 
 ## Grid & Size Reference
 
-| Asset Type | Pixel Size | PixelLab `size`/`tile_size` | Notes |
+| Asset Type | Pixel Size | Sprite target | Notes |
 |---|---|---|---|
 | Terrain tiles | 16x16 | `tile_size: 16` | Base unit. Wang tilesets. |
 | Flowers / small props | 16x16 | `width: 32, height: 32` | 1-tile footprint, pad canvas |
@@ -112,8 +112,8 @@ Canvas size should be ~2x the visual footprint to allow transparent padding:
 
 ## Color Direction (for all prompts)
 
-These phrases should be included or adapted in every PixelLab description to
-maintain the AdamCYounis-inspired palette feel:
+These phrases should be included or adapted in every prompt to maintain the
+AdamCYounis-inspired palette feel:
 
 | Concept | Prompt Language |
 |---|---|
@@ -134,33 +134,12 @@ maintain the AdamCYounis-inspired palette feel:
 - Neon or oversaturated colors -- breaks the storybook tone
 - Flat shading without hue shift -- looks lifeless
 - Mixing outline styles across asset types -- pick one and stay consistent
-- `ai_freedom` above 800 -- results drift from the intended style
 - Side view for top-down assets -- camera angle must match
 
-## PixelLab Rate Limits & Timing
-
-**Concurrency limit:** ~5 concurrent jobs. Queuing more than 5 at once causes
-429 errors ("maximum number of concurrent jobs"). Plan batches of 4-5.
-
-**Generation times (approximate):**
-- `create_map_object`: 30-60 seconds
-- `create_topdown_tileset`: ~100 seconds
-- `create_character` (standard): 2-3 minutes (4 dirs), 3-5 minutes (8 dirs)
-- `create_character` (pro): 3-5 minutes
-
-**Recommended workflow for bulk generation:**
-1. Queue batch of 4-5 jobs
-2. Wait ~60 seconds (map objects) or ~120 seconds (tilesets/characters)
-3. Check all with `get_*` -- download completed ones
-4. Re-queue any that failed with 429
-5. Queue next batch
-
-**Tip:** Tilesets take longest -- start them first, then fill wait time with
-map objects. Characters last since they cost the most credits.
 
 ## Quick Reference Card
 
-For copy-paste into PixelLab prompts, append this style suffix:
+Append this style suffix to prompts:
 
 > Warm earthy palette with hue-shifted shadows toward cool purple and highlights
 > toward warm gold. Moderate saturation, clean readable forms, storybook fantasy

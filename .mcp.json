@@ -4,6 +4,18 @@
       "type": "stdio",
       "command": "mcp-language-server",
       "args": ["--workspace", "/home/ddudson/repos/evergreen", "--lsp", "rust-analyzer"]
+    },
+    "gameart": {
+      "type": "stdio",
+      "command": "gameart-mcp",
+      "env": {
+        "COMFY_URL": "http://127.0.0.1:8188",
+        "GAMEART_OUTPUT_DIR": "${HOME}/.local/share/gameart-mcp/output",
+        "GAMEART_ICON_LORA": "3d-icon-sdxl-lora.safetensors",
+        "GAMEART_BG_REMOVAL_MODEL": "birefnet.safetensors",
+        "GAMEART_VLM_MODEL": "qwen3-vl:8b",
+        "OLLAMA_URL": "http://127.0.0.1:11434"
+      }
     }
   }
 }

@@ -17,10 +17,7 @@ pub enum BarkSelector {
 }
 
 impl BarkSelector {
-    pub fn select(
-        &self,
-        barks: &[Handle<DialogueScript>],
-    ) -> Option<Handle<DialogueScript>> {
+    pub fn select(&self, barks: &[Handle<DialogueScript>]) -> Option<Handle<DialogueScript>> {
         match self {
             Self::Uniform => {
                 let mut rng = rand::rng();

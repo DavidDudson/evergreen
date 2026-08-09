@@ -23,6 +23,7 @@ pub mod seconds;
 pub mod settings;
 pub mod shadow;
 pub mod speed;
+pub mod sprite_anim;
 pub mod tags;
 pub mod tailwind;
 pub mod textured;

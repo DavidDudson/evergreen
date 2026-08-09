@@ -178,7 +178,7 @@ fn npc_data(
             ],
         ),
         // BloodyMary now has dedicated art (4-row x 8-col sheet built from
-        // pixellab rotations + breathing-idle + walking-4-frames). Dialogue
+        // 4-way rotations + breathing-idle + walking-4-frames). Dialogue
         // scripts still alias Morgana until Mary's own writing lands.
         NpcKind::BloodyMary => (
             "Bloody Mary",

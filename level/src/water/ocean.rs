@@ -67,8 +67,7 @@ pub(super) fn generate_ocean_and_sand(map: &mut WaterMap, world: &WorldMap) {
             for x in 0..width {
                 let key = (off_pos, UVec2::new(x, y));
                 map.tiles.entry(key).or_insert(WaterKind::Ocean);
-                map.depths
-                    .insert(key, super::depth::WaterDepth::Deep);
+                map.depths.insert(key, super::depth::WaterDepth::Deep);
             }
         }
     }

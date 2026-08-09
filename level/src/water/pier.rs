@@ -83,7 +83,8 @@ fn carve_pier(
     // Build candidate footprint: `length` along axial, centred over `width`.
     let half_lo = width / 2;
     let half_hi = (width - 1) - half_lo;
-    let mut footprint: Vec<(i32, i32)> = Vec::with_capacity(usize::try_from(length * width).unwrap_or(0));
+    let mut footprint: Vec<(i32, i32)> =
+        Vec::with_capacity(usize::try_from(length * width).unwrap_or(0));
     for axial in 0..length {
         for lat in -half_lo..=half_hi {
             let tx = start_x + axial_step.0 * axial + lateral_step.0 * lat;
@@ -94,7 +95,9 @@ fn carve_pier(
 
     // Validate end cap: forward + lateral neighbours of the outermost row must
     // not be land. Otherwise we'd have land beside the end of the pier.
-    if !end_cap_surrounded_by_water(world, area_pos, direction, start_x, start_y, length, half_lo, half_hi) {
+    if !end_cap_surrounded_by_water(
+        world, area_pos, direction, start_x, start_y, length, half_lo, half_hi,
+    ) {
         return;
     }
 
@@ -136,7 +139,10 @@ fn pier_start_tile(
     for _ in 0..i32::from(MAP_WIDTH).max(i32::from(MAP_HEIGHT)) {
         if is_ocean_tile(world, area_pos, tx, ty) {
             // Step back `land_tiles` so the first row of the pier lies on land.
-            return Some((tx - axial_step.0 * land_tiles, ty - axial_step.1 * land_tiles));
+            return Some((
+                tx - axial_step.0 * land_tiles,
+                ty - axial_step.1 * land_tiles,
+            ));
         }
         tx += axial_step.0;
         ty += axial_step.1;
@@ -211,10 +217,7 @@ fn local_in_area(tx: i32, ty: i32) -> Option<UVec2> {
     if tx >= i32::from(MAP_WIDTH) || ty >= i32::from(MAP_HEIGHT) {
         return None;
     }
-    Some(UVec2::new(
-        u32::try_from(tx).ok()?,
-        u32::try_from(ty).ok()?,
-    ))
+    Some(UVec2::new(u32::try_from(tx).ok()?, u32::try_from(ty).ok()?))
 }
 
 fn sample_range(rng: &mut u64, lo: i32, hi: i32) -> i32 {

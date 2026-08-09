@@ -34,3 +34,15 @@ fmt:
 # Auto-fix lint issues
 fix:
     cargo fix --allow-staged --allow-dirty && cargo fmt
+
+# ── Art ──────────────────────────────────────────────────────────────────────
+
+# Assemble frames into a sprite sheet (see .claude/skills/art-animation)
+sheet *ARGS:
+    uv run scripts/build_sheet.py {{ARGS}}
+
+# Check committed sheets still match the grids the engine declares
+sheet-check:
+    uv run scripts/build_sheet.py --verify --layout npc assets/sprites/npc/*_sheet.webp
+    uv run scripts/build_sheet.py --verify --layout enemy assets/sprites/enemies/*_sheet.webp
+    uv run scripts/build_sheet.py --verify --layout player assets/sprites/player/*_sheet.webp

@@ -94,10 +94,7 @@ pub(crate) fn handle_debug_input(
 }
 
 fn weather_index(kind: WeatherKind) -> usize {
-    WEATHER_CYCLE
-        .iter()
-        .position(|k| *k == kind)
-        .unwrap_or(0)
+    WEATHER_CYCLE.iter().position(|k| *k == kind).unwrap_or(0)
 }
 
 fn next_period_hour(current: f32) -> f32 {

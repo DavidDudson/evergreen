@@ -6,7 +6,7 @@
 
 **Architecture:** A `GrassTuft` marker and `WindSway` component live in models. Spawning follows the same deterministic-seed, biome-pool, blended-alignment pattern as decorations but with a unique salt to avoid overlap. A sway animation system reads `Res<WindStrength>` and applies a sinusoidal rotation to each tuft. 20-30 tufts per area, spawned/despawned with area lifecycle.
 
-**Tech Stack:** Rust, Bevy 0.18, PixelLab (grass sprites)
+**Tech Stack:** Rust, Bevy 0.18, the asset generator (grass sprites)
 
 ---
 
@@ -502,16 +502,16 @@ git commit -m "Wire grass tufts into area spawning and level plugin"
 
 ---
 
-## Task 4: Generate Grass Sprites via PixelLab
+## Task 4: Generate Grass Sprites via the asset generator
 
 **Files:**
 - Create: 9 sprites in `assets/sprites/scenery/grass/`
 
-All sprites use the `create_map_object` PixelLab tool. Style suffix for all: "Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
+All sprites use the `create_map_object` the asset generator tool. Style suffix for all: "Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
 
 - [ ] **Step 1: Generate city/grass_small.webp**
 
-Use `mcp__pixellab__create_map_object` with:
+Use `the asset generator's map-object tool` with:
 - `description`: "A small single tuft of short, trimmed yellow-green grass, 2-3 blades, manicured lawn style. Warm earthy palette with hue-shifted shadows toward cool purple and highlights toward warm gold. Moderate saturation, clean readable forms, storybook fantasy RPG style. 16-bit pixel art aesthetic."
 - `view`: "low top-down"
 - `outline`: "single color outline"

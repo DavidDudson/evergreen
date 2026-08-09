@@ -2,8 +2,8 @@
 //!
 //! Each tileset is a 4x4 grid of 16 tiles, each tile indexed by a 4-bit
 //! corner mask (NW=8, NE=4, SW=2, SE=1; bit set = "upper" / land, cleared =
-//! "lower" / the body material). Metadata JSON exported by pixellab tells
-//! us the `(corners → bounding_box)` mapping; we parse it once at startup
+//! "lower" / the body material). The tileset metadata JSON gives us the
+//! `(corners -> bounding_box)` mapping; we parse it once at startup
 //! and build a `[u8; 16]` lookup table per tileset.
 
 use std::collections::HashMap;
@@ -104,7 +104,7 @@ fn parse_lut(json_bytes: &[u8]) -> [usize; 16] {
     let md: TilesetMetadata = serde_json::from_slice(json_bytes).expect("tileset json parses");
     let mut lut = [0usize; 16];
     for tile in md.tileset_data.tiles {
-        // Pixellab "lower" represents the body (water/sand). We want a mask
+        // "lower" represents the body (water/sand). We want a mask
         // where bit=1 means "body present at that corner", so "lower"->1.
         let mask = wang_mask(
             is_lower(&tile.corners.nw),

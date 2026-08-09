@@ -45,10 +45,7 @@ pub struct QuestHandles(pub Vec<Handle<QuestAsset>>);
 /// Bevy's asset server cannot enumerate a directory on the wasm target, so we
 /// list the quest files explicitly. Add a new entry here when authoring a
 /// new quest.
-pub fn load_quest_manifest(
-    mut handles: ResMut<QuestHandles>,
-    asset_server: Res<AssetServer>,
-) {
+pub fn load_quest_manifest(mut handles: ResMut<QuestHandles>, asset_server: Res<AssetServer>) {
     const QUEST_FILES: &[&str] = &["quests/bigby_sick_animals.quest.ron"];
     handles.0 = QUEST_FILES
         .iter()
@@ -70,8 +67,6 @@ pub fn drain_quest_assets(
         let Some(asset) = assets.get(id) else {
             continue;
         };
-        registry
-            .quests
-            .insert(asset.0.id.clone(), asset.0.clone());
+        registry.quests.insert(asset.0.id.clone(), asset.0.clone());
     }
 }

@@ -16,8 +16,8 @@ pub use haptics::{HapticPulse, Haptics};
 pub use input::ActionInput;
 pub use plugin::KeybindsPlugin;
 pub use remap::{
-    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted,
-    RemapCompleted, RequestControllerRemap, RequestRemap,
+    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted, RemapCompleted,
+    RequestControllerRemap, RequestRemap,
 };
 
 // Re-export so callers can iterate Action variants without depending on strum directly.

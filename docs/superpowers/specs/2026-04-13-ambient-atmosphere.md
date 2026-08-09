@@ -266,7 +266,7 @@ Each gets its own plan -> implementation cycle.
 ## Scope
 
 ### In Scope
-- 9 grass sprites, 11 creature sprite sheets, 5 particle sprites (via PixelLab)
+- 9 grass sprites, 11 creature sprite sheets, 5 particle sprites (via the asset generator)
 - GameClock resource with configurable tick rate
 - Time-of-day post-processing shader
 - Weather state machine with 5 states

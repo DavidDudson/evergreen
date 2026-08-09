@@ -192,13 +192,7 @@ fn spawn_decoration(
 
 /// True when any of the 8 tiles surrounding `(xu, yu)` (the tiles sharing a
 /// Wang-corner vertex with this one) is a dirt path.
-fn has_dirt_neighbour(
-    _area: &Area,
-    world: &WorldMap,
-    area_pos: IVec2,
-    xu: u32,
-    yu: u32,
-) -> bool {
+fn has_dirt_neighbour(_area: &Area, world: &WorldMap, area_pos: IVec2, xu: u32, yu: u32) -> bool {
     has_dirt_within_radius(world, area_pos, xu, yu, 1)
 }
 

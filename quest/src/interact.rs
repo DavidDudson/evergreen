@@ -143,7 +143,9 @@ pub fn detect_investigate_range(
                 .insert(InvestigateTrigger { target: t });
         }
         (None, Some(_)) => {
-            commands.entity(player_entity).remove::<InvestigateTrigger>();
+            commands
+                .entity(player_entity)
+                .remove::<InvestigateTrigger>();
         }
         (Some(t), Some(c)) if t != c => {
             commands

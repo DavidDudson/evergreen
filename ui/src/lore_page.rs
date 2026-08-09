@@ -495,7 +495,11 @@ impl crate::screen::ScreenSetup for LoreScreen {
             .add_systems(OnExit(GameState::LorePage), teardown)
             .add_systems(
                 Update,
-                (handle_back_button, handle_category_buttons, handle_topic_buttons)
+                (
+                    handle_back_button,
+                    handle_category_buttons,
+                    handle_topic_buttons,
+                )
                     .run_if(in_state(GameState::LorePage)),
             );
     }

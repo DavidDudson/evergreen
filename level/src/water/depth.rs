@@ -38,11 +38,8 @@ const SHALLOW_JITTER_TILES: i32 = 1;
 /// any pre-set value. Per-river depth assignments inserted during carving are
 /// preserved (river tiles are skipped here).
 pub fn classify_depths(map: &mut WaterMap) {
-    let keys: Vec<(IVec2, UVec2, WaterKind)> = map
-        .tiles
-        .iter()
-        .map(|(&(a, l), &k)| (a, l, k))
-        .collect();
+    let keys: Vec<(IVec2, UVec2, WaterKind)> =
+        map.tiles.iter().map(|(&(a, l), &k)| (a, l, k)).collect();
     for (area, local, kind) in keys {
         // Rivers + waterfall already have their depth assigned during carving.
         if kind.is_river() {
@@ -102,12 +99,7 @@ fn distance_to_non_matching(
     best
 }
 
-fn classify_by_distance(
-    map: &WaterMap,
-    area: IVec2,
-    local: UVec2,
-    kind: WaterKind,
-) -> WaterDepth {
+fn classify_by_distance(map: &WaterMap, area: IVec2, local: UVec2, kind: WaterKind) -> WaterDepth {
     let dist = distance_to_non_matching(map, area, local, kind);
     let jitter = jitter_for(area, local);
     let threshold = SHALLOW_BAND_TILES + jitter;

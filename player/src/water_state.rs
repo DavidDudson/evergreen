@@ -130,7 +130,11 @@ pub fn spawn_splashes(
             color: palette::SPLASH_TINT,
             ..default()
         },
-        Transform::from_xyz(p.x, p.y - f32::from(TILE_SIZE_PX) * 0.4, Layer::Tilemap.z_f32() + 0.6),
+        Transform::from_xyz(
+            p.x,
+            p.y - f32::from(TILE_SIZE_PX) * 0.4,
+            Layer::Tilemap.z_f32() + 0.6,
+        ),
     ));
 }
 

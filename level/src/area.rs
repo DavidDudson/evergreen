@@ -419,13 +419,7 @@ fn scatter_dirt_patches(grid: &mut [Terrain], w: u32, h: u32, alignment: AreaAli
 /// share noise; uses world-absolute coords for cross-area continuity.
 const PATH_JITTER_TILES: i32 = 1;
 
-fn is_dirt(
-    x: u32,
-    y: u32,
-    exits: &BTreeSet<Direction>,
-    half_w: u32,
-    area_pos: IVec2,
-) -> bool {
+fn is_dirt(x: u32, y: u32, exits: &BTreeSet<Direction>, half_w: u32, area_pos: IVec2) -> bool {
     // Centre of the cross intersection (nominal, before jitter).
     let cx_nom = (PATH_COL_START + PATH_COL_END) / 2; // 15
     let cy_nom = (PATH_ROW_START + PATH_ROW_END) / 2; // 8

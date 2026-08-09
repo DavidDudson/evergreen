@@ -23,6 +23,7 @@ pub mod scenery;
 pub mod shadows;
 pub mod spawn_profile;
 pub mod spawning;
+pub mod sprite_anim;
 pub mod terrain;
 pub mod wang;
 pub mod water;

@@ -80,22 +80,14 @@ impl WaterKind {
     pub fn terrain_tags(self) -> TerrainTags {
         match self {
             Self::Plain => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
-            Self::PurplePond => {
-                TerrainTags::new(&[tag::WATER, tag::STILL], &[tag::FERTILE])
-            }
+            Self::PurplePond => TerrainTags::new(&[tag::WATER, tag::STILL], &[tag::FERTILE]),
             Self::Lake => TerrainTags::new(&[tag::WATER, tag::STILL], &[]),
-            Self::HotSpring => {
-                TerrainTags::new(&[tag::WATER, tag::STILL, tag::HOT], &[tag::HOT])
-            }
+            Self::HotSpring => TerrainTags::new(&[tag::WATER, tag::STILL, tag::HOT], &[tag::HOT]),
             Self::RiverNS | Self::RiverEW => {
                 TerrainTags::new(&[tag::WATER, tag::FLOWING], &[tag::FLOWING])
             }
-            Self::Waterfall => {
-                TerrainTags::new(&[tag::WATER, tag::FLOWING], &[tag::FLOWING])
-            }
-            Self::Ocean => {
-                TerrainTags::new(&[tag::WATER, tag::STILL, tag::SALT], &[tag::SALT])
-            }
+            Self::Waterfall => TerrainTags::new(&[tag::WATER, tag::FLOWING], &[tag::FLOWING]),
+            Self::Ocean => TerrainTags::new(&[tag::WATER, tag::STILL, tag::SALT], &[tag::SALT]),
         }
     }
 }

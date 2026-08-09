@@ -4,13 +4,13 @@ use bevy::prelude::*;
 
 #[cfg(debug_assertions)]
 use crate::debug_panel::{
-    handle_debug_input, panel_visible, setup_debug_panel, toggle_debug_panel,
-    update_debug_panel, DebugPanelState,
+    handle_debug_input, panel_visible, setup_debug_panel, toggle_debug_panel, update_debug_panel,
+    DebugPanelState,
 };
 #[cfg(debug_assertions)]
 use crate::frame_stages::{
-    finalize_frame, stamp_first, stamp_last, stamp_post_update, stamp_pre_update,
-    stamp_update, FrameStageTimings,
+    finalize_frame, stamp_first, stamp_last, stamp_post_update, stamp_pre_update, stamp_update,
+    FrameStageTimings,
 };
 #[cfg(debug_assertions)]
 use crate::overlay::{

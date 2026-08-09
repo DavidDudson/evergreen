@@ -6,7 +6,7 @@
 
 **Architecture:** A shared `blended_alignment` function computes per-tile effective alignment by lerping toward neighbor areas. A new `Revealable` component with child sprites handles the crossfade stump mechanic. All world entities (trees, decorations, NPCs, player) share a single `Layer::World` z-base with y-sort offsets, fixing the z-ordering bug.
 
-**Tech Stack:** Rust, Bevy 0.18, bevy_ecs_tilemap, PixelLab (asset generation)
+**Tech Stack:** Rust, Bevy 0.18, bevy_ecs_tilemap, the asset generator (asset generation)
 
 ---
 
@@ -536,9 +536,9 @@ git commit -m "feat: add Revealable, RevealState, FullSprite, StumpSprite compon
 - Delete: `assets/sprites/scenery/trees/tree_oak.webp`, `tree_pine.webp`
 - Create: 16 new tree assets in `assets/sprites/scenery/trees/{city,greenwood,darkwood}/`
 
-- [ ] **Step 1: Generate tree assets via PixelLab**
+- [ ] **Step 1: Generate tree assets via the asset generator**
 
-Use `mcp__pixellab__create_map_object` in batches of 4 (respecting rate limits, ~60s between batches).
+Use `the asset generator's map-object tool` in batches of 4 (respecting rate limits, ~60s between batches).
 
 **Full trees** (48x64, `view: "low top-down"`, `outline: "single color outline"`, `shading: "basic shading"`, `detail: "medium detail"`):
 
@@ -1103,7 +1103,7 @@ git commit -m "feat: add reveal fade to large decorations when player walks behi
 
 ---
 
-### Task 10: Generate Tree Assets with PixelLab
+### Task 10: Generate Tree Assets
 
 **Files:**
 - Create: 16 tree sprites in `assets/sprites/scenery/trees/{city,greenwood,darkwood}/`
@@ -1117,7 +1117,7 @@ mkdir -p assets/sprites/scenery/trees/{city,greenwood,darkwood}
 
 - [ ] **Step 2: Generate full trees (batch of 4, wait 60s, repeat)**
 
-Use `mcp__pixellab__create_map_object` with `width: 48, height: 64` for each. Style: `view: "low top-down"`, `outline: "single color outline"`, `shading: "basic shading"`, `detail: "medium detail"`.
+Use `the asset generator's map-object tool` with `width: 48, height: 64` for each. Style: `view: "low top-down"`, `outline: "single color outline"`, `shading: "basic shading"`, `detail: "medium detail"`.
 
 Batch 1 (4 jobs): city_ornamental, city_fruit, green_oak, green_birch
 Batch 2 (4 jobs): green_maple, dark_gnarled, dark_dead, dark_willow

@@ -1,65 +1,97 @@
 ---
 name: art-character
-description: Generate NPC and player character sprites for Evergreen. Covers the local concept/single-view path and when to spend PixelLab credits instead for 4/8-direction rotation sets. Use for anything destined for assets/sprites/npc, player, creatures or enemies.
+description: Generate NPC and player character sprites for Evergreen, including multi-direction turnarounds and animation key poses, entirely locally via Qwen-Image-Edit. Use for anything destined for assets/sprites/npc, player, creatures or enemies.
 ---
 
 # Character Sprite Generation
 
-Characters are the one asset type where the local rig does **not** replace
-PixelLab. Read this before starting, because picking the wrong path wastes
-either an hour or a pile of credits.
+Fully local. Identity across directions comes from **editing one approved
+sprite**, not from re-prompting -- text-to-image re-invents a character every
+seed, but an edit conditioned on the original keeps it.
 
-**Style contract:** `research/art/pixellab_style_guide.md` (character defaults,
-description formula) and `research/art/adamcyounis_style.md` (proportions,
-outlines, shading).
+**Read `research/art/local_workflow.md` for the pick loop**; take the
+`character` fragment from `research/art/local_style_presets.md`. Appearance
+details come from `research/characters/` -- check `npc_list.md`,
+`player_characters.md` or the named character file before inventing anything.
 
-## Which path
+## 1. Base sprite
 
-| Need | Use | Why |
-|---|---|---|
-| Concept art, portrait, promo | **local** | Free, fast, high resolution |
-| Single-facing static NPC | **local** | One view is all the sprite needs |
-| 4/8-direction walk sets | **PixelLab** | `create_character` produces consistent rotations; diffusion cannot hold a character across angles |
-| Animation frames | **PixelLab** | Same reason — frame-to-frame identity |
-
-Diffusion re-invents details every seed. A "walking left" render will not match
-the "walking right" one, and no prompt fixes that. Do not attempt rotation sets
-locally.
-
-## Local path
-
-Description formula from the style guide:
+Description formula from `asset_style_guide.md`:
 
 > [body type] [species/race] [gender presentation] with [hair colour/style],
 > wearing [clothing in 1-2 palette colours], [1 distinguishing accessory].
-> Warm earthy palette, hue-shifted shadows toward cool purple, highlights
-> toward warm gold. Clean readable silhouette, storybook fantasy style.
 
-1. Check `research/characters/` for the character's existing description
-   (cadwallader.md, morgana.md, npc_list.md, player_characters.md) and use it
-   rather than inventing appearance details.
-2. ```
-   generate_best(
-     prompt="<formula>, chibi proportions, low top-down view, full body, centred",
-     kind="sprite", n=4,
-     criteria="<character>, readable silhouette at 32px, chibi proportions, single figure"
-   )
-   ```
-   `kind="sprite"` routes to SDXL + the pixel-art LoRA with a real alpha cut.
-3. `pixelize(image_path=<winner>, target_px=32, palette="apollo", upscale=8)`
-   — 32 for NPCs, 48 for player scale.
-4. Save to `assets/sprites/npc/`, `player/`, `creatures/` or `enemies/`.
+```
+generate_sprite(prompt="<formula>, <character style fragment>, front view, full body, centred",
+                variants=5, seed=<base>)
+```
 
-## PixelLab path
+Contact sheet → user picks → `describe_style` → update the preset. **The
+winning sprite is now the identity reference for every other direction.** Save
+the 1024px original, not just the downscaled sprite -- edits work from the
+full-resolution image.
 
-Use the `pixellab` MCP with the character defaults from the style guide —
-`size: 32`, `view: "low top-down"`, `body_type: "humanoid"`,
-`outline: "single color outline"`, `shading: "basic shading"`,
-`proportions: chibi`, `n_directions: 8`, `ai_freedom: 600`.
+## 2. Turnarounds
 
-Budget 3–5 minutes per character; cap at 4–5 concurrent jobs or the API
-returns 429.
+One `edit_image` call per direction, each conditioned on the same base:
 
-Afterwards, still run `conform_palette(path, palette="apollo")` on the result —
-it costs nothing and guarantees the PixelLab output sits in the same palette as
-the locally generated props around it.
+```
+edit_image(
+  image_path="<approved base, 1024px>",
+  instruction="show the same character from behind, back view, identical outfit, colours and proportions, same art style",
+  lora="Qwen-Edit-2509-Multiple-angles.safetensors",
+  lora_strength=1.0
+)
+```
+
+- The multiple-angles LoRA is trained for exactly this; without it the model
+  tends to redraw rather than rotate.
+- Directions Evergreen uses: front, back, left, right (4-way) or add the
+  diagonals for 8-way.
+- Always edit **from the base**, never from the previous direction -- errors
+  compound down a chain.
+- Check each result against the base for drift: hair colour, accessory
+  placement, silhouette height. Regenerate with a different seed rather than
+  accepting a near-match; a drifting sprite sheet is obvious in motion.
+
+## 3. Animation
+
+Stop here. Cycles, frame generation and sheet assembly are **`art-animation`**
+-- it owns the per-kind grids and the builder script, and the approved base
+plus its turnarounds are exactly the input it expects.
+
+## 4. Finish
+
+```
+pixelize(image_path=<each direction>, target_px=32, palette="apollo")
+```
+
+32 for NPCs, enemies and creatures. The player is **32x64**, not square:
+pixelize to `target_px=64` (pixelize works on the longest side) and let the
+sheet builder pad the width.
+
+Sheet grids differ per kind and are declared in Rust, not here -- see the
+layout table in `art-animation`. In short: NPC and enemy sheets are 8x4 of
+32x32 (`level/src/npcs.rs`, `level/src/enemies.rs`), the player is 12x8 of
+32x64 (`player/src/animation.rs`).
+
+- `slice_sheet` if a single render already contains multiple poses.
+- Save to `assets/sprites/npc/`, `player/`, `creatures/` or `enemies/`.
+
+## Saving (WebP, always)
+
+This repo bans PNG and JPEG in `assets/` -- see CLAUDE.md. Convert before
+saving, losslessly, because lossy WebP resamples across hard colour edges and
+puts colours back in the file that the palette conform removed:
+
+```
+to_webp(image_path=<final sprite>, lossless=true, keep_source=false,
+        output_path="assets/sprites/<dir>/<snake_case>.webp")
+```
+
+## Honest limits
+
+- Turnarounds are good, not perfect. Small details (buckle side, hair parting)
+  can flip. Budget a cleanup pass in Aseprite for hero characters.
+- Long animation cycles are still hand work. This gets you consistent keys --
+  see `art-animation` for how far the local rig takes a cycle.

@@ -55,8 +55,7 @@ pub fn move_player(
     if water_state.on_shallow {
         mult *= SHALLOW_SPEED_MULT;
     }
-    let delta =
-        direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * mult * time.delta_secs();
+    let delta = direction * f32::from(speed.0) * f32::from(TILE_SIZE_PX) * mult * time.delta_secs();
     transform.translation += delta.extend(0.0);
 }
 

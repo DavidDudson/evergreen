@@ -9,6 +9,6 @@ mod plugin;
 mod storage;
 
 pub use file::{SaveFile, SAVE_VERSION};
-pub use persistable::{Migrator, PersistableAppExt, Persistable};
+pub use persistable::{Migrator, Persistable, PersistableAppExt};
 pub use plugin::SavePlugin;
 pub use storage::{NativeBackend, StorageBackend, WasmBackend};

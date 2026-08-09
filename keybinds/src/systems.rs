@@ -4,8 +4,8 @@ use crate::bindings::Keybinds;
 use crate::controller::ControllerBinds;
 use crate::controller_serialize::button_name;
 use crate::remap::{
-    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted,
-    RemapCompleted, RequestControllerRemap, RequestRemap,
+    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted, RemapCompleted,
+    RequestControllerRemap, RequestRemap,
 };
 
 /// Handles [`RequestRemap`]: begins listening for the next keypress.

@@ -4,8 +4,8 @@ use keybinds::bindings::Keybinds;
 use keybinds::controller::ControllerBinds;
 use keybinds::controller_serialize::button_name;
 use keybinds::remap::{
-    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted,
-    RemapCompleted, RequestControllerRemap, RequestRemap,
+    AwaitingControllerRemap, AwaitingRemap, CancelRemap, ControllerRemapCompleted, RemapCompleted,
+    RequestControllerRemap, RequestRemap,
 };
 use keybinds::serialize::keycode_name;
 use keybinds::IntoEnumIterator;

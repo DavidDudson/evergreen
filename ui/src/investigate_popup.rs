@@ -84,10 +84,7 @@ fn setup(mut commands: Commands, fonts: Res<UiFont>) {
                 top: Val::Px(POPUP_TOP_PX),
                 left: Val::Percent((100.0 - POPUP_WIDTH_PERCENT) / 2.0),
                 width: Val::Percent(POPUP_WIDTH_PERCENT),
-                padding: UiRect::axes(
-                    Val::Px(POPUP_PADDING_H_PX),
-                    Val::Px(POPUP_PADDING_V_PX),
-                ),
+                padding: UiRect::axes(Val::Px(POPUP_PADDING_H_PX), Val::Px(POPUP_PADDING_V_PX)),
                 border: UiRect::all(Val::Px(POPUP_BORDER_PX)),
                 border_radius: BorderRadius::all(Val::Px(POPUP_RADIUS_PX)),
                 flex_direction: FlexDirection::Column,
@@ -206,10 +203,7 @@ fn on_investigation(
 
 #[allow(clippy::type_complexity)]
 fn on_button_click(
-    mut interaction_q: Query<
-        (&Interaction, &InvestigateChoiceButton),
-        Changed<Interaction>,
-    >,
+    mut interaction_q: Query<(&Interaction, &InvestigateChoiceButton), Changed<Interaction>>,
     locale: Res<LocaleMap>,
     mut commands: Commands,
     mut popup_q: Query<&mut InvestigatePopupState, With<InvestigatePopup>>,

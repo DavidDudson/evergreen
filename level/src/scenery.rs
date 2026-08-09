@@ -100,8 +100,7 @@ fn clear_for_tree(_area: &Area, world: &WorldMap, area_pos: IVec2, xu: u32, yu: 
         } else {
             bevy::math::UVec2::new(0, yu)
         };
-        if world.water.get(key_pos, key_local).is_some()
-            || world.water.has_sand(key_pos, key_local)
+        if world.water.get(key_pos, key_local).is_some() || world.water.has_sand(key_pos, key_local)
         {
             return false;
         }

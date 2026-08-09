@@ -6,8 +6,8 @@ use crate::remap::{
     CancelRemap, ControllerRemapCompleted, RemapCompleted, RequestControllerRemap, RequestRemap,
 };
 use crate::systems::{
-    capture_remap_button, capture_remap_key, handle_cancel_remap,
-    handle_request_controller_remap, handle_request_remap,
+    capture_remap_button, capture_remap_key, handle_cancel_remap, handle_request_controller_remap,
+    handle_request_remap,
 };
 
 pub struct KeybindsPlugin;
