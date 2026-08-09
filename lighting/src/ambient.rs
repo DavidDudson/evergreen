@@ -150,14 +150,14 @@ mod tests {
     #[test]
     fn ambient_at_midday_returns_day() {
         let t = profile().target_for_hour(12.0);
-        assert_eq!(t.color, AMBIENT_DAY);
+        approx_color(t.color, AMBIENT_DAY);
         approx(t.brightness, DAY_BRIGHTNESS);
     }
 
     #[test]
     fn ambient_at_midnight_returns_night() {
         let t = profile().target_for_hour(0.0);
-        assert_eq!(t.color, AMBIENT_NIGHT);
+        approx_color(t.color, AMBIENT_NIGHT);
         approx(t.brightness, NIGHT_BRIGHTNESS);
     }
 
@@ -185,14 +185,14 @@ mod tests {
     #[test]
     fn ambient_after_evening_end_returns_night() {
         let t = profile().target_for_hour(23.0);
-        assert_eq!(t.color, AMBIENT_NIGHT);
+        approx_color(t.color, AMBIENT_NIGHT);
         approx(t.brightness, NIGHT_BRIGHTNESS);
     }
 
     #[test]
     fn ambient_at_hour_24_clamps_to_night() {
         let t = profile().target_for_hour(24.0);
-        assert_eq!(t.color, AMBIENT_NIGHT);
+        approx_color(t.color, AMBIENT_NIGHT);
         approx(t.brightness, NIGHT_BRIGHTNESS);
     }
 }

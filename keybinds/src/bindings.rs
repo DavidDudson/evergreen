@@ -26,7 +26,7 @@ const DEFAULT_BINDINGS: &[(Action, KeyCode)] = &[
 /// to check what key is bound to a given action.
 ///
 /// # Example
-/// ```rust
+/// ```ignore
 /// fn my_system(keyboard: Res<ButtonInput<KeyCode>>, bindings: Res<Keybinds>) {
 ///     if keyboard.just_pressed(bindings.key(Action::Interact)) { ... }
 /// }
