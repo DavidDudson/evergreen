@@ -190,12 +190,19 @@ fn ensure_area_spawned(
     if spawned.0.contains(&area_pos) {
         return;
     }
+    let _area_scope = crate::spawn_profile::scope("area total");
     let in_world = world.get_area(area_pos).is_some();
     let is_off_map_ocean = !in_world && world.has_ocean;
     let dense_forest = Area::dense_forest();
     let area = world.get_area(area_pos).unwrap_or(&dense_forest);
-    spawn_area_tilemap(commands, asset_server, registry, world, area, area_pos);
-    crate::water::spawn_area_water(commands, asset_server, wang, world, area_pos);
+    {
+        let _s = crate::spawn_profile::scope("tilemap");
+        spawn_area_tilemap(commands, asset_server, registry, world, area, area_pos);
+    }
+    {
+        let _s = crate::spawn_profile::scope("water");
+        crate::water::spawn_area_water(commands, asset_server, wang, world, area_pos);
+    }
     if is_off_map_ocean {
         // Off-map ocean placeholder -- skip beaches, flora, fauna, scenery,
         // grass, decorations, creatures, NPCs. The full-area ocean tiles
@@ -203,54 +210,87 @@ fn ensure_area_spawned(
         spawned.0.insert(area_pos);
         return;
     }
-    crate::beach::spawn_area_beach(commands, asset_server, wang, world, area_pos);
-    crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
-    crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
-    scenery::spawn_area_scenery_at(
-        commands,
-        asset_server,
-        shadow_assets,
-        registry,
-        area,
-        area_pos,
-        world,
-    );
-    decorations::spawn_area_decorations(commands, asset_server, registry, area, area_pos, world);
-    grass::spawn_area_grass(
-        commands,
-        asset_server,
-        shadow_assets,
-        registry,
-        area,
-        area_pos,
-        world,
-    );
-    creatures::spawn_area_creatures(
-        commands,
-        asset_server,
-        shadow_assets,
-        registry,
-        area,
-        area_pos,
-        world,
-    );
-    npcs::spawn_npc_for_area(
-        commands,
-        asset_server,
-        atlas_layouts,
-        shadow_assets,
-        area,
-        area_pos,
-    );
-    crate::enemies::spawn_area_enemies(commands, asset_server, atlas_layouts, area, area_pos);
-    crate::quest_props::spawn_quest_prop_for_area(
-        commands,
-        asset_server,
-        world,
-        area,
-        area_pos,
-    );
-    spawn_portal_for_area(commands, asset_server, atlas_layouts, world, area_pos);
+    {
+        let _s = crate::spawn_profile::scope("beach");
+        crate::beach::spawn_area_beach(commands, asset_server, wang, world, area_pos);
+    }
+    {
+        let _s = crate::spawn_profile::scope("water flora");
+        crate::water_flora::spawn_area_water_flora(commands, asset_server, world, area_pos);
+    }
+    {
+        let _s = crate::spawn_profile::scope("water fauna");
+        crate::water_fauna::spawn_area_water_fauna(commands, asset_server, world, area_pos);
+    }
+    {
+        let _s = crate::spawn_profile::scope("scenery");
+        scenery::spawn_area_scenery_at(
+            commands,
+            asset_server,
+            shadow_assets,
+            registry,
+            area,
+            area_pos,
+            world,
+        );
+    }
+    {
+        let _s = crate::spawn_profile::scope("decorations");
+        decorations::spawn_area_decorations(commands, asset_server, registry, area, area_pos, world);
+    }
+    {
+        let _s = crate::spawn_profile::scope("grass");
+        grass::spawn_area_grass(
+            commands,
+            asset_server,
+            shadow_assets,
+            registry,
+            area,
+            area_pos,
+            world,
+        );
+    }
+    {
+        let _s = crate::spawn_profile::scope("creatures");
+        creatures::spawn_area_creatures(
+            commands,
+            asset_server,
+            shadow_assets,
+            registry,
+            area,
+            area_pos,
+            world,
+        );
+    }
+    {
+        let _s = crate::spawn_profile::scope("npcs");
+        npcs::spawn_npc_for_area(
+            commands,
+            asset_server,
+            atlas_layouts,
+            shadow_assets,
+            area,
+            area_pos,
+        );
+    }
+    {
+        let _s = crate::spawn_profile::scope("enemies");
+        crate::enemies::spawn_area_enemies(commands, asset_server, atlas_layouts, area, area_pos);
+    }
+    {
+        let _s = crate::spawn_profile::scope("quest props");
+        crate::quest_props::spawn_quest_prop_for_area(
+            commands,
+            asset_server,
+            world,
+            area,
+            area_pos,
+        );
+    }
+    {
+        let _s = crate::spawn_profile::scope("portal");
+        spawn_portal_for_area(commands, asset_server, atlas_layouts, world, area_pos);
+    }
     spawned.0.insert(area_pos);
 }
 
@@ -357,6 +397,27 @@ fn spawn_area_tilemap(
 
     let in_world = world.get_area(area_pos).is_some();
 
+    // Isolates wang-index + tint cost from entity spawn cost. Runs the index
+    // maths a second time in debug builds only; the release path is untouched.
+    #[cfg(debug_assertions)]
+    {
+        let _s = crate::spawn_profile::scope("  of which: tile index maths");
+        for x in 0..MAP_WIDTH {
+            for y in 0..MAP_HEIGHT {
+                let (xu, yu) = (u32::from(x), u32::from(y));
+                let idx = if in_world {
+                    wang_tile_index(xu, yu, area_pos, world)
+                } else {
+                    wang_tile_index_local(xu, yu, area, area_pos, world)
+                };
+                let color = biome_tile_color(area.alignment, xu, yu, area_pos, world);
+                std::hint::black_box((idx, color));
+            }
+        }
+    }
+
+    let _tile_scope = crate::spawn_profile::scope("  of which: tile entities");
+
     for x in 0..MAP_WIDTH {
         for y in 0..MAP_HEIGHT {
             let xu = u32::from(x);
@@ -383,7 +444,9 @@ fn spawn_area_tilemap(
             storage.set(&tile_pos, tile_entity);
         }
     }
+    drop(_tile_scope);
 
+    let _s = crate::spawn_profile::scope("  of which: tilemap bundle");
     commands.entity(tilemap_entity).insert((
         AreaTilemap,
         TilemapBundle {
@@ -510,4 +573,76 @@ fn biome_tile_color(
         1.0,
     );
     TileColor(blended)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Instant;
+
+    /// Areas spawned on entering `Playing`: current plus four cardinals.
+    const INITIAL_AREAS: usize = 1 + NEIGHBOR_OFFSETS.len();
+
+    fn tiles_per_area() -> usize {
+        usize::from(MAP_WIDTH) * usize::from(MAP_HEIGHT)
+    }
+
+    /// Not an assertion of speed -- a harness for measuring where the startup
+    /// cost sits, runnable with:
+    ///
+    /// ```text
+    /// cargo test -p level --target x86_64-unknown-linux-gnu \
+    ///     startup_cost_breakdown -- --nocapture --ignored
+    /// ```
+    ///
+    /// Native numbers are a floor, not the wasm figure, but the *ratio*
+    /// between phases is what decides where optimisation is worth spending.
+    #[test]
+    #[ignore = "measurement harness, not a pass/fail test"]
+    fn startup_cost_breakdown() {
+        let seed = 0x5EED_C0FF_EE12_3456_u64;
+
+        let t = Instant::now();
+        let world = WorldMap::new(seed, 50);
+        let gen_ms = t.elapsed().as_secs_f64() * 1000.0;
+
+        let positions: Vec<IVec2> = std::iter::once(world.current)
+            .chain(NEIGHBOR_OFFSETS.iter().map(|o| world.current + *o))
+            .collect();
+
+        let dense_forest = Area::dense_forest();
+        let t = Instant::now();
+        let mut checksum = 0u64;
+        for pos in &positions {
+            let in_world = world.get_area(*pos).is_some();
+            let area = world.get_area(*pos).unwrap_or(&dense_forest);
+            for x in 0..MAP_WIDTH {
+                for y in 0..MAP_HEIGHT {
+                    let (xu, yu) = (u32::from(x), u32::from(y));
+                    let idx = if in_world {
+                        wang_tile_index(xu, yu, *pos, &world)
+                    } else {
+                        wang_tile_index_local(xu, yu, area, *pos, &world)
+                    };
+                    let _c = biome_tile_color(area.alignment, xu, yu, *pos, &world);
+                    checksum = checksum.wrapping_add(u64::from(idx));
+                }
+            }
+        }
+        let index_ms = t.elapsed().as_secs_f64() * 1000.0;
+
+        let tiles = tiles_per_area() * INITIAL_AREAS;
+        #[allow(clippy::as_conversions)] // measurement output only
+        let per_tile_us = (index_ms * 1000.0) / tiles as f64;
+
+        println!("--- startup cost breakdown (native, debug) ---");
+        println!("world generate          {gen_ms:>9.2} ms");
+        println!(
+            "tile index + tint       {index_ms:>9.2} ms  ({tiles} tiles across \
+             {INITIAL_AREAS} areas, {per_tile_us:.2} us/tile)"
+        );
+        println!("tile entities spawned   {tiles:>9} (one per tile, plus \
+                  scenery/grass/creatures on top)");
+        println!("checksum {checksum}");
+    }
 }

@@ -67,7 +67,25 @@ impl Plugin for LevelPlugin {
                     galen::spawn_galen,
                 )
                     .chain(),
+            );
+
+        #[cfg(debug_assertions)]
+        app.init_resource::<crate::spawn_profile::SpawnProfileRun>()
+            .add_systems(
+                OnEnter(GameState::Playing),
+                crate::spawn_profile::begin_run.before(regenerate_world),
             )
+            .add_systems(
+                Update,
+                (
+                    crate::spawn_profile::track_image_loads,
+                    crate::spawn_profile::report_when_settled,
+                )
+                    .chain()
+                    .run_if(in_state(GameState::Playing)),
+            );
+
+        app
             .add_systems(
                 Update,
                 (
@@ -209,18 +227,23 @@ fn regenerate_world(
         {
             save.current_alignment = crate::world::ROOT_MAP_ALIGNMENT;
         }
+        let _s = crate::spawn_profile::scope("world generate (resume)");
         *world = WorldMap::generate(
             crate::world::MapId(save.current_id),
             save.current_seed,
             save.current_alignment,
             save.maps_traversed,
         );
+        drop(_s);
         clock.hour = rand::random::<f32>() * HOURS_PER_DAY;
         return;
     }
     let dominant = alignment.dominant_area_alignment();
     let new_seed: u64 = rand::random();
-    *world = WorldMap::new(new_seed, dominant);
+    {
+        let _s = crate::spawn_profile::scope("world generate (new)");
+        *world = WorldMap::new(new_seed, dominant);
+    }
     clock.hour = rand::random::<f32>() * HOURS_PER_DAY;
     // Stamp the freshly-generated root map into the save resource so we
     // can resume on next launch.

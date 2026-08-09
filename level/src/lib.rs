@@ -21,6 +21,7 @@ pub mod quest_props;
 pub mod reveal;
 pub mod scenery;
 pub mod shadows;
+pub mod spawn_profile;
 pub mod spawning;
 pub mod terrain;
 pub mod wang;

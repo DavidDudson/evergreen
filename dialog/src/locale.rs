@@ -28,7 +28,18 @@ pub struct LocaleMap {
 }
 
 impl LocaleMap {
+    /// Whether any locale table has been loaded yet. Before this is true,
+    /// [`get`](Self::get) can only return raw keys, so UI must not paint yet.
+    pub fn is_ready(&self) -> bool {
+        !self.data.is_empty() || !self.fallback.is_empty()
+    }
+
     /// Look up a locale key. Falls through active → default → key.
+    ///
+    /// The final fallthrough returns the key itself, which is a useful signal
+    /// for a genuinely missing translation but reads as gibberish on screen
+    /// (`ui.main_menu.start`) before the locale asset has loaded. Callers that
+    /// paint text should gate on [`is_ready`](Self::is_ready) first.
     pub fn get<'a>(&'a self, key: &'a str) -> &'a str {
         if let Some(value) = self.data.get(key) {
             return value.as_str();
@@ -176,6 +187,13 @@ pub fn apply_locale_keys(
         Query<(&LocaleKey, &mut Text), Added<LocaleKey>>,
     )>,
 ) {
+    // Until a locale table exists every lookup returns the key itself, which
+    // would paint `ui.main_menu.start` across the menu for as long as the
+    // asset takes to arrive. Leave the text empty instead; the `is_changed`
+    // branch below repaints everything the moment the table lands.
+    if !locale_map.is_ready() {
+        return;
+    }
     if locale_map.is_changed() {
         for (key, mut text) in &mut queries.p0() {
             **text = locale_map.get(&key.0).to_owned();
