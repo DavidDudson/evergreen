@@ -45,7 +45,12 @@ bevy = { version = "0.18.1", default-features = false, features = [
     "2d",                           # full 2D rendering stack
     "bevy_color",                   # Color type, palette support
     "bevy_core_pipeline",           # main camera pipeline, clear color, MSAA
-    "webgl2",                       # wasm GPU backend
+    # TEMPORARY: was "webgl2". Moved to WebGPU so `bevy_lit` (the only 2D
+    # lighting crate with a Bevy 0.19 release) becomes usable -- it dropped
+    # WebGL2 support. Revert to "webgl2" once malbernaz/bevy_lit#26 ships.
+    # Cost: browsers without WebGPU can no longer run the game. See
+    # UPGRADE_NOTES.md "Alternative: bevy_lit".
+    "webgpu",                       # wasm GPU backend (overrides webgl2)
     "tonemapping_luts",             # tonemapping textures
     "smaa_luts",                    # SMAA anti-aliasing textures
     "bevy_anti_alias",              # AA pipeline support

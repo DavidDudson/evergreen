@@ -12,8 +12,10 @@ pub fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         Camera2d,
         Hdr,
-        // HDR + MSAA is unsupported on WebGL2 and crashes at runtime.
-        // Pixel art also gains nothing from MSAA.
+        // Pixel art gains nothing from MSAA, so it stays off. Note this was
+        // also mandatory under WebGL2, where HDR + MSAA crashes at runtime;
+        // that constraint is gone now the wasm backend is WebGPU, but the
+        // setting is still the right one for this art style.
         Msaa::Off,
         Tonemapping::TonyMcMapface,
         DebandDither::Enabled,

@@ -251,9 +251,56 @@ So the choice becomes:
    already 0.19. Accepts an unreleased dependency.
 3. **Switch the wasm backend to WebGPU** and use published `0.11.0` as-is.
    This is a product decision, not a technical one -- it drops browsers without
-   WebGPU. Note `camera/src/setup.rs` currently disables MSAA specifically
-   because "HDR + MSAA is unsupported on WebGL2", so some of the existing
-   render config exists to serve the WebGL2 constraint and could be revisited.
+   WebGPU. **This is the option currently taken; see below.**
+
+#### Backend switch: WebGL2 -> WebGPU (2026-08-09, temporary)
+
+The root `Cargo.toml` bevy feature list now has `"webgpu"` where it had
+`"webgl2"`. The comment above it marks the change as temporary and names the
+revert condition (malbernaz/bevy_lit#26 shipping). `webgpu` overrides `webgl2`
+in Bevy, so the two are mutually exclusive, not additive.
+
+Follow-on edits:
+
+- `camera/src/setup.rs` -- `Msaa::Off` stays, but its comment no longer claims
+  WebGL2 forces it. MSAA is off because pixel art gains nothing from it; the
+  "HDR + MSAA crashes on WebGL2" constraint is simply no longer the reason.
+- `post_processing/src/atmosphere.rs` -- the 16-byte padding comment now says
+  it is a WGSL uniform address space requirement, not a WebGL one, so nobody
+  deletes the padding thinking WebGPU made it obsolete.
+
+**Cost:** browsers without WebGPU can no longer run the game at all. There is
+no automatic fallback -- `webgpu` replaces the GL backend rather than sitting
+in front of it.
+
+**Verified in-browser** (Vivaldi 150 / Chromium, Linux, NVIDIA RTX 4090):
+
+- `navigator.gpu.requestAdapter()` resolves; adapter reports
+  `vendor: nvidia, architecture: lovelace`.
+- Bevy logs `AdapterInfo { ..., backend: BrowserWebGpu }` -- the backend really
+  switched, it did not silently fall back.
+- No wgpu, shader, pipeline, or validation errors in the console across the
+  whole session.
+- Gameplay renders correctly: tilemap, scenery, player, NPC name label, torch
+  point light, biome atmosphere darkening, HUD and minimap all present and
+  matching a WebGL2 capture of the same scene.
+- Informational only: `Some GPU preprocessing are limited on this device`.
+  Under WebGL2 the equivalent line is the stronger `GPU preprocessing is not
+  supported on this device. Falling back to CPU preprocessing`, plus a warning
+  that `OrderIndependentTransparencyPlugin` cannot load for lack of
+  `FRAGMENT_WRITABLE_STORAGE`. So WebGPU is the less degraded path of the two.
+- Pre-existing and unrelated: `Failed to load asset
+  'quests/bigby_sick_animals.quest.ron' ... Expected opening '(' for struct
+  'QuestId'`. Present on both backends. Worth fixing separately.
+
+**Not established:** a like-for-like framerate comparison. Attempts to measure
+frame rate through the browser-automation bridge returned 1 frame in ~22s on
+*both* backends, which means the probe was measuring the extension's injected
+context rather than the game loop -- not a real result for either. Two
+`Page.captureScreenshot` calls also timed out during the WebGPU run while the
+level was still streaming in, but the WebGL2 run was not exercised the same way
+at that stage, so this does not isolate to the backend. **Judge perceived
+performance by playing it, not from these notes.**
 
 #### Known `bevy_lit` issues worth tracking
 

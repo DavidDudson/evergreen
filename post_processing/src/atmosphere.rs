@@ -17,7 +17,8 @@ use bevy::shader::ShaderRef;
 pub struct BiomeAtmosphere {
     /// Biome darkness: 0.0 = city (bright), 1.0 = darkwood (dark + vignette).
     pub darkness: f32,
-    // Padding to reach 16-byte alignment (required by WebGL).
+    // Padding to reach 16-byte alignment. Required by the WGSL uniform
+    // address space, so this stays necessary on WebGPU -- do not drop it.
     _pad0: f32,
     _pad1: f32,
     _pad2: f32,
