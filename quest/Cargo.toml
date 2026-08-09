@@ -13,3 +13,8 @@ dialog = { path = "../dialog" }
 keybinds = { path = "../keybinds" }
 serde = { version = "1.0.229", features = ["derive"] }
 ron = "0.12.2"
+
+[dev-dependencies]
+# QuestProgress is persisted as JSON by the `save` crate; the model tests
+# assert QuestId still serializes as a plain map key.
+serde_json = "1.0.151"

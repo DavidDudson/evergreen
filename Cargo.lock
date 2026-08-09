@@ -4056,6 +4056,7 @@ dependencies = [
  "models",
  "ron",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
