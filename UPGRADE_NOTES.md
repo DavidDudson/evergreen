@@ -181,18 +181,94 @@ running later than usual this cycle.
 
 ### Options if waiting is unacceptable
 
-1. **Fork `bevy_light_2d`.** Not recommended. It is ~59 KB of source, but ~60%
+1. **Swap to `bevy_lit`.** The only viable alternative, and a genuinely close
+   API match -- see [Alternative: bevy_lit](#alternative-bevy-lit) below. Has
+   one open blocker of its own (WebGL2).
+2. **Fork `bevy_light_2d`.** Not recommended. It is ~59 KB of source, but ~60%
    of that is three render-graph nodes (`light_map`, `sdf`, `lighting`) plus
    their pipelines and WGSL. Bevy 0.19 **removed the `RenderGraph` API
    entirely** -- `ViewNode` is gone, render passes are now systems in the
    `Core2d`/`Core3d` schedules. Forking means rewriting exactly the part of the
    crate the release broke hardest, in a subsystem nobody here maintains.
-2. **Drop 2D lighting.** `bevy_light_2d` reaches only 6 files
+3. **Drop 2D lighting.** `bevy_light_2d` reaches only 6 files
    (`lighting/src/{ambient,torch,exit_light,plugin}.rs`, `camera/src/setup.rs`,
    `models/src/palette.rs`) via four symbols: `Light2dPlugin`, `Light2d`,
    `AmbientLight2d`, `PointLight2d`. Cheap to excise, but the day/night cycle
    and torch lighting are the visual identity of the game.
-3. **Wait**, and re-run Phase 0 of `/upgrade-bevy` periodically.
+4. **Wait**, and re-run Phase 0 of `/upgrade-bevy` periodically.
+
+### Alternative: `bevy_lit`
+
+`bevy_lit` (https://github.com/malbernaz/bevy_lit) is the only other maintained
+2D lighting crate for Bevy. **`bevy_lit 0.11.0` requires `bevy ^0.19.0`** and
+landed 2026-06-22, four days after Bevy 0.19.0 shipped. Its compatibility table
+covers every Bevy release from 0.14 onward, so its release cadence is
+substantially better than `bevy_light_2d`'s.
+
+Surveyed and rejected: `bevy_magic_light_2d` (last release requires bevy 0.14),
+`bevy_incandescent` (bevy 0.13). No other 2D lighting crate was found.
+
+#### API mapping
+
+This workspace uses four symbols across six files, and every one has a direct
+counterpart:
+
+| `bevy_light_2d` 0.9 | `bevy_lit` 0.11 | Notes |
+| --- | --- | --- |
+| `Light2dPlugin` | `Lighting2dPlugin` | `lighting/src/plugin.rs:14` |
+| `Light2d { ambient_light: AmbientLight2d { .. } }` on camera | `Lighting2dSettings` on camera; `AmbientLight2d` is a **direct** component (pulled in by `#[require]`) | removes the wrapper indirection in `ambient.rs`; query `&mut AmbientLight2d` instead of `&mut Light2d` |
+| `AmbientLight2d { color, brightness }` | `AmbientLight2d { color, intensity }` | field rename only |
+| `PointLight2d { color, intensity, radius, falloff, cast_shadows }` | `PointLight2d { color, intensity, inner_radius, outer_radius, falloff, cast_shadows }` | `radius` -> `outer_radius`, add `inner_radius: 0.0` |
+
+`LightOccluder2d` is not used anywhere in this workspace, so the biggest
+behavioral difference between the two crates (mesh occluders vs rectangle-only)
+does not apply.
+
+Estimated cost: ~30 lines across `lighting/src/{plugin,ambient,torch,exit_light}.rs`
+and `camera/src/setup.rs`, plus retuning `TorchConfig`/`ExitLightConfig`
+intensities against a different falloff model.
+
+#### The catch: WebGL2
+
+`bevy_lit` **dropped WebGL2 support** (commit `124607d`). This project ships
+wasm with the `webgl2` feature, so published `0.11.0` will not run in the
+browser as configured.
+
+There is a fix in flight: [PR #26](https://github.com/malbernaz/bevy_lit/pull/26)
+readds WebGL2. As of 2026-08-09 it is open, `mergeable_state: clean`, +80/-22
+across 13 files, based on `main` (already Bevy 0.19). The contributor reports
+all examples passing on both `webgl2` and `x86_64-unknown-linux-gnu`; the
+maintainer's last comment (2026-07-14) is "from a first glance this is looking
+good". Not merged, and no release contains it.
+
+So the choice becomes:
+
+1. **Wait for PR #26 to merge and ship** -- probably the shortest path to
+   Bevy 0.19 overall, and cheaper than waiting on `bevy_light_2d`, whose
+   upstream shows no 0.19 activity at all.
+2. **Pin `bevy_lit` to the PR branch** (`leomeinel/bevy_lit` branch `webgl`)
+   as a git dependency. The diff is small and reviewable, and the base is
+   already 0.19. Accepts an unreleased dependency.
+3. **Switch the wasm backend to WebGPU** and use published `0.11.0` as-is.
+   This is a product decision, not a technical one -- it drops browsers without
+   WebGPU. Note `camera/src/setup.rs` currently disables MSAA specifically
+   because "HDR + MSAA is unsupported on WebGL2", so some of the existing
+   render config exists to serve the WebGL2 constraint and could be revisited.
+
+#### Known `bevy_lit` issues worth tracking
+
+- [#24](https://github.com/malbernaz/bevy_lit/issues/24) -- a despawned
+  `PointLight2d` can leave its lighting effect on screen. `lighting/src/torch.rs:90`
+  removes `PointLight2d` to switch the torch off, which is exactly this code
+  path. The one comment on the issue suspects it only triggers when
+  `AmbientLight2d` itself is removed (this project resets it rather than
+  removing it), but verify the torch toggle before committing to the swap.
+- [#25](https://github.com/malbernaz/bevy_lit/issues/25) -- `LightOccluder2d`
+  is very expensive even with `cast_shadows` off. Not applicable today; matters
+  if occluders are ever adopted.
+- `bevy_light_2d` has the mirror-image bug
+  ([#62](https://github.com/jgayfer/bevy_light_2d/issues/62): `Visibility::Hidden`
+  leaves a stale light), so this failure class is not unique to `bevy_lit`.
 
 ### What the migration will cost when it unblocks
 
