@@ -39,7 +39,7 @@ panic = "abort"                     # no unwinding; smaller binary, faster, ok f
 debug = false                       # no debug info in release wasm
 
 [workspace.dependencies]
-bevy = { version = "0.18.1", default-features = false, features = [
+bevy = { version = "0.19.0", default-features = false, features = [
     # core runtime
     "std",                          # standard library (required on wasm32-unknown-unknown)
     "multi_threaded",               # parallel scheduler feature gates
