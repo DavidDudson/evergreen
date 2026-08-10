@@ -8,7 +8,7 @@ workspace = true
 
 [dependencies]
 bevy.workspace = true
-bevy_ecs_tilemap = { version = "0.18.1", features = ["atlas"] }
+bevy_ecs_tilemap = { version = "0.19.0", features = ["atlas"] }
 bevy_light_2d = "0.9"
 models = { path = "../models" }
 dialog = { path = "../dialog" }
