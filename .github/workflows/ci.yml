@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libasound2-dev libudev-dev pkg-config
@@ -35,7 +35,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
@@ -59,7 +59,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup | Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
         with:
